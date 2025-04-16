@@ -30,7 +30,7 @@ This repository contains the source code of R package **moo4feed**.
   - Current affiliation: University of Veterinary Medicine, Vienna
   - Email: <forisbori@gmail.com>
 
-- **Contributor:**Kratika Rathi  
+- **Contributor:** Kratika Rathi  
   - Affiliation: University of British Columbia  
   - Email: <kratikar2011@gmail.com>
   
