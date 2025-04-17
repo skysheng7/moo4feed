@@ -5,9 +5,13 @@ Authors@R:
     person("Kehan (Sky)", "Sheng", , "skysheng7@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-6442-5284"))
 Description: This R package facilitates the extraction of novel variables that reflect individual animal characteristics based on feeding and drinking data.
-License: MIT LICENSE
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 URL: https://github.com/skysheng7/moo4feed
 BugReports: https://github.com/skysheng7/moo4feed/issues
+Imports: 
+    dplyr,
+    lubridate,
+    tidyr

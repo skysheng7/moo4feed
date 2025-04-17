@@ -1,25 +1,35 @@
-#' process daylight saving date records
+#' Detect Daylight Saving Time (DST) Change Dates
 #'
-#' This function processes the dataframe recording 2 daylight saving dates in
-#' each year: concatenate year-month-date, convert data types, calculate the day
-#' after daylight saving day
+#' Returns a data frame with the start ("Spring") and end ("Fall") dates of Daylight Saving Time for each year in the input range.
 #'
+#' @param years A numeric vector specifying the range of years to evaluate. Use the format `c(start_year, end_year)`, e.g., `years = c(2020, 2021)`..
+#' @param tz A valid time zone name (default is the time zone of your current physical location), used to determine DST rules.
 #'
-#' @param daylight_saving_table A dataframe with 3 columns recording daylight
-#' saving dates once in the spring, once in the fall:
-#' Year, Spring (date-month), Fall(date-month)
-#' @return daylight_saving_table dataframe after processing.
+#' @return A data frame with columns: Year, Spring (DST start for global north), and Fall (DST end for global south).
+#' @export
+#'
 #' @examples
-#' daylight_saving_process(your_dataframe)
-daylight_saving_process <- function(daylight_saving_table)
-{
-  colnames(daylight_saving_table) <- c("Year", "Spring", "Fall")
-  daylight_saving_table$Year <- as.character(daylight_saving_table$Year)
-  daylight_saving_table$Spring <- ydm(paste(daylight_saving_table$Year, daylight_saving_table$Spring, sep = "-"), tz=time_zone)
-  daylight_saving_table$Fall <- ydm(paste(daylight_saving_table$Year, daylight_saving_table$Fall, sep = "-"), tz=time_zone)
-  daylight_saving_table$Year <- as.integer(daylight_saving_table$Year)
-  daylight_saving_table <- daylight_saving_table[order(daylight_saving_table$Year),]
-  daylight_saving_table$Spring_nextDay <- daylight_saving_table$Spring + days(1)
-  daylight_saving_table$Fall_nextDay <- daylight_saving_table$Fall + days(1)
-  return(daylight_saving_table)
+#' dst_switch(c(2020, 2021), tz = "America/Vancouver")
+#' # Returns a data frame like:
+#' #   Year    Spring      Fall
+#' #   2020 2020-03-08 2020-11-01
+#' #   2021 2021-03-14 2021-11-07
+dst_switch <- function(years = c(2020, 2021), tz = Sys.timezone()){
+  start_date <- paste0(as.character(min(years)), "-01-01")
+  end_date <- paste0(as.character(max(years)), "-12-31")
+  date_seq <- seq(lubridate::ymd(start_date),
+                  lubridate::ymd(end_date),
+                  by = "1 day")
+  date_seq_tz <- lubridate::force_tz(date_seq, tz = tz)
+  dst_status <- lubridate::dst(date_seq_tz)
+  dst_change <- date_seq[which(diff(dst_status) != 0)]
+
+  dst_df <- data.frame(date = dst_change) |>
+    dplyr::mutate(Year = lubridate::year(date),
+                  Season = dplyr::if_else((lubridate::month(date)<9), "Spring", "Fall")) |>
+    tidyr::pivot_wider(names_from = Season,
+                       values_from = date)
+
+  return(dst_df)
 }
+
