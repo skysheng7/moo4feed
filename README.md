@@ -1,6 +1,6 @@
 # R Package: **moo4feed**
 
-This repository contains the source code of R package **moo4feed**.
+This R package **moo4feed** helps you derive individual animal traits from feeding and drinking data
 
 ## Repository Information
 
