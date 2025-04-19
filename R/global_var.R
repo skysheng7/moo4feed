@@ -1,1 +1,1 @@
-utils::globalVariables(c("Season"))
+utils::globalVariables(c("season", "fall", "spring", "Start", "End"))
