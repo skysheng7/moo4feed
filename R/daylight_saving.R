@@ -329,14 +329,14 @@ daylight_saving_adjust <- function(data_frame, date, start_col = "Start", end_co
           {{ end_col }}   := lubridate::hms({{ end_col }})
         ),
       warning = function(w) {
-        if (grepl("All formats failed to parse. No formats found.", w$message)) {
-          stop("`start_col` must be time in 'hh:mm:ss' format.")
+        if (grepl("failed to parse", w$message)) {
+          stop("all values in `start_col` and `end_col` must be in 'hh:mm:ss' format to indicate time.")
         } else {
           warning(w)  # pass through other warnings
         }
       },
       error = function(e) {
-        stop("`start_col` must be time in 'hh:mm:ss' format.")
+        stop("all values in `start_col` and `end_col` must be in 'hh:mm:ss' format to indicate time.")
       }
     )
   }

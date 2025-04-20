@@ -253,4 +253,100 @@ test_that("test fall daylight saving day", {
 
 
 
+test_that("error case: invalid date format", {
+  expect_error(
+    daylight_saving_adjust(df,
+                           date = "09-01-2021",
+                           start_col = "Start",
+                           end_col = "End",
+                           dst_df = dst_info),
+    "must be a valid Date object or string"
+  )
+})
 
+test_that("error case: non-character column names", {
+  expect_error(
+    daylight_saving_adjust(df,
+                           date = "2021-09-01",
+                           start_col = 123,
+                           end_col = TRUE,
+                           dst_df = dst_info),
+    "must be a string"
+  )
+})
+
+test_that("error case: start_col not in dataframe", {
+  expect_error(
+    daylight_saving_adjust(df,
+                           date = "2021-09-01",
+                           start_col = "NotHere",
+                           end_col = "End",
+                           dst_df = dst_info),
+    "Column `NotHere` not found"
+  )
+})
+
+df_bad_time <- data.frame(Start = c("01:30:00", "not_a_time", "04:00:00"),
+                          End   = c("02:00:00", "03:00:00", "04:30:00"))
+
+test_that("error case: invalid time format", {
+  expect_error(
+    daylight_saving_adjust(df_bad_time,
+                           date = "2021-11-07",
+                           start_col = "Start",
+                           end_col = "End",
+                           dst_df = dst_info),
+    "must be in 'hh:mm:ss' format"
+  )
+})
+
+df <- data.frame(Start = c("00:02:02", "01:30:00", "02:30:00", "04:00:00"),
+                 End = c("00:17:00", "02:00:00", "02:35:00", "04:30:00"))
+test_that("error case: daylight_change_duration not an integer", {
+  expect_error(
+    daylight_saving_adjust(df,
+                           date = "2021-11-07",
+                           start_col = "Start",
+                           end_col = "End",
+                           dst_df = dst_info,
+                           daylight_change_duration = "sixty"),
+    "must be a single integer"
+  )
+})
+
+test_that("error case: daylight_change_duration out of bounds", {
+  expect_error(
+    daylight_saving_adjust(df,
+                           date = "2021-11-07",
+                           start_col = "Start",
+                           end_col = "End",
+                           dst_df = dst_info,
+                           daylight_change_duration = 120),
+    "must be a single integer"
+  )
+})
+
+
+df_empty <- data.frame(Start = character(), End = character())
+test_that("edge case: empty dataframe", {
+  result <- daylight_saving_adjust(df_empty,
+                                   date = "2021-11-07",
+                                   start_col = "Start",
+                                   end_col = "End",
+                                   dst_df = dst_info)
+  expect_equal(nrow(result), 0)
+})
+
+
+df_edge_fall <- data.frame(Start = c("03:00:00"), End = c("03:30:00"))
+expect <- data.frame(Start = c("02:00:00"), End = c("02:30:00")) |>
+  dplyr::mutate(Start = lubridate::hms(Start), End = lubridate::hms(End))
+
+test_that("boundary case: fallback event at boundary of fallback_end", {
+  result <- daylight_saving_adjust(df_edge_fall,
+                                   date = "2021-11-07",
+                                   start_col = "Start",
+                                   end_col = "End",
+                                   dst_df = dst_info)
+  expect_equal(as.data.frame(result), expect, ignore_attr = TRUE)
+})
