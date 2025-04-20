@@ -314,6 +314,13 @@ daylight_saving_adjust <- function(data_frame, date, start_col = "Start", end_co
     start_col = rlang::sym(start_col)
     end_col = rlang::sym(end_col)
   }
+  if (!as.character(start_col) %in% colnames(data_frame)) {
+    stop(paste0("Column `", as.character(start_col), "` not found in `data_frame`."))
+  }
+
+  if (!as.character(end_col) %in% colnames(data_frame)) {
+    stop(paste0("Column `", as.character(end_col), "` not found in `data_frame`."))
+  }
 
   # Extract the relevant DST row for the current year
   dst_row <- dst_df[dst_df$year == lubridate::year(date), ]

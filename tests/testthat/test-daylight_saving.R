@@ -138,12 +138,60 @@ dst_info <- get_dst_switch_info(years = 2021, tz = "America/Vancouver")
 # test for normal cases when it's not a daylight saving change day
 df <- data.frame(Start = c("01:30:00", "02:30:00", "04:00:00"),
                                    End = c("02:00:00", "03:00:00", "04:30:00"))
-daylight_saving_adjust(df,
-                      date = "2021-11-07",
-                      start_col = "Start",
-                      end_col = "End",
-                      dst_df = dst_info,
-                      tz = "America/Vancouver")
+test_that("normal case: when it's not daylight saving day, return original df", {
+  result <- daylight_saving_adjust(df,
+                         date = "2021-9-1",
+                         start_col = "Start",
+                         end_col = "End",
+                         dst_df = dst_info,
+                         tz = "America/Vancouver")
+
+  expect_equal(as.data.frame(result), df, ignore_attr = TRUE)
+})
+
+# test for edge case user did not enter the column names of start and end time
+df <- data.frame(Start = c("01:30:00", "02:30:00", "04:00:00"),
+                 End = c("02:00:00", "03:00:00", "04:30:00"))
+test_that("edge case: when user did not enter the column names of start and end time", {
+  result <- daylight_saving_adjust(df,
+                                   date = "2021-9-1",
+                                   dst_df = dst_info,
+                                   tz = "America/Vancouver")
+
+  expect_equal(as.data.frame(result), df, ignore_attr = TRUE)
+})
+
+# test for edge case user did not enter the column names of start and end time,
+# but the column name in the user's dataframe is not the same as the function default
+df <- data.frame(Start_time = c("01:30:00", "02:30:00", "04:00:00"),
+                 End_time = c("02:00:00", "03:00:00", "04:30:00"))
+test_that("edge case: when user did not enter the column names of start and end time", {
+  expect_error(
+    result <- daylight_saving_adjust(df,
+                                     date = "2021-9-1",
+                                     dst_df = dst_info,
+                                     tz = "America/Vancouver"),
+    "not found", fixed = TRUE
+  )
+
+})
+
+# test for normal case when it's spring daylight saving change day
+df <- data.frame(Start_time = c("01:30:00", "02:30:00", "04:00:00"),
+                 End_time = c("02:00:00", "03:00:00", "04:30:00"))
+test_that("edge case: when user did not enter the column names of start and end time", {
+  expect_error(
+    result <- daylight_saving_adjust(df,
+                                     date = "2021-9-1",
+                                     dst_df = dst_info,
+                                     tz = "America/Vancouver"),
+    "not found", fixed = TRUE
+  )
+
+})
+
+
+
 
 
 
