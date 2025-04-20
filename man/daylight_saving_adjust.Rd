@@ -7,8 +7,8 @@
 daylight_saving_adjust(
   data_frame,
   date,
-  start_col,
-  end_col,
+  start_col = "Start",
+  end_col = "End",
   dst_df,
   daylight_change_duration = 60,
   tz = Sys.timezone()

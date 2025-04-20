@@ -291,7 +291,7 @@ dst_switch_hm <- function(date, tz = Sys.timezone(), interval = 1) {
 #'                       tz = "America/Vancouver")
 #'
 #' @export
-daylight_saving_adjust <- function(data_frame, date, start_col, end_col, dst_df, daylight_change_duration=60, tz = Sys.timezone()) {
+daylight_saving_adjust <- function(data_frame, date, start_col = "Start", end_col = "End", dst_df, daylight_change_duration=60, tz = Sys.timezone()) {
   # --- Error handling ---
   if (!inherits(date, "Date")) {
     date <- tryCatch(
@@ -317,7 +317,9 @@ daylight_saving_adjust <- function(data_frame, date, start_col, end_col, dst_df,
 
   # Extract the relevant DST row for the current year
   dst_row <- dst_df[dst_df$year == lubridate::year(date), ]
-  if (nrow(dst_row) == 0) return(data_frame)
+  if (nrow(dst_row) == 0) {
+    stop("The `dst_df` you provided does not contain daylight saving time information for the year your data was recorded. Please re-run `dst_info <- get_dst_switch_info(years = 2021, tz = XXX)` to generate the appropriate DST reference table.")
+  }
 
   # Fall back: clocks repeat 1–2am (typically early November)
   if (date == lubridate::ymd(dst_row$fall, tz=tz)) {

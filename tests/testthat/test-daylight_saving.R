@@ -110,7 +110,7 @@ test_that("errors on invalid interval (too small, not integer, or too large)", {
 })
 
 
-# ----------------------- tests for get_dst_switch_info() ----------------------#
+# ----------------------- tests for get_dst_switch_info() ---------------------#
 test_that("Normal case: Vancouver timezone, 2021–2022", {
   result <- get_dst_switch_info(years = 2021:2022, tz = "America/Vancouver")
 
@@ -129,3 +129,22 @@ test_that("Edge case: timezone without DST", {
   expect_equal(nrow(result), 0)
   expect_true(all(c("spring_time", "fall_time") %in% colnames(result)))
 })
+
+
+# --------------------- tests for daylight_saving_adjust() --------------------#
+# get daylight saving days in a dataframe first
+dst_info <- get_dst_switch_info(years = 2021, tz = "America/Vancouver")
+
+# test for normal cases when it's not a daylight saving change day
+df <- data.frame(Start = c("01:30:00", "02:30:00", "04:00:00"),
+                                   End = c("02:00:00", "03:00:00", "04:30:00"))
+daylight_saving_adjust(df,
+                      date = "2021-11-07",
+                      start_col = "Start",
+                      end_col = "End",
+                      dst_df = dst_info,
+                      tz = "America/Vancouver")
+
+
+
+
