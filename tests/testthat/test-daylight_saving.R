@@ -134,11 +134,14 @@ test_that("Edge case: timezone without DST", {
 # --------------------- tests for daylight_saving_adjust() --------------------#
 # get daylight saving days in a dataframe first
 dst_info <- get_dst_switch_info(years = 2021, tz = "America/Vancouver")
-
-# test for normal cases when it's not a daylight saving change day
 df <- data.frame(Start = c("01:30:00", "02:30:00", "04:00:00"),
-                                   End = c("02:00:00", "03:00:00", "04:30:00"))
-test_that("normal case: when it's not daylight saving day, return original df", {
+                End = c("02:00:00", "03:00:00", "04:30:00"))
+
+expect <- df|> dplyr::mutate(
+  Start := lubridate::hms(Start),
+  End   := lubridate::hms(End)
+)
+test_that("normal case: when it's not daylight saving day, return original df, only change to lubridate hms format", {
   result <- daylight_saving_adjust(df,
                          date = "2021-9-1",
                          start_col = "Start",
@@ -146,26 +149,21 @@ test_that("normal case: when it's not daylight saving day, return original df", 
                          dst_df = dst_info,
                          tz = "America/Vancouver")
 
-  expect_equal(as.data.frame(result), df, ignore_attr = TRUE)
+  expect_equal(as.data.frame(result), expect, ignore_attr = TRUE)
 })
 
-# test for edge case user did not enter the column names of start and end time
-df <- data.frame(Start = c("01:30:00", "02:30:00", "04:00:00"),
-                 End = c("02:00:00", "03:00:00", "04:30:00"))
 test_that("edge case: when user did not enter the column names of start and end time", {
   result <- daylight_saving_adjust(df,
                                    date = "2021-9-1",
                                    dst_df = dst_info,
                                    tz = "America/Vancouver")
 
-  expect_equal(as.data.frame(result), df, ignore_attr = TRUE)
+  expect_equal(as.data.frame(result), expect, ignore_attr = TRUE)
 })
 
-# test for edge case user did not enter the column names of start and end time,
-# but the column name in the user's dataframe is not the same as the function default
 df <- data.frame(Start_time = c("01:30:00", "02:30:00", "04:00:00"),
                  End_time = c("02:00:00", "03:00:00", "04:30:00"))
-test_that("edge case: when user did not enter the column names of start and end time", {
+test_that("edge case: when user did not enter the column names of start and end time, but the column name in the user's dataframe is not the same as the function default", {
   expect_error(
     result <- daylight_saving_adjust(df,
                                      date = "2021-9-1",
@@ -176,22 +174,82 @@ test_that("edge case: when user did not enter the column names of start and end 
 
 })
 
-# test for normal case when it's spring daylight saving change day
 df <- data.frame(Start_time = c("01:30:00", "02:30:00", "04:00:00"),
                  End_time = c("02:00:00", "03:00:00", "04:30:00"))
-test_that("edge case: when user did not enter the column names of start and end time", {
+test_that("edge case: when user provided dataframe about daylight saving change days does not include the year when data was recorded.", {
   expect_error(
     result <- daylight_saving_adjust(df,
-                                     date = "2021-9-1",
+                                     date = "2015-11-1",
+                                     start_col = "Start_time",
+                                     end_col = "End_time",
                                      dst_df = dst_info,
                                      tz = "America/Vancouver"),
-    "not found", fixed = TRUE
+    "you provided does not contain daylight saving time information for the year", fixed = TRUE
   )
 
 })
 
 
+df <- data.frame(Start_time = c("00:02:02", "01:30:00", "02:30:00", "04:00:00", "23:00:00", "23:05:00"),
+                 End_time = c("00:17:00", "02:00:00", "02:35:00", "04:30:00", "23:01:00", "23:08:00"))
+expect <- data.frame(Start_time = c("00:02:02", "03:30:00", "05:00:00"),
+                     End_time = c("00:17:00", "03:35:00", "05:30:00"))|>
+  dplyr::mutate(
+    Start_time := lubridate::hms(Start_time),
+    End_time   := lubridate::hms(End_time)
+  )
+test_that("test spring daylight saving day", {
+  result <- daylight_saving_adjust(df,
+                                   date = "2021-3-14",
+                                   start_col = "Start_time",
+                                   end_col = "End_time",
+                                   dst_df = dst_info,
+                                   tz = "America/Vancouver")
+  expect_equal(as.data.frame(result), expect, ignore_attr = TRUE)
 
+})
+
+df <- data.frame(Start_time = c("23:00:01", "23:05:01", "01:30:00", "02:30:00", "04:00:00"),
+                 End_time = c("23:06:00", "23:05:01", "02:00:00", "02:35:00", "04:30:00"),
+                 cow = c(1, 2, 3, 4, 5))
+expect <- data.frame(Start_time = c("01:30:00", "02:30:00", "04:00:00"),
+                     End_time = c("02:00:00", "02:35:00", "04:30:00"),
+                     cow = c(3, 4, 5))|>
+  dplyr::mutate(
+    Start_time := lubridate::hms(Start_time),
+    End_time   := lubridate::hms(End_time)
+  )
+test_that("test next day after spring daylight saving day", {
+  result <- daylight_saving_adjust(df,
+                                   date = "2021-3-15",
+                                   start_col = "Start_time",
+                                   end_col = "End_time",
+                                   dst_df = dst_info,
+                                   tz = "America/Vancouver")
+  expect_equal(as.data.frame(result), expect, ignore_attr = TRUE)
+
+})
+
+
+
+df <- data.frame(Start_time = c("00:02:02", "01:30:00", "02:30:00", "04:00:00"),
+                 End_time = c("00:17:00", "02:00:00", "02:35:00", "04:30:00"))
+expect <- data.frame(Start_time = c("00:02:02", "03:00:00"),
+                     End_time = c("00:17:00", "03:30:00"))|>
+  dplyr::mutate(
+    Start_time := lubridate::hms(Start_time),
+    End_time   := lubridate::hms(End_time)
+  )
+test_that("test fall daylight saving day", {
+  result <- daylight_saving_adjust(df,
+                                   date = "2021-11-7",
+                                   start_col = "Start_time",
+                                   end_col = "End_time",
+                                   dst_df = dst_info,
+                                   tz = "America/Vancouver")
+  expect_equal(as.data.frame(result), expect, ignore_attr = TRUE)
+
+})
 
 
 

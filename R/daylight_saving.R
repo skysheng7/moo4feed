@@ -321,6 +321,25 @@ daylight_saving_adjust <- function(data_frame, date, start_col = "Start", end_co
   if (!as.character(end_col) %in% colnames(data_frame)) {
     stop(paste0("Column `", as.character(end_col), "` not found in `data_frame`."))
   }
+  if (!inherits(df[[start_col]], "Period")) {
+    data_frame <- tryCatch(
+      data_frame |>
+        dplyr::mutate(
+          {{ start_col }} := lubridate::hms({{ start_col }}),
+          {{ end_col }}   := lubridate::hms({{ end_col }})
+        ),
+      warning = function(w) {
+        if (grepl("All formats failed to parse. No formats found.", w$message)) {
+          stop("`start_col` must be time in 'hh:mm:ss' format.")
+        } else {
+          warning(w)  # pass through other warnings
+        }
+      },
+      error = function(e) {
+        stop("`start_col` must be time in 'hh:mm:ss' format.")
+      }
+    )
+  }
 
   # Extract the relevant DST row for the current year
   dst_row <- dst_df[dst_df$year == lubridate::year(date), ]
@@ -409,7 +428,7 @@ adjust_dst_fall <- function(data_frame,
   }
 
   # Try parsing dst_detected_time into hms if it isn't already
-  if (!inherits(dst_detected_time, "hms")) {
+  if (!inherits(dst_detected_time, "Period")) {
     dst_detected_time <- tryCatch({
       lubridate::hms(dst_detected_time)
     }, error = function(e) {
@@ -431,26 +450,25 @@ adjust_dst_fall <- function(data_frame,
 
   # --- Main logic: parse time, filter and shift ---
   data_frame <- data_frame |>
-    dplyr::mutate(
-      {{ start_col }} := lubridate::hms({{ start_col }}),
-      {{ end_col }}   := lubridate::hms({{ end_col }})
-    ) |>
     dplyr::filter(
       !({{ start_col }} > fallback_start & {{ start_col }} <= fallback_end),
       !({{ end_col }} > fallback_start & {{ end_col }} <= fallback_end)
     ) |>
     dplyr::mutate(
-      {{ start_col }} := ifelse(
+      {{ start_col }} := dplyr::if_else(
         {{ start_col }} > fallback_end,
         {{ start_col }} - lubridate::minutes(daylight_change_duration),
         {{ start_col }}
       ),
-      {{ end_col }} := ifelse(
+      {{ end_col }} := dplyr::if_else(
         {{ end_col }} > fallback_end,
         {{ end_col }} - lubridate::minutes(daylight_change_duration),
         {{ end_col }}
+      )) |>
+      dplyr::mutate(
+        {{ start_col }} := lubridate::seconds_to_period(lubridate::period_to_seconds({{ start_col }})),
+        {{ end_col }} := lubridate::seconds_to_period(lubridate::period_to_seconds({{ end_col }}))
       )
-    )
 
   return(data_frame)
 }
@@ -490,7 +508,7 @@ adjust_dst_spring <- function(data_frame,
   }
 
   # Try parsing dst_detected_time into hms if needed
-  if (!inherits(dst_detected_time, "hms")) {
+  if (!inherits(dst_detected_time, "Period")) {
     dst_detected_time <- tryCatch({
       lubridate::hms(dst_detected_time)
     }, error = function(e) {
@@ -510,24 +528,28 @@ adjust_dst_spring <- function(data_frame,
   spring_gap_end <- dst_detected_time + lubridate::minutes(daylight_change_duration)
 
   data_frame <- data_frame |>
-    dplyr::mutate(
-      {{ start_col }} := lubridate::hms({{ start_col }}),
-      {{ end_col }}   := lubridate::hms({{ end_col }})
-    ) |>
     dplyr::filter(
-      !({{ start_col }} <= spring_gap_start & {{ end_col }} > spring_gap_start)
+      !({{ start_col }} <= spring_gap_start & {{ end_col }} > spring_gap_start),
+      # we delete all records happened after 11pm, because it will be pushed to
+      # overflow to the next day in the spring if we attempt to do so
+      !({{ start_col }} >= lubridate::hms("23:00:00")),
+      !({{ end_col }} >= lubridate::hms("23:00:00")),
     ) |>
     dplyr::mutate(
-      {{ start_col }} := ifelse(
+      {{ start_col }} := dplyr::if_else(
         {{ start_col }} > spring_gap_start,
         {{ start_col }} + lubridate::minutes(daylight_change_duration),
         {{ start_col }}
       ),
-      {{ end_col }} := ifelse(
+      {{ end_col }} := dplyr::if_else(
         {{ end_col }} > spring_gap_start,
         {{ end_col }} + lubridate::minutes(daylight_change_duration),
         {{ end_col }}
       )
+    ) |>
+    dplyr::mutate(
+      {{ start_col }} := lubridate::seconds_to_period(lubridate::period_to_seconds({{ start_col }})),
+      {{ end_col }} := lubridate::seconds_to_period(lubridate::period_to_seconds({{ end_col }}))
     )
 
   return(data_frame)
@@ -556,7 +578,7 @@ next_day_after_spring_dst <- function(data_frame, start_col = Start) {
     stop(paste0("Column `", as.character(start_col), "` not found in `data_frame`."))
   }
 
-  time_vals <- lubridate::hms(dplyr::pull(data_frame, {{ start_col }}))
+  time_vals <- dplyr::pull(data_frame, {{ start_col }})
 
   # diff will be negative where time goes backward
   backward_jump_idx <- which(diff(time_vals) < 0)[1]
