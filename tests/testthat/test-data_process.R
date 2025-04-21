@@ -59,6 +59,7 @@ test_that("Error handling: col_name is not a single character string", {
 })
 
 
+
 # ---------------------- test for file_name_processing() ----------------------#
 
 test_that("Normal case: matching dates between feed and water", {
@@ -127,4 +128,56 @@ test_that("Handles list inputs by unlisting", {
   res3 <- compare_files(both_lists_feed, both_lists_water)
   expect_equal(res3$feed,  "feed/VR200801.DAT")
   expect_equal(res3$water, "water/VW200801.DAT")
+})
+
+
+
+# ---------------------- test for get_date_range() ----------------------#
+
+test_that("single file returns its own date token", {
+  expect_equal(
+    get_date_range("feed/VR200715.DAT"),
+    "200715"
+  )
+})
+
+test_that("multiple unordered files yield the correct min‐max span", {
+  files <- c("feed/VR200720.DAT", "feed/VR200715.DAT", "feed/VR200716.DAT")
+  expect_equal(
+    get_date_range(files),
+    "200715_200720"
+  )
+})
+
+test_that("works when dates are already sorted", {
+  files <- c("water/VW200801.DAT", "water/VW200803.DAT")
+  expect_equal(
+    get_date_range(files),
+    "200801_200803"
+  )
+})
+
+test_that("empty input vector gives NA with a warning", {
+  expect_warning(
+    out <- get_date_range(character(0)),
+    "`df` has no rows; returning NA_character_"
+  )
+  expect_true(is.na(out))
+})
+
+test_that("non‐character input errors out", {
+  expect_error(
+    get_date_range(123),
+    "`file_names` must be a character vector"
+  )
+})
+
+test_that("files with no digits produce NA (and a warning)", {
+  # file_name_processing will yield date = NA for both,
+  # helper will see zero non‐NA dates → warning + NA
+  expect_warning(
+    out <- get_date_range(c("foo.txt", "bar.doc")),
+    "column is NA"
+  )
+  expect_true(is.na(out))
 })
