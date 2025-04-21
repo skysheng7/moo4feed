@@ -2,9 +2,11 @@
 
 export(compare_files)
 export(daylight_saving_adjust)
+export(delete_rows)
 export(dst_switch_day)
 export(dst_switch_hm)
 export(file_name_processing)
 export(get_date_range)
 export(get_dst_switch_info)
+export(keep_bins)
 importFrom(rlang,":=")
