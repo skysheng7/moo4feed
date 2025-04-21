@@ -4,15 +4,15 @@
 \alias{delete_rows}
 \title{Remove rows by matching values in a specified column}
 \usage{
-delete_rows(df, col_name, to_delete)
+delete_rows(df, to_delete, col_name = "cow")
 }
 \arguments{
 \item{df}{A data frame containing a column named \code{col_name}.}
 
-\item{col_name}{A single string giving the name of the column to filter on.}
-
 \item{to_delete}{A vector of values to remove; \strong{must} have the same type
-data type as \code{df[[col_name]]}.}
+data type as \code{df[[col_name]]}. Default is "cow".}
+
+\item{col_name}{A single string giving the name of the column to filter on.}
 }
 \value{
 A data frame identical to \code{df} but with all rows where
@@ -29,9 +29,9 @@ df <- data.frame(
   stringsAsFactors = FALSE
 )
 # drop cows "A" and "C"
-delete_rows(df, "cow", c("A", "C"))
+delete_rows(df, c("A", "C"), "cow")
 
 # drop transponder "X2"
-delete_rows(df, "transponder", c("X2"))
+delete_rows(df, c("X2"), "transponder")
 
 }
