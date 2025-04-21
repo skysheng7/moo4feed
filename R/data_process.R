@@ -127,3 +127,77 @@ compare_files <- function(file_names.f, file_names.w) {
   return(list(feed  = feed_matches,
        water = water_matches))
 }
+
+
+#' Get date range string for dataset
+#'
+#' Computes the overall date range from the `date` column of the input data frame,
+#' returning it as a single string. If all dates are identical, returns that single date.
+#'
+#' @param df A data frame with a `date` column of class `Date` or `POSIXt`.
+#'
+#' @return A single character string:
+#' \describe{
+#'   \item{`"YYYY-MM-DD"`}{when all dates in `df$date` are the same}
+#'   \item{`"YYYY-MM-DD_YYYY-MM-DD"`}{otherwise, concatenation of start and end dates}
+#' }
+#' Returns `NA_character_` (with a warning) if `df` has zero rows.
+#'
+#' @details
+#' - Throws an error if `df` is not a data frame or lacks a `date` column.\cr
+#' - Throws an error if the `date` column is not of class `Date` or `POSIXt`.\cr
+#' - Coerces `POSIXt` to `Date` (dropping time-of-day) before range calculation.\cr
+#'
+#' @examples
+#' df1 <- data.frame(date = as.Date(c("2021-01-01", "2021-01-10")))
+#' get_date_range(df1)
+#' # [1] "2021-01-01_2021-01-10"
+#'
+#' df2 <- data.frame(date = as.POSIXct("2021-01-15 12:34:56"))
+#' get_date_range(df2)
+#' # [1] "2021-01-15"
+#'
+#' df3 <- data.frame(date = as.Date(character(0)))
+#' get_date_range(df3)
+#' # Warning: `df` has no rows; returning NA_character_.
+#' # [1] NA
+#'
+#' @export
+get_date_range <- function(df) {
+  # --- Error handling ---
+  if (!is.data.frame(df)) {
+    stop("`df` must be a data frame.")
+  }
+  if (!"date" %in% names(df)) {
+    stop("`df` must contain a `date` column.")
+  }
+  if (!inherits(df$date, c("Date", "POSIXt"))) {
+    stop("`date` column must be of class 'Date' or 'POSIXt'.")
+  }
+
+  # --- Handle zero-row case ---
+  if (nrow(df) == 0L) {
+    warning("`df` has no rows; returning NA_character_.")
+    return(NA_character_)
+  }
+
+  # --- Prepare dates ---
+  dates <- if (inherits(df$date, "POSIXt")) {
+    as.Date(df$date)
+  } else {
+    df$date
+  }
+
+  # --- Compute start and end ---
+  start <- min(dates, na.rm = TRUE)
+  end   <- max(dates, na.rm = TRUE)
+  start_str <- format(start, "%Y-%m-%d")
+  end_str   <- format(end,   "%Y-%m-%d")
+
+  # --- Return only the date_range string ---
+  if (identical(start, end)) {
+    start_str
+  } else {
+    paste0(start_str, "_", end_str)
+  }
+}
