@@ -124,6 +124,6 @@ compare_files <- function(file_names.f, file_names.w) {
   feed_matches  <- feed_df$feed_name[ feed_df$date  %in% common_dates ]
   water_matches <- water_df$water_name[ water_df$date %in% common_dates ]
 
-  list(feed  = feed_matches,
-       water = water_matches)
+  return(list(feed  = feed_matches,
+       water = water_matches))
 }

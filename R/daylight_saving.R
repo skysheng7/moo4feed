@@ -321,7 +321,7 @@ daylight_saving_adjust <- function(data_frame, date, start_col = "Start", end_co
   if (!as.character(end_col) %in% colnames(data_frame)) {
     stop(paste0("Column `", as.character(end_col), "` not found in `data_frame`."))
   }
-  if (!inherits(df[[start_col]], "Period")) {
+  if (!inherits(data_frame[[start_col]], "Period")) {
     data_frame <- tryCatch(
       data_frame |>
         dplyr::mutate(

@@ -338,10 +338,10 @@ test_that("edge case: empty dataframe", {
 })
 
 
+
 df_edge_fall <- data.frame(Start = c("03:00:00"), End = c("03:30:00"))
 expect <- data.frame(Start = c("02:00:00"), End = c("02:30:00")) |>
   dplyr::mutate(Start = lubridate::hms(Start), End = lubridate::hms(End))
-
 test_that("boundary case: fallback event at boundary of fallback_end", {
   result <- daylight_saving_adjust(df_edge_fall,
                                    date = "2021-11-07",
