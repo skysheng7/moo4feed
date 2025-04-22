@@ -11,7 +11,7 @@ dst_switch_hm(date, tz = Sys.timezone(), interval = 1)
 
 \item{tz}{A valid time zone name (default is the time zone of your current physical location), used to determine DST rules. Use \code{OlsonNames()} to see all valid options.}
 
-\item{interval}{An integer specifying the time resolution in minutes (default is 1). Must be between 1 and 59.}
+\item{interval}{An integer (1–59) specifying the time resolution in minutes used to detect DST changes (default: 1).}
 }
 \value{
 A POSIXct object indicating the time just before the DST transition.

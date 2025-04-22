@@ -38,6 +38,37 @@ test_that("process_feeder reads, filters, and subsets correctly", {
   expect_equal(out$value, 30)
 })
 
+test_that("when select_cols is NULL, return all columns", {
+  # Create a toy feeder data frame
+  original <- data.frame(
+    cow         = c("A","B","C","A"),
+    transponder = c("X1","X2","X3","X2"),
+    bin         = c(1,2,3,2),
+    value       = c(10,20,30,40),
+    stringsAsFactors = FALSE
+  )
+  tmp <- make_csv(original)
+
+  # Drop cow "A" and transponder "X2", keep bins 2:3
+  out <- process_feeder(
+    file        = tmp,
+    col_names   = names(original),
+    drop_ids    = "A",
+    drop_trans  = "X2",
+    bins        = 2:3,
+    header = TRUE
+  )
+  unlink(tmp)
+
+  # Expect only rows where cow ∉ "A", transponder ∉ "X2", bin ∈ {2,3}
+  expect_s3_class(out, "data.frame")
+  expect_equal(colnames(out), colnames(original))
+  expect_equal(nrow(out), 1L)
+  expect_equal(out$cow, "C")
+  expect_equal(out$bin, 3)
+  expect_equal(out$value, 30)
+})
+
 
 # Create a small CSV to exercise normal and edge cases
 df_sample <- data.frame(

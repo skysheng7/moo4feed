@@ -73,8 +73,8 @@ file_name_processing <- function(file_names, col_name = "dir") {
 #' Identifies the subset of feed and water file names that share the same
 #' extracted dates, returning only those with matching date tokens.
 #'
-#' @param file_names.f A character vector of feed file names.
-#' @param file_names.w A character vector of water file names.
+#' @param file_names_feed A character vector of feed file names.
+#' @param file_names_water A character vector of water file names.
 #'
 #' @return A list with components:
 #' \describe{
@@ -93,26 +93,26 @@ file_name_processing <- function(file_names, col_name = "dir") {
 #' # water = c("water/VW200715.DAT")
 #'
 #' @export
-compare_files <- function(file_names.f, file_names.w) {
+compare_files <- function(file_names_feed, file_names_water) {
   # --- Normalize inputs: allow lists by unlisting ---
-  if (is.list(file_names.f)) {
-    file_names.f <- unlist(file_names.f, use.names = FALSE)
+  if (is.list(file_names_feed)) {
+    file_names_feed <- unlist(file_names_feed, use.names = FALSE)
   }
-  if (is.list(file_names.w)) {
-    file_names.w <- unlist(file_names.w, use.names = FALSE)
+  if (is.list(file_names_water)) {
+    file_names_water <- unlist(file_names_water, use.names = FALSE)
   }
 
   # --- Error handling ---
-  if (!is.character(file_names.f)) {
-    stop("`file_names.f` must be a character vector.")
+  if (!is.character(file_names_feed)) {
+    stop("`file_names_feed` must be a character vector.")
   }
-  if (!is.character(file_names.w)) {
-    stop("`file_names.w` must be a character vector.")
+  if (!is.character(file_names_water)) {
+    stop("`file_names_water` must be a character vector.")
   }
 
   # --- Extract dates via helper ---
-  feed_df  <- file_name_processing(file_names.f, "feed_name")
-  water_df <- file_name_processing(file_names.w, "water_name")
+  feed_df  <- file_name_processing(file_names_feed, "feed_name")
+  water_df <- file_name_processing(file_names_water, "water_name")
 
   # --- Find intersection of dates ---
   common_dates <- base::intersect(feed_df$date, water_df$date)

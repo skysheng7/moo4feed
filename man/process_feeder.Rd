@@ -13,7 +13,7 @@ process_feeder(
   drop_trans = NULL,
   bin_col = "bin",
   bins,
-  select_cols,
+  select_cols = NULL,
   sep = ",",
   header = FALSE
 )
@@ -35,7 +35,7 @@ process_feeder(
 
 \item{bins}{Numeric vector: bin IDs to keep (e.g. \code{2:4} or \code{c(1,5)}).}
 
-\item{select_cols}{Character vector: columns to retain in the final output.}
+\item{select_cols}{Character vector: columns to retain in the final output. Default is null, select all columns.}
 
 \item{sep}{Field separator; passed to \code{read.table()}. Defaults to \code{","}.}
 

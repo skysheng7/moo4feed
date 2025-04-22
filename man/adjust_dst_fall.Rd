@@ -7,8 +7,8 @@
 adjust_dst_fall(
   data_frame,
   dst_detected_time,
-  start_col = Start,
-  end_col = End,
+  start_col = start,
+  end_col = end,
   daylight_change_duration = 60
 )
 }
@@ -18,9 +18,9 @@ formatted as "HH:MM:SS".}
 
 \item{dst_detected_time}{A \code{lubridate::hms} object indicating the time when DST fallback starts (e.g., 01:59:00).}
 
-\item{start_col}{Name of the start time column (unquoted).}
+\item{start_col}{Name of the start time column (unquoted). Default is: start}
 
-\item{end_col}{Name of the end time column (unquoted).}
+\item{end_col}{Name of the end time column (unquoted). Default is : end}
 
 \item{daylight_change_duration}{An integer for the fallback duration in minutes (default = 60).}
 }

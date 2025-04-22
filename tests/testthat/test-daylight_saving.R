@@ -134,18 +134,18 @@ test_that("Edge case: timezone without DST", {
 # --------------------- tests for daylight_saving_adjust() --------------------#
 # get daylight saving days in a dataframe first
 dst_info <- get_dst_switch_info(years = 2021, tz = "America/Vancouver")
-df <- data.frame(Start = c("01:30:00", "02:30:00", "04:00:00"),
-                End = c("02:00:00", "03:00:00", "04:30:00"))
+df <- data.frame(start = c("01:30:00", "02:30:00", "04:00:00"),
+                end = c("02:00:00", "03:00:00", "04:30:00"))
 
 expect <- df|> dplyr::mutate(
-  Start := lubridate::hms(Start),
-  End   := lubridate::hms(End)
+  start := lubridate::hms(start),
+  end   := lubridate::hms(end)
 )
 test_that("normal case: when it's not daylight saving day, return original df, only change to lubridate hms format", {
   result <- daylight_saving_adjust(df,
                          date = "2021-9-1",
-                         start_col = "Start",
-                         end_col = "End",
+                         start_col = "start",
+                         end_col = "end",
                          dst_df = dst_info,
                          tz = "America/Vancouver")
 
@@ -257,8 +257,8 @@ test_that("error case: invalid date format", {
   expect_error(
     daylight_saving_adjust(df,
                            date = "09-01-2021",
-                           start_col = "Start",
-                           end_col = "End",
+                           start_col = "Start_time",
+                           end_col = "End_time",
                            dst_df = dst_info),
     "must be a valid Date object or string"
   )
@@ -286,15 +286,15 @@ test_that("error case: start_col not in dataframe", {
   )
 })
 
-df_bad_time <- data.frame(Start = c("01:30:00", "not_a_time", "04:00:00"),
-                          End   = c("02:00:00", "03:00:00", "04:30:00"))
+df_bad_time <- data.frame(start = c("01:30:00", "not_a_time", "04:00:00"),
+                         end   = c("02:00:00", "03:00:00", "04:30:00"))
 
 test_that("error case: invalid time format", {
   expect_error(
     daylight_saving_adjust(df_bad_time,
                            date = "2021-11-07",
-                           start_col = "Start",
-                           end_col = "End",
+                           start_col = "start",
+                           end_col = "end",
                            dst_df = dst_info),
     "must be in 'hh:mm:ss' format"
   )

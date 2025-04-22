@@ -103,7 +103,7 @@ test_that("Edge case: one side empty returns empty vectors", {
 test_that("Error handling: inputs must be character vectors", {
   expect_error(
     compare_files(123, c("water/VW200715.DAT")),
-    "`file_names.f` must be a character vector\\."
+    "`file_names_feed` must be a character vector\\."
   )
 })
 

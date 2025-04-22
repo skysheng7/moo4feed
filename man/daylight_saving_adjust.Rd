@@ -7,8 +7,8 @@
 daylight_saving_adjust(
   data_frame,
   date,
-  start_col = "Start",
-  end_col = "End",
+  start_col = "start",
+  end_col = "end",
   dst_df,
   daylight_change_duration = 60,
   tz = Sys.timezone()
@@ -20,9 +20,9 @@ formatted as "HH:MM:SS".}
 
 \item{date}{A string in "YYYY-MM-DD" format or a Date object.}
 
-\item{start_col}{Name of the start time column (quoted), e.g.: start_col = "Start"}
+\item{start_col}{Name of the column recording the start time of an event (quoted), e.g.: start_col = "start"}
 
-\item{end_col}{Name of the end time column (quoted). e.g.: end_col = "End"}
+\item{end_col}{Name of the column recording the end time of an event (quoted). e.g.: end_col = "end"}
 
 \item{dst_df}{A data frame created by \code{\link{get_dst_switch_info}}, containing DST change dates and times per year.}
 

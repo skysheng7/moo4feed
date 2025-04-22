@@ -4,12 +4,12 @@
 \alias{next_day_after_spring_dst}
 \title{Handle Error Reading on the Second Day after Daylight Saving Change in the Spring}
 \usage{
-next_day_after_spring_dst(data_frame, start_col = Start)
+next_day_after_spring_dst(data_frame, start_col = start)
 }
 \arguments{
 \item{data_frame}{A data frame with a time column (formatted as "HH:MM:SS") representing visit start times.}
 
-\item{start_col}{Name of the time column (unquoted), usually this is the start time of the event}
+\item{start_col}{Name of the time column (unquoted), usually this is the start time of the event. Default is: start.}
 }
 \value{
 A filtered data frame with only rows after the DST-induced reset point.

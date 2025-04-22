@@ -4,12 +4,12 @@
 \alias{compare_files}
 \title{Compare feed and water file names by shared dates}
 \usage{
-compare_files(file_names.f, file_names.w)
+compare_files(file_names_feed, file_names_water)
 }
 \arguments{
-\item{file_names.f}{A character vector of feed file names.}
+\item{file_names_feed}{A character vector of feed file names.}
 
-\item{file_names.w}{A character vector of water file names.}
+\item{file_names_water}{A character vector of water file names.}
 }
 \value{
 A list with components:

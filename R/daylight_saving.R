@@ -145,7 +145,6 @@ dst_switch_day <- function(years = c(2020, 2021), tz = Sys.timezone()){
 #'
 #' @inheritParams get_dst_switch_info
 #' @param date A string in "YYYY-MM-DD" format or a Date object.
-#' @param interval An integer specifying the time resolution in minutes (default is 1). Must be between 1 and 59.
 #'
 #' @return A POSIXct object indicating the time just before the DST transition.
 #' If no DST change is detected on the specified date, the function returns `NULL` with a warning.
@@ -268,12 +267,11 @@ dst_switch_hm <- function(date, tz = Sys.timezone(), interval = 1) {
 #'     }
 #' }
 #'
-#' @inheritParams get_dst_switch_info
 #' @inheritParams dst_switch_hm
 #' @param data_frame A data frame with two columns representing the start and end time of each visit,
 #'  formatted as "HH:MM:SS".
-#' @param start_col Name of the start time column (quoted), e.g.: start_col = "Start"
-#' @param end_col Name of the end time column (quoted). e.g.: end_col = "End"
+#' @param start_col Name of the column recording the start time of an event (quoted), e.g.: start_col = "start"
+#' @param end_col Name of the column recording the end time of an event (quoted). e.g.: end_col = "end"
 #' @param dst_df A data frame created by \code{\link{get_dst_switch_info}}, containing DST change dates and times per year.
 #' @param daylight_change_duration An integer for the fallback duration in minutes (default = 60).
 #'
@@ -291,7 +289,7 @@ dst_switch_hm <- function(date, tz = Sys.timezone(), interval = 1) {
 #'                       tz = "America/Vancouver")
 #'
 #' @export
-daylight_saving_adjust <- function(data_frame, date, start_col = "Start", end_col = "End", dst_df, daylight_change_duration=60, tz = Sys.timezone()) {
+daylight_saving_adjust <- function(data_frame, date, start_col = "start", end_col = "end", dst_df, daylight_change_duration=60, tz = Sys.timezone()) {
   # --- Error handling ---
   if (!inherits(date, "Date")) {
     date <- tryCatch(
@@ -399,8 +397,8 @@ daylight_saving_adjust <- function(data_frame, date, start_col = "Start", end_co
 #'
 #' @param data_frame A data frame with two columns representing the start and end time of each visit,
 #'  formatted as "HH:MM:SS".
-#' @param start_col Name of the start time column (unquoted).
-#' @param end_col Name of the end time column (unquoted).
+#' @param start_col Name of the start time column (unquoted). Default is: start
+#' @param end_col Name of the end time column (unquoted). Default is : end
 #' @param dst_detected_time A `lubridate::hms` object indicating the time when DST fallback starts (e.g., 01:59:00).
 #' @param daylight_change_duration An integer for the fallback duration in minutes (default = 60).
 #' @return A data frame with updated start and end time columns after adjusting for DST fallback.
@@ -410,8 +408,8 @@ daylight_saving_adjust <- function(data_frame, date, start_col = "Start", end_co
 #' @importFrom rlang :=
 adjust_dst_fall <- function(data_frame,
                              dst_detected_time,
-                             start_col = Start,
-                             end_col = End,
+                             start_col = start,
+                             end_col = end,
                              daylight_change_duration = 60) {
 
   # --- Error handling ---
@@ -491,8 +489,8 @@ adjust_dst_fall <- function(data_frame,
 #' @importFrom rlang :=
 adjust_dst_spring <- function(data_frame,
                                dst_detected_time,
-                               start_col = Start,
-                               end_col = End,
+                               start_col = start,
+                               end_col = end,
                                daylight_change_duration = 60) {
   # --- Error handling ---
   if (!is.data.frame(data_frame)) {
@@ -566,10 +564,10 @@ adjust_dst_spring <- function(data_frame,
 #' and removes all rows before that point.
 #'
 #' @param data_frame A data frame with a time column (formatted as "HH:MM:SS") representing visit start times.
-#' @param start_col Name of the time column (unquoted), usually this is the start time of the event
+#' @param start_col Name of the time column (unquoted), usually this is the start time of the event. Default is: start.
 #'
 #' @return A filtered data frame with only rows after the DST-induced reset point.
-next_day_after_spring_dst <- function(data_frame, start_col = Start) {
+next_day_after_spring_dst <- function(data_frame, start_col = start) {
   if (!is.data.frame(data_frame)) {
     stop("`data_frame` must be a data frame.")
   }
