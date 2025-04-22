@@ -70,7 +70,9 @@ process_water(
   bin_col     = "bin"
   bins        = 1:5,
   select_cols = c("cow", "bin", "value")
-  bin_offset  = 100
+  bin_offset  = 100,
+  sep         = ","
+  header      = TRUE
 )
 }
 

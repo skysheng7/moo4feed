@@ -65,7 +65,9 @@ process_feeder(
   drop_trans = c("0000"),
   bin_col     = "bin"
   bins        = 1:30,
-  select_cols = c("cow", "bin", "value")
+  select_cols = c("cow", "bin", "value"),
+  sep         = ","
+  header      = TRUE
 )
 }
 }
