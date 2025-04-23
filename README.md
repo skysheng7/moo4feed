@@ -2,6 +2,10 @@
 
 This R package **moo4feed** helps you derive individual animal traits from feeding and drinking data
 
+<!-- badges: start -->
+  [![Codecov test coverage](https://codecov.io/gh/skysheng7/moo4feed/graph/badge.svg)](https://app.codecov.io/gh/skysheng7/moo4feed)
+  <!-- badges: end -->
+  
 ## Repository Information
 
 - **Date Created:** 2023-07-29  
