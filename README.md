@@ -1,4 +1,7 @@
 # R Package: **moo4feed**
+
+# moo4feed <a href="https://skysheng7.github.io/moo4feed/"><img src="man/figures/logo.png" align="right" height="139" alt="moo4feed website" /></a>
+
 <!-- badges: start -->
 [![codecov](https://codecov.io/gh/skysheng7/moo4feed/graph/badge.svg?token=YF9IBR7EYG)](https://codecov.io/gh/skysheng7/moo4feed)
 [![R-CMD-check](https://github.com/skysheng7/moo4feed/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/skysheng7/moo4feed/actions/workflows/R-CMD-check.yaml)
