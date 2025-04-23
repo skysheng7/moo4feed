@@ -2,7 +2,7 @@ pandoc: 3.1.11
 pkgdown: 2.1.1
 pkgdown_sha: ~
 articles: {}
-last_built: 2025-04-23T20:16Z
+last_built: 2025-04-23T20:19Z
 urls:
   reference: https://skysheng7.github.io/moo4feed/reference
   article: https://skysheng7.github.io/moo4feed/articles
