@@ -1,7 +1,8 @@
 # R Package: **moo4feed**
 <!-- badges: start -->
-  [![Codecov test coverage](https://codecov.io/gh/skysheng7/moo4feed/graph/badge.svg)](https://app.codecov.io/gh/skysheng7/moo4feed)
-  <!-- badges: end -->
+[![Codecov test coverage](https://codecov.io/gh/skysheng7/moo4feed/graph/badge.svg)](https://app.codecov.io/gh/skysheng7/moo4feed)
+[![R-CMD-check](https://github.com/skysheng7/moo4feed/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/skysheng7/moo4feed/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
   
 
 This R package **moo4feed** helps you derive individual animal traits from feeding and drinking data
