@@ -387,3 +387,157 @@ test_that("errors if select_cols contains missing column", {
   )
   unlink(tmp)
 })
+
+
+
+# ----------------------- tests for process_all_feed() -------------------------#
+
+test_that("process_all_feed() errors on bad inputs", {
+  expect_error(
+    process_all_feed(files = 1:2, col_names = c("cow","bin","start","end"), bins = 1),
+    "`files` must be a nonempty character vector"
+  )
+  expect_error(
+    process_all_feed(files = character(0), col_names = c("cow","bin","start","end"), bins = 1),
+    "`files` must be a nonempty character vector"
+  )
+  expect_error(
+    process_all_feed(files = "x.csv", col_names = list(), bins = 1),
+    "`col_names` must be a character vector"
+  )
+})
+
+test_that("process_all_feed() with empty CSVs yields zero‐row data.frames named by date", {
+  tmp <- tempdir()
+  # create two empty CSVs with headers only
+  files <- file.path(tmp, c("20220101.csv", "20220102.csv"))
+  for(f in files) {
+    write.csv(
+      data.frame(cow=character(), transponder=character(), bin=integer(),
+                 start=character(), end=character()),
+      file = f, row.names = FALSE
+    )
+  }
+
+  expect_message(
+    expect_message(
+      expect_message(out <- process_all_feed(
+        files       = files,
+        col_names   = c("cow","transponder","bin","start","end"),
+        bins        = 1:10,
+        select_cols = c("cow","bin","start","end"),
+        sep         = ",",
+        header      = TRUE,
+        tz          = "UTC"),
+        "No DST transitions found for the given years and time zone"),
+      "File has no data rows"
+    ),
+  "File has no data rows"
+  )
+
+
+  expect_length(out, 2)
+  expect_named(out, c("2022-01-01","2022-01-02"))
+  lapply(out, function(df) {
+    expect_s3_class(df, "data.frame")
+    expect_equal(nrow(df), 0L)
+    expect_equal(colnames(df), c("cow","bin","start","end"))
+  })
+})
+
+test_that("process_all_feed() correctly reads and time‐converts one row", {
+  tmp <- tempdir()
+  f <- file.path(tmp, "20220103.csv")
+  write.csv(
+    data.frame(
+      cow         = "A",
+      transponder = "T1",
+      bin         = 2,
+      start       = "05:30:00",
+      end         = "05:31:00"
+    ),
+    file = f, row.names = FALSE
+  )
+
+  expect_message(
+    (out <- process_all_feed(
+      files       = f,
+      col_names   = c("cow","transponder","bin","start","end"),
+      bins        = 1:5,
+      select_cols = c("cow","bin","start","end"),
+      sep         = ",",
+      header      = TRUE,
+      tz          = "UTC"
+    )),
+    "No DST transitions found for the given years and time zone"
+  )
+
+
+  df <- out[["2022-01-03"]]
+  expect_equal(nrow(df), 1L)
+  expect_equal(df$cow, "A")
+  expect_equal(df$bin, 2)
+  # start/end should now be POSIXct
+  expect_s3_class(df$start, c("POSIXct","POSIXt"))
+  expect_equal(format(df$start, "%Y-%m-%d %H:%M:%S", tz="UTC"),
+               "2022-01-03 05:30:00")
+  expect_s3_class(df$end, c("POSIXct","POSIXt"))
+  expect_equal(format(df$end, "%Y-%m-%d %H:%M:%S", tz="UTC"),
+               "2022-01-03 05:31:00")
+})
+
+
+# ---------------------- tests for process_all_water() ------------------------#
+
+test_that("process_all_water() applies bin_offset and same time‐conversion logic", {
+  tmp <- tempdir()
+  f <- file.path(tmp, "20220301.csv")
+  write.csv(
+    data.frame(
+      cow         = "B",
+      transponder = "T2",
+      bin         = 3,
+      start       = "12:00:00",
+      end         = "12:05:00"
+    ),
+    file = f, row.names = FALSE
+  )
+
+  expect_message(
+    out <- process_all_water(
+      files       = f,
+      col_names   = c("cow","transponder","bin","start","end"),
+      bins        = 1:5,
+      select_cols = c("cow","bin","start","end"),
+      bin_offset  = 10,
+      sep         = ",",
+      header      = TRUE,
+      tz          = "UTC"
+    ),
+  "No DST transitions found for the given years and time zone"
+  )
+
+  df <- out[["2022-03-01"]]
+  expect_equal(nrow(df), 1L)
+  expect_equal(df$cow, "B")
+  # bin should have been offset by +10
+  expect_equal(df$bin, 3 + 10)
+  # times still converted to POSIXct
+  expect_s3_class(df$start, c("POSIXct","POSIXt"))
+  expect_equal(format(df$start, "%Y-%m-%d %H:%M:%S", tz="UTC"),
+               "2022-03-01 12:00:00")
+  expect_s3_class(df$end, c("POSIXct","POSIXt"))
+  expect_equal(format(df$end, "%Y-%m-%d %H:%M:%S", tz="UTC"),
+               "2022-03-01 12:05:00")
+})
+
+test_that("process_all_water() errors on bad inputs too", {
+  expect_error(
+    process_all_water(files = NULL, col_names = c("cow","bin"), bins = 1),
+    "`files` must be a nonempty character vector"
+  )
+  expect_error(
+    process_all_water(files = "x.csv", col_names = 1:5, bins = 1),
+    "`col_names` must be a character vector"
+  )
+})

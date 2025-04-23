@@ -17,7 +17,7 @@ test_that("returns empty data frame for non‑existent file", {
   missing <- tempfile()
   expect_message(
     out <- read_data_safely(missing),
-    "File missing, or this path is to a folder instead of a file, or the file is empty"
+    "File missing, or the file is empty"
   )
   expect_s3_class(out, "data.frame")
   expect_equal(nrow(out), 0L)
@@ -32,7 +32,7 @@ test_that("returns empty data frame for zero‑length file", {
 
   expect_message(
     out <- read_data_safely(tmp),
-    "File missing, or this path is to a folder instead of a file, or the file is empty"
+    "File missing, or the file is empty"
   )
   expect_s3_class(out, "data.frame")
   expect_equal(nrow(out), 0L)
@@ -59,7 +59,7 @@ test_that("catches read errors and returns empty data frame", {
   dir_path <- tempdir()
   expect_message(
     out <- read_data_safely(dir_path),
-    "Error occured because"
+    "this path is to a folder instead of a file"
   )
   expect_s3_class(out, "data.frame")
   expect_equal(nrow(out), 0L)

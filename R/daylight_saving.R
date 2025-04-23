@@ -116,7 +116,7 @@ dst_switch_day <- function(years = c(2020, 2021), tz = Sys.timezone()){
   dst_change <- date_seq[which(diff(dst_status) != 0)]
 
   if (length(dst_change) == 0) {
-    warning("No DST transitions found for the given years and time zone.")
+    message("No DST transitions found for the given years and time zone.")
     return(data.frame(
       year = integer(0),
       spring = as.Date(character(0)),

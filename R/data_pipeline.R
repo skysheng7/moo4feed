@@ -306,7 +306,12 @@ process_data_generic <- function(
 
   # ------ main logic ---------#
   df <- read_data_safely(file, sep = sep, header = header)
-  if (nrow(df) == 0L) return(df)
+  if (nrow(df) == 0L) {
+    # return an empty data.frame with your desired columns
+    empty <- as.data.frame(matrix(ncol = length(select_cols), nrow = 0))
+    names(empty) <- select_cols
+    return(empty)
+  }
 
   # 1) assign column names
   colnames(df) <- col_names
@@ -386,7 +391,7 @@ process_all <- function(
   }
   file_type <- match.arg(trimws(tolower(file_type)), c("feed","water"))
   if (!is.character(col_names)) {
-    stop("`col_names` must be a character vector that matches either `feed` or `water`.")
+    stop("`col_names` must be a character vector.")
   }
 
   # 2) Extract dates + build DST lookup -------------------------------------
@@ -444,15 +449,18 @@ process_all <- function(
       df[[start_col]] <- trimws(df[[start_col]])
       df[[end_col]]   <- trimws(df[[end_col]])
 
-      df <- daylight_saving_adjust(
-        data_frame               = df,
-        date                     = date,
-        start_col                = start_col,
-        end_col                  = end_col,
-        dst_df                   = dst_df,
-        daylight_change_duration = daylight_change_duration,
-        tz                       = tz
-      )
+      if (nrow(dst_df) > 0){
+        df <- daylight_saving_adjust(
+          data_frame               = df,
+          date                     = date,
+          start_col                = start_col,
+          end_col                  = end_col,
+          dst_df                   = dst_df,
+          daylight_change_duration = daylight_change_duration,
+          tz                       = tz
+        )
+
+      }
 
       df[[start_col]] <- lubridate::ymd_hms(paste(date, df[[start_col]]), tz = tz)
       df[[end_col]]   <- lubridate::ymd_hms(paste(date, df[[end_col]]),   tz = tz)

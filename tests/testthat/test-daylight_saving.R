@@ -26,8 +26,8 @@ test_that("dst_switch_day returns correct structure and values", {
   expect_equal(result$year, c(2020, 2021))
 })
 
-test_that("returns empty data frame with warning in no-DST time zone", {
-  expect_warning(
+test_that("returns empty data frame with warning message in no-DST time zone", {
+  expect_message(
     result <- dst_switch_day(2020, tz = "Etc/UTC"),
     "No DST transitions found for the given years and time zone."
   )
@@ -123,7 +123,7 @@ test_that("Normal case: Vancouver timezone, 2021–2022", {
 })
 
 test_that("Edge case: timezone without DST", {
-  expect_warning(result <- get_dst_switch_info(years = 2020:2021, tz = "Etc/UTC"))
+  expect_message((result <- get_dst_switch_info(years = 2020:2021, tz = "Etc/UTC")), "No DST transitions found for the given years and time zone")
 
   expect_s3_class(result, "data.frame")
   expect_equal(nrow(result), 0)
