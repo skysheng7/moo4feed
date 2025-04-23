@@ -40,7 +40,9 @@ This R package **moo4feed** helps you derive individual animal traits from feedi
   - Affiliation: University of British Columbia  
   - Email: <kratikar2011@gmail.com>
   
-  
+## Acknowledgements
+
+I implemented this R package following the instructions and recommended R package lifestyle from Dr.Hadley Wickham and Dr. Jennifer Bryan's book [R Package](https://r-pkgs.org/), Dr. Tiffany Timbers's book: [Reproducible and Trustworthy Workflows for Data Science](https://ubc-dsci.github.io/reproducible-and-trustworthy-workflows-for-data-science/), and her courses [DSCI 522 Data Science Workflows](https://ubc-mds.github.io/course-descriptions/DSCI_522_dsci-workflows/), [DSCI 524 Collaborative Software Development](https://ubc-mds.github.io/DSCI_524_collab-sw-dev/README.html).
 
 ## Project Information
 - **Funding:** This project was supported by the NSERC. 
