@@ -60,7 +60,7 @@ Add an offset to bin IDs, so that water bin ID differs from feed bin ID
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">process_water</span><span class="op">(</span></span>
 <span>  <span class="va">file</span>,</span>
-<span>  <span class="va">col_names</span>,</span>
+<span>  col_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  id_col <span class="op">=</span> <span class="st">"cow"</span>,</span>
 <span>  drop_ids <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  trans_col <span class="op">=</span> <span class="st">"transponder"</span>,</span>
@@ -79,51 +79,66 @@ Add an offset to bin IDs, so that water bin ID differs from feed bin ID
 
 
 <dl><dt id="arg-file">file<a class="anchor" aria-label="anchor" href="#arg-file"></a></dt>
-<dd><p>A single string giving the path to the file.</p></dd>
+<dd><p>What's the path to your data file? This should be a single string giving the path to the file.</p></dd>
 
 
 <dt id="arg-col-names">col_names<a class="anchor" aria-label="anchor" href="#arg-col-names"></a></dt>
-<dd><p>Character vector of names to assign to the raw data columns.</p></dd>
+<dd><p>A character vector of column names to assign when <code>header = FALSE</code>.
+This vector must match the number of columns in the raw data.
+If <code>header = TRUE</code>, the file’s existing column names are used and
+<code>col_names</code> is ignored.</p></dd>
 
 
 <dt id="arg-id-col">id_col<a class="anchor" aria-label="anchor" href="#arg-id-col"></a></dt>
-<dd><p>Single string: column name for animal IDs (default: <code>"cow"</code>).</p></dd>
+<dd><p>What's the name of the column recording animal ID? This should be
+a Single string. (default: <code>"cow"</code>).</p></dd>
 
 
 <dt id="arg-drop-ids">drop_ids<a class="anchor" aria-label="anchor" href="#arg-drop-ids"></a></dt>
-<dd><p>Vector: values in <code>id_col</code> to remove (default: <code>NULL</code>).</p></dd>
+<dd><p>Which animals do you wish to drop? This should be a vector
+indicating values in <code>id_col</code> that you wish to remove (default: <code>NULL</code>, so remove nothing).</p></dd>
 
 
 <dt id="arg-trans-col">trans_col<a class="anchor" aria-label="anchor" href="#arg-trans-col"></a></dt>
-<dd><p>Single string: column name for transponder IDs (default: <code>"transponder"</code>).</p></dd>
+<dd><p>What's the name of the column recording transponder ID for each visit?
+This should be a single string. (default: <code>"transponder"</code>).</p></dd>
 
 
 <dt id="arg-drop-trans">drop_trans<a class="anchor" aria-label="anchor" href="#arg-drop-trans"></a></dt>
-<dd><p>Vector: values in <code>trans_col</code> to remove (default: <code>NULL</code>).</p></dd>
+<dd><p>Which transponders do you wish to delete because they are not part
+of your study? This should be a vector indicating values in <code>trans_col</code> that
+you wish to remove (default: <code>NULL</code>, so remove nothing).</p></dd>
 
 
 <dt id="arg-bin-col">bin_col<a class="anchor" aria-label="anchor" href="#arg-bin-col"></a></dt>
-<dd><p>Single string: column name for bin IDs (default: <code>"bin"</code>).</p></dd>
+<dd><p>What's the name of the column recording the ID of the bin for each visit?
+This should be a single string. (default: <code>"bin"</code>).</p></dd>
 
 
 <dt id="arg-bins">bins<a class="anchor" aria-label="anchor" href="#arg-bins"></a></dt>
-<dd><p>Numeric vector: bin IDs to keep (e.g. <code>2:4</code> or <code>c(1,5)</code>).</p></dd>
+<dd><p>Which bins are included in your study? This should be a
+numeric vector indicating bin IDs to keep (e.g. <code>2:4</code> or <code>c(1,5)</code>).</p></dd>
 
 
 <dt id="arg-select-cols">select_cols<a class="anchor" aria-label="anchor" href="#arg-select-cols"></a></dt>
-<dd><p>Character vector: columns to retain in the final output. Default is null, select all columns.</p></dd>
+<dd><p>Which columns in the dataframe do you wish to keep in your
+original data frame after cleaning? This should be a character vector indicating
+columns to retain in the final output. Default is <code>NULL</code>, so we select all columns.</p></dd>
 
 
 <dt id="arg-bin-offset">bin_offset<a class="anchor" aria-label="anchor" href="#arg-bin-offset"></a></dt>
-<dd><p>Single numeric value to add to each kept bin ID (default: <code>100</code>).</p></dd>
+<dd><p>A single numeric value to add to each matching bin ID. Default is 100.</p></dd>
 
 
 <dt id="arg-sep">sep<a class="anchor" aria-label="anchor" href="#arg-sep"></a></dt>
-<dd><p>Field separator; passed to <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table()</a></code>. Defaults to <code>","</code>.</p></dd>
+<dd><p>Field separator; passed to <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table()</a></code>. Defaults to <code>","</code> for
+comma delimited files like <code>.csv</code> and <code>.DAT</code>.</p></dd>
 
 
 <dt id="arg-header">header<a class="anchor" aria-label="anchor" href="#arg-header"></a></dt>
-<dd><p>Logical; does the file have a header row? Defaults to <code>FALSE</code>.</p></dd>
+<dd><p>Logical; does your data file have a header row (i.e., column names)?
+Defaults to <code>FALSE</code>. If yor file contains column names at the top, please set
+this to <code>TRUE</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -133,7 +148,42 @@ Add an offset to bin IDs, so that water bin ID differs from feed bin ID
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># create a toy data file</span></span></span>
+<span class="r-in"><span><span class="va">original</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  cow         <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"D"</span>,<span class="st">"E"</span>,<span class="st">"F"</span>,<span class="st">"D"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  transponder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Y1"</span>,<span class="st">"Y2"</span>,<span class="st">"Y3"</span>,<span class="st">"Y2"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  bin         <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">6</span>,<span class="fl">7</span>,<span class="fl">6</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  value       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>,<span class="fl">60</span>,<span class="fl">70</span>,<span class="fl">80</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">original</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   cow transponder bin value</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   D          Y1   5    50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   E          Y2   6    60</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   F          Y3   7    70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4   D          Y2   6    80</span>
+<span class="r-in"><span><span class="va">tmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.table</a></span><span class="op">(</span><span class="va">original</span>, <span class="va">tmp</span>, sep <span class="op">=</span> <span class="st">","</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span>, col.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Drop nothing, keep bins 5:7, offset +100, select cow, bin, value</span></span></span>
+<span class="r-in"><span><span class="fu">process_water</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  file        <span class="op">=</span> <span class="va">tmp</span>,</span></span>
+<span class="r-in"><span>  col_names   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cow"</span>, <span class="st">"transponder"</span>, <span class="st">"bin"</span>, <span class="st">"value"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  drop_ids    <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>  drop_trans  <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>  bins        <span class="op">=</span> <span class="fl">5</span><span class="op">:</span><span class="fl">7</span>,</span></span>
+<span class="r-in"><span>  select_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cow"</span>,<span class="st">"bin"</span>,<span class="st">"value"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  bin_offset  <span class="op">=</span> <span class="fl">100</span>,</span></span>
+<span class="r-in"><span>  header <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   cow bin value</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   D 105    50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   E 106    60</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   F 107    70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4   D 106    80</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">tmp</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

@@ -42,7 +42,7 @@ of data frames keyed by file date (YYYY‑MM‑DD).</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">process_all_water</span><span class="op">(</span></span>
 <span>  <span class="va">files</span>,</span>
-<span>  <span class="va">col_names</span>,</span>
+<span>  col_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  id_col <span class="op">=</span> <span class="st">"cow"</span>,</span>
 <span>  drop_ids <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  trans_col <span class="op">=</span> <span class="st">"transponder"</span>,</span>
@@ -63,59 +63,78 @@ of data frames keyed by file date (YYYY‑MM‑DD).</p>
 
 
 <dl><dt id="arg-files">files<a class="anchor" aria-label="anchor" href="#arg-files"></a></dt>
-<dd><p>Character vector of all the file paths.</p></dd>
+<dd><p>What are the files you wish to process? This should be a character
+vector of all the file paths.</p></dd>
 
 
 <dt id="arg-col-names">col_names<a class="anchor" aria-label="anchor" href="#arg-col-names"></a></dt>
-<dd><p>Character vector of names to assign to the raw data columns.</p></dd>
+<dd><p>A character vector of column names to assign when <code>header = FALSE</code>.
+This vector must match the number of columns in the raw data.
+If <code>header = TRUE</code>, the file’s existing column names are used and
+<code>col_names</code> is ignored.</p></dd>
 
 
 <dt id="arg-id-col">id_col<a class="anchor" aria-label="anchor" href="#arg-id-col"></a></dt>
-<dd><p>Single string: column name for animal IDs (default: <code>"cow"</code>).</p></dd>
+<dd><p>What's the name of the column recording animal ID? This should be
+a Single string. (default: <code>"cow"</code>).</p></dd>
 
 
 <dt id="arg-drop-ids">drop_ids<a class="anchor" aria-label="anchor" href="#arg-drop-ids"></a></dt>
-<dd><p>Vector: values in <code>id_col</code> to remove (default: <code>NULL</code>).</p></dd>
+<dd><p>Which animals do you wish to drop? This should be a vector
+indicating values in <code>id_col</code> that you wish to remove (default: <code>NULL</code>, so remove nothing).</p></dd>
 
 
 <dt id="arg-trans-col">trans_col<a class="anchor" aria-label="anchor" href="#arg-trans-col"></a></dt>
-<dd><p>Single string: column name for transponder IDs (default: <code>"transponder"</code>).</p></dd>
+<dd><p>What's the name of the column recording transponder ID for each visit?
+This should be a single string. (default: <code>"transponder"</code>).</p></dd>
 
 
 <dt id="arg-drop-trans">drop_trans<a class="anchor" aria-label="anchor" href="#arg-drop-trans"></a></dt>
-<dd><p>Vector: values in <code>trans_col</code> to remove (default: <code>NULL</code>).</p></dd>
+<dd><p>Which transponders do you wish to delete because they are not part
+of your study? This should be a vector indicating values in <code>trans_col</code> that
+you wish to remove (default: <code>NULL</code>, so remove nothing).</p></dd>
 
 
 <dt id="arg-bin-col">bin_col<a class="anchor" aria-label="anchor" href="#arg-bin-col"></a></dt>
-<dd><p>Single string: column name for bin IDs (default: <code>"bin"</code>).</p></dd>
+<dd><p>What's the name of the column recording the ID of the bin for each visit?
+This should be a single string. (default: <code>"bin"</code>).</p></dd>
 
 
 <dt id="arg-bins">bins<a class="anchor" aria-label="anchor" href="#arg-bins"></a></dt>
-<dd><p>Numeric vector: bin IDs to keep (e.g. <code>2:4</code> or <code>c(1,5)</code>).</p></dd>
+<dd><p>Which bins are included in your study? This should be a
+numeric vector indicating bin IDs to keep (e.g. <code>2:4</code> or <code>c(1,5)</code>).</p></dd>
 
 
 <dt id="arg-select-cols">select_cols<a class="anchor" aria-label="anchor" href="#arg-select-cols"></a></dt>
-<dd><p>Character vector: columns to retain in the final output. Default is null, select all columns.</p></dd>
+<dd><p>Which columns in the dataframe do you wish to keep in your
+original data frame after cleaning? This should be a character vector indicating
+columns to retain in the final output. Default is <code>NULL</code>, so we select all columns.</p></dd>
 
 
 <dt id="arg-bin-offset">bin_offset<a class="anchor" aria-label="anchor" href="#arg-bin-offset"></a></dt>
-<dd><p>Single numeric value to add to each kept bin ID (default: <code>100</code>).</p></dd>
+<dd><p>A single numeric value to add to each matching bin ID. Default is 100.</p></dd>
 
 
 <dt id="arg-sep">sep<a class="anchor" aria-label="anchor" href="#arg-sep"></a></dt>
-<dd><p>Field separator; passed to <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table()</a></code>. Defaults to <code>","</code>.</p></dd>
+<dd><p>Field separator; passed to <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table()</a></code>. Defaults to <code>","</code> for
+comma delimited files like <code>.csv</code> and <code>.DAT</code>.</p></dd>
 
 
 <dt id="arg-header">header<a class="anchor" aria-label="anchor" href="#arg-header"></a></dt>
-<dd><p>Logical; does the file have a header row? Defaults to <code>FALSE</code>.</p></dd>
+<dd><p>Logical; does your data file have a header row (i.e., column names)?
+Defaults to <code>FALSE</code>. If yor file contains column names at the top, please set
+this to <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-daylight-change-duration">daylight_change_duration<a class="anchor" aria-label="anchor" href="#arg-daylight-change-duration"></a></dt>
-<dd><p>An integer for the fallback duration in minutes (default = 60).</p></dd>
+<dd><p>How many minutes does the clock jump or fall back
+on the day of daylight saving change? This should be an integer for the
+duration in minutes (default = 60).</p></dd>
 
 
 <dt id="arg-tz">tz<a class="anchor" aria-label="anchor" href="#arg-tz"></a></dt>
-<dd><p>A valid time zone name (default is the time zone of your current physical location), used to determine DST rules. Use <code><a href="https://rdrr.io/r/base/timezones.html" class="external-link">OlsonNames()</a></code> to see all valid options.</p></dd>
+<dd><p>A valid time zone name (default is the time zone of your current physical location),
+used to determine DST rules. Use <code><a href="https://rdrr.io/r/base/timezones.html" class="external-link">OlsonNames()</a></code> to see all valid options.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -126,18 +145,18 @@ of data frames keyed by file date (YYYY‑MM‑DD).</p>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Steps:</p><ol><li><p><strong>Validate</strong> all inputs (types, <code>file_type</code> ∈ <code>"feed","water"</code>).</p></li>
 <li><p><strong>Extract</strong> a date information from each filename and parse it via <code><a href="https://lubridate.tidyverse.org/reference/ymd.html" class="external-link">lubridate::ymd()</a></code>.</p></li>
-<li><p><strong>Fetch</strong> Daylight Saving Time (DST) switch table for the relevant years (<code>dst_switch_day(years, tz)</code>).</p></li>
-<li><p><strong>Loop</strong> over each file:
-4.1. Call either <code><a href="process_feeder.html">process_feeder()</a></code> or <code><a href="process_water.html">process_water()</a></code> to do:
-4.1.1. Safely read the CSV / DAT file
-4.1.2. Rename columns
-4.1.3. Drop unwanted cows &amp; transponders
-4.1.4. Keep only specified bins
-4.1.5. Subset to desired columns
-4.2. Drop any rows with <code>NA</code>.
-4.3. Call <code><a href="daylight_saving_adjust.html">daylight_saving_adjust()</a></code> to adjust timestamps for daylight saving change days.
-4.4. Standardize the columns recording start and end time of each event to be in the format of "yyyy-mm-dd hh:mm:ss".
-4.5. Store processed dataframe the output list and name it by the date.</p></li>
+<li><p><strong>Fetch</strong> Daylight Saving Time (DST) switch table for the relevant years (<code><a href="dst_switch_day.html">dst_switch_day()</a></code>).</p></li>
+<li><p><strong>Loop</strong> over each file:</p><ul><li><p>Call either <code><a href="process_feeder.html">process_feeder()</a></code> or <code><a href="process_water.html">process_water()</a></code> to do:
+- Safely read the CSV / DAT file
+- Rename columns
+- Drop unwanted cows &amp; transponders
+- Keep only specified bins
+- Subset to desired columns</p></li>
+<li><p>Drop any rows with <code>NA</code>.</p></li>
+<li><p>Call <code><a href="daylight_saving_adjust.html">daylight_saving_adjust()</a></code> to adjust timestamps for daylight saving change days.</p></li>
+<li><p>Standardize the columns recording start and end time of each event to be in the format of "yyyy-mm-dd hh:mm:ss".</p></li>
+<li><p>Store processed dataframe the output list and name it by the date.</p></li>
+</ul></li>
 </ol></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -152,19 +171,51 @@ of data frames keyed by file date (YYYY‑MM‑DD).</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># 1) create three small water‐data CSVs in a temporary directory</span></span></span>
+<span class="r-in"><span><span class="va">tmp</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tmp</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"VW2023042"</span>, <span class="fl">0</span><span class="op">:</span><span class="fl">3</span>, <span class="st">".csv"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">files</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">toy</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    cow         <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    transponder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"W1"</span>, <span class="st">"W2"</span>, <span class="st">"W3"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    bin         <span class="op">=</span> <span class="va">i</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    start       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"06:00:00"</span>, <span class="st">"07:00:00"</span>, <span class="st">"08:00:00"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    end         <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"06:05:00"</span>, <span class="st">"07:05:00"</span>, <span class="st">"08:05:00"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">toy</span>, <span class="va">files</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># 2) process them in batch, shifting water‐bin IDs by +100</span></span></span>
 <span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">process_all_water</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  files       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"path/to/file/VW200306.DAT"</span>, <span class="st">"path/to/file/VW200307.DAT"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  col_names   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cow"</span>, <span class="st">"transponder"</span>, <span class="st">"bin"</span>, <span class="st">"start"</span>, <span class="st">"end"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  bins        <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,</span></span>
+<span class="r-in"><span>  files       <span class="op">=</span> <span class="va">files</span>,</span></span>
+<span class="r-in"><span>  bins        <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">4</span>,</span></span>
 <span class="r-in"><span>  select_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cow"</span>, <span class="st">"bin"</span>, <span class="st">"start"</span>, <span class="st">"end"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  bin_offset  <span class="op">=</span> <span class="fl">100</span>,</span></span>
 <span class="r-in"><span>  sep         <span class="op">=</span> <span class="st">","</span>,</span></span>
 <span class="r-in"><span>  header      <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  tz          <span class="op">=</span> <span class="st">"UTC"</span></span></span>
+<span class="r-in"><span>  tz          <span class="op">=</span> <span class="st">"America/Vancouver"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">res</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`2023-04-20`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   cow bin               start                 end</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   A 102 2023-04-20 06:00:00 2023-04-20 06:05:00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   B 103 2023-04-20 07:00:00 2023-04-20 07:05:00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   C 104 2023-04-20 08:00:00 2023-04-20 08:05:00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`2023-04-21`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   cow bin               start                 end</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   A 103 2023-04-21 06:00:00 2023-04-21 06:05:00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   B 104 2023-04-21 07:00:00 2023-04-21 07:05:00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`2023-04-22`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   cow bin               start                 end</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   A 104 2023-04-22 06:00:00 2023-04-22 06:05:00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`2023-04-23`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] cow   bin   start end  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;0 rows&gt; (or 0-length row.names)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
