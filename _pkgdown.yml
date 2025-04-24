@@ -2,3 +2,45 @@ url: https://skysheng7.github.io/moo4feed/
 template:
   bootstrap: 5
 
+reference:
+- title: Data cleaning
+
+- subtitle: Data cleaning pipeline
+  desc: >
+    Functions that automate the entire data cleaning pipeline for you on either a single file or a collection of files.
+  contents:
+  - process_all_feed
+  - process_all_water
+  - process_feeder
+  - process_water
+
+- subtitle: Read data
+  desc: >
+    Read in data safely.
+  contents:
+  - read_data_safely
+
+- subtitle: Daylight Saving Time changes
+  desc: >
+    Adjust timestamps for days affected by Daylight Saving Time changes based on timezone of your choice.
+  contents:
+  - daylight_saving_adjust
+  - get_dst_switch_info
+  - dst_switch_day
+  - dst_switch_hm
+
+- subtitle: Date extraction from file names
+  desc: >
+    Extracts information about date from file names
+  contents:
+  - file_name_processing
+  - compare_files
+  - get_date_range
+
+- subtitle: Data filtering
+  desc: >
+    Filters for data relevant to animals and sensors included in your study.
+  contents:
+  - delete_rows
+  - keep_bins
+  - rename_bins
