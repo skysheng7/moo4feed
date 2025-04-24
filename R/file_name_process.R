@@ -5,17 +5,19 @@
 #' Process file names and extract date tokens
 #'
 #' Extracts date tokens from file names. The date is assumed to be embedded as digits
-#' in the filename in the format of yymmdd (year, month, day). The code will
+#' in the filename in the format of `yymmdd` (year, month, day). The code will
 #' automatically extract the continuous digits out of the filename
-#' (e.g. `"VR200715"` → `"200715"`; `"rmdh20250101"` → `"rmdh20250101"`).
+#' (e.g. `"VR200715"` → `"200715"`; `"rmdh20250101"` → `"20250101"`).
 #'
-#' @param file_names A character vector of file names.
-#' @param col_name A single character string specifying the column name for the
-#'   file names in the output data frame. Default is "dir".
+#' @param file_names What are the path to all the data files that you wish to process?
+#'  This should be a character vector of file names.
+#' @param col_name We wil put all your file names into a column stored in a dataframe.
+#'  What name do you want to give to that column? This should be a single character
+#'  string. Default is "dir".
 #'
 #' @return A data frame with columns:
 #' \describe{
-#'   \item{<col_name>}{Original cleaned file names (underscores instead of "/", " " or ".").}
+#'   \item{<col_name>}{Original cleaned file names.}
 #'   \item{date}{Extracted date tokens as character strings (e.g. `"200715"`), or `NA` if
 #'     extraction failed.}
 #' }
@@ -23,7 +25,7 @@
 #'
 #' @examples
 #' file_name_processing(
-#'  file_names = c(" feed/VR200715.DAT ", "feed/VR200716.DAT"),
+#'  file_names = c(" feed/VR200715.DAT ", "feed/VR200716.DAT", "feed/VR200718.DAT"),
 #'  col_name = "Feed_dir"
 #' )
 #'
@@ -70,8 +72,10 @@ file_name_processing <- function(file_names, col_name = "dir") {
 
 #' Compare feed and water file names by shared dates
 #'
-#' Identifies the subset of feed and water file names that share the same
-#' extracted dates, returning only those with matching date tokens.
+#' Idealy we want to have both feeder and water data for each day. This function
+#' identifies the subset of feed and water file names that share the same
+#' extracted dates, returning only files from dates when both feeder and water data
+#' exist.
 #'
 #' @param file_names_feed A character vector of feed file names.
 #' @param file_names_water A character vector of water file names.
@@ -88,10 +92,6 @@ file_name_processing <- function(file_names, col_name = "dir") {
 #'   c("feed/VR200715.DAT", "feed/VR200716.DAT"),
 #'   c("water/VW200715.DAT", "water/VW200717.DAT")
 #' )
-#' # returned list:
-#' # feed = c("feed/VR200715.DAT")
-#' # water = c("water/VW200715.DAT")
-#'
 #' @export
 compare_files <- function(file_names_feed, file_names_water) {
   # --- Normalize inputs: allow lists by unlisting ---
@@ -132,23 +132,20 @@ compare_files <- function(file_names_feed, file_names_water) {
 
 #' Get the overall date range for a set of files
 #'
-#' Processes a character vector of file names, extracts embedded date tokens
-#' (via [file_name_processing()]), and computes the full date span
-#' using [get_date_range_helper()].
+#' What are the start and end date of your study? This function takes in a vector of
+#' file names, and export a character string indicating the date range of your study.
 #'
 #' @inheritParams file_name_processing
 #'
-#' @return A single character string:
+#' @return A single character string in one of the following format:
 #' \describe{
-#'   \item{`"YYYY-MM-DD"`}{when all dates in `df$date` are the same}
-#'   \item{`"YYYY-MM-DD_YYYY-MM-DD"`}{otherwise, concatenation of start and end dates}
+#'   \item{`"YYMMDD"`}{when all dates in `df$date` are the same}
+#'   \item{`"YYMMDD_YYMMDD"`}{otherwise, concatenation of start and end dates}
 #' }
 #' Returns `NA_character_` (with a warning) if `df` has zero rows.
 #'
 #' @examples
 #' get_date_range(c("feed/VR200720.DAT", "feed/VR200715.DAT", "feed/VR200716.DAT"))
-#' # returns:
-#' # "200715_200720"
 #'
 #' @export
 get_date_range <- function(file_names) {
@@ -178,6 +175,8 @@ get_date_range <- function(file_names) {
 #'
 #' @details
 #' - Throws an error if `df` is not a data frame or lacks a `date` column.\cr
+#'
+#' @noRd
 get_date_range_helper <- function(df) {
   # --- Error handling ---
   if (!is.data.frame(df)) {

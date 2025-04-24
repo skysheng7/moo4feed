@@ -6,7 +6,7 @@
 \usage{
 process_water(
   file,
-  col_names,
+  col_names = NULL,
   id_col = "cow",
   drop_ids = NULL,
   trans_col = "transponder",
@@ -20,29 +20,44 @@ process_water(
 )
 }
 \arguments{
-\item{file}{A single string giving the path to the file.}
+\item{file}{What's the path to your data file? This should be a single string giving the path to the file.}
 
-\item{col_names}{Character vector of names to assign to the raw data columns.}
+\item{col_names}{A character vector of column names to assign when \code{header = FALSE}.
+This vector must match the number of columns in the raw data.
+If \code{header = TRUE}, the file’s existing column names are used and
+\code{col_names} is ignored.}
 
-\item{id_col}{Single string: column name for animal IDs (default: \code{"cow"}).}
+\item{id_col}{What's the name of the column recording animal ID? This should be
+a Single string. (default: \code{"cow"}).}
 
-\item{drop_ids}{Vector: values in \code{id_col} to remove (default: \code{NULL}).}
+\item{drop_ids}{Which animals do you wish to drop? This should be a vector
+indicating values in \code{id_col} that you wish to remove (default: \code{NULL}, so remove nothing).}
 
-\item{trans_col}{Single string: column name for transponder IDs (default: \code{"transponder"}).}
+\item{trans_col}{What's the name of the column recording transponder ID for each visit?
+This should be a single string. (default: \code{"transponder"}).}
 
-\item{drop_trans}{Vector: values in \code{trans_col} to remove (default: \code{NULL}).}
+\item{drop_trans}{Which transponders do you wish to delete because they are not part
+of your study? This should be a vector indicating values in \code{trans_col} that
+you wish to remove (default: \code{NULL}, so remove nothing).}
 
-\item{bin_col}{Single string: column name for bin IDs (default: \code{"bin"}).}
+\item{bin_col}{What's the name of the column recording the ID of the bin for each visit?
+This should be a single string. (default: \code{"bin"}).}
 
-\item{bins}{Numeric vector: bin IDs to keep (e.g. \code{2:4} or \code{c(1,5)}).}
+\item{bins}{Which bins are included in your study? This should be a
+numeric vector indicating bin IDs to keep (e.g. \code{2:4} or \code{c(1,5)}).}
 
-\item{select_cols}{Character vector: columns to retain in the final output. Default is null, select all columns.}
+\item{select_cols}{Which columns in the dataframe do you wish to keep in your
+original data frame after cleaning? This should be a character vector indicating
+columns to retain in the final output. Default is \code{NULL}, so we select all columns.}
 
-\item{bin_offset}{Single numeric value to add to each kept bin ID (default: \code{100}).}
+\item{bin_offset}{A single numeric value to add to each matching bin ID. Default is 100.}
 
-\item{sep}{Field separator; passed to \code{read.table()}. Defaults to \code{","}.}
+\item{sep}{Field separator; passed to \code{read.table()}. Defaults to \code{","} for
+comma delimited files like \code{.csv} and \code{.DAT}.}
 
-\item{header}{Logical; does the file have a header row? Defaults to \code{FALSE}.}
+\item{header}{Logical; does your data file have a header row (i.e., column names)?
+Defaults to \code{FALSE}. If yor file contains column names at the top, please set
+this to \code{TRUE}.}
 }
 \value{
 A cleaned water data frame with shifted bin IDs.
@@ -59,21 +74,29 @@ Reads, cleans, filters, and offsets a water file:
 }
 }
 \examples{
-\dontrun{
-process_water(
-  file        = "path/to/my/file/water.csv",
-  col_names   = c("cow", "transponder", "bin", "value"),
-  id_col      = "cow"
-  drop_ids    = c("A", "C"),
-  trans_col   = "transponder",
-  drop_trans  = c("0000"),
-  bin_col     = "bin"
-  bins        = 1:5,
-  select_cols = c("cow", "bin", "value")
-  bin_offset  = 100,
-  sep         = ","
-  header      = TRUE
+# create a toy data file
+original <- data.frame(
+  cow         = c("D","E","F","D"),
+  transponder = c("Y1","Y2","Y3","Y2"),
+  bin         = c(5,6,7,6),
+  value       = c(50,60,70,80),
+  stringsAsFactors = FALSE
 )
-}
+print(original)
+tmp <- tempfile(fileext = ".csv")
+write.table(original, tmp, sep = ",", row.names = FALSE, col.names = FALSE)
+
+# Drop nothing, keep bins 5:7, offset +100, select cow, bin, value
+process_water(
+  file        = tmp,
+  col_names   = c("cow", "transponder", "bin", "value"),
+  drop_ids    = NULL,
+  drop_trans  = NULL,
+  bins        = 5:7,
+  select_cols = c("cow","bin","value"),
+  bin_offset  = 100,
+  header = FALSE
+)
+unlink(tmp)
 
 }

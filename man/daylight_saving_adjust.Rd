@@ -24,23 +24,26 @@ formatted as "HH:MM:SS".}
 
 \item{end_col}{Name of the column recording the end time of an event (quoted). e.g.: end_col = "end"}
 
-\item{dst_df}{A data frame created by \code{\link{get_dst_switch_info}}, containing DST change dates and times per year.}
+\item{dst_df}{A data frame created by \code{\link{get_dst_switch_info}},
+containing DST change dates and times for each year.}
 
-\item{daylight_change_duration}{An integer for the fallback duration in minutes (default = 60).}
+\item{daylight_change_duration}{How many minutes does the clock jump or fall back
+on the day of daylight saving change? This should be an integer for the
+duration in minutes (default = 60).}
 
-\item{tz}{A valid time zone name (default is the time zone of your current physical location), used to determine DST rules. Use \code{OlsonNames()} to see all valid options.}
+\item{tz}{A valid time zone name (default is the time zone of your current physical location),
+used to determine DST rules. Use \code{OlsonNames()} to see all valid options.}
 }
 \value{
 A data frame adjusted for daylight saving time, or the original data if no adjustment applies.
 }
 \description{
-This function adjusts a dataframe of visit events (e.g., feed or water visits) based on
-Daylight Saving Time (DST) changes. It detects whether the current date is a DST transition day
-(in spring or fall), or the day after the spring DST change, and applies the appropriate time correction logic.
+This function adjusts a dataframe of visit events (e.g., feed or water visits)
+based on DST changes. It detects whether the current date is a DST transition day
+(in spring or fall), or the day after the spring DST change, and applies the
+appropriate time correction logic. The adjustment logic for each case is as follows:
 }
 \details{
-The adjustment logic for each case is as follows:
-
 \strong{Fall DST Change Day (e.g., 1st Sunday of November):}
 \itemize{
 \item North American clocks fall back from 2:00 AM to 1:00 AM, repeating the hour from 1:00 to 2:00 AM.
@@ -68,8 +71,8 @@ The adjustment logic for each case is as follows:
 \item On the day after spring DST change, sensors may still include late-night entries from the previous (DST) day, due to time "over-spill"
 \item This function:
 \itemize{
-\item Identifies the first time point where time resets (e.g., from 23:00 to 01:00), based on the start time column.
-\item Removes all rows before that backward time jump to exclude spillover data from the DST change day.
+\item Identifies the first time point where time resets, based on the start time column.
+\item Removes all rows all entries from the previous day if there is data spillover due to DST change.
 }
 }
 }
@@ -77,6 +80,7 @@ The adjustment logic for each case is as follows:
 dst_info <- get_dst_switch_info(years = 2021, tz = "America/Vancouver")
 df <- data.frame(Start = c("01:30:00", "02:30:00", "04:00:00"),
                  End = c("02:00:00", "03:00:00", "04:30:00"))
+print(df)
 daylight_saving_adjust(df,
                       date = "2021-11-07",
                       start_col = "Start",

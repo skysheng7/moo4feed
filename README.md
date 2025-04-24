@@ -57,9 +57,10 @@ Full documentation and examples are available at the [package website](https://s
 ## Acknowledgements
 
 This R package was developed following the instructions and recommended workflows outlined in several key resources: 
+
 - [*R Packages*](https://r-pkgs.org/) by Hadley Wickham and Jenny Bryan  
 - [*Reproducible and Trustworthy Workflows for Data Science*](https://ubc-dsci.github.io/reproducible-and-trustworthy-workflows-for-data-science/) by Tiffany Timbers, Joel Ostblom, and Florencia D’Andrea  
 - Courses: [DSCI 522 Data Science Workflows](https://ubc-mds.github.io/course-descriptions/DSCI_522_dsci-workflows/), [DSCI 524 Collaborative Software Development](https://ubc-mds.github.io/DSCI_524_collab-sw-dev/README.html) by Dr. Tiffany Timbers
 
 ## Project Information
-- **Funding:** This project is funded by a Natural Sciences and Engineering Research Council (NSERC) Discovery Grant (RGPIN-2021-02848; Ottawa, ON, Canada) awarded to MvK. KS also received funding from the Pei-Huang Tung and Tan-Wen Tung Graduate Fellowship (Vancouver, BC, Canada), Elizabeth R. Howland Fellowship (Vancouver, BC, Canada), and Wilson Henderson Fellowship (Vancouver, BC, Canada), Hugo E Meilicke Memorial Fellowship (Vancouver, BC, Canada), Mary and David Macaree Fellowship (Vancouver, BC, Canada).
+- **Funding:** This project is funded by a Natural Sciences and Engineering Research Council (NSERC) Discovery Grant (RGPIN-2021-02848; Ottawa, ON, Canada) awarded to MvK. KS also received funding from the Pei-Huang Tung and Tan-Wen Tung Graduate Fellowship (Vancouver, BC, Canada), Elizabeth R. Howland Fellowship (Vancouver, BC, Canada), Wilson Henderson Fellowship (Vancouver, BC, Canada), Hugo E Meilicke Memorial Fellowship (Vancouver, BC, Canada), and Mary and David Macaree Fellowship (Vancouver, BC, Canada).

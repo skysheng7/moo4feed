@@ -70,6 +70,34 @@ test_that("when select_cols is NULL, return all columns", {
 })
 
 
+test_that("when header = FALSE, and there is no col_names defined, error is prompted", {
+  # Create a toy feeder data frame
+  original <- data.frame(
+    cow         = c("A","B","C","A"),
+    transponder = c("X1","X2","X3","X2"),
+    bin         = c(1,2,3,2),
+    value       = c(10,20,30,40),
+    stringsAsFactors = FALSE
+  )
+  tmp <- make_csv(original)
+
+  # Drop cow "A" and transponder "X2", keep bins 2:3
+  expect_error(
+    (out <- process_feeder(
+      file        = tmp,
+      drop_ids    = "A",
+      drop_trans  = "X2",
+      bins        = 2:3,
+      header = FALSE
+    )),
+    "must be a character vector when header = FALSE."
+  )
+
+  unlink(tmp)
+
+})
+
+
 # Create a small CSV to exercise normal and edge cases
 df_sample <- data.frame(
   cow         = c("A","B","C"),
@@ -100,7 +128,7 @@ test_that("errors if `col_names` is not a character vector", {
       col_names   = 1:4,
       bins         = 1:3,
       select_cols = c("cow","bin","value"),
-      header = TRUE
+      header = FALSE
     ),
     "`col_names` must be a character vector"
   )
@@ -235,6 +263,98 @@ test_that("process_water reads, shifts bins, and subsets correctly", {
   expect_equal(out$bin, c(105,106,107,106))
   expect_equal(out$value, c(50,60,70,80))
 })
+
+test_that("When the length of `col_names` does not equal to the number of columns in the file", {
+  original <- data.frame(
+    cow         = c("D","E","F","D"),
+    transponder = c("Y1","Y2","Y3","Y2"),
+    bin         = c(5,6,7,6),
+    value       = c(50,60,70,80),
+    stringsAsFactors = FALSE
+  )
+  tmp <- make_csv(original)
+
+  # Drop nothing, keep bins 5:7, offset +100, select cow, bin, value
+  expect_error(
+    (out <- process_water(
+      file        = tmp,
+      col_names   = c("cow", "transponder"),
+      drop_ids    = NULL,
+      drop_trans  = NULL,
+      bins        = 5:7,
+      select_cols = c("cow","bin","value"),
+      bin_offset  = 100,
+      header = FALSE
+    )),
+    "Length of `col_names` must equal number of columns in the file"
+  )
+  unlink(tmp)
+
+})
+
+test_that("When there is no header, but provided the right col_names", {
+  original <- data.frame(
+    cow         = c("D","E","F","D"),
+    transponder = c("Y1","Y2","Y3","Y2"),
+    bin         = c(5,6,7,6),
+    value       = c(50,60,70,80),
+    stringsAsFactors = FALSE
+  )
+  tmp <- tempfile(fileext = ".csv")
+  write.table(original, tmp, sep       = ",", row.names = FALSE, col.names = FALSE)
+
+  # Drop nothing, keep bins 5:7, offset +100, select cow, bin, value
+  out <- process_water(
+    file        = tmp,
+    col_names   = names(original),
+    drop_ids    = NULL,
+    drop_trans  = NULL,
+    bins        = 5:7,
+    select_cols = c("cow","bin","value"),
+    bin_offset  = 100,
+    header = FALSE
+  )
+  unlink(tmp)
+
+  expect_s3_class(out, "data.frame")
+  # After shift, original bins 5,6,7 → 105,106,107
+  expect_equal(out$cow, c("D","E","F","D"))
+  expect_equal(out$bin, c(105,106,107,106))
+  expect_equal(out$value, c(50,60,70,80))
+})
+
+
+test_that("When there is no header, provided the right col_names, but select_cols is NULL, dataframe return all columns in col_names", {
+  original <- data.frame(
+    cow         = c("D","E","F","D"),
+    transponder = c("Y1","Y2","Y3","Y2"),
+    bin         = c(5,6,7,6),
+    value       = c(50,60,70,80),
+    stringsAsFactors = FALSE
+  )
+  tmp <- tempfile(fileext = ".csv")
+  write.table(original, tmp, sep       = ",", row.names = FALSE, col.names = FALSE)
+
+  # Drop nothing, keep bins 5:7, offset +100, select cow, bin, value
+  out <- process_water(
+    file        = tmp,
+    col_names   = names(original),
+    drop_ids    = NULL,
+    drop_trans  = NULL,
+    bins        = 5:7,
+    bin_offset  = 100,
+    header = FALSE
+  )
+  unlink(tmp)
+
+  expect_s3_class(out, "data.frame")
+  # After shift, original bins 5,6,7 → 105,106,107
+  expect_equal(colnames(out), names(original))
+  expect_equal(out$cow, c("D","E","F","D"))
+  expect_equal(out$bin, c(105,106,107,106))
+  expect_equal(out$value, c(50,60,70,80))
+})
+
 
 test_that("process_water returns empty df when no rows survive", {
   df <- data.frame(cow="X", transponder="T", bin=1, value=1L, stringsAsFactors=FALSE)
@@ -383,7 +503,7 @@ test_that("errors if select_cols contains missing column", {
       bin_offset  = 100,
       header      = TRUE
     ),
-    "vector contains columns that do not exist in this dataframe"
+    "Some `select_cols` are not present in the data.frame"
   )
   unlink(tmp)
 })

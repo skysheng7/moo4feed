@@ -9,17 +9,21 @@ delete_rows(df, to_delete, col_name = "cow")
 \arguments{
 \item{df}{A data frame containing a column named \code{col_name}.}
 
-\item{to_delete}{A vector of values to remove; \strong{must} have the same type
-data type as \code{df[[col_name]]}. Default is "cow".}
+\item{to_delete}{What's the animal ID/transponders that you wish to delete? This
+should be a vector of values to remove; \strong{must} have the same data type as \code{df[[col_name]]}.}
 
-\item{col_name}{A single string giving the name of the column to filter on.}
+\item{col_name}{What's the name of the column you wish to filter your data on?
+This should be a single string giving the name of the column you are interested in.
+Default is "cow".}
 }
 \value{
 A data frame identical to \code{df} but with all rows where
 \code{df[[col_name]] \%in\% to_delete} dropped.
 }
 \description{
-Filters out any rows where the values in \code{col_name} appear in \code{to_delete}.
+Filters out any rows where the values in \code{col_name} appear in \code{to_delete}. This
+function is helpful for when you want to delete information about certain animals
+by their ID, or certain sensors/transponders/insentec bins.
 }
 \examples{
 df <- data.frame(
@@ -28,10 +32,11 @@ df <- data.frame(
   Value       = 1:3,
   stringsAsFactors = FALSE
 )
-# drop cows "A" and "C"
+print(df)
+# drop data about cows "A" and "C" from the dataframe
 delete_rows(df, c("A", "C"), "cow")
 
-# drop transponder "X2"
+# drop data recorded by transponder "X2" from the dataframe
 delete_rows(df, c("X2"), "transponder")
 
 }

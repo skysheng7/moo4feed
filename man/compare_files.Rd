@@ -20,16 +20,14 @@ A list with components:
 If no common dates are found, both components are empty character vectors.
 }
 \description{
-Identifies the subset of feed and water file names that share the same
-extracted dates, returning only those with matching date tokens.
+Idealy we want to have both feeder and water data for each day. This function
+identifies the subset of feed and water file names that share the same
+extracted dates, returning only files from dates when both feeder and water data
+exist.
 }
 \examples{
 compare_files(
   c("feed/VR200715.DAT", "feed/VR200716.DAT"),
   c("water/VW200715.DAT", "water/VW200717.DAT")
 )
-# returned list:
-# feed = c("feed/VR200715.DAT")
-# water = c("water/VW200715.DAT")
-
 }

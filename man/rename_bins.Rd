@@ -9,12 +9,14 @@ rename_bins(df, bins, bin_offset, bin_col = "bin")
 \arguments{
 \item{df}{A data frame containing a column of bin IDs.}
 
-\item{bins}{A numeric vector of the ID of bins that we are interested in renaing.
-You can supply individual values (e.g. \code{c(2, 4, 6)}) or a sequence (e.g. \code{3:5}).}
+\item{bins}{Which bins do you wish to rename? This should be a numeric vector
+of the ID of bins that we are interested in renaming. You can supply individual
+values (e.g. \code{c(2, 4, 6)}) or a sequence (e.g. \code{3:5}).}
 
-\item{bin_offset}{A single numeric value to add to each matching bin ID.}
+\item{bin_offset}{A single numeric value to add to each matching bin ID. Default is 100.}
 
-\item{bin_col}{A single string naming the column recording bin IDs (default: \code{"bin"}).}
+\item{bin_col}{What's the name of the column noting the ID of the bin in each visit?
+This should be a single string naming the column recording bin IDs (default: \code{"bin"}).}
 }
 \value{
 A data frame identical to \code{df} but with \code{df[[bin_col]]} updated:
@@ -25,13 +27,12 @@ for each row where \code{df[[bin_col]] \%in\% bins}, the new value is
 Rename bin ID by adding an amount defined in \code{bin_offset} to each bin's
 original ID  in \code{df[[bin_col]]}. Only rename bins that matches one of the
 ID in the vector \code{bins}, preserving all other rows unchanged.
-}
-\details{
 We wish to do this because sometimes water bin and feed bin share the same
-ID, and we want to differentiate water bins from feed bins.
+ID, and we want to differentiate water bins from feed bins using this \code{bin_offset}.
 }
 \examples{
 df <- data.frame(Bin = 1:5, Value = 10:14)
+print(df)
 # shift bins 2,3,4 by +100 → become 102,103,104
 rename_bins(df, bins = 2:4, bin_offset = 100, bin_col = "Bin")
 

@@ -7,15 +7,17 @@
 file_name_processing(file_names, col_name = "dir")
 }
 \arguments{
-\item{file_names}{A character vector of file names.}
+\item{file_names}{What are the path to all the data files that you wish to process?
+This should be a character vector of file names.}
 
-\item{col_name}{A single character string specifying the column name for the
-file names in the output data frame. Default is "dir".}
+\item{col_name}{We wil put all your file names into a column stored in a dataframe.
+What name do you want to give to that column? This should be a single character
+string. Default is "dir".}
 }
 \value{
 A data frame with columns:
 \describe{
-\item{<col_name>}{Original cleaned file names (underscores instead of "/", " " or ".").}
+\item{<col_name>}{Original cleaned file names.}
 \item{date}{Extracted date tokens as character strings (e.g. \code{"200715"}), or \code{NA} if
 extraction failed.}
 }
@@ -23,13 +25,13 @@ Returns an empty data frame with those two columns if \code{file_names} is empty
 }
 \description{
 Extracts date tokens from file names. The date is assumed to be embedded as digits
-in the filename in the format of yymmdd (year, month, day). The code will
+in the filename in the format of \code{yymmdd} (year, month, day). The code will
 automatically extract the continuous digits out of the filename
-(e.g. \code{"VR200715"} → \code{"200715"}; \code{"rmdh20250101"} → \code{"rmdh20250101"}).
+(e.g. \code{"VR200715"} → \code{"200715"}; \code{"rmdh20250101"} → \code{"20250101"}).
 }
 \examples{
 file_name_processing(
- file_names = c(" feed/VR200715.DAT ", "feed/VR200716.DAT"),
+ file_names = c(" feed/VR200715.DAT ", "feed/VR200716.DAT", "feed/VR200718.DAT"),
  col_name = "Feed_dir"
 )
 

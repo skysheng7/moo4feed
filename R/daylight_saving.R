@@ -2,15 +2,20 @@
 # -------------------- External user-facing functions -------------------------#
 # -----------------------------------------------------------------------------#
 
-#' Get DST Switch Dates and Exact Transition Times
+#' Get Daylight Saving Time (DST) Switch Dates and Exact Transition Times
 #'
-#' A wrapper around `dst_switch_day()` and `dst_switch_hm()` to generate a
-#' data frame with both the dates and exact times (hour and minute) when
-#' Daylight Saving Time (DST) transitions occur.
+#' Generate a data frame recording both the dates and exact times (hour and minute)
+#' when DST transitions occurs in the specified timezone, default is the timezone
+#' your computer is located at.
 #'
-#' @param years A numeric vector specifying the range of years to evaluate. Use the format `c(start_year, end_year)`, e.g., `years = c(2020, 2021)`. Must contain at least one numeric value.
-#' @param tz A valid time zone name (default is the time zone of your current physical location), used to determine DST rules. Use `OlsonNames()` to see all valid options.
-#' @param interval An integer (1–59) specifying the time resolution in minutes used to detect DST changes (default: 1).
+#' @param years A numeric vector specifying the range of years to evaluate.
+#'  Use the format `c(start_year, end_year)`, e.g., `years = c(2020, 2021)`.
+#'  Must contain at least one numeric value.
+#' @param tz A valid time zone name (default is the time zone of your current physical location),
+#'  used to determine DST rules. Use `OlsonNames()` to see all valid options.
+#' @param interval An integer (1–59) specifying the time resolution in minutes
+#'  used to detect DST changes (default: 1, meaning 1 minute). You almost never need
+#'  to change this.
 #'
 #' @return A data frame with columns:
 #' \describe{
@@ -22,10 +27,10 @@
 #'   \item{spring_time}{Exact timestamp just before DST starts}
 #'   \item{fall_time}{Exact timestamp just before DST ends}
 #' }
-#' Returns an empty data frame with all columns if no transitions are found.
+#' Returns an empty data frame with only column names if no transitions are found.
 #'
 #' @details
-#' Internally calls `dst_switch_day()` to get the switch dates, and
+#' Internally calls the internal functions `dst_switch_day()` to get the switch dates, and
 #' `dst_switch_hm()` to detect the transition times for each spring and fall date.
 #' If transition times cannot be detected, `NA` values are returned in the corresponding columns.
 #'
@@ -70,26 +75,27 @@ get_dst_switch_info <- function(years = c(2020, 2021), tz = Sys.timezone(), inte
 
 #' Detect Daylight Saving Time (DST) Change Dates
 #'
-#' Returns a data frame with the start ("spring") and end ("fall") dates of Daylight Saving Time for each year in the input range.
+#' Returns a data frame with the start ("spring") and end ("fall") dates of Daylight
+#' Saving Time for each year in the input range.
 #'
 #' @inheritParams get_dst_switch_info
 
-#' @return A data frame with columns: year, spring (DST start for global north), fall (DST end for global south), spring_next_day (the second day after daylight saving changes in spring), fall_next_day (the second day after daylight saving changes in fall).
-#' If no DST transitions are found for the specified years and time zone, an empty data frame is returned
-#' with the expected column names.
+#' @return A data frame with columns: year, spring (DST start for global north),
+#' fall (DST end for global south), spring_next_day (the second day after daylight
+#' saving changes in spring), fall_next_day (the second day after daylight saving
+#' changes in fall). If no DST transitions are found for the specified years and
+#' time zone, an empty data frame is returned with the expected column names.
 #'
 #' @details
-#' If `years` is not numeric, has zero length, <= 1907 (start year of daylight saving changes in history) or if `tz` is not a recognized time zone name,
-#' the function will throw an error. For regions without DST (e.g., `Etc/UTC`), the function returns an empty data frame and issues a warning.
+#' If `years` is not numeric, has zero length, <= 1907 (start year of daylight
+#' saving changes in history) or if `tz` is not a recognized time zone name,
+#' the function will throw an error. For regions without DST (e.g., `Etc/UTC`),
+#' the function returns an empty data frame and issues a warning.
 #'
 #' @export
 #'
 #' @examples
 #' dst_switch_day(years = c(2020, 2021), tz = "America/Vancouver")
-#' # Returns a data frame like:
-#' #   year    spring      fall   spring_next_day  fall_next_day
-#' #   2020 2020-03-08 2020-11-01   2020-03-09      2020-11-02
-#' #   2021 2021-03-14 2021-11-07   2021-03-15      2021-11-08
 dst_switch_day <- function(years = c(2020, 2021), tz = Sys.timezone()){
   # --- Error handling ---
   if (!is.numeric(years)) {
@@ -140,18 +146,20 @@ dst_switch_day <- function(years = c(2020, 2021), tz = Sys.timezone()){
 
 #' Detect the Exact Time (hour and minute; hm) of Daylight Saving Time (DST) Change
 #'
-#' Identifies the precise local time when a Daylight Saving Time (DST) transition occurs
+#' Identifies the precise local time when a DST transition occurs
 #' on a given date in a specified time zone.
 #'
 #' @inheritParams get_dst_switch_info
 #' @param date A string in "YYYY-MM-DD" format or a Date object.
 #'
 #' @return A POSIXct object indicating the time just before the DST transition.
-#' If no DST change is detected on the specified date, the function returns `NULL` with a warning.
+#' If no DST change is detected on the specified date, the function returns `NULL`
+#' with a warning.
 #'
 #' @details
-#' The function detects DST changes using differences in DST status across time intervals during the given date.
-#' It handles "skipped" or "duplicated" times (as occurs during spring and fall transitions) using both `dst()` and `NA` time gaps.
+#' The function detects DST changes using differences in DST status across time
+#' intervals during the given date. It handles "skipped" or "duplicated" times
+#' (as occurs during spring and fall transitions) using both `dst()` and `NA` time gaps.
 #' In the case of ambiguous or unresolvable transitions, `NULL` is returned with a warning.
 #'
 #' @examples
@@ -229,12 +237,12 @@ dst_switch_hm <- function(date, tz = Sys.timezone(), interval = 1) {
 
 #' Adjust Time Stamp for Daylight Saving Time (DST) Transitions
 #'
-#' This function adjusts a dataframe of visit events (e.g., feed or water visits) based on
-#' Daylight Saving Time (DST) changes. It detects whether the current date is a DST transition day
-#' (in spring or fall), or the day after the spring DST change, and applies the appropriate time correction logic.
+#' This function adjusts a dataframe of visit events (e.g., feed or water visits)
+#' based on DST changes. It detects whether the current date is a DST transition day
+#' (in spring or fall), or the day after the spring DST change, and applies the
+#' appropriate time correction logic. The adjustment logic for each case is as follows:
 #'
-#' The adjustment logic for each case is as follows:
-#'
+#' @details
 #' \strong{Fall DST Change Day (e.g., 1st Sunday of November):}
 #' \itemize{
 #'   \item North American clocks fall back from 2:00 AM to 1:00 AM, repeating the hour from 1:00 to 2:00 AM.
@@ -262,8 +270,8 @@ dst_switch_hm <- function(date, tz = Sys.timezone(), interval = 1) {
 #'   \item On the day after spring DST change, sensors may still include late-night entries from the previous (DST) day, due to time "over-spill"
 #'   \item This function:
 #'     \itemize{
-#'       \item Identifies the first time point where time resets (e.g., from 23:00 to 01:00), based on the start time column.
-#'       \item Removes all rows before that backward time jump to exclude spillover data from the DST change day.
+#'       \item Identifies the first time point where time resets, based on the start time column.
+#'       \item Removes all rows all entries from the previous day if there is data spillover due to DST change.
 #'     }
 #' }
 #'
@@ -272,8 +280,11 @@ dst_switch_hm <- function(date, tz = Sys.timezone(), interval = 1) {
 #'  formatted as "HH:MM:SS".
 #' @param start_col Name of the column recording the start time of an event (quoted), e.g.: start_col = "start"
 #' @param end_col Name of the column recording the end time of an event (quoted). e.g.: end_col = "end"
-#' @param dst_df A data frame created by \code{\link{get_dst_switch_info}}, containing DST change dates and times per year.
-#' @param daylight_change_duration An integer for the fallback duration in minutes (default = 60).
+#' @param dst_df A data frame created by \code{\link{get_dst_switch_info}},
+#'    containing DST change dates and times for each year.
+#' @param daylight_change_duration How many minutes does the clock jump or fall back
+#'    on the day of daylight saving change? This should be an integer for the
+#'    duration in minutes (default = 60).
 #'
 #' @return A data frame adjusted for daylight saving time, or the original data if no adjustment applies.
 #'
@@ -281,6 +292,7 @@ dst_switch_hm <- function(date, tz = Sys.timezone(), interval = 1) {
 #' dst_info <- get_dst_switch_info(years = 2021, tz = "America/Vancouver")
 #' df <- data.frame(Start = c("01:30:00", "02:30:00", "04:00:00"),
 #'                  End = c("02:00:00", "03:00:00", "04:30:00"))
+#' print(df)
 #' daylight_saving_adjust(df,
 #'                       date = "2021-11-07",
 #'                       start_col = "Start",
@@ -387,13 +399,14 @@ daylight_saving_adjust <- function(data_frame, date, start_col = "start", end_co
 
 #' Adjust visit times for Daylight Saving Time (DST) fallback (fall transition)
 #'
-#' This function adjusts feed or water visit times that fall during the end of Daylight Saving Time (DST) in the fall.
-#' In North America, clocks fall back from 2:00 AM to 1:00 AM, repeating the hour between 1–2 AM.
-#' However, some sensors do not reset the time. Instead of repeating the hour, they continue recording
-#' as if it were 2:00–3:00 AM, creating duplicate or misaligned timestamps.
-#'
-#' To correct for this, the function removes visits that occur in the ambiguous period after 2:00 AM,
-#' and shifts all visits after 3:00 AM back by one hour, to reflect the actual (post-fallback) clock time.
+#' This function adjusts feed or water visit times that fall during the end of
+#' Daylight Saving Time (DST) in the fall. In North America, clocks fall back from
+#' 2:00 AM to 1:00 AM, repeating the hour between 1–2 AM.
+#' However, some sensors do not reset the time. Instead of repeating the hour,
+#' they continue recording as if it were 2:00–3:00 AM, creating duplicate or
+#' misaligned timestamps. To correct for this, the function removes visits that
+#' occur in the ambiguous period after 2:00 AM, and shifts all visits after 3:00 AM
+#' back by one hour, to reflect the actual (post-fallback) clock time.
 #'
 #' @param data_frame A data frame with two columns representing the start and end time of each visit,
 #'  formatted as "HH:MM:SS".
@@ -406,6 +419,8 @@ daylight_saving_adjust <- function(data_frame, date, start_col = "start", end_co
 #' @details We used North American DST shift pattern as an example, describing the fallback behavior of jumping from 2:00 AM back to 1:00 AM).
 #' This function can also be used for other DST fallback patterns in other countries if appropriate values for `dst_detected_time` and `daylight_change_duration` are provided.
 #' @importFrom rlang :=
+#'
+#' @noRd
 adjust_dst_fall <- function(data_frame,
                              dst_detected_time,
                              start_col = start,
@@ -473,20 +488,25 @@ adjust_dst_fall <- function(data_frame,
 
 #' Adjust visit times for Daylight Saving Time (DST) in the spring (spring forward)
 #'
-#' This function adjusts feed or water visit times that fall during the start of Daylight Saving Time (DST) in the spring.
-#' In North America, clocks jump forward from 2:00 AM to 3:00 AM, skipping the hour between 2–3 AM.
-#' Some sensors continue recording using local time, which may result in invalid or misaligned timestamps.
-#'
-#' The function removes visits that start before the DST jump and end during the skipped hour (2–3 AM),
-#' and shifts all visits that occur after the DST jump forward by one hour to reflect the actual (post-DST) clock time.
+#' This function adjusts feed or water visit times that fall during the start of
+#' DST in the spring. In North America, clocks jump forward from 2:00 AM to 3:00 AM,
+#' skipping the hour between 2–3 AM. Some sensors continue recording using local
+#' time, which may result in invalid or misaligned timestamps. The function removes
+#' visits that start before the DST jump and end during the skipped hour (2–3 AM),
+#' and shifts all visits that occur after the DST jump forward by one hour to
+#' reflect the actual (post-DST) clock time.
 #'
 #' @inheritParams adjust_dst_fall
-#' @return A data frame with updated start and end time columns after adjusting for spring DST jump.
+#' @return A data frame with updated start and end time columns after adjusting
+#'  for spring DST jump.
 #'
-#' @details This function assumes North American spring DST behavior (2:00 AM → 3:00 AM), but can be adapted
-#' for other timezones with a suitable `dst_detected_time` and `daylight_change_duration`.
+#' @details This function assumes North American spring DST behavior (2:00 AM → 3:00 AM),
+#'  but can be adapted for other timezones with a suitable `dst_detected_time`
+#'  and `daylight_change_duration`.
 #'
 #' @importFrom rlang :=
+#'
+#' @noRd
 adjust_dst_spring <- function(data_frame,
                                dst_detected_time,
                                start_col = start,
@@ -567,6 +587,8 @@ adjust_dst_spring <- function(data_frame,
 #' @param start_col Name of the time column (unquoted), usually this is the start time of the event. Default is: start.
 #'
 #' @return A filtered data frame with only rows after the DST-induced reset point.
+#'
+#' @noRd
 next_day_after_spring_dst <- function(data_frame, start_col = start) {
   if (!is.data.frame(data_frame)) {
     stop("`data_frame` must be a data frame.")

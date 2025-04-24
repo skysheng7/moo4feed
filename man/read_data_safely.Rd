@@ -7,18 +7,22 @@
 read_data_safely(file, sep = ",", header = FALSE)
 }
 \arguments{
-\item{file}{A single string giving the path to the file.}
+\item{file}{What's the path to your data file? This should be a single string giving the path to the file.}
 
-\item{sep}{Field separator; passed to \code{read.table()}. Defaults to \code{","}.}
+\item{sep}{Field separator; passed to \code{read.table()}. Defaults to \code{","} for
+comma delimited files like \code{.csv} and \code{.DAT}.}
 
-\item{header}{Logical; does the file have a header row? Defaults to \code{FALSE}.}
+\item{header}{Logical; does your data file have a header row (i.e., column names)?
+Defaults to \code{FALSE}. If yor file contains column names at the top, please set
+this to \code{TRUE}.}
 }
 \value{
 A data frame of the file’s contents, or an empty data frame if
 the file is missing, is a directory, is empty, or cannot be read.
 }
 \description{
-Attempts to read a delimited file (comma by default) into a data frame.
+Attempts to read a file (comma delimited by default) into a data frame. Please note
+files with the extension \code{.csv}, and \code{.DAT} are both comma delimited files.
 If the file does not exist, is a directory, is empty, or an error occurs
 during reading, this function returns an empty data frame (0 rows, 0 columns).
 }

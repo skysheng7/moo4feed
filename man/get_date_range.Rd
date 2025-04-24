@@ -7,24 +7,22 @@
 get_date_range(file_names)
 }
 \arguments{
-\item{file_names}{A character vector of file names.}
+\item{file_names}{What are the path to all the data files that you wish to process?
+This should be a character vector of file names.}
 }
 \value{
-A single character string:
+A single character string in one of the following format:
 \describe{
-\item{\code{"YYYY-MM-DD"}}{when all dates in \code{df$date} are the same}
-\item{\code{"YYYY-MM-DD_YYYY-MM-DD"}}{otherwise, concatenation of start and end dates}
+\item{\code{"YYMMDD"}}{when all dates in \code{df$date} are the same}
+\item{\code{"YYMMDD_YYMMDD"}}{otherwise, concatenation of start and end dates}
 }
 Returns \code{NA_character_} (with a warning) if \code{df} has zero rows.
 }
 \description{
-Processes a character vector of file names, extracts embedded date tokens
-(via \code{\link[=file_name_processing]{file_name_processing()}}), and computes the full date span
-using \code{\link[=get_date_range_helper]{get_date_range_helper()}}.
+What are the start and end date of your study? This function takes in a vector of
+file names, and export a character string indicating the date range of your study.
 }
 \examples{
 get_date_range(c("feed/VR200720.DAT", "feed/VR200715.DAT", "feed/VR200716.DAT"))
-# returns:
-# "200715_200720"
 
 }

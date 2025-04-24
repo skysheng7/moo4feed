@@ -9,21 +9,26 @@ dst_switch_hm(date, tz = Sys.timezone(), interval = 1)
 \arguments{
 \item{date}{A string in "YYYY-MM-DD" format or a Date object.}
 
-\item{tz}{A valid time zone name (default is the time zone of your current physical location), used to determine DST rules. Use \code{OlsonNames()} to see all valid options.}
+\item{tz}{A valid time zone name (default is the time zone of your current physical location),
+used to determine DST rules. Use \code{OlsonNames()} to see all valid options.}
 
-\item{interval}{An integer (1–59) specifying the time resolution in minutes used to detect DST changes (default: 1).}
+\item{interval}{An integer (1–59) specifying the time resolution in minutes
+used to detect DST changes (default: 1, meaning 1 minute). You almost never need
+to change this.}
 }
 \value{
 A POSIXct object indicating the time just before the DST transition.
-If no DST change is detected on the specified date, the function returns \code{NULL} with a warning.
+If no DST change is detected on the specified date, the function returns \code{NULL}
+with a warning.
 }
 \description{
-Identifies the precise local time when a Daylight Saving Time (DST) transition occurs
+Identifies the precise local time when a DST transition occurs
 on a given date in a specified time zone.
 }
 \details{
-The function detects DST changes using differences in DST status across time intervals during the given date.
-It handles "skipped" or "duplicated" times (as occurs during spring and fall transitions) using both \code{dst()} and \code{NA} time gaps.
+The function detects DST changes using differences in DST status across time
+intervals during the given date. It handles "skipped" or "duplicated" times
+(as occurs during spring and fall transitions) using both \code{dst()} and \code{NA} time gaps.
 In the case of ambiguous or unresolvable transitions, \code{NULL} is returned with a warning.
 }
 \examples{

@@ -9,10 +9,12 @@ keep_bins(df, bins, bin_col = "bin")
 \arguments{
 \item{df}{A data frame containing a column of bin IDs.}
 
-\item{bins}{A numeric vector of bin IDs to keep. You can supply individual
+\item{bins}{Which bins are included in your study for analysis? This should be
+a numeric vector of bin IDs to keep. You can supply individual
 values (e.g. \code{c(1, 3, 5)}) or a sequence (e.g. \code{2:4}).}
 
-\item{bin_col}{A single string naming the column of bin IDs (default: \code{"bin"}).}
+\item{bin_col}{What's the name of the column recording your bin ID?
+This is a single string naming the column of bin IDs (default: \code{"bin"}).}
 }
 \value{
 A data frame identical to \code{df} but only with rows where
@@ -20,9 +22,13 @@ A data frame identical to \code{df} but only with rows where
 }
 \description{
 Filters to rows where the column recording bin IDs matches one of the values in \code{bins}.
+This is useful when your raw data files contains recordings from multiple bins
+including bins that are not used in your study. You can use this function to keep
+only data recorded from bins included in your study.
 }
 \examples{
 df <- data.frame(Bin = 1:5, Value = 11:15)
+print(df)
 keep_bins(df, bins = 2:4, bin_col = "Bin")
 #   Bin Value
 # 2   2    12

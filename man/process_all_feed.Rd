@@ -6,7 +6,7 @@
 \usage{
 process_all_feed(
   files,
-  col_names,
+  col_names = NULL,
   id_col = "cow",
   drop_ids = NULL,
   trans_col = "transponder",
@@ -21,31 +21,50 @@ process_all_feed(
 )
 }
 \arguments{
-\item{files}{Character vector of all the file paths.}
+\item{files}{What are the files you wish to process? This should be a character
+vector of all the file paths.}
 
-\item{col_names}{Character vector of names to assign to the raw data columns.}
+\item{col_names}{A character vector of column names to assign when \code{header = FALSE}.
+This vector must match the number of columns in the raw data.
+If \code{header = TRUE}, the file’s existing column names are used and
+\code{col_names} is ignored.}
 
-\item{id_col}{Single string: column name for animal IDs (default: \code{"cow"}).}
+\item{id_col}{What's the name of the column recording animal ID? This should be
+a Single string. (default: \code{"cow"}).}
 
-\item{drop_ids}{Vector: values in \code{id_col} to remove (default: \code{NULL}).}
+\item{drop_ids}{Which animals do you wish to drop? This should be a vector
+indicating values in \code{id_col} that you wish to remove (default: \code{NULL}, so remove nothing).}
 
-\item{trans_col}{Single string: column name for transponder IDs (default: \code{"transponder"}).}
+\item{trans_col}{What's the name of the column recording transponder ID for each visit?
+This should be a single string. (default: \code{"transponder"}).}
 
-\item{drop_trans}{Vector: values in \code{trans_col} to remove (default: \code{NULL}).}
+\item{drop_trans}{Which transponders do you wish to delete because they are not part
+of your study? This should be a vector indicating values in \code{trans_col} that
+you wish to remove (default: \code{NULL}, so remove nothing).}
 
-\item{bin_col}{Single string: column name for bin IDs (default: \code{"bin"}).}
+\item{bin_col}{What's the name of the column recording the ID of the bin for each visit?
+This should be a single string. (default: \code{"bin"}).}
 
-\item{bins}{Numeric vector: bin IDs to keep (e.g. \code{2:4} or \code{c(1,5)}).}
+\item{bins}{Which bins are included in your study? This should be a
+numeric vector indicating bin IDs to keep (e.g. \code{2:4} or \code{c(1,5)}).}
 
-\item{select_cols}{Character vector: columns to retain in the final output. Default is null, select all columns.}
+\item{select_cols}{Which columns in the dataframe do you wish to keep in your
+original data frame after cleaning? This should be a character vector indicating
+columns to retain in the final output. Default is \code{NULL}, so we select all columns.}
 
-\item{sep}{Field separator; passed to \code{read.table()}. Defaults to \code{","}.}
+\item{sep}{Field separator; passed to \code{read.table()}. Defaults to \code{","} for
+comma delimited files like \code{.csv} and \code{.DAT}.}
 
-\item{header}{Logical; does the file have a header row? Defaults to \code{FALSE}.}
+\item{header}{Logical; does your data file have a header row (i.e., column names)?
+Defaults to \code{FALSE}. If yor file contains column names at the top, please set
+this to \code{TRUE}.}
 
-\item{daylight_change_duration}{An integer for the fallback duration in minutes (default = 60).}
+\item{daylight_change_duration}{How many minutes does the clock jump or fall back
+on the day of daylight saving change? This should be an integer for the
+duration in minutes (default = 60).}
 
-\item{tz}{A valid time zone name (default is the time zone of your current physical location), used to determine DST rules. Use \code{OlsonNames()} to see all valid options.}
+\item{tz}{A valid time zone name (default is the time zone of your current physical location),
+used to determine DST rules. Use \code{OlsonNames()} to see all valid options.}
 }
 \value{
 A \strong{named} list of data frames, one per input file, named by date (YYYY‑MM‑DD).
@@ -58,33 +77,50 @@ of data frames keyed by file date (YYYY‑MM‑DD).
 Steps:
 \enumerate{
 \item \strong{Validate} all inputs (types, \code{file_type} ∈ \verb{"feed","water"}).
-\item \strong{Extract} a date information from each filename and parse it via \code{lubridate::ymd()}.
-\item \strong{Fetch} Daylight Saving Time (DST) switch table for the relevant years (\code{dst_switch_day(years, tz)}).
+\item \strong{Extract} a date information from each filename and parse it via \code{\link[lubridate:ymd]{lubridate::ymd()}}.
+\item \strong{Fetch} Daylight Saving Time (DST) switch table for the relevant years (\code{\link[=dst_switch_day]{dst_switch_day()}}).
 \item \strong{Loop} over each file:
-4.1. Call either \code{process_feeder()} or \code{process_water()} to do:
-4.1.1. Safely read the CSV / DAT file
-4.1.2. Rename columns
-4.1.3. Drop unwanted cows & transponders
-4.1.4. Keep only specified bins
-4.1.5. Subset to desired columns
-4.2. Drop any rows with \code{NA}.
-4.3. Call \code{daylight_saving_adjust()} to adjust timestamps for daylight saving change days.
-4.4. Standardize the columns recording start and end time of each event to be in the format of "yyyy-mm-dd hh:mm:ss".
-4.5. Store processed dataframe the output list and name it by the date.
+\itemize{
+\item Call either \code{\link[=process_feeder]{process_feeder()}} or \code{\link[=process_water]{process_water()}} to do:
+- Safely read the CSV / DAT file
+- Rename columns
+- Drop unwanted cows & transponders
+- Keep only specified bins
+- Subset to desired columns
+\item Drop any rows with \code{NA}.
+\item Call \code{\link[=daylight_saving_adjust]{daylight_saving_adjust()}} to adjust timestamps for daylight saving change days.
+\item Standardize the columns recording start and end time of each event to be in the format of "yyyy-mm-dd hh:mm:ss".
+\item Store processed dataframe the output list and name it by the date.
+}
 }
 }
 \examples{
-\dontrun{
-res <- process_all_feed(
-  files       = c("path/to/file/VR210102.DAT", "path/to/file/VW210605.DAT"),
-  col_names   = c("cow", "transponder", "bin", "start", "end"),
-  bins        = 1:30,
-  select_cols = c("cow", "bin", "start", "end"),
-  sep         = ",",
-  header      = TRUE,
-  tz          = "UTC"
-)
+tmp <- tempdir()
+# create two CSVs in a temporary directory
+files <- file.path(tmp, paste0("VR2022010", 1:3, ".csv"))
+for (i in seq_along(files)) {
+  write.csv(
+    data.frame(
+      cow         = c("A", "B", "C"),
+      transponder = c("X1","X2","X3"),
+      bin         = i + 0:2,
+      start       = c("01:00:00", "02:00:00", "03:00:00"),
+      end         = c("01:05:00", "02:06:01", "03:03:00")
+    ),
+    file      = files[i],
+    row.names = FALSE
+   )
 }
+
+res <- process_all_feed(
+files       = files,
+bins        = 1:10,
+select_cols = c("cow","bin","start","end"),
+sep         = ",",
+header      = TRUE,
+tz          = "America/Vancouver")
+
+res
 
 }
 \seealso{

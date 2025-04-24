@@ -2,16 +2,21 @@
 % Please edit documentation in R/daylight_saving.R
 \name{get_dst_switch_info}
 \alias{get_dst_switch_info}
-\title{Get DST Switch Dates and Exact Transition Times}
+\title{Get Daylight Saving Time (DST) Switch Dates and Exact Transition Times}
 \usage{
 get_dst_switch_info(years = c(2020, 2021), tz = Sys.timezone(), interval = 1)
 }
 \arguments{
-\item{years}{A numeric vector specifying the range of years to evaluate. Use the format \code{c(start_year, end_year)}, e.g., \code{years = c(2020, 2021)}. Must contain at least one numeric value.}
+\item{years}{A numeric vector specifying the range of years to evaluate.
+Use the format \code{c(start_year, end_year)}, e.g., \code{years = c(2020, 2021)}.
+Must contain at least one numeric value.}
 
-\item{tz}{A valid time zone name (default is the time zone of your current physical location), used to determine DST rules. Use \code{OlsonNames()} to see all valid options.}
+\item{tz}{A valid time zone name (default is the time zone of your current physical location),
+used to determine DST rules. Use \code{OlsonNames()} to see all valid options.}
 
-\item{interval}{An integer (1–59) specifying the time resolution in minutes used to detect DST changes (default: 1).}
+\item{interval}{An integer (1–59) specifying the time resolution in minutes
+used to detect DST changes (default: 1, meaning 1 minute). You almost never need
+to change this.}
 }
 \value{
 A data frame with columns:
@@ -24,15 +29,15 @@ A data frame with columns:
 \item{spring_time}{Exact timestamp just before DST starts}
 \item{fall_time}{Exact timestamp just before DST ends}
 }
-Returns an empty data frame with all columns if no transitions are found.
+Returns an empty data frame with only column names if no transitions are found.
 }
 \description{
-A wrapper around \code{dst_switch_day()} and \code{dst_switch_hm()} to generate a
-data frame with both the dates and exact times (hour and minute) when
-Daylight Saving Time (DST) transitions occur.
+Generate a data frame recording both the dates and exact times (hour and minute)
+when DST transitions occurs in the specified timezone, default is the timezone
+your computer is located at.
 }
 \details{
-Internally calls \code{dst_switch_day()} to get the switch dates, and
+Internally calls the internal functions \code{dst_switch_day()} to get the switch dates, and
 \code{dst_switch_hm()} to detect the transition times for each spring and fall date.
 If transition times cannot be detected, \code{NA} values are returned in the corresponding columns.
 }
