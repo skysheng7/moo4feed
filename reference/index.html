@@ -30,9 +30,15 @@
     </div>
 
     <div class="section level2">
-      <h2 id="all-functions">All functions<a class="anchor" aria-label="anchor" href="#all-functions"></a></h2>
+      <h2 id="data-cleaning">Data cleaning<a class="anchor" aria-label="anchor" href="#data-cleaning"></a></h2>
 
 
+
+
+    </div><div class="section level2">
+
+      <h3 id="data-cleaning-pipeline">Data cleaning pipeline<a class="anchor" aria-label="anchor" href="#data-cleaning-pipeline"></a></h3>
+      <div class="section-desc"><p>Functions that automate the entire data cleaning pipeline for you on either a single file or a collection of files.</p></div>
 
 
     </div><div class="section level2">
@@ -41,60 +47,6 @@
 
 
       <dl><dt>
-
-          <code><a href="compare_files.html">compare_files()</a></code>
-
-        </dt>
-        <dd>Compare feed and water file names by shared dates</dd>
-      </dl><dl><dt>
-
-          <code><a href="daylight_saving_adjust.html">daylight_saving_adjust()</a></code>
-
-        </dt>
-        <dd>Adjust Time Stamp for Daylight Saving Time (DST) Transitions</dd>
-      </dl><dl><dt>
-
-          <code><a href="delete_rows.html">delete_rows()</a></code>
-
-        </dt>
-        <dd>Remove rows by matching values in a specified column</dd>
-      </dl><dl><dt>
-
-          <code><a href="dst_switch_day.html">dst_switch_day()</a></code>
-
-        </dt>
-        <dd>Detect Daylight Saving Time (DST) Change Dates</dd>
-      </dl><dl><dt>
-
-          <code><a href="dst_switch_hm.html">dst_switch_hm()</a></code>
-
-        </dt>
-        <dd>Detect the Exact Time (hour and minute; hm) of Daylight Saving Time (DST) Change</dd>
-      </dl><dl><dt>
-
-          <code><a href="file_name_processing.html">file_name_processing()</a></code>
-
-        </dt>
-        <dd>Process file names and extract date tokens</dd>
-      </dl><dl><dt>
-
-          <code><a href="get_date_range.html">get_date_range()</a></code>
-
-        </dt>
-        <dd>Get the overall date range for a set of files</dd>
-      </dl><dl><dt>
-
-          <code><a href="get_dst_switch_info.html">get_dst_switch_info()</a></code>
-
-        </dt>
-        <dd>Get Daylight Saving Time (DST) Switch Dates and Exact Transition Times</dd>
-      </dl><dl><dt>
-
-          <code><a href="keep_bins.html">keep_bins()</a></code>
-
-        </dt>
-        <dd>Keep only rows for specified bins</dd>
-      </dl><dl><dt>
 
           <code><a href="process_all_feed.html">process_all_feed()</a></code>
 
@@ -118,12 +70,110 @@
 
         </dt>
         <dd>Process water data</dd>
-      </dl><dl><dt>
+      </dl></div><div class="section level2">
+
+      <h3 id="read-data">Read data<a class="anchor" aria-label="anchor" href="#read-data"></a></h3>
+      <div class="section-desc"><p>Read in data safely.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
 
           <code><a href="read_data_safely.html">read_data_safely()</a></code>
 
         </dt>
         <dd>Safely Read Data from a File</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="daylight-saving-time-changes">Daylight Saving Time changes<a class="anchor" aria-label="anchor" href="#daylight-saving-time-changes"></a></h3>
+      <div class="section-desc"><p>Adjust timestamps for days affected by Daylight Saving Time changes based on timezone of your choice.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="daylight_saving_adjust.html">daylight_saving_adjust()</a></code>
+
+        </dt>
+        <dd>Adjust Time Stamp for Daylight Saving Time (DST) Transitions</dd>
+      </dl><dl><dt>
+
+          <code><a href="get_dst_switch_info.html">get_dst_switch_info()</a></code>
+
+        </dt>
+        <dd>Get Daylight Saving Time (DST) Switch Dates and Exact Transition Times</dd>
+      </dl><dl><dt>
+
+          <code><a href="dst_switch_day.html">dst_switch_day()</a></code>
+
+        </dt>
+        <dd>Detect Daylight Saving Time (DST) Change Dates</dd>
+      </dl><dl><dt>
+
+          <code><a href="dst_switch_hm.html">dst_switch_hm()</a></code>
+
+        </dt>
+        <dd>Detect the Exact Time (hour and minute; hm) of Daylight Saving Time (DST) Change</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="date-extraction-from-file-names">Date extraction from file names<a class="anchor" aria-label="anchor" href="#date-extraction-from-file-names"></a></h3>
+      <div class="section-desc"><p>Extracts information about date from file names</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="file_name_processing.html">file_name_processing()</a></code>
+
+        </dt>
+        <dd>Process file names and extract date tokens</dd>
+      </dl><dl><dt>
+
+          <code><a href="compare_files.html">compare_files()</a></code>
+
+        </dt>
+        <dd>Compare feed and water file names by shared dates</dd>
+      </dl><dl><dt>
+
+          <code><a href="get_date_range.html">get_date_range()</a></code>
+
+        </dt>
+        <dd>Get the overall date range for a set of files</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="data-filtering">Data filtering<a class="anchor" aria-label="anchor" href="#data-filtering"></a></h3>
+      <div class="section-desc"><p>Filters for data relevant to animals and sensors included in your study.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="delete_rows.html">delete_rows()</a></code>
+
+        </dt>
+        <dd>Remove rows by matching values in a specified column</dd>
+      </dl><dl><dt>
+
+          <code><a href="keep_bins.html">keep_bins()</a></code>
+
+        </dt>
+        <dd>Keep only rows for specified bins</dd>
       </dl><dl><dt>
 
           <code><a href="rename_bins.html">rename_bins()</a></code>
@@ -131,7 +181,8 @@
         </dt>
         <dd>Shift specified bin IDs by an offset</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
