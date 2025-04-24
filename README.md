@@ -1,18 +1,31 @@
 # R Package: **moo4feed** <a href="https://skysheng7.github.io/moo4feed/"><img src="man/figures/logo.png" align="right" height="139" alt="moo4feed website" /></a>
 
+**Authors**: Kehan (Sky) Sheng, Borbala Foris, Daniel Weary, Marina von Keyserlingk
+
 <!-- badges: start -->
 [![codecov](https://codecov.io/gh/skysheng7/moo4feed/graph/badge.svg?token=YF9IBR7EYG)](https://codecov.io/gh/skysheng7/moo4feed)
 [![R-CMD-check](https://github.com/skysheng7/moo4feed/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/skysheng7/moo4feed/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
   
+## Overview
 
-This R package **moo4feed** helps you derive individual animal traits from feeding and drinking data
+**moo4feed** is an R package designed to extract novel individual-level traits from raw feeding and drinking data collected through precision livestock farming systems.
 
+The package aims to support animal welfare research and data-driven monitoring by enabling reproducible, scalable analysis workflows.
 
-## Repository Information
+## Installation
 
-- **Date Created:** 2023-07-29  
-- **Created by:** Kehan (Sky) Sheng
+To install the development version of **moo4feed** from GitHub, run:
+
+```r
+install.packages("devtools")
+devtools::install_github("skysheng7/moo4feed")
+```
+
+## Documentation
+
+Full documentation and examples are available at the [package website](https://skysheng7.github.io/moo4feed/).
+
 
 ## Contributors
 
@@ -43,7 +56,10 @@ This R package **moo4feed** helps you derive individual animal traits from feedi
   
 ## Acknowledgements
 
-I implemented this R package following the instructions and recommended R package lifestyle from Dr.Hadley Wickham and Dr. Jennifer Bryan's book [R Package](https://r-pkgs.org/), Dr. Tiffany Timbers's book: [Reproducible and Trustworthy Workflows for Data Science](https://ubc-dsci.github.io/reproducible-and-trustworthy-workflows-for-data-science/), and her courses [DSCI 522 Data Science Workflows](https://ubc-mds.github.io/course-descriptions/DSCI_522_dsci-workflows/), [DSCI 524 Collaborative Software Development](https://ubc-mds.github.io/DSCI_524_collab-sw-dev/README.html).
+This R package was developed following the instructions and recommended workflows outlined in several key resources: 
+- [*R Packages*](https://r-pkgs.org/) by Hadley Wickham and Jenny Bryan  
+- [*Reproducible and Trustworthy Workflows for Data Science*](https://ubc-dsci.github.io/reproducible-and-trustworthy-workflows-for-data-science/) by Tiffany Timbers, Joel Ostblom, and Florencia D’Andrea  
+- Courses: [DSCI 522 Data Science Workflows](https://ubc-mds.github.io/course-descriptions/DSCI_522_dsci-workflows/), [DSCI 524 Collaborative Software Development](https://ubc-mds.github.io/DSCI_524_collab-sw-dev/README.html) by Dr. Tiffany Timbers
 
 ## Project Information
-- **Funding:** This project was supported by the NSERC. 
+- **Funding:** This project is funded by a Natural Sciences and Engineering Research Council (NSERC) Discovery Grant (RGPIN-2021-02848; Ottawa, ON, Canada) awarded to MvK. KS also received funding from the Pei-Huang Tung and Tan-Wen Tung Graduate Fellowship (Vancouver, BC, Canada), Elizabeth R. Howland Fellowship (Vancouver, BC, Canada), and Wilson Henderson Fellowship (Vancouver, BC, Canada), Hugo E Meilicke Memorial Fellowship (Vancouver, BC, Canada), Mary and David Macaree Fellowship (Vancouver, BC, Canada).
