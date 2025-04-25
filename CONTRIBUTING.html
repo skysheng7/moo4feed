@@ -32,65 +32,126 @@
 
 <div id="contributing" class="section level1">
 
-<p>Contributions are welcome, and they are greatly appreciated! Every little bit helps, and credit will always be given.</p>
+<p>Contributions are welcome, and they are greatly appreciated! Every little bit<br>
+helps, and credit will always be given.</p>
+<p>Please also read our <a href="CODE_OF_CONDUCT.html">Code of Conduct</a> before contributing.</p>
 <div class="section level2">
 <h2 id="example-contributions">Example Contributions<a class="anchor" aria-label="anchor" href="#example-contributions"></a></h2>
 <p>You can contribute in many ways, for example:</p>
-<ul><li><a href="#report-bugs">Report bugs</a></li>
-<li><a href="#fix-bugs">Fix Bugs</a></li>
-<li><a href="#implement-features">Implement Features</a></li>
-<li><a href="#write-documentation">Write Documentation</a></li>
-<li><a href="#submit-feedback">Submit Feedback</a></li>
+<ul><li>
+<a href="#report-bugs">Report bugs</a><br></li>
+<li>
+<a href="#fix-bugs">Fix bugs</a><br></li>
+<li>
+<a href="#implement-features">Implement features</a><br></li>
+<li>
+<a href="#write-documentation">Write documentation</a><br></li>
+<li><a href="#submit-feedback">Submit feedback</a></li>
 </ul></div>
 <div class="section level2">
-<h2 id="report-bugs">Report Bugs<a class="anchor" aria-label="anchor" href="#report-bugs"></a></h2>
+<h2 id="report-bugs">Report bugs<a class="anchor" aria-label="anchor" href="#report-bugs"></a></h2>
 <p>Report bugs at <a href="https://github.com/skysheng7/moo4feed/issues" class="external-link uri">https://github.com/skysheng7/moo4feed/issues</a>.</p>
-<p><strong>If you are reporting a bug, please follow the template guidelines. The more detailed your report, the easier and thus faster we can help you.</strong></p>
+<p><strong>If you are reporting a bug, please follow the template guidelines. The more<br>
+detailed your report, the easier and thus faster we can help you.</strong></p>
 </div>
 <div class="section level2">
-<h2 id="fix-bugs">Fix Bugs<a class="anchor" aria-label="anchor" href="#fix-bugs"></a></h2>
-<p>Look through the GitHub issues for bugs. Anything labelled with <code>bug</code> and <code>help wanted</code> is open to whoever wants to implement it. When you decide to work on such an issue, please assign yourself to it and add a comment that you’ll be working on that, too. If you see another issue without the <code>help wanted</code> label, just post a comment, the maintainers are usually happy for any support that they can get.</p>
+<h2 id="fix-bugs">Fix bugs<a class="anchor" aria-label="anchor" href="#fix-bugs"></a></h2>
+<p>Look through the GitHub issues for bugs. Anything labelled with <code>bug</code> and<br><code>help wanted</code> is open to whoever wants to implement it. When you decide to work<br>
+on such an issue, please assign yourself to it and add a comment that you’ll be<br>
+working on it. If you see another issue without the <code>help wanted</code> label, just<br>
+post a comment—the maintainers are usually happy for any support they can get.</p>
 </div>
 <div class="section level2">
-<h2 id="implement-features">Implement Features<a class="anchor" aria-label="anchor" href="#implement-features"></a></h2>
-<p>Look through the GitHub issues for features. Anything labelled with <code>enhancement</code> and <code>help wanted</code> is open to whoever wants to implement it. As for <a href="#fix-bugs">fixing bugs</a>, please assign yourself to the issue and add a comment that you’ll be working on that, too. If another enhancement catches your fancy, but it doesn’t have the <code>help wanted</code> label, just post a comment, the maintainers are usually happy for any support that they can get.</p>
+<h2 id="implement-features">Implement features<a class="anchor" aria-label="anchor" href="#implement-features"></a></h2>
+<p>Look through the GitHub issues for features. Anything labelled with<br><code>enhancement</code> and <code>help wanted</code> is open to contribute. As for <a href="#fix-bugs">fix bugs</a>,<br>
+please assign yourself and comment that you’ll be working on it. If another<br>
+enhancement catches your fancy but lacks the <code>help wanted</code> label, just post a<br>
+comment—the maintainers appreciate extra hands.</p>
 </div>
 <div class="section level2">
-<h2 id="write-documentation">Write Documentation<a class="anchor" aria-label="anchor" href="#write-documentation"></a></h2>
-<p>This R package could always use more documentation, whether as part of the official documentation, in docstrings, or even on the web in blog posts, articles, and such. Just <a href="https://github.com/skysheng7/moo4feed/issues" class="external-link">open an issue</a> to let us know what you will be working on so that we can provide you with guidance.</p>
-</div>
-<div class="section level2">
-<h2 id="submit-feedback">Submit Feedback<a class="anchor" aria-label="anchor" href="#submit-feedback"></a></h2>
-<p>The best way to send feedback is to file an issue at <a href="https://github.com/skysheng7/moo4feed/issues" class="external-link uri">https://github.com/skysheng7/moo4feed/issues</a>. If your feedback fits the format of one of the issue templates, please use that. Remember that this is a volunteer-driven project and everybody has limited time.</p>
-</div>
-<div class="section level2">
-<h2 id="get-started">Get Started<a class="anchor" aria-label="anchor" href="#get-started"></a></h2>
-<p>Ready to contribute? Here’s how to set up moo4feed for local development.</p>
-<ol style="list-style-type: decimal"><li><p>Fork the <a href="https://github.com/skysheng7/moo4feed" class="external-link uri">https://github.com/skysheng7/moo4feed</a> repository on GitHub.</p></li>
+<h2 id="write-documentation">Write documentation<a class="anchor" aria-label="anchor" href="#write-documentation"></a></h2>
+<p>This package uses <strong>roxygen2</strong> for documentation. You can help by writing or improving docs:</p>
+<ul><li><p>Ensure all roxygen2 blocks use correct tags and syntax.</p></li>
 <li>
-<p>Clone your fork locally</p>
+<p><strong>Examples</strong> in <code>@examples</code> must run without errors. Test by running:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">document</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">run_examples</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</li>
+<li><p>Use <code>@inheritParams &lt;function_name&gt;</code> to inherit parameter docs for parameters documented elsewhere; inheritance is recursive.</p></li>
+<li><p>Mark internal helper functions with <code>@noRd</code> to suppress generation of man pages.</p></li>
+<li>
+<p>After updating <code>.R</code> and <code>roxygen</code> comments, rebuild docs with:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">document</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>and inspect the resulting files under man/.</p>
+</li>
+</ul></div>
+<div class="section level2">
+<h2 id="submit-feedback">Submit feedback<a class="anchor" aria-label="anchor" href="#submit-feedback"></a></h2>
+<p>The best way to send feedback is to file an issue at <a href="https://github.com/skysheng7/moo4feed/issues" class="external-link uri">https://github.com/skysheng7/moo4feed/issues</a>. If your feedback fits an issue template, please use it. Remember this is a volunteer-driven project—everyone has limited time.</p>
+</div>
+<div class="section level2">
+<h2 id="get-started">Get started<a class="anchor" aria-label="anchor" href="#get-started"></a></h2>
+<p>Ready to contribute? Here’s how to set up moo4feed for local development. 1. Fork the <a href="https://github.com/skysheng7/moo4feed" class="external-link uri">https://github.com/skysheng7/moo4feed</a> repository on GitHub. 2. Clone your fork locally</p>
 <pre class="shell"><code>git clone git@github.com:your_name_here/moo4feed.git</code></pre>
-</li>
-<li>
-<p>Create a branch for local development using the default branch (typically <code>main</code>) as a starting point. Use <code>fix</code> or <code>feat</code> as a prefix for your branch name.</p>
-<pre class="shell"><code>git checkout main
-git checkout -b fix-name-of-your-bugfix</code></pre>
+<ol start="3" style="list-style-type: decimal"><li>Create a branch for local development using the default branch (typically <code>main</code>) as a starting point. Use <code>fix</code> or <code>feat</code> as a prefix for your branch name.</li>
+</ol><pre class="shell"><code>git checkout main
+git checkout -b &lt;fix-name-of-your-bugfix&gt;</code></pre>
+<blockquote>
+<p>💡 Make sure <fix-name-of-your-bugfix> matches your branch name.</fix-name-of-your-bugfix></p>
+</blockquote>
 <p>Now you can make your changes locally.</p>
-</li>
-<li>
+<ol start="4" style="list-style-type: decimal"><li>Install dependencies and load the package:</li>
+</ol><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Install any missing dependencies</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_deps</span><span class="op">(</span>dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Load code without sourcing individual files</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">load_all</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<ol start="5" style="list-style-type: decimal"><li>When you need to add a new package dependency, use:</li>
+</ol><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_package</span><span class="op">(</span><span class="st">"pkgName"</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Never use <code><a href="https://rdrr.io/r/base/library.html" class="external-link">library()</a></code> calls</strong> in R package development.</p>
+<ol start="6" style="list-style-type: decimal"><li>If you make any changes to functions under <code>/R</code>, please run tests and checks package health frequently:</li>
+</ol><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># if you only want to run all tests</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">test</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># if you want to run entire R CMD check, this is what CRAN runs</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">check</span><span class="op">(</span><span class="op">)</span> </span></code></pre></div>
+<p>Call these functions regularly to catch errors and warnings early.</p>
+<blockquote>
+<p>⚠️ <strong>Important:</strong> Please <strong>ALWAYS</strong> run <code>check()</code> and make sure there is 0 error, 0 warning and 0 note, before you make a commit or submit a pull request!</p>
+</blockquote>
+<ol start="7" style="list-style-type: decimal"><li>
 <p>Commit your changes and push your branch to GitHub. Please use <a href="https://www.conventionalcommits.org/" class="external-link">semantic commit messages</a>.</p>
 <pre class="shell"><code>git add .
 git commit -m "fix: summarize your changes"
-git push -u origin fix-name-of-your-bugfix</code></pre>
+git push -u origin &lt;fix-name-of-your-bugfix&gt;</code></pre>
 </li>
-<li><p>Open the link displayed in the message when pushing your new branch in order to submit a pull request.</p></li>
-</ol><div class="section level3">
-<h3 id="pull-request-guidelines">Pull Request Guidelines<a class="anchor" aria-label="anchor" href="#pull-request-guidelines"></a></h3>
-<p>Before you submit a pull request, check that it meets these guidelines:</p>
-<ol style="list-style-type: decimal"><li>The pull request should include tests.</li>
-<li>If the pull request adds functionality, the docs should be updated. Put your new functionality into a function with a docstring.</li>
-<li>Your pull request will automatically be checked by the full test suite. It needs to pass all of them before it can be considered for merging.</li>
-</ol></div>
+</ol><blockquote>
+<p>💡 Make sure <fix-name-of-your-bugfix> matches your branch name.</fix-name-of-your-bugfix></p>
+</blockquote>
+<ol start="8" style="list-style-type: decimal"><li>Open the link displayed in the terminal after pushing your branch</li>
+</ol><p>This link will direct you to GitHub where you can submit a Pull Request (PR) for review.</p>
+</div>
+<div class="section level2">
+<h2 id="local-development-tips">Local development tips<a class="anchor" aria-label="anchor" href="#local-development-tips"></a></h2>
+<ul><li><p>Use <code>devtools::load_all()</code> instead of <code><a href="https://rdrr.io/r/base/source.html" class="external-link">source()</a></code> so that namespace wiring, NAMESPACE exports, and dependencies are handled correctly.</p></li>
+<li><p>Add packages via <code>usethis::use_package()</code> (which updates DESCRIPTION) rather than <code><a href="https://rdrr.io/r/base/library.html" class="external-link">library()</a></code> in your code.</p></li>
+<li><p>Run <code>devtools::check()</code> regularly to monitor package health (errors, warnings, notes).</p></li>
+<li>
+<p>Build the pkgdown site (if applicable) with:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">pkgdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">build_site</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</li>
+</ul></div>
+<div class="section level2">
+<h2 id="pull-request-guidelines">Pull request guidelines<a class="anchor" aria-label="anchor" href="#pull-request-guidelines"></a></h2>
+<p>Before you submit a pull request, please ensure: 1. You’ve written or updated tests under <code>tests/</code> and all tests pass with <code>devtools::test()</code>. 2. Documentation is updated: <code>roxygen2</code> blocks generate the correct <code>.Rd</code> files, and examples run without error. 3. You’ve run <code>devtools::check()</code> and addressed any errors, warnings, or notes. 4. Commit messages follow Conventional Commits (e.g. fix: …, feat: …). 5. Your branch is up to date with main and can be merged cleanly.</p>
+<p>Thank you for helping make moo4feed better!</p>
 </div>
 </div>
 
