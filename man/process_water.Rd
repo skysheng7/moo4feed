@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_pipeline.R
 \name{process_water}
 \alias{process_water}
-\title{Process water data}
+\title{Process 1 water data file}
 \usage{
 process_water(
   file,

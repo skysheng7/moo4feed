@@ -235,8 +235,9 @@ dst_switch_hm <- function(date, tz = Sys.timezone(), interval = 1) {
 
 }
 
-#' Adjust Time Stamp for Daylight Saving Time (DST) Transitions
+#' Adjust Time Stamp for Daylight Saving Time (DST) Transitions in North America
 #'
+#' Please note this function's logic currently is based on**North America** only.
 #' This function adjusts a dataframe of visit events (e.g., feed or water visits)
 #' based on DST changes. It detects whether the current date is a DST transition day
 #' (in spring or fall), or the day after the spring DST change, and applies the

@@ -22,7 +22,7 @@ reference:
 
 - subtitle: Daylight Saving Time changes
   desc: >
-    Adjust timestamps for days affected by Daylight Saving Time changes based on timezone of your choice.
+    Adjust timestamps for days affected by Daylight Saving Time changes for North America.
   contents:
   - daylight_saving_adjust
   - get_dst_switch_info

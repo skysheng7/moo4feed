@@ -2,7 +2,7 @@
 % Please edit documentation in R/daylight_saving.R
 \name{daylight_saving_adjust}
 \alias{daylight_saving_adjust}
-\title{Adjust Time Stamp for Daylight Saving Time (DST) Transitions}
+\title{Adjust Time Stamp for Daylight Saving Time (DST) Transitions in North America}
 \usage{
 daylight_saving_adjust(
   data_frame,
@@ -38,6 +38,7 @@ used to determine DST rules. Use \code{OlsonNames()} to see all valid options.}
 A data frame adjusted for daylight saving time, or the original data if no adjustment applies.
 }
 \description{
+Please note this function's logic currently is based on\strong{North America} only.
 This function adjusts a dataframe of visit events (e.g., feed or water visits)
 based on DST changes. It detects whether the current date is a DST transition day
 (in spring or fall), or the day after the spring DST change, and applies the

@@ -18,7 +18,8 @@ process_all_water(
   sep = ",",
   header = FALSE,
   daylight_change_duration = 60,
-  tz = Sys.timezone()
+  tz = Sys.timezone(),
+  adjust_dst = TRUE
 )
 }
 \arguments{
@@ -68,6 +69,12 @@ duration in minutes (default = 60).}
 
 \item{tz}{A valid time zone name (default is the time zone of your current physical location),
 used to determine DST rules. Use \code{OlsonNames()} to see all valid options.}
+
+\item{adjust_dst}{Do you want to apply the function (\code{\link[=daylight_saving_adjust]{daylight_saving_adjust()}})
+I designed to adjust timestamp for dates affected by Daylight Saving Time
+changes or not? This should be logical, default is TRUE. The timestamp adjustment
+would only be applied if \code{adjust_dst} is TRUE and \code{tz} is set to be a timezone
+in North America.}
 }
 \value{
 A \strong{named} list of data frames, one per input file, named by date (YYYY‑MM‑DD).

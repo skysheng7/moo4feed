@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_pipeline.R
 \name{process_feeder}
 \alias{process_feeder}
-\title{Process feeder data}
+\title{Process 1 feeder data file}
 \usage{
 process_feeder(
   file,

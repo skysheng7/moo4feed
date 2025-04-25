@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------#
 
 
-#' Process feeder data
+#' Process 1 feeder data file
 #'
 #' Reads, cleans, and filters a feeder file:
 #' 1. Safely read the CSV / DAT file
@@ -89,7 +89,7 @@ process_feeder <- function(file,
 }
 
 
-#' Process water data
+#' Process 1 water data file
 #'
 #' Reads, cleans, filters, and offsets a water file:
 #' 1. Safely read the CSV
@@ -171,6 +171,11 @@ process_water <- function(file,
 #' @inheritParams process_water
 #' @param files  What are the files you wish to process? This should be a character
 #'  vector of all the file paths.
+#' @param adjust_dst Do you want to apply the function ([daylight_saving_adjust()])
+#'  I designed to adjust timestamp for dates affected by Daylight Saving Time
+#'  changes or not? This should be logical, default is TRUE. The timestamp adjustment
+#'  would only be applied if `adjust_dst` is TRUE and `tz` is set to be a timezone
+#'  in North America.
 #'
 #' @return
 #' A **named** list of data frames, one per input file, named by date (YYYY‑MM‑DD).
@@ -241,7 +246,8 @@ process_all_feed <- function(
     sep         = ",",
     header      = FALSE,
     daylight_change_duration = 60,
-    tz          = Sys.timezone()
+    tz          = Sys.timezone(),
+    adjust_dst  = TRUE
 ) {
   process_all(
     files    = files,
@@ -257,7 +263,8 @@ process_all_feed <- function(
     sep       = sep,
     header    = header,
     daylight_change_duration = daylight_change_duration,
-    tz        = tz
+    tz        = tz,
+    adjust_dst = adjust_dst
   )
 }
 
@@ -311,7 +318,8 @@ process_all_water <- function(
     sep         = ",",
     header      = FALSE,
     daylight_change_duration = 60,
-    tz          = Sys.timezone()
+    tz          = Sys.timezone(),
+    adjust_dst  = TRUE
 ) {
   process_all(
     files    = files,
@@ -328,7 +336,8 @@ process_all_water <- function(
     sep       = sep,
     header    = header,
     daylight_change_duration = daylight_change_duration,
-    tz        = tz
+    tz        = tz,
+    adjust_dst = adjust_dst
   )
 }
 
@@ -464,7 +473,8 @@ process_all <- function(
     sep         = ",",
     header      = FALSE,
     daylight_change_duration=60,
-    tz = Sys.timezone()
+    tz = Sys.timezone(),
+    adjust_dst  = TRUE
 ) {
   # ---- input validation ----
   if (!is.character(files) || length(files) < 1) {
@@ -532,7 +542,8 @@ process_all <- function(
       df[[start_col]] <- trimws(df[[start_col]])
       df[[end_col]]   <- trimws(df[[end_col]])
 
-      if (nrow(dst_df) > 0){
+      # only adjust daylight saving changes if timezone is set in north america, and user set adjust_dst to TRUE
+      if ((nrow(dst_df) > 0) && adjust_dst && is_north_american_tz(tz)){
         df <- daylight_saving_adjust(
           data_frame               = df,
           date                     = date,
@@ -557,4 +568,18 @@ process_all <- function(
   return(out)
 }
 
-
+#' Check if a timezone is in North America
+#'
+#' This internal helper function checks whether a given timezone string
+#' corresponds to a North American region. It currently matches timezones
+#' that start with "America/" or "Canada/", which covers most zones in the
+#' United States, Canada, and Mexico.
+#'
+#' @inheritParams get_dst_switch_info
+#'
+#' @return A logical value indicating whether the timezone is in North America.
+#'
+#' @noRd
+is_north_american_tz <- function(tz) {
+  grepl("^America/|^Canada/", tz)
+}
