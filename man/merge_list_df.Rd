@@ -7,7 +7,7 @@
 merge_list_df(data_list)
 }
 \arguments{
-\item{data_list}{}
+\item{data_list}{A list of data frames to merge.}
 }
 \value{
 A single merged data frame.

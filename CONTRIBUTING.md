@@ -153,15 +153,15 @@ Ready to contribute? Here’s how to set up moo4feed for local development.
 
 Before you submit a pull request, please ensure:
 
-	1.	You’ve written or updated tests under `tests/` and all tests pass with `devtools::test()`.
-	
-	2.	Documentation is updated: `roxygen2` blocks generate the correct `.Rd` files, and examples run without error.
-	
-	3.	You’ve run `devtools::check()` and addressed any errors, warnings, or notes.
-	
-	4.	Commit messages follow Conventional Commits (e.g. fix: …, feat: …).
-	
-	5.	Your branch is up to date with main and can be merged cleanly.
+1.	You’ve written or updated tests under `tests/` and all tests pass with `devtools::test()`.
+
+2.	Documentation is updated: `roxygen2` blocks generate the correct `.Rd` files, and examples run without error.
+
+3.	You’ve run `devtools::check()` and addressed any errors, warnings, or notes.
+
+4.	Commit messages follow Conventional Commits (e.g. fix: …, feat: …).
+
+5.	Your branch is up to date with main and can be merged cleanly.
 
 Thank you for helping make moo4feed better!
 
