@@ -7,6 +7,8 @@
 <url><loc>https://skysheng7.github.io/moo4feed/PULL_REQUEST_TEMPLATE.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/authors.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/index.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/cap_first.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/combine_feed_water.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/compare_files.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/daylight_saving_adjust.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/delete_rows.html</loc></url>
@@ -17,6 +19,8 @@
 <url><loc>https://skysheng7.github.io/moo4feed/reference/get_dst_switch_info.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/index.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/keep_bins.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/lower_first.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/merge_list_df.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/process_all_feed.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/process_all_water.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/process_feeder.html</loc></url>

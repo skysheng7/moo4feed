@@ -93,8 +93,10 @@ comment—the maintainers appreciate extra hands.</p>
 </div>
 <div class="section level2">
 <h2 id="get-started">Get started<a class="anchor" aria-label="anchor" href="#get-started"></a></h2>
-<p>Ready to contribute? Here’s how to set up moo4feed for local development. 1. Fork the <a href="https://github.com/skysheng7/moo4feed" class="external-link uri">https://github.com/skysheng7/moo4feed</a> repository on GitHub. 2. Clone your fork locally</p>
-<pre class="shell"><code>git clone git@github.com:your_name_here/moo4feed.git</code></pre>
+<p>Ready to contribute? Here’s how to set up moo4feed for local development.</p>
+<ol style="list-style-type: decimal"><li><p>Fork the <a href="https://github.com/skysheng7/moo4feed" class="external-link uri">https://github.com/skysheng7/moo4feed</a> repository on GitHub.</p></li>
+<li><p>Clone your fork locally</p></li>
+</ol><pre class="shell"><code>git clone git@github.com:your_name_here/moo4feed.git</code></pre>
 <ol start="3" style="list-style-type: decimal"><li>Create a branch for local development using the default branch (typically <code>main</code>) as a starting point. Use <code>fix</code> or <code>feat</code> as a prefix for your branch name.</li>
 </ol><pre class="shell"><code>git checkout main
 git checkout -b &lt;fix-name-of-your-bugfix&gt;</code></pre>
@@ -150,7 +152,16 @@ git push -u origin &lt;fix-name-of-your-bugfix&gt;</code></pre>
 </ul></div>
 <div class="section level2">
 <h2 id="pull-request-guidelines">Pull request guidelines<a class="anchor" aria-label="anchor" href="#pull-request-guidelines"></a></h2>
-<p>Before you submit a pull request, please ensure: 1. You’ve written or updated tests under <code>tests/</code> and all tests pass with <code>devtools::test()</code>. 2. Documentation is updated: <code>roxygen2</code> blocks generate the correct <code>.Rd</code> files, and examples run without error. 3. You’ve run <code>devtools::check()</code> and addressed any errors, warnings, or notes. 4. Commit messages follow Conventional Commits (e.g. fix: …, feat: …). 5. Your branch is up to date with main and can be merged cleanly.</p>
+<p>Before you submit a pull request, please ensure:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fl">1.</span>  You’ve written or updated tests under <span class="st">`</span><span class="at">tests/</span><span class="st">`</span> and all tests pass with <span class="st">`</span><span class="at">devtools::test()</span><span class="st">`</span>.</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="fl">2.</span>  Documentation is updated<span class="sc">:</span> <span class="st">`</span><span class="at">roxygen2</span><span class="st">`</span> blocks generate the correct <span class="st">`</span><span class="at">.Rd</span><span class="st">`</span> files, and examples run without error.</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="fl">3.</span>  You’ve run <span class="st">`</span><span class="at">devtools::check()</span><span class="st">`</span> and addressed any errors, warnings, or notes.</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="fl">4.</span>  Commit messages follow Conventional <span class="fu">Commits</span> (e.g. fix<span class="sc">:</span> …, feat<span class="sc">:</span> …).</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="fl">5.</span>  Your branch is up to date with main and can be merged cleanly.</span></code></pre></div>
 <p>Thank you for helping make moo4feed better!</p>
 </div>
 </div>

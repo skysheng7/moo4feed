@@ -46,6 +46,8 @@ of data frames keyed by file date (YYYY‑MM‑DD).</p>
 <span>  id_col <span class="op">=</span> <span class="st">"cow"</span>,</span>
 <span>  drop_ids <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  trans_col <span class="op">=</span> <span class="st">"transponder"</span>,</span>
+<span>  start_col <span class="op">=</span> <span class="st">"start"</span>,</span>
+<span>  end_col <span class="op">=</span> <span class="st">"end"</span>,</span>
 <span>  drop_trans <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  bin_col <span class="op">=</span> <span class="st">"bin"</span>,</span>
 <span>  <span class="va">bins</span>,</span>
@@ -88,6 +90,14 @@ indicating values in <code>id_col</code> that you wish to remove (default: <code
 <dt id="arg-trans-col">trans_col<a class="anchor" aria-label="anchor" href="#arg-trans-col"></a></dt>
 <dd><p>What's the name of the column recording transponder ID for each visit?
 This should be a single string. (default: <code>"transponder"</code>).</p></dd>
+
+
+<dt id="arg-start-col">start_col<a class="anchor" aria-label="anchor" href="#arg-start-col"></a></dt>
+<dd><p>Name of the column recording the start time of an event (quoted), e.g.: start_col = "start"</p></dd>
+
+
+<dt id="arg-end-col">end_col<a class="anchor" aria-label="anchor" href="#arg-end-col"></a></dt>
+<dd><p>Name of the column recording the end time of an event (quoted). e.g.: end_col = "end"</p></dd>
 
 
 <dt id="arg-drop-trans">drop_trans<a class="anchor" aria-label="anchor" href="#arg-drop-trans"></a></dt>
@@ -148,7 +158,8 @@ in North America.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <strong>named</strong> list of data frames, one per input file, named by date (YYYY‑MM‑DD).</p>
+    <p>A <strong>named</strong> list of data frames, one per input file, named by date (YYYY‑MM-DD).
+Within each datafarme, there is processed <code>date</code> column.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -207,19 +218,19 @@ in North America.</p></dd>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">res</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $`2023-04-20`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   cow bin               start                 end</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   A 102 2023-04-20 06:00:00 2023-04-20 06:05:00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2   B 103 2023-04-20 07:00:00 2023-04-20 07:05:00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3   C 104 2023-04-20 08:00:00 2023-04-20 08:05:00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   cow bin               start                 end       date</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   A 102 2023-04-20 06:00:00 2023-04-20 06:05:00 2023-04-20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   B 103 2023-04-20 07:00:00 2023-04-20 07:05:00 2023-04-20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   C 104 2023-04-20 08:00:00 2023-04-20 08:05:00 2023-04-20</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $`2023-04-21`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   cow bin               start                 end</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   A 103 2023-04-21 06:00:00 2023-04-21 06:05:00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2   B 104 2023-04-21 07:00:00 2023-04-21 07:05:00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   cow bin               start                 end       date</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   A 103 2023-04-21 06:00:00 2023-04-21 06:05:00 2023-04-21</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   B 104 2023-04-21 07:00:00 2023-04-21 07:05:00 2023-04-21</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $`2023-04-22`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   cow bin               start                 end</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   A 104 2023-04-22 06:00:00 2023-04-22 06:05:00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   cow bin               start                 end       date</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   A 104 2023-04-22 06:00:00 2023-04-22 06:05:00 2023-04-22</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $`2023-04-23`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] cow   bin   start end  </span>
