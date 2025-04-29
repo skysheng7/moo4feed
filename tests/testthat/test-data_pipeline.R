@@ -604,6 +604,8 @@ test_that("process_all_feed() correctly reads and time‐converts one row", {
   expect_s3_class(df$end, c("POSIXct","POSIXt"))
   expect_equal(format(df$end, "%Y-%m-%d %H:%M:%S", tz="UTC"),
                "2022-01-03 05:31:00")
+  expect_equal(format(df$date, "%Y-%m-%d", tz="UTC"),
+               "2022-01-03")
 })
 
 
@@ -649,6 +651,8 @@ test_that("process_all_water() applies bin_offset and same time‐conversion log
   expect_s3_class(df$end, c("POSIXct","POSIXt"))
   expect_equal(format(df$end, "%Y-%m-%d %H:%M:%S", tz="UTC"),
                "2022-03-01 12:05:00")
+  expect_equal(format(df$date, "%Y-%m-%d", tz="UTC"),
+               "2022-03-01")
 })
 
 test_that("process_all_water() errors on bad inputs too", {

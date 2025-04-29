@@ -5,6 +5,12 @@ template:
 reference:
 - title: Data cleaning
 
+- subtitle: Read data
+  desc: >
+    Read in data safely.
+  contents:
+  - read_data_safely
+
 - subtitle: Data cleaning pipeline
   desc: >
     Functions that automate the entire data cleaning pipeline for you on either a single file or a collection of files.
@@ -13,12 +19,6 @@ reference:
   - process_all_water
   - process_feeder
   - process_water
-
-- subtitle: Read data
-  desc: >
-    Read in data safely.
-  contents:
-  - read_data_safely
 
 - subtitle: Daylight Saving Time changes
   desc: >
@@ -44,3 +44,17 @@ reference:
   - delete_rows
   - keep_bins
   - rename_bins
+
+- subtitle: Data merging and combination
+  desc: >
+    Functions to combine feeding and drinking visits into unified datasets.
+  contents:
+  - combine_feed_water
+  - merge_list_df
+
+- subtitle: Capitalize and de-capitalize String
+  desc: >
+    Small helper functions for formatting strings (e.g., column names).
+  contents:
+  - cap_first
+  - lower_first

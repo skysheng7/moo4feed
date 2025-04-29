@@ -10,6 +10,8 @@ process_all_feed(
   id_col = "cow",
   drop_ids = NULL,
   trans_col = "transponder",
+  start_col = "start",
+  end_col = "end",
   drop_trans = NULL,
   bin_col = "bin",
   bins,
@@ -38,6 +40,10 @@ indicating values in \code{id_col} that you wish to remove (default: \code{NULL}
 
 \item{trans_col}{What's the name of the column recording transponder ID for each visit?
 This should be a single string. (default: \code{"transponder"}).}
+
+\item{start_col}{Name of the column recording the start time of an event (quoted), e.g.: start_col = "start"}
+
+\item{end_col}{Name of the column recording the end time of an event (quoted). e.g.: end_col = "end"}
 
 \item{drop_trans}{Which transponders do you wish to delete because they are not part
 of your study? This should be a vector indicating values in \code{trans_col} that
@@ -74,7 +80,8 @@ would only be applied if \code{adjust_dst} is TRUE and \code{tz} is set to be a 
 in North America.}
 }
 \value{
-A \strong{named} list of data frames, one per input file, named by date (YYYY‑MM‑DD).
+A \strong{named} list of data frames, one per input file, named by date (YYYY‑MM-DD).
+Within each datafarme, there is processed \code{date} column.
 }
 \description{
 Reads, cleans, and time‑adjusts a batch of files, returning a named list

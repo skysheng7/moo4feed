@@ -178,7 +178,8 @@ process_water <- function(file,
 #'  in North America.
 #'
 #' @return
-#' A **named** list of data frames, one per input file, named by date (YYYY‑MM‑DD).
+#' A **named** list of data frames, one per input file, named by date (YYYY‑MM-DD).
+#' Within each datafarme, there is processed `date` column.
 #'
 #' @details
 #' Steps:
@@ -239,6 +240,8 @@ process_all_feed <- function(
     id_col      = "cow",
     drop_ids    = NULL,
     trans_col   = "transponder",
+    start_col   = "start",
+    end_col     = "end",
     drop_trans  = NULL,
     bin_col     = "bin",
     bins,
@@ -256,6 +259,8 @@ process_all_feed <- function(
     id_col    = id_col,
     drop_ids  = drop_ids,
     trans_col = trans_col,
+    start_col   = start_col,
+    end_col     = end_col,
     drop_trans = drop_trans,
     bin_col   = bin_col,
     bins      = bins,
@@ -304,12 +309,15 @@ process_all_feed <- function(
 #' res
 #'
 #' @export
+#'
 process_all_water <- function(
     files,
     col_names   = NULL,
     id_col      = "cow",
     drop_ids    = NULL,
     trans_col   = "transponder",
+    start_col   = "start",
+    end_col     = "end",
     drop_trans  = NULL,
     bin_col     = "bin",
     bins,
@@ -327,6 +335,8 @@ process_all_water <- function(
     col_names = col_names,
     id_col    = id_col,
     drop_ids  = drop_ids,
+    start_col   = start_col,
+    end_col     = end_col,
     trans_col = trans_col,
     drop_trans = drop_trans,
     bin_col   = bin_col,
@@ -558,6 +568,7 @@ process_all <- function(
 
       df[[start_col]] <- lubridate::ymd_hms(paste(date, df[[start_col]]), tz = tz)
       df[[end_col]]   <- lubridate::ymd_hms(paste(date, df[[end_col]]),   tz = tz)
+      df[["date"]] <- lubridate::date(df[[start_col]]) # extract date
     }
 
     # 4.4) Store and name by date
