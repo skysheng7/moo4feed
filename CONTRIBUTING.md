@@ -1,167 +1,307 @@
-# Contributing
+# Contributing to moo4feed
 
-Contributions are welcome, and they are greatly appreciated! Every little bit  
-helps, and credit will always be given.
+Contributions are welcome, and they are greatly appreciated! Every little bit helps, and credit will always be given.
 
 Please also read our [Code of Conduct](CODE_OF_CONDUCT.md) before contributing.
 
-## Example Contributions
+## Table of Contents
+- [Ways to Contribute](#ways-to-contribute)
+- [For Internal Collaborators](#for-internal-collaborators)
+- [For External Contributors](#for-external-contributors)
+- [Common Development Guidelines](#common-development-guidelines)
+- [Documentation Guidelines](#documentation-guidelines)
+- [Writing Tests](#writing-tests)
+- [Pull Request Guidelines](#pull-request-guidelines)
 
-You can contribute in many ways, for example:
+## Ways to Contribute
+
+You can contribute in many ways:
 
 * [Report bugs](#report-bugs)  
 * [Fix bugs](#fix-bugs)  
 * [Implement features](#implement-features)  
-* [Write documentation](#write-documentation)  
+* [Write documentation](#documentation-guidelines)  
+* [Write tests](#writing-tests)
 * [Submit feedback](#submit-feedback)
 
-## Report bugs
+### Report bugs
 
 Report bugs at <https://github.com/skysheng7/moo4feed/issues>.
 
-**If you are reporting a bug, please follow the template guidelines. The more  
-detailed your report, the easier and thus faster we can help you.**
+If you are reporting a bug, please follow the template guidelines. The more detailed your report, the easier and thus faster we can help you.
 
-## Fix bugs
+### Fix bugs
 
-Look through the GitHub issues for bugs. Anything labelled with `bug` and  
-`help wanted` is open to whoever wants to implement it. When you decide to work  
-on such an issue, please assign yourself to it and add a comment that you’ll be  
-working on it. If you see another issue without the `help wanted` label, just  
-post a comment—the maintainers are usually happy for any support they can get.
+Look through the GitHub issues for bugs. Anything labelled with `bug` and `help wanted` is open to whoever wants to implement it. When you decide to work on such an issue, please assign yourself to it and add a comment that you'll be working on it. If you see another issue without the `help wanted` label, just post a comment—the maintainers are usually happy for any support they can get.
 
-## Implement features
+### Implement features
 
-Look through the GitHub issues for features. Anything labelled with  
-`enhancement` and `help wanted` is open to contribute. As for [fix bugs](#fix-bugs),  
-please assign yourself and comment that you’ll be working on it. If another  
-enhancement catches your fancy but lacks the `help wanted` label, just post a  
-comment—the maintainers appreciate extra hands.
+Look through the GitHub issues for features. Anything labelled with `enhancement` and `help wanted` is open to contribute. As for [fix bugs](#fix-bugs), please assign yourself and comment that you'll be working on it. If another enhancement catches your fancy but lacks the `help wanted` label, just post a comment—the maintainers appreciate extra hands.
 
-## Write documentation
+### Submit feedback
 
-This package uses **roxygen2** for documentation. You can help by writing or improving docs:
+The best way to send feedback is to file an issue at <https://github.com/skysheng7/moo4feed/issues>. If your feedback fits an issue template, please use it. Remember this is a volunteer-driven project—everyone has limited time.
 
-- Ensure all roxygen2 blocks use correct tags and syntax.
-- **Examples** in `@examples` must run without errors. Test by running:
-  ```r
-  devtools::document()
-  devtools::run_examples()
-  ```
-- Use `@inheritParams <function_name>` to inherit parameter docs for parameters documented elsewhere; inheritance is recursive.
-- Mark internal helper functions with `@noRd` to suppress generation of man pages.
-- After updating `.R` and `roxygen` comments, rebuild docs with:
-  ```r
-  devtools::document()
-  ```
-  and inspect the resulting files under man/.
+---
 
-## Submit feedback
+# For Internal Collaborators
 
-The best way to send feedback is to file an issue at
-<https://github.com/skysheng7/moo4feed/issues>. If your feedback fits an issue
-template, please use it. Remember this is a volunteer-driven project—everyone
-has limited time.
+If you're already added as a collaborator to the GitHub repository:
 
-## Get started
+## Getting Started
 
-Ready to contribute? Here’s how to set up moo4feed for local development.
+1. Clone the repository directly:
 
-1. Fork the <https://github.com/skysheng7/moo4feed>
-   repository on GitHub.
+   ```shell
+   git clone https://github.com/skysheng7/moo4feed.git
+   ```
+
+2. Create a new branch for local development:
    
-2. Clone your fork locally
-
-  ```shell
-  git clone git@github.com:your_name_here/moo4feed.git
-  ```
-
-3. Create a branch for local development using the default branch (typically `main`)
-   as a starting point. Use `fix` or `feat` as a prefix for your branch name.
-
-  ```shell
-  git checkout main
-  git checkout -b <fix-name-of-your-bugfix>
-  ```
-  > 💡 Make sure <fix-name-of-your-bugfix> matches your branch name.
-
-  Now you can make your changes locally.
-
+   Move to `main` branch if you are not there already:
+   ```shell
+   git checkout main
+   ```
    
-4.	Install dependencies and load the package:
+   Create a new branch with a descriptive name using `fix-` or `feat-` prefix:
+   ```shell
+   git checkout -b fix-name-of-your-bugfix
+   ```
+   
+   > 💡 Make sure `<fix-name-of-your-bugfix>` matches your branch name.
+
+3. Make your changes and follow the [common development guidelines](#common-development-guidelines).
+
+   If you want to create new functions please follow the guidelines in [Writing Tests](#writing-tests).
+
+## Submitting Changes
+
+1. Commit and push your changes regularly to your current branch:
+
+   ```shell
+   git add .
+   git commit -m "fix: summarize your changes"
+   git push
+   ```
+   
+   - Try to make small, focused commits (one logical change per commit)
+   - Use [semantic commit messages](https://www.conventionalcommits.org/)
+   
+2. Open a Pull Request in one of these ways:
+
+   **Option 1:** Through terminal:
+   
+   ```shell
+   git add .
+   git commit -m "fix: summarize your changes"
+   git push -u origin fix-name-of-your-bugfix
+   ```
+   
+   Open the link displayed in the terminal to create a PR.
+   
+   **Option 2:** Through GitHub website:
+   - Go to the repository on GitHub
+   - Navigate to your branch
+   - Click "Open Pull Request"
+   - Fill out the PR description
+   - Assign reviewers if needed
+
+   > 🚀 Only open a PR when your branch passes all tests and checks without errors/warnings/notes.
+
+---
+
+# For External Contributors
+
+If you're not a direct collaborator on the repository:
+
+## Getting Started
+
+1. Fork the repository on GitHub: <https://github.com/skysheng7/moo4feed>
+   
+2. Clone your fork locally:
+
+   ```shell
+   git clone git@github.com:your_name_here/moo4feed.git
+   ```
+
+3. You can work directly on the main branch of your fork or create a feature branch if preferred
+
+4. Make your changes and follow the [common development guidelines](#common-development-guidelines)
+
+   If you want to create new functions please follow the guidelines in [Writing Tests](#writing-tests).
+
+
+## Submitting Changes
+
+1. Commit and push your changes to your current branch:
+
+   ```shell
+   git add .
+   git commit -m "fix: summarize your changes"
+   git push
+   ```
+
+2. Submit a Pull Request:
+   - Go to your fork on GitHub
+   - You'll see a banner suggesting "Compare & Pull Request" — click it
+   - Ensure the base repository is the original repo and the base branch is main
+   - Submit your pull request with a clear title and description
+
+   > 🚀 Only open a PR when your code passes all tests and checks without errors/warnings/notes.
+
+---
+
+# Common Development Guidelines
+
+These guidelines apply to both internal and external contributors:
+
+## Development Setup
+
+1. Install dependencies and load the package:
 	
-  ```r
-  # Install any missing dependencies
-  install.packages("remotes")
-  remotes::install_deps(dependencies = TRUE)
-  ```
-  
-  ```r
-  # Load code without sourcing individual files
-  devtools::load_all()
-  ```
+   ```r
+   # Install any missing dependencies
+   install.packages("remotes")
+   remotes::install_deps(dependencies = TRUE)
+   ```
+   
+   ```r
+   # Load code without sourcing individual R files and functions
+   devtools::load_all()
+   ```
+   
+   > ⚠️ **Never use `source()` calls** to run your R scripts in R package development.
 
-5.	When you need to add a new package dependency, use:
+2. When adding a new package dependency:
 
-  ```r
-  usethis::use_package("pkgName")
-  ```
+   ```r
+   usethis::use_package("pkgName")
+   ```
 
-  **Never use `library()` calls** in R package development.
+   > ⚠️ **Never use `library()` calls** in R package development.
 
-6.	If you make any changes to functions under `/R`, please run tests and checks package health frequently:
+3. Run tests and checks regularly:
 
-  ```r
-  # if you only want to run all tests
-  devtools::test()
-  ```
-  
-  ```r
-  # if you want to run entire R CMD check, this is what CRAN runs
-  devtools::check() 
-  ```
-  
-  Call these functions regularly to catch errors and warnings early.
-  
-  > ⚠️ **Important:** Please **ALWAYS** run `check()` and make sure there is 0 error, 0 warning and 0 note, before you make a commit or submit a pull request!
+   ```r
+   # Run all tests
+   devtools::test()
+   
+   # Run full R CMD check (what CRAN uses)
+   devtools::check() 
+   ```
+   
+   > ⚠️ **Important:** Always run `check()` and make sure there are 0 errors, 0 warnings and 0 notes before making a commit or submitting a PR!
 
-7. Commit your changes and push your branch to GitHub. Please use [semantic commit messages](https://www.conventionalcommits.org/).
+## Local Development Tips
 
-    ```shell
-    git add .
-    git commit -m "fix: summarize your changes"
-    git push -u origin <fix-name-of-your-bugfix>
-    ```
-    
-  > 💡 Make sure <fix-name-of-your-bugfix> matches your branch name.
-
-8. Open the link displayed in the terminal after pushing your branch
-
-  This link will direct you to GitHub where you can submit a Pull Request (PR) for review.
-  
-
-## Local development tips
-- Use `devtools::load_all()` instead of `source()` so that namespace wiring, NAMESPACE exports, and dependencies are handled correctly.
-- Add packages via `usethis::use_package()` (which updates DESCRIPTION) rather than `library()` in your code.
-- Run `devtools::check()` regularly to monitor package health (errors, warnings, notes).
+- Use `devtools::load_all()` instead of `source()` for proper namespace handling
+- Add packages via `usethis::use_package()` rather than `library()` calls
+- Run `devtools::check()` regularly to catch issues early
 - Build the pkgdown site (if applicable) with:
   ```r
   pkgdown::build_site()
   ```
 
-## Pull request guidelines
+---
 
-Before you submit a pull request, please ensure:
+# Documentation Guidelines
 
-1.	You’ve written or updated tests under `tests/` and all tests pass with `devtools::test()`.
+This package uses **roxygen2** for documentation. You can help by writing or improving docs:
 
-2.	Documentation is updated: `roxygen2` blocks generate the correct `.Rd` files, and examples run without error.
+## Function Documentation Standards
 
-3.	You’ve run `devtools::check()` and addressed any errors, warnings, or notes.
+**For Exported (User-Facing) Functions:**
 
-4.	Commit messages follow Conventional Commits (e.g. fix: …, feat: …).
+- Begin with a one-sentence title that summarizes the function
+- Include a thorough description paragraph (can use `@description` tag)
+- Document each parameter with `@param name description`
+- Use `@inheritParams function_name` to inherit parameter docs from elsewhere (inheritance is recursive)
+- Include `@return` to clearly describe what the function returns
+- Provide working examples in `@examples` blocks
+- Include `@export` tag to make the function available to users
+- (Optional): Use `@details` to write detailed logics of your functions
+- (Optionall): use `@seealso` to link relevant functions
+- Use `[package::function()]` when you refer to a specific function, the link to this function's URL will be automatically inserted when we build the website for our package.
 
-5.	Your branch is up to date with main and can be merged cleanly.
+**For Internal Helper Functions:**
+
+- Use `@noRd` instead of `@export` to prevent generating man pages for internal functions
+- Still document parameters and return values the same way as instructed above for maintainer clarity
+
+## Testing Documentation
+
+- All `@examples` must run without errors. Test by running:
+  ```r
+  devtools::document()
+  devtools::run_examples()
+  ```
+
+## Building Documentation
+
+- After updating `.R` files and roxygen comments, rebuild documentation:
+  ```r
+  devtools::document()
+  ```
+- Inspect the generated files in the `man/` directory to ensure quality
+- You can also inspect it on the website by re-building the pkgdown site with:
+  ```r
+  pkgdown::build_site()
+  ```
+
+---
+
+# Writing Tests
+
+Our functions can always benefit from having more tests!
+
+We use `testthat` R package for testing. Follow these steps:
+
+1. Find existing tests in the `tests/testthat` directory
+
+2. When creating a new function:
+   ```r
+   # Create new R script for your function
+   usethis::use_r("your_new_function_name")
+   
+   # Create associated test file
+   usethis::use_test("your_new_function_name")
+   ```
+   
+   This creates:
+   - `R/your_new_function_name.R` for the function
+   - `tests/testthat/test-your_new_function_name.R` for tests
+
+3. For each function, write at least 3 tests covering:
+   - Normal use cases
+   - Edge cases
+   - Error handling
+
+4. Run the entire test suite:
+   ```r
+   devtools::test()
+   ```
+
+5. Check test coverage:
+   ```r
+   covr::package_coverage()
+   ```
+   
+   We aim for 80-95% code coverage.
+
+---
+
+# Pull Request Guidelines
+
+Before submitting a pull request, please ensure:
+
+1. You've written or updated tests and all tests pass with `devtools::test()`
+
+2. Documentation is updated with correct roxygen2 blocks and examples run without error
+
+3. You've run `devtools::check()` and addressed any errors, warnings, or notes
+
+4. Commit messages follow Conventional Commits format (e.g., `fix: ...`, `feat: ...`)
+
+5. Your branch is up to date with main and can be merged cleanly
 
 Thank you for helping make moo4feed better!
-
