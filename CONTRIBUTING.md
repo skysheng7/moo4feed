@@ -69,8 +69,12 @@ If you're already added as a collaborator to the GitHub repository:
    ```
    
    > 💡 Make sure `<fix-name-of-your-bugfix>` matches your branch name.
+   
+   Now your terminal should end with your new branch name `(fix-name-of-your-bugfix)`. 
+   
+3. Double click on `moo4feed` R project object in the root directory, this will open a new R studio window with `Git` panel on the top right side. You can double check after you click on `Git`, there should be a drop down button named after your new branch name `(fix-name-of-your-bugfix)`.
 
-3. Make your changes and follow the [common development guidelines](#common-development-guidelines).
+4. Make your changes and follow the [common development guidelines](#common-development-guidelines).
 
    If you want to create new functions please follow the guidelines in [Writing Tests](#writing-tests).
 
@@ -201,6 +205,12 @@ These guidelines apply to both internal and external contributors:
   ```r
   pkgdown::build_site()
   ```
+  
+  > ⚠️ **Note:** If you built the **pkgdown** site locally using the code above,  
+  > please delete the `pkgdown/` directory before submitting a pull request to the `main` branch.
+  >
+  > The `main` branch of the `moo4feed` repository uses a GitHub Action to automatically rebuild the site.  
+  > Therefore, the `pkgdown/` directory should not be committed — the site will be regenerated automatically on another branch `gh-pages`.
 
 ---
 
