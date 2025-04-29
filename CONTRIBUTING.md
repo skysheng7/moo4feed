@@ -98,7 +98,7 @@ If you're already added as a collaborator to the GitHub repository:
    ```shell
    git add .
    git commit -m "fix: summarize your changes"
-   git push -u origin fix-name-of-your-bugfix
+   git push -u origin <fix-name-of-your-bugfix>
    ```
    
    Open the link displayed in the terminal to create a PR.
