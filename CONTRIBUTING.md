@@ -85,25 +85,16 @@ If you're already added as a collaborator to the GitHub repository:
    ```shell
    git add .
    git commit -m "fix: summarize your changes"
-   git push
+   git push -u origin <fix-name-of-your-bugfix>
    ```
    
    - Try to make small, focused commits (one logical change per commit)
    - Use [semantic commit messages](https://www.conventionalcommits.org/)
-   
-2. Open a Pull Request in one of these ways:
+   - the `git push -u origin <fix-name-of-your-bugfix>` only needs to be run once. `-u` will tells Git to remember the remote branch so you can just run `git push` or `git pull` next time (instead of specifying the branch again). `origin` refers to your remote repository.
 
-   **Option 1:** Through terminal:
    
-   ```shell
-   git add .
-   git commit -m "fix: summarize your changes"
-   git push -u origin <fix-name-of-your-bugfix>
-   ```
-   
-   Open the link displayed in the terminal to create a PR.
-   
-   **Option 2:** Through GitHub website:
+2. Open a Pull Request
+
    - Go to the repository on GitHub
    - Navigate to your branch
    - Click "Open Pull Request"
@@ -144,6 +135,8 @@ If you're not a direct collaborator on the repository:
    git commit -m "fix: summarize your changes"
    git push
    ```
+   
+   You would need to run `git push -u origin <new-branch-name>` if you are working on a new branch called `<new-branch-name>`
 
 2. Submit a Pull Request:
    - Go to your fork on GitHub
