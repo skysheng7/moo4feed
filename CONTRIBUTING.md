@@ -72,7 +72,9 @@ If you're already added as a collaborator to the GitHub repository:
    
    Now your terminal should end with your new branch name `(fix-name-of-your-bugfix)`. 
    
-3. Double click on `moo4feed` R project object in the root folder, this will open a new R studio window with `Git` panel on the top right side. You can double check after you click on `Git`, there should be a drop down button named after your new branch name `(fix-name-of-your-bugfix)`.
+3. Double click on `moo4feed` R project object in the root directory on your local computer. 
+
+   This will open a new R studio window showing the R package. There should be a `Git` panel on the top right side. You can double check after you click on `Git`, there should be a drop down button named after your new branch name `(fix-name-of-your-bugfix)`.
 
 4. Make your changes and follow the [common development guidelines](#common-development-guidelines).
 
@@ -120,11 +122,16 @@ If you're not a direct collaborator on the repository:
 
 3. You can work directly on the main branch of your fork or create a feature branch if preferred
 
-4. Make your changes and follow the [common development guidelines](#common-development-guidelines)
+4. Double click on `moo4feed` R project object in the root directory on your local computer. 
+
+   This will open a new R studio window showing the R package. There should be a `Git` panel on the top right side. You can double check after you click on `Git`, there should be a drop down button named after your new branch name `(fix-name-of-your-bugfix)`.
+
+
+5. Make your changes and follow the [common development guidelines](#common-development-guidelines)
 
    If you want to create new functions please follow the guidelines in [Writing Tests](#writing-tests).
 
-5. Commit and push your changes to your current branch:
+6. Commit and push your changes to your current branch:
 
    ```shell
    git add .
@@ -142,7 +149,7 @@ If you're not a direct collaborator on the repository:
    Once your work is ready, you’ll open a pull request within your own fork to merge the changes from `<new-branch-name>` into the main (or master) branch within your fork.
 
    
-6. Submit a Pull Request to the original [moo4feed repository](https://github.com/skysheng7/moo4feed.git):
+7. Submit a Pull Request to the original [moo4feed repository](https://github.com/skysheng7/moo4feed.git):
    - Go to your fork on GitHub
    - You'll see a banner suggesting "Compare & Pull Request" — click it
    - Ensure the base repository is the original repo and the base branch is main
