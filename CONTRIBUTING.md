@@ -72,7 +72,7 @@ If you're already added as a collaborator to the GitHub repository:
    
    Now your terminal should end with your new branch name `(fix-name-of-your-bugfix)`. 
    
-3. Double click on `moo4feed` R project object in the root directory, this will open a new R studio window with `Git` panel on the top right side. You can double check after you click on `Git`, there should be a drop down button named after your new branch name `(fix-name-of-your-bugfix)`.
+3. Double click on `moo4feed` R project object in the root folder, this will open a new R studio window with `Git` panel on the top right side. You can double check after you click on `Git`, there should be a drop down button named after your new branch name `(fix-name-of-your-bugfix)`.
 
 4. Make your changes and follow the [common development guidelines](#common-development-guidelines).
 
