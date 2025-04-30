@@ -78,9 +78,7 @@ If you're already added as a collaborator to the GitHub repository:
 
    If you want to create new functions please follow the guidelines in [Writing Tests](#writing-tests).
 
-## Submitting Changes
-
-1. Commit and push your changes regularly to your current branch:
+5. Commit and push your changes regularly to your current branch:
 
    ```shell
    git add .
@@ -93,13 +91,14 @@ If you're already added as a collaborator to the GitHub repository:
    - the `git push -u origin <fix-name-of-your-bugfix>` only needs to be run once. `-u` will tells Git to remember the remote branch so you can just run `git push` or `git pull` next time (instead of specifying the branch again). `origin` refers to your remote repository.
 
    
-2. Open a Pull Request
+6. Open a Pull Request
 
    - Go to the repository on GitHub
    - Navigate to your branch
-   - Click "Open Pull Request"
+   - Click "Open Pull Request", or "Compare & Pull Request" banner
    - Fill out the PR description
    - Assign reviewers if needed
+   - 3 Github actions will be triggered to [1] check if your new changes passes R CMD checks, [2] pkgdown website can be built and [3] calculate code coverage.
 
    > 🚀 Only open a PR when your branch passes all tests and checks without errors/warnings/notes.
 
@@ -125,10 +124,7 @@ If you're not a direct collaborator on the repository:
 
    If you want to create new functions please follow the guidelines in [Writing Tests](#writing-tests).
 
-
-## Submitting Changes
-
-1. Commit and push your changes to your current branch:
+5. Commit and push your changes to your current branch:
 
    ```shell
    git add .
@@ -136,13 +132,22 @@ If you're not a direct collaborator on the repository:
    git push
    ```
    
-   You would need to run `git push -u origin <new-branch-name>` if you are working on a new branch called `<new-branch-name>`
+   If you're working on a new branch called `<new-branch-name>`, you'll need to run:
 
-2. Submit a Pull Request:
+   ```shell
+   git push -u origin <new-branch-name>
+   ```
+   This command pushes your new branch to your fork on GitHub and sets up tracking so future push and pull commands know where to go. 
+   
+   Once your work is ready, you’ll open a pull request within your own fork to merge the changes from `<new-branch-name>` into the main (or master) branch within your fork.
+
+   
+6. Submit a Pull Request to the original [moo4feed repository](https://github.com/skysheng7/moo4feed.git):
    - Go to your fork on GitHub
    - You'll see a banner suggesting "Compare & Pull Request" — click it
    - Ensure the base repository is the original repo and the base branch is main
    - Submit your pull request with a clear title and description
+   - 3 Github actions will be triggered to [1] check if your new changes passes R CMD checks, [2] pkgdown website can be built and [3] calculate code coverage.
 
    > 🚀 Only open a PR when your code passes all tests and checks without errors/warnings/notes.
 
