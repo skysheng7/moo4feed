@@ -23,11 +23,11 @@ cap_first <- function(s) {
     stop("`s` must be a single character string.")
   }
   # 2) check for NA
-  if (is.na(s)){
+  if (is.na(s)) {
     return(NA_character_)
   }
   # 3) check for if it's a character
-  if(!is.character(s)) {
+  if (!is.character(s)) {
     stop("`s` must be a single character string.")
   }
 
@@ -61,11 +61,11 @@ lower_first <- function(s) {
     stop("`s` must be a single character string.")
   }
   # 2) check for NA
-  if (is.na(s)){
+  if (is.na(s)) {
     return(NA_character_)
   }
   # 3) check for if it's a character
-  if(!is.character(s)) {
+  if (!is.character(s)) {
     stop("`s` must be a single character string.")
   }
 

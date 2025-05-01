@@ -30,7 +30,7 @@ test_that("Edge case: multiple digit blocks only picks the first", {
   input <- c("mypath/folder123/weird/VR20220101_extra_999.DAT")
   result <- file_name_processing(input, col_name = "Feed_dir")
 
-  expect_equal(result$date, "20220101")  # Should match the first digit block in file name
+  expect_equal(result$date, "20220101") # Should match the first digit block in file name
 })
 
 test_that("Edge case: underscores and special characters are handled", {
@@ -63,7 +63,7 @@ test_that("Error handling: col_name is not a single character string", {
 # ---------------------- test for file_name_processing() ----------------------#
 
 test_that("Normal case: matching dates between feed and water", {
-  feed_files  <- c("feed/VR200715.DAT", "feed/VR200716.DAT", "feed/VR200717.DAT")
+  feed_files <- c("feed/VR200715.DAT", "feed/VR200716.DAT", "feed/VR200717.DAT")
   water_files <- c("water/VW200715.DAT", "water/VW200717.DAT", "water/VW200718.DAT")
 
   res <- compare_files(feed_files, water_files)
@@ -72,31 +72,31 @@ test_that("Normal case: matching dates between feed and water", {
   expect_named(res, c("feed", "water"))
 
   # Common dates are 200715 and 200717
-  expect_equal(res$feed,  c("feed/VR200715.DAT", "feed/VR200717.DAT"))
+  expect_equal(res$feed, c("feed/VR200715.DAT", "feed/VR200717.DAT"))
   expect_equal(res$water, c("water/VW200715.DAT", "water/VW200717.DAT"))
 })
 
 test_that("Edge case: no common dates returns empty vectors", {
-  feed_files  <- c("feed/VR200715.DAT", "feed/VR200716.DAT")
+  feed_files <- c("feed/VR200715.DAT", "feed/VR200716.DAT")
   water_files <- c("water/VW200718.DAT", "water/VW200719.DAT")
 
   res <- compare_files(feed_files, water_files)
 
-  expect_equal(res$feed,  character(0))
+  expect_equal(res$feed, character(0))
   expect_equal(res$water, character(0))
 })
 
 test_that("Edge case: one side empty returns empty vectors", {
   res1 <- compare_files(character(0), c("water/VW200715.DAT"))
-  expect_equal(res1$feed,  character(0))
+  expect_equal(res1$feed, character(0))
   expect_equal(res1$water, character(0))
 
   res2 <- compare_files(c("feed/VR200715.DAT"), character(0))
-  expect_equal(res2$feed,  character(0))
+  expect_equal(res2$feed, character(0))
   expect_equal(res2$water, character(0))
 
   res3 <- compare_files(character(0), character(0))
-  expect_equal(res3$feed,  character(0))
+  expect_equal(res3$feed, character(0))
   expect_equal(res3$water, character(0))
 })
 
@@ -109,24 +109,24 @@ test_that("Error handling: inputs must be character vectors", {
 
 test_that("Handles list inputs by unlisting", {
   # Feed as list, water as character vector
-  feed_list  <- list("feed/VR200715.DAT", "feed/VR200716.DAT", "feed/VR200717.DAT")
-  water_vec  <- c("water/VW200715.DAT", "water/VW200717.DAT")
+  feed_list <- list("feed/VR200715.DAT", "feed/VR200716.DAT", "feed/VR200717.DAT")
+  water_vec <- c("water/VW200715.DAT", "water/VW200717.DAT")
   res1 <- compare_files(feed_list, water_vec)
-  expect_equal(res1$feed,  c("feed/VR200715.DAT", "feed/VR200717.DAT"))
+  expect_equal(res1$feed, c("feed/VR200715.DAT", "feed/VR200717.DAT"))
   expect_equal(res1$water, c("water/VW200715.DAT", "water/VW200717.DAT"))
 
   # Feed as character vector, water as list
   feed_vec <- c("feed/VR200715.DAT", "feed/VR200716.DAT")
   water_list <- list("water/VW200715.DAT", "water/VW200716.DAT")
   res2 <- compare_files(feed_vec, water_list)
-  expect_equal(res2$feed,  c("feed/VR200715.DAT", "feed/VR200716.DAT"))
+  expect_equal(res2$feed, c("feed/VR200715.DAT", "feed/VR200716.DAT"))
   expect_equal(res2$water, c("water/VW200715.DAT", "water/VW200716.DAT"))
 
   # Both as lists
-  both_lists_feed  <- list("feed/VR200801.DAT", "feed/VR200802.DAT")
+  both_lists_feed <- list("feed/VR200801.DAT", "feed/VR200802.DAT")
   both_lists_water <- list("water/VW200801.DAT", "water/VW200803.DAT")
   res3 <- compare_files(both_lists_feed, both_lists_water)
-  expect_equal(res3$feed,  "feed/VR200801.DAT")
+  expect_equal(res3$feed, "feed/VR200801.DAT")
   expect_equal(res3$water, "water/VW200801.DAT")
 })
 

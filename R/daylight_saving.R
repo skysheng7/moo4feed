@@ -55,20 +55,23 @@ get_dst_switch_info <- function(years = c(2020, 2021), tz = Sys.timezone(), inte
 
   # --- Internal helper for safe DST time detection ---
   get_dst_time_safe <- function(date) {
-    tryCatch({
-      result <- dst_switch_hm(date, tz = tz, interval = interval)
-      if (is.null(result)) NA else as.character(result)
-    }, error = function(e) {
-      warning(paste0("Error detecting DST time for ", date, ": ", e$message))
-      return(NA)
-    })
+    tryCatch(
+      {
+        result <- dst_switch_hm(date, tz = tz, interval = interval)
+        if (is.null(result)) NA else as.character(result)
+      },
+      error = function(e) {
+        warning(paste0("Error detecting DST time for ", date, ": ", e$message))
+        return(NA)
+      }
+    )
   }
 
   # --- Apply to each row ---
   dst_df$spring_time <- sapply(dst_df$spring, get_dst_time_safe)
-  dst_df$fall_time   <- sapply(dst_df$fall,   get_dst_time_safe)
-  dst_df$spring_time <- lubridate::ymd_hms(dst_df$spring_time, tz=tz)
-  dst_df$fall_time   <- lubridate::ymd_hms(dst_df$fall_time, tz=tz)
+  dst_df$fall_time <- sapply(dst_df$fall, get_dst_time_safe)
+  dst_df$spring_time <- lubridate::ymd_hms(dst_df$spring_time, tz = tz)
+  dst_df$fall_time <- lubridate::ymd_hms(dst_df$fall_time, tz = tz)
 
   return(dst_df)
 }
@@ -96,7 +99,7 @@ get_dst_switch_info <- function(years = c(2020, 2021), tz = Sys.timezone(), inte
 #'
 #' @examples
 #' dst_switch_day(years = c(2020, 2021), tz = "America/Vancouver")
-dst_switch_day <- function(years = c(2020, 2021), tz = Sys.timezone()){
+dst_switch_day <- function(years = c(2020, 2021), tz = Sys.timezone()) {
   # --- Error handling ---
   if (!is.numeric(years)) {
     stop("`years` must be a numeric vector.")
@@ -115,8 +118,9 @@ dst_switch_day <- function(years = c(2020, 2021), tz = Sys.timezone()){
   start_date <- paste0(as.character(min(years)), "-01-01")
   end_date <- paste0(as.character(max(years)), "-12-31")
   date_seq <- seq(lubridate::ymd(start_date),
-                  lubridate::ymd(end_date),
-                  by = "1 day")
+    lubridate::ymd(end_date),
+    by = "1 day"
+  )
   date_seq_tz <- lubridate::force_tz(date_seq, tz = tz)
   dst_status <- lubridate::dst(date_seq_tz)
   dst_change <- date_seq[which(diff(dst_status) != 0)]
@@ -133,12 +137,18 @@ dst_switch_day <- function(years = c(2020, 2021), tz = Sys.timezone()){
   }
 
   dst_df <- data.frame(date = dst_change) |>
-    dplyr::mutate(year = lubridate::year(date),
-                  season = dplyr::if_else((lubridate::month(date)<9), "spring", "fall")) |>
-    tidyr::pivot_wider(names_from = season,
-                       values_from = date) |>
-    dplyr::mutate(spring_next_day = (spring + lubridate::days(1)),
-                  fall_next_day = (fall + lubridate::days(1)))
+    dplyr::mutate(
+      year = lubridate::year(date),
+      season = dplyr::if_else((lubridate::month(date) < 9), "spring", "fall")
+    ) |>
+    tidyr::pivot_wider(
+      names_from = season,
+      values_from = date
+    ) |>
+    dplyr::mutate(
+      spring_next_day = (spring + lubridate::days(1)),
+      fall_next_day = (fall + lubridate::days(1))
+    )
 
 
   return(dst_df)
@@ -165,7 +175,7 @@ dst_switch_day <- function(years = c(2020, 2021), tz = Sys.timezone()){
 #' @examples
 #' dst_switch_hm("2020-03-08", tz = "America/Vancouver")
 #' dst_switch_hm("2020-11-01", tz = "America/Vancouver")
-#' dst_switch_hm("2020-07-01", tz = "Etc/UTC")  # No DST change
+#' dst_switch_hm("2020-07-01", tz = "Etc/UTC") # No DST change
 #'
 #' @export
 dst_switch_hm <- function(date, tz = Sys.timezone(), interval = 1) {
@@ -180,7 +190,7 @@ dst_switch_hm <- function(date, tz = Sys.timezone(), interval = 1) {
         if (grepl("All formats failed to parse. No formats found.", w$message)) {
           stop("`date` must be a valid Date object or string in 'YYYY-MM-DD' format.")
         } else {
-          warning(w)  # pass through other warnings
+          warning(w) # pass through other warnings
         }
       },
       error = function(e) {
@@ -196,7 +206,7 @@ dst_switch_hm <- function(date, tz = Sys.timezone(), interval = 1) {
   }
 
   # --- Convert date and generate time sequence ---
-  interval = as.integer(interval)
+  interval <- as.integer(interval)
   date <- lubridate::ymd(date)
   times <- seq(
     from = lubridate::ymd_hms(paste0(date, " 00:00:00")),
@@ -216,7 +226,7 @@ dst_switch_hm <- function(date, tz = Sys.timezone(), interval = 1) {
     return(NULL)
 
     # if there is transition
-  } else if(length(transition_index) > 0) {
+  } else if (length(transition_index) > 0) {
     # Return the last time before the DST change
     return(times_tz[transition_index])
 
@@ -229,10 +239,7 @@ dst_switch_hm <- function(date, tz = Sys.timezone(), interval = 1) {
       warning("DST transition may occur at the first time point or is ambiguous.")
       return(NULL)
     }
-
   }
-
-
 }
 
 #' Adjust Time Stamp for Daylight Saving Time (DST) Transitions in North America
@@ -291,27 +298,30 @@ dst_switch_hm <- function(date, tz = Sys.timezone(), interval = 1) {
 #'
 #' @examples
 #' dst_info <- get_dst_switch_info(years = 2021, tz = "America/Vancouver")
-#' df <- data.frame(Start = c("01:30:00", "02:30:00", "04:00:00"),
-#'                  End = c("02:00:00", "03:00:00", "04:30:00"))
+#' df <- data.frame(
+#'   Start = c("01:30:00", "02:30:00", "04:00:00"),
+#'   End = c("02:00:00", "03:00:00", "04:30:00")
+#' )
 #' print(df)
 #' daylight_saving_adjust(df,
-#'                       date = "2021-11-07",
-#'                       start_col = "Start",
-#'                       end_col = "End",
-#'                       dst_df = dst_info,
-#'                       tz = "America/Vancouver")
+#'   date = "2021-11-07",
+#'   start_col = "Start",
+#'   end_col = "End",
+#'   dst_df = dst_info,
+#'   tz = "America/Vancouver"
+#' )
 #'
 #' @export
-daylight_saving_adjust <- function(data_frame, date, start_col = "start", end_col = "end", dst_df, daylight_change_duration=60, tz = Sys.timezone()) {
+daylight_saving_adjust <- function(data_frame, date, start_col = "start", end_col = "end", dst_df, daylight_change_duration = 60, tz = Sys.timezone()) {
   # --- Error handling ---
   if (!inherits(date, "Date")) {
     date <- tryCatch(
-      lubridate::ymd(date, tz=tz),
+      lubridate::ymd(date, tz = tz),
       warning = function(w) {
         if (grepl("All formats failed to parse. No formats found.", w$message)) {
           stop("`date` must be a valid Date object or string in 'YYYY-MM-DD' format.")
         } else {
-          warning(w)  # pass through other warnings
+          warning(w) # pass through other warnings
         }
       },
       error = function(e) {
@@ -322,8 +332,8 @@ daylight_saving_adjust <- function(data_frame, date, start_col = "start", end_co
   if ((!is.character(start_col)) || (!is.character(end_col))) {
     stop("`start_col` and `end_col` must be a string indicating column names")
   } else {
-    start_col = rlang::sym(start_col)
-    end_col = rlang::sym(end_col)
+    start_col <- rlang::sym(start_col)
+    end_col <- rlang::sym(end_col)
   }
   if (!as.character(start_col) %in% colnames(data_frame)) {
     stop(paste0("Column `", as.character(start_col), "` not found in `data_frame`."))
@@ -337,13 +347,13 @@ daylight_saving_adjust <- function(data_frame, date, start_col = "start", end_co
       data_frame |>
         dplyr::mutate(
           {{ start_col }} := lubridate::hms({{ start_col }}),
-          {{ end_col }}   := lubridate::hms({{ end_col }})
+          {{ end_col }} := lubridate::hms({{ end_col }})
         ),
       warning = function(w) {
         if (grepl("failed to parse", w$message)) {
           stop("all values in `start_col` and `end_col` must be in 'hh:mm:ss' format to indicate time.")
         } else {
-          warning(w)  # pass through other warnings
+          warning(w) # pass through other warnings
         }
       },
       error = function(e) {
@@ -359,33 +369,35 @@ daylight_saving_adjust <- function(data_frame, date, start_col = "start", end_co
   }
 
   # Fall back: clocks repeat 1–2am (typically early November)
-  if (date == lubridate::ymd(dst_row$fall, tz=tz)) {
+  if (date == lubridate::ymd(dst_row$fall, tz = tz)) {
     data_frame <- adjust_dst_fall(
       data_frame = data_frame,
       dst_detected_time = lubridate::hms(paste(as.character(lubridate::hour(dst_row$fall_time)),
-                                as.character(lubridate::minute(dst_row$fall_time)),
-                                as.character(lubridate::second(dst_row$fall_time)),
-                                sep = ":")),
+        as.character(lubridate::minute(dst_row$fall_time)),
+        as.character(lubridate::second(dst_row$fall_time)),
+        sep = ":"
+      )),
       start_col = start_col,
       end_col = end_col,
       daylight_change_duration = daylight_change_duration
     )
 
     # Spring forward: clocks jump 2am → 3am (typically early March)
-  } else if (date == lubridate::ymd(dst_row$spring, tz=tz)) {
+  } else if (date == lubridate::ymd(dst_row$spring, tz = tz)) {
     data_frame <- adjust_dst_spring(
       data_frame = data_frame,
       dst_detected_time = lubridate::hms(paste(as.character(lubridate::hour(dst_row$spring_time)),
-                                       as.character(lubridate::minute(dst_row$spring_time)),
-                                       as.character(lubridate::second(dst_row$spring_time)),
-                                       sep = ":")),
+        as.character(lubridate::minute(dst_row$spring_time)),
+        as.character(lubridate::second(dst_row$spring_time)),
+        sep = ":"
+      )),
       start_col = start_col,
       end_col = end_col,
       daylight_change_duration = daylight_change_duration
     )
 
     # Handle the day *after* DST spring forward — usually messy data at the begining of that dataframe
-  } else if (date == lubridate::ymd(dst_row$spring_next_day, tz=tz)) {
+  } else if (date == lubridate::ymd(dst_row$spring_next_day, tz = tz)) {
     data_frame <- next_day_after_spring_dst(data_frame, start_col = start_col)
   }
 
@@ -423,11 +435,10 @@ daylight_saving_adjust <- function(data_frame, date, start_col = "start", end_co
 #'
 #' @noRd
 adjust_dst_fall <- function(data_frame,
-                             dst_detected_time,
-                             start_col = start,
-                             end_col = end,
-                             daylight_change_duration = 60) {
-
+                            dst_detected_time,
+                            start_col = start,
+                            end_col = end,
+                            daylight_change_duration = 60) {
   # --- Error handling ---
   if (!is.data.frame(data_frame)) {
     stop("`data_frame` must be a data frame.")
@@ -443,18 +454,21 @@ adjust_dst_fall <- function(data_frame,
 
   # Try parsing dst_detected_time into hms if it isn't already
   if (!inherits(dst_detected_time, "Period")) {
-    dst_detected_time <- tryCatch({
-      lubridate::hms(dst_detected_time)
-    }, error = function(e) {
-      stop("`dst_detected_time` must be an hms object or a string like '01:59:00'")
-    })
+    dst_detected_time <- tryCatch(
+      {
+        lubridate::hms(dst_detected_time)
+      },
+      error = function(e) {
+        stop("`dst_detected_time` must be an hms object or a string like '01:59:00'")
+      }
+    )
   }
 
   # Check daylight_change_duration is a valid integer between 1 and 60
   if (!is.numeric(daylight_change_duration) ||
-      length(daylight_change_duration) != 1 ||
-      daylight_change_duration %% 1 != 0 ||
-      daylight_change_duration < 1 || daylight_change_duration > 60) {
+    length(daylight_change_duration) != 1 ||
+    daylight_change_duration %% 1 != 0 ||
+    daylight_change_duration < 1 || daylight_change_duration > 60) {
     stop("`daylight_change_duration` must be a single integer between 1 and 60.")
   }
 
@@ -478,11 +492,12 @@ adjust_dst_fall <- function(data_frame,
         {{ end_col }} > fallback_end,
         {{ end_col }} - lubridate::minutes(daylight_change_duration),
         {{ end_col }}
-      )) |>
-      dplyr::mutate(
-        {{ start_col }} := lubridate::seconds_to_period(lubridate::period_to_seconds({{ start_col }})),
-        {{ end_col }} := lubridate::seconds_to_period(lubridate::period_to_seconds({{ end_col }}))
       )
+    ) |>
+    dplyr::mutate(
+      {{ start_col }} := lubridate::seconds_to_period(lubridate::period_to_seconds({{ start_col }})),
+      {{ end_col }} := lubridate::seconds_to_period(lubridate::period_to_seconds({{ end_col }}))
+    )
 
   return(data_frame)
 }
@@ -509,10 +524,10 @@ adjust_dst_fall <- function(data_frame,
 #'
 #' @noRd
 adjust_dst_spring <- function(data_frame,
-                               dst_detected_time,
-                               start_col = start,
-                               end_col = end,
-                               daylight_change_duration = 60) {
+                              dst_detected_time,
+                              start_col = start,
+                              end_col = end,
+                              daylight_change_duration = 60) {
   # --- Error handling ---
   if (!is.data.frame(data_frame)) {
     stop("`data_frame` must be a data frame.")
@@ -528,18 +543,21 @@ adjust_dst_spring <- function(data_frame,
 
   # Try parsing dst_detected_time into hms if needed
   if (!inherits(dst_detected_time, "Period")) {
-    dst_detected_time <- tryCatch({
-      lubridate::hms(dst_detected_time)
-    }, error = function(e) {
-      stop("`dst_detected_time` must be an hms object or a string like '01:59:00'")
-    })
+    dst_detected_time <- tryCatch(
+      {
+        lubridate::hms(dst_detected_time)
+      },
+      error = function(e) {
+        stop("`dst_detected_time` must be an hms object or a string like '01:59:00'")
+      }
+    )
   }
 
   # Check daylight_change_duration is a valid integer between 1 and 60
   if (!is.numeric(daylight_change_duration) ||
-      length(daylight_change_duration) != 1 ||
-      daylight_change_duration %% 1 != 0 ||
-      daylight_change_duration < 1 || daylight_change_duration > 60) {
+    length(daylight_change_duration) != 1 ||
+    daylight_change_duration %% 1 != 0 ||
+    daylight_change_duration < 1 || daylight_change_duration > 60) {
     stop("`daylight_change_duration` must be a single integer between 1 and 60.")
   }
 
@@ -610,4 +628,3 @@ next_day_after_spring_dst <- function(data_frame, start_col = start) {
 
   return(data_frame[(backward_jump_idx + 1):nrow(data_frame), ])
 }
-

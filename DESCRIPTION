@@ -6,7 +6,7 @@ Authors@R:
            comment = c(ORCID = "0000-0001-6442-5284"))
 Description: This R package facilitates the extraction of novel variables that reflect individual animal characteristics based on feeding and drinking data.
 License: MIT + file LICENSE
-Depends: R (>= 3.5.0)
+Depends: R (>= 4.1.0)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
@@ -22,6 +22,9 @@ Suggests:
     hexSticker,
     knitr,
     rmarkdown,
-    testthat (>= 3.0.0)
+    roxygen2,
+    styler,
+    testthat (>= 3.0.0),
+    usethis
 Config/testthat/edition: 3
 VignetteBuilder: knitr

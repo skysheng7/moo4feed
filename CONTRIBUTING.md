@@ -92,8 +92,23 @@ If you're already added as a collaborator to the GitHub repository:
    - Use [semantic commit messages](https://www.conventionalcommits.org/)
    - the `git push -u origin <fix-name-of-your-bugfix>` only needs to be run once. `-u` will tells Git to remember the remote branch so you can just run `git push` or `git pull` next time (instead of specifying the branch again). `origin` refers to your remote repository.
 
+6. Style your code using tidyverse style
    
-6. Open a Pull Request
+   If you have created/modified 1 or a few new R scripts, run:
+   
+   ```r
+   styler::style_file("path/to/your/r/scripts")
+   ```
+   
+   If you wish to style an entire directory, run:
+   
+   ```r
+   styler::style_dir("path/to/your/folder")
+   ```
+   
+   Remember to commit and push your changes.
+   
+7. Open a Pull Request
 
    - Go to the repository on GitHub
    - Navigate to your branch
@@ -148,8 +163,23 @@ If you're not a direct collaborator on the repository:
    
    Once your work is ready, you’ll open a pull request within your own fork to merge the changes from `<new-branch-name>` into the main (or master) branch within your fork.
 
+7. Style your code using tidyverse style
    
-7. Submit a Pull Request to the original [moo4feed repository](https://github.com/skysheng7/moo4feed.git):
+   If you have created/modified 1 or a few new R scripts, run:
+   
+   ```r
+   styler::style_file("path/to/your/r/scripts")
+   ```
+   
+   If you wish to style an entire directory, run:
+   
+   ```r
+   styler::style_dir("path/to/your/folder")
+   ```
+   
+   Remember to commit and push your changes.
+   
+8. Submit a Pull Request to the original [moo4feed repository](https://github.com/skysheng7/moo4feed.git):
    - Go to your fork on GitHub
    - You'll see a banner suggesting "Compare & Pull Request" — click it
    - Ensure the base repository is the original repo and the base branch is main

@@ -14,8 +14,8 @@
 #'
 #' @examples
 #' fed_list <- list(
-#' "2024-01-01" = data.frame(cow = 1:2, intake = c(10, 20)),
-#' "2024-01-02" = data.frame(cow = 3:4, intake = c(30, 40))
+#'   "2024-01-01" = data.frame(cow = 1:2, intake = c(10, 20)),
+#'   "2024-01-02" = data.frame(cow = 3:4, intake = c(30, 40))
 #' )
 #' wat_list <- list(
 #'   "2024-01-01" = data.frame(cow = 1:2, intake = c(5, 15)),
@@ -42,7 +42,6 @@ combine_feed_water <- function(all_fed, all_wat) {
   for (i in seq_along(all_fed)) {
     out[[i]] <- rbind(all_fed[[i]], all_wat[[i]])
     names(out)[i] <- names(all_fed)[i]
-
   }
 
   return(out)
@@ -68,7 +67,6 @@ combine_feed_water <- function(all_fed, all_wat) {
 #'
 #' @export
 merge_list_df <- function(data_list) {
-
   # 1) Validate input
   if (!is.list(data_list) || inherits(data_list, "data.frame")) {
     stop("`data_list` must be a list of data frames.")

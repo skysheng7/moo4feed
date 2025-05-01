@@ -1,6 +1,3 @@
-
-
-
 # ---------------------- test for keep_bins() ----------------------#
 
 test_that("keeps specified bins using default column", {
@@ -72,7 +69,7 @@ test_that("errors if `bins` is not numeric", {
 
 test_that("removes specified values for a character column", {
   df <- data.frame(
-    cow   = c("A", "B", "C", "A"),
+    cow = c("A", "B", "C", "A"),
     value = 1:4,
     stringsAsFactors = FALSE
   )
@@ -228,7 +225,7 @@ test_that("errors if column is not numeric", {
 test_that("errors if `bins` is not numeric", {
   df <- data.frame(bin = 1:3)
   expect_error(
-    rename_bins(df, bins = c("x","y"), bin_offset = 1),
+    rename_bins(df, bins = c("x", "y"), bin_offset = 1),
     "`bins` must be a numeric vector"
   )
 })
@@ -236,7 +233,7 @@ test_that("errors if `bins` is not numeric", {
 test_that("errors if `bin_offset` is not a single numeric", {
   df <- data.frame(bin = 1:3)
   expect_error(
-    rename_bins(df, bins = 1, bin_offset = c(1,2)),
+    rename_bins(df, bins = 1, bin_offset = c(1, 2)),
     "`bin_offset` must be a single numeric value"
   )
   expect_error(
@@ -244,4 +241,3 @@ test_that("errors if `bin_offset` is not a single numeric", {
     "`bin_offset` must be a single numeric value"
   )
 })
-

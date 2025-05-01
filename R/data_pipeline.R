@@ -40,10 +40,10 @@
 #' @examples
 #' # Create a toy feeder data frame
 #' original <- data.frame(
-#'   cow         = c("A","B","C","A"),
-#'   transponder = c("X1","X2","X3","X2"),
-#'   bin         = c(1,2,3,2),
-#'   value       = c(10,20,30,40),
+#'   cow = c("A", "B", "C", "A"),
+#'   transponder = c("X1", "X2", "X3", "X2"),
+#'   bin = c(1, 2, 3, 2),
+#'   value = c(10, 20, 30, 40),
 #'   stringsAsFactors = FALSE
 #' )
 #' print(original)
@@ -52,27 +52,27 @@
 #'
 #' # Drop cow "A" and transponder "X2", keep bins 2:3, select only cow, bin, value
 #' process_feeder(
-#'   file        = tmp,
-#'   drop_ids    = "A",
-#'   drop_trans  = "X2",
-#'   bins        = 2:3,
-#'   select_cols = c("cow","bin","value"),
+#'   file = tmp,
+#'   drop_ids = "A",
+#'   drop_trans = "X2",
+#'   bins = 2:3,
+#'   select_cols = c("cow", "bin", "value"),
 #'   header = TRUE
 #' )
 #' unlink(tmp)
 #'
 #' @export
 process_feeder <- function(file,
-                           col_names   = NULL,
-                           id_col      = "cow",
-                           drop_ids    = NULL,
-                           trans_col   = "transponder",
-                           drop_trans  = NULL,
-                           bin_col     = "bin",
+                           col_names = NULL,
+                           id_col = "cow",
+                           drop_ids = NULL,
+                           trans_col = "transponder",
+                           drop_trans = NULL,
+                           bin_col = "bin",
                            bins,
                            select_cols = NULL,
-                           sep         = ",",
-                           header      = FALSE) {
+                           sep = ",",
+                           header = FALSE) {
   process_data_generic(
     file         = file,
     col_names    = col_names,
@@ -107,10 +107,10 @@ process_feeder <- function(file,
 #' @examples
 #' # create a toy data file
 #' original <- data.frame(
-#'   cow         = c("D","E","F","D"),
-#'   transponder = c("Y1","Y2","Y3","Y2"),
-#'   bin         = c(5,6,7,6),
-#'   value       = c(50,60,70,80),
+#'   cow = c("D", "E", "F", "D"),
+#'   transponder = c("Y1", "Y2", "Y3", "Y2"),
+#'   bin = c(5, 6, 7, 6),
+#'   value = c(50, 60, 70, 80),
 #'   stringsAsFactors = FALSE
 #' )
 #' print(original)
@@ -119,31 +119,30 @@ process_feeder <- function(file,
 #'
 #' # Drop nothing, keep bins 5:7, offset +100, select cow, bin, value
 #' process_water(
-#'   file        = tmp,
-#'   col_names   = c("cow", "transponder", "bin", "value"),
-#'   drop_ids    = NULL,
-#'   drop_trans  = NULL,
-#'   bins        = 5:7,
-#'   select_cols = c("cow","bin","value"),
-#'   bin_offset  = 100,
+#'   file = tmp,
+#'   col_names = c("cow", "transponder", "bin", "value"),
+#'   drop_ids = NULL,
+#'   drop_trans = NULL,
+#'   bins = 5:7,
+#'   select_cols = c("cow", "bin", "value"),
+#'   bin_offset = 100,
 #'   header = FALSE
 #' )
 #' unlink(tmp)
 #'
 #' @export
 process_water <- function(file,
-                          col_names   = NULL,
-                          id_col      = "cow",
-                          drop_ids    = NULL,
-                          trans_col   = "transponder",
-                          drop_trans  = NULL,
-                          bin_col     = "bin",
+                          col_names = NULL,
+                          id_col = "cow",
+                          drop_ids = NULL,
+                          trans_col = "transponder",
+                          drop_trans = NULL,
+                          bin_col = "bin",
                           bins,
                           select_cols = NULL,
-                          bin_offset  = 100,
-                          sep         = ",",
-                          header      = FALSE) {
-
+                          bin_offset = 100,
+                          sep = ",",
+                          header = FALSE) {
   out <- process_data_generic(
     file         = file,
     col_names    = col_names,
@@ -213,62 +212,62 @@ process_water <- function(file,
 #'   write.csv(
 #'     data.frame(
 #'       cow         = c("A", "B", "C"),
-#'       transponder = c("X1","X2","X3"),
+#'       transponder = c("X1", "X2", "X3"),
 #'       bin         = i + 0:2,
 #'       start       = c("01:00:00", "02:00:00", "03:00:00"),
 #'       end         = c("01:05:00", "02:06:01", "03:03:00")
 #'     ),
-#'     file      = files[i],
+#'     file = files[i],
 #'     row.names = FALSE
-#'    )
+#'   )
 #' }
 #'
 #' res <- process_all_feed(
-#' files       = files,
-#' bins        = 1:10,
-#' select_cols = c("cow","bin","start","end"),
-#' sep         = ",",
-#' header      = TRUE,
-#' tz          = "America/Vancouver")
+#'   files       = files,
+#'   bins        = 1:10,
+#'   select_cols = c("cow", "bin", "start", "end"),
+#'   sep         = ",",
+#'   header      = TRUE,
+#'   tz          = "America/Vancouver"
+#' )
 #'
 #' res
 #'
 #' @export
 process_all_feed <- function(
     files,
-    col_names   = NULL,
-    id_col      = "cow",
-    drop_ids    = NULL,
-    trans_col   = "transponder",
-    start_col   = "start",
-    end_col     = "end",
-    drop_trans  = NULL,
-    bin_col     = "bin",
+    col_names = NULL,
+    id_col = "cow",
+    drop_ids = NULL,
+    trans_col = "transponder",
+    start_col = "start",
+    end_col = "end",
+    drop_trans = NULL,
+    bin_col = "bin",
     bins,
     select_cols = NULL,
-    sep         = ",",
-    header      = FALSE,
+    sep = ",",
+    header = FALSE,
     daylight_change_duration = 60,
-    tz          = Sys.timezone(),
-    adjust_dst  = TRUE
-) {
+    tz = Sys.timezone(),
+    adjust_dst = TRUE) {
   process_all(
-    files    = files,
+    files = files,
     file_type = "feed",
     col_names = col_names,
-    id_col    = id_col,
-    drop_ids  = drop_ids,
+    id_col = id_col,
+    drop_ids = drop_ids,
     trans_col = trans_col,
-    start_col   = start_col,
-    end_col     = end_col,
+    start_col = start_col,
+    end_col = end_col,
     drop_trans = drop_trans,
-    bin_col   = bin_col,
-    bins      = bins,
+    bin_col = bin_col,
+    bins = bins,
     select_cols = select_cols,
-    sep       = sep,
-    header    = header,
+    sep = sep,
+    header = header,
     daylight_change_duration = daylight_change_duration,
-    tz        = tz,
+    tz = tz,
     adjust_dst = adjust_dst
   )
 }
@@ -282,15 +281,15 @@ process_all_feed <- function(
 #'
 #' @examples
 #' # 1) create three small water‐data CSVs in a temporary directory
-#' tmp   <- tempdir()
+#' tmp <- tempdir()
 #' files <- file.path(tmp, paste0("VW2023042", 0:3, ".csv"))
 #' for (i in seq_along(files)) {
 #'   toy <- data.frame(
-#'     cow         = c("A", "B", "C"),
+#'     cow = c("A", "B", "C"),
 #'     transponder = c("W1", "W2", "W3"),
-#'     bin         = i + c(1, 2, 3),
-#'     start       = c("06:00:00", "07:00:00", "08:00:00"),
-#'     end         = c("06:05:00", "07:05:00", "08:05:00"),
+#'     bin = i + c(1, 2, 3),
+#'     start = c("06:00:00", "07:00:00", "08:00:00"),
+#'     end = c("06:05:00", "07:05:00", "08:05:00"),
 #'     stringsAsFactors = FALSE
 #'   )
 #'   write.csv(toy, files[i], row.names = FALSE)
@@ -312,41 +311,40 @@ process_all_feed <- function(
 #'
 process_all_water <- function(
     files,
-    col_names   = NULL,
-    id_col      = "cow",
-    drop_ids    = NULL,
-    trans_col   = "transponder",
-    start_col   = "start",
-    end_col     = "end",
-    drop_trans  = NULL,
-    bin_col     = "bin",
+    col_names = NULL,
+    id_col = "cow",
+    drop_ids = NULL,
+    trans_col = "transponder",
+    start_col = "start",
+    end_col = "end",
+    drop_trans = NULL,
+    bin_col = "bin",
     bins,
     select_cols = NULL,
-    bin_offset  = 100,
-    sep         = ",",
-    header      = FALSE,
+    bin_offset = 100,
+    sep = ",",
+    header = FALSE,
     daylight_change_duration = 60,
-    tz          = Sys.timezone(),
-    adjust_dst  = TRUE
-) {
+    tz = Sys.timezone(),
+    adjust_dst = TRUE) {
   process_all(
-    files    = files,
+    files = files,
     file_type = "water",
     col_names = col_names,
-    id_col    = id_col,
-    drop_ids  = drop_ids,
-    start_col   = start_col,
-    end_col     = end_col,
+    id_col = id_col,
+    drop_ids = drop_ids,
+    start_col = start_col,
+    end_col = end_col,
     trans_col = trans_col,
     drop_trans = drop_trans,
-    bin_col   = bin_col,
-    bins      = bins,
+    bin_col = bin_col,
+    bins = bins,
     select_cols = select_cols,
     bin_offset = bin_offset,
-    sep       = sep,
-    header    = header,
+    sep = sep,
+    header = header,
     daylight_change_duration = daylight_change_duration,
-    tz        = tz,
+    tz = tz,
     adjust_dst = adjust_dst
   )
 }
@@ -374,18 +372,16 @@ process_all_water <- function(
 #' @noRd
 process_data_generic <- function(
     file,
-    col_names   = NULL,
-    id_col      = "cow",
-    drop_ids    = NULL,
-    trans_col   = "transponder",
-    drop_trans  = NULL,
-    bin_col     = "bin",
+    col_names = NULL,
+    id_col = "cow",
+    drop_ids = NULL,
+    trans_col = "transponder",
+    drop_trans = NULL,
+    bin_col = "bin",
     bins,
     select_cols = NULL,
-    sep         = ",",
-    header      = FALSE
-) {
-
+    sep = ",",
+    header = FALSE) {
   # ------ error handling ---------#
   if (!is.character(file) || length(file) != 1) {
     stop("`file` must be a single character string path.")
@@ -425,7 +421,7 @@ process_data_generic <- function(
     if (!is.null(select_cols)) {
       empty <- as.data.frame(matrix(ncol = length(select_cols), nrow = 0))
       names(empty) <- select_cols
-    } else{
+    } else {
       empty <- df
     }
 
@@ -445,7 +441,7 @@ process_data_generic <- function(
 
 
   # 2) drop unwanted IDs
-  if (!is.null(drop_ids))   df <- delete_rows(df, drop_ids,   id_col)
+  if (!is.null(drop_ids)) df <- delete_rows(df, drop_ids, id_col)
   if (!is.null(drop_trans)) df <- delete_rows(df, drop_trans, trans_col)
 
   # 3) keep only selected bins
@@ -468,29 +464,28 @@ process_data_generic <- function(
 #' @noRd
 process_all <- function(
     files,
-    file_type   = "feed",
-    col_names   = NULL,
-    id_col      = "cow",
-    drop_ids    = NULL,
-    trans_col   = "transponder",
-    start_col   = "start",
-    end_col     = "end",
-    drop_trans  = NULL,
-    bin_col     = "bin",
+    file_type = "feed",
+    col_names = NULL,
+    id_col = "cow",
+    drop_ids = NULL,
+    trans_col = "transponder",
+    start_col = "start",
+    end_col = "end",
+    drop_trans = NULL,
+    bin_col = "bin",
     bins,
     select_cols = NULL,
-    bin_offset  = 100,
-    sep         = ",",
-    header      = FALSE,
-    daylight_change_duration=60,
+    bin_offset = 100,
+    sep = ",",
+    header = FALSE,
+    daylight_change_duration = 60,
     tz = Sys.timezone(),
-    adjust_dst  = TRUE
-) {
+    adjust_dst = TRUE) {
   # ---- input validation ----
   if (!is.character(files) || length(files) < 1) {
     stop("`files` must be a nonempty character vector of file paths.")
   }
-  file_type <- match.arg(trimws(tolower(file_type)), c("feed","water"))
+  file_type <- match.arg(trimws(tolower(file_type)), c("feed", "water"))
   if (!header) {
     if (is.null(col_names) || !is.character(col_names)) {
       stop("`col_names` must be a character vector when header = FALSE.")
@@ -500,8 +495,8 @@ process_all <- function(
   # 2) Extract dates + build DST lookup -------------------------------------
   date_meta <- file_name_processing(files, col_name = "path")
   date_meta$date <- lubridate::ymd(date_meta$date, tz = tz)
-  years         <- unique(lubridate::year(date_meta$date))
-  dst_df        <- get_dst_switch_info(years = years, tz = tz)
+  years <- unique(lubridate::year(date_meta$date))
+  dst_df <- get_dst_switch_info(years = years, tz = tz)
 
   # 3) Pre‑allocate output --------------------------------------------------
   out <- vector("list", length(files))
@@ -527,7 +522,7 @@ process_all <- function(
         sep         = sep,
         header      = header
       )
-    } else {  # water
+    } else { # water
       df <- process_water(
         file        = path,
         col_names   = col_names,
@@ -550,10 +545,10 @@ process_all <- function(
     # 4.3) Trim raw times and apply DST adjustment
     if (nrow(df) > 0L) {
       df[[start_col]] <- trimws(df[[start_col]])
-      df[[end_col]]   <- trimws(df[[end_col]])
+      df[[end_col]] <- trimws(df[[end_col]])
 
       # only adjust daylight saving changes if timezone is set in north america, and user set adjust_dst to TRUE
-      if ((nrow(dst_df) > 0) && adjust_dst && is_north_american_tz(tz)){
+      if ((nrow(dst_df) > 0) && adjust_dst && is_north_american_tz(tz)) {
         df <- daylight_saving_adjust(
           data_frame               = df,
           date                     = date,
@@ -564,20 +559,18 @@ process_all <- function(
           tz                       = tz
         )
 
-        df[[start_col]] <- lubridate::ymd_hms(paste(date, add_hour_prefix(as.character( df[[start_col]]) )), tz = tz)
-        df[[end_col]]   <- lubridate::ymd_hms(paste(date, add_hour_prefix(as.character( df[[end_col]]) )),   tz = tz)
-
+        df[[start_col]] <- lubridate::ymd_hms(paste(date, add_hour_prefix(as.character(df[[start_col]]))), tz = tz)
+        df[[end_col]] <- lubridate::ymd_hms(paste(date, add_hour_prefix(as.character(df[[end_col]]))), tz = tz)
       } else {
         df[[start_col]] <- lubridate::ymd_hms(paste(date, df[[start_col]]), tz = tz)
-        df[[end_col]]   <- lubridate::ymd_hms(paste(date, df[[end_col]]),   tz = tz)
-
+        df[[end_col]] <- lubridate::ymd_hms(paste(date, df[[end_col]]), tz = tz)
       }
 
       df[["date"]] <- lubridate::date(df[[start_col]]) # extract date
     }
 
     # 4.4) Store and name by date
-    out[[i]]      <- df
+    out[[i]] <- df
     names(out)[i] <- date
   }
 

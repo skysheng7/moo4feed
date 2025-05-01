@@ -9,10 +9,10 @@ test_that("cap_first works for normal cases", {
 })
 
 test_that("cap_first works for edge cases", {
-  expect_equal(cap_first(""), "")                      # empty string
-  expect_equal(cap_first("h"), "H")                     # single character
-  expect_equal(cap_first("1world"), "1world")           # starts with a number
-  expect_equal(cap_first("@world"), "@world")           # starts with a symbol
+  expect_equal(cap_first(""), "") # empty string
+  expect_equal(cap_first("h"), "H") # single character
+  expect_equal(cap_first("1world"), "1world") # starts with a number
+  expect_equal(cap_first("@world"), "@world") # starts with a symbol
   expect_equal(cap_first(NA_character_), NA_character_) # NA returns NA
 })
 
@@ -33,11 +33,11 @@ test_that("lower_first works for normal cases", {
 })
 
 test_that("lower_first works for edge cases", {
-  expect_equal(lower_first(""), "")                     # empty string
-  expect_equal(lower_first("H"), "h")                    # single character
-  expect_equal(lower_first("1World"), "1World")          # starts with a number
-  expect_equal(lower_first("@World"), "@World")          # starts with a symbol
-  expect_equal(lower_first(NA_character_), NA_character_)# NA returns NA
+  expect_equal(lower_first(""), "") # empty string
+  expect_equal(lower_first("H"), "h") # single character
+  expect_equal(lower_first("1World"), "1World") # starts with a number
+  expect_equal(lower_first("@World"), "@World") # starts with a symbol
+  expect_equal(lower_first(NA_character_), NA_character_) # NA returns NA
 })
 
 test_that("lower_first throws error for invalid inputs", {

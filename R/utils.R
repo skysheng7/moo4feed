@@ -43,35 +43,38 @@ read_data_safely <- function(file, sep = ",", header = FALSE) {
     message(paste0(
       "Warning: File missing, or the file is empty; returning an empty data frame: ",
       file,
-      ". You can ignore this warning if an empty file is expected."))
+      ". You can ignore this warning if an empty file is expected."
+    ))
     return(data.frame())
   }
 
   # 3) Try to read (suppress any low‑level warnings)
-  out <- tryCatch({
-    df <- suppressWarnings(
-      utils::read.table(
-        file,
-        header          = header,
-        sep             = sep,
-        stringsAsFactors = FALSE
+  out <- tryCatch(
+    {
+      df <- suppressWarnings(
+        utils::read.table(
+          file,
+          header = header,
+          sep = sep,
+          stringsAsFactors = FALSE
+        )
       )
-    )
-    # treat zero‐row frames as “empty”
-    if (nrow(df) == 0L) {
-      message(paste0(
-        "Warning: File has no data rows; returning an empty data frame, : ",
-        file,
-        ". You can ignore this warning if an empty file is expected."))
-      return(data.frame())
+      # treat zero‐row frames as “empty”
+      if (nrow(df) == 0L) {
+        message(paste0(
+          "Warning: File has no data rows; returning an empty data frame, : ",
+          file,
+          ". You can ignore this warning if an empty file is expected."
+        ))
+        return(data.frame())
+      }
+      df
+    },
+    error = function(e) {
+      message("Error reading '", file, "': ", e$message, " Returning empty data frame.")
+      data.frame()
     }
-    df
-  }, error = function(e) {
-    message("Error reading '", file, "': ", e$message, " Returning empty data frame.")
-    data.frame()
-  })
+  )
 
   return(out)
 }
-
-

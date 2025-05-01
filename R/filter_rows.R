@@ -20,9 +20,9 @@
 #'
 #' @examples
 #' df <- data.frame(
-#'   cow         = c("A", "B", "C"),
+#'   cow = c("A", "B", "C"),
 #'   transponder = c("X1", "X2", "X3"),
-#'   Value       = 1:3,
+#'   Value = 1:3,
 #'   stringsAsFactors = FALSE
 #' )
 #' print(df)
@@ -33,7 +33,7 @@
 #' delete_rows(df, c("X2"), "transponder")
 #'
 #' @export
-delete_rows <- function(df, to_delete, col_name="cow") {
+delete_rows <- function(df, to_delete, col_name = "cow") {
   if (!is.data.frame(df)) {
     stop("`df` must be a data frame.")
   }
@@ -52,7 +52,7 @@ delete_rows <- function(df, to_delete, col_name="cow") {
   # allow any combination of integer/double as numeric
   if (!(
     (is.numeric(col_data) && is.numeric(to_delete)) ||
-    identical(typeof(col_data), typeof(to_delete))
+      identical(typeof(col_data), typeof(to_delete))
   )) {
     stop(
       sprintf(
@@ -188,5 +188,3 @@ rename_bins <- function(df, bins, bin_offset, bin_col = "bin") {
 
   return(df)
 }
-
-

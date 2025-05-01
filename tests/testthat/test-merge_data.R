@@ -18,7 +18,7 @@ test_that("combine_feed_water works for normal case", {
   expect_named(combined, c("2024-01-01", "2024-01-02"))
   expect_true(all(c("cow", "intake") %in% names(combined[[1]])))
   expect_true(all(c("cow", "intake") %in% names(combined[[2]])))
-  expect_equal(nrow(combined[[1]]), 4)  # two rows from feed + two rows from water
+  expect_equal(nrow(combined[[1]]), 4) # two rows from feed + two rows from water
 })
 
 test_that("combine_feed_water throws error if lists are not lists", {

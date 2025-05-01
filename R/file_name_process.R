@@ -25,8 +25,8 @@
 #'
 #' @examples
 #' file_name_processing(
-#'  file_names = c(" feed/VR200715.DAT ", "feed/VR200716.DAT", "feed/VR200718.DAT"),
-#'  col_name = "Feed_dir"
+#'   file_names = c(" feed/VR200715.DAT ", "feed/VR200716.DAT", "feed/VR200718.DAT"),
+#'   col_name = "Feed_dir"
 #' )
 #'
 #' @export
@@ -111,22 +111,26 @@ compare_files <- function(file_names_feed, file_names_water) {
   }
 
   # --- Extract dates via helper ---
-  feed_df  <- file_name_processing(file_names_feed, "feed_name")
+  feed_df <- file_name_processing(file_names_feed, "feed_name")
   water_df <- file_name_processing(file_names_water, "water_name")
 
   # --- Find intersection of dates ---
   common_dates <- base::intersect(feed_df$date, water_df$date)
   if (length(common_dates) == 0L) {
-    return(list(feed  = character(0),
-                water = character(0)))
+    return(list(
+      feed = character(0),
+      water = character(0)
+    ))
   }
 
   # --- Filter original names by common dates ---
-  feed_matches  <- feed_df$feed_name[ feed_df$date  %in% common_dates ]
-  water_matches <- water_df$water_name[ water_df$date %in% common_dates ]
+  feed_matches <- feed_df$feed_name[feed_df$date %in% common_dates]
+  water_matches <- water_df$water_name[water_df$date %in% common_dates]
 
-  return(list(feed  = feed_matches,
-              water = water_matches))
+  return(list(
+    feed = feed_matches,
+    water = water_matches
+  ))
 }
 
 
@@ -206,7 +210,7 @@ get_date_range_helper <- function(df) {
 
   # --- Compute start and end ---
   start <- min(dates, na.rm = TRUE)
-  end   <- max(dates, na.rm = TRUE)
+  end <- max(dates, na.rm = TRUE)
 
   # --- Return only the date_range string ---
   if (identical(start, end)) {
@@ -215,5 +219,3 @@ get_date_range_helper <- function(df) {
     return(paste0(as.character(start), "_", as.character(end)))
   }
 }
-
-
