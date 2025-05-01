@@ -19,7 +19,12 @@ To install the development version of **moo4feed** from GitHub, run:
 
 ```r
 install.packages("devtools")
+
+# run below if you only want to install the package
 devtools::install_github("skysheng7/moo4feed")
+
+# run below if you want to read the vignettes, and install dependencies needed for development too
+devtools::install_github("skysheng7/moo4feed", dependencies = TRUE, build_vignettes = TRUE)
 ```
 
 ## Documentation

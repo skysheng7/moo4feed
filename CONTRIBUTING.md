@@ -199,6 +199,7 @@ These guidelines apply to both internal and external contributors:
 - Use `devtools::load_all()` instead of `source()` for proper namespace handling
 - Add packages via `usethis::use_package()` rather than `library()` calls
 - Run `devtools::check()` regularly to catch issues early
+- Avoid hard-coding file paths—the directory structure shifts as the package moves from source to bundle to build. Instead, obtain paths programmatically with `system.file("folder-name", package = "moo4feed")`.
 - Build the pkgdown site (if applicable) with:
   ```r
   pkgdown::build_site()

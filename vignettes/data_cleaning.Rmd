@@ -1,0 +1,271 @@
+---
+title: "data_cleaning"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{data_cleaning}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r, echo=FALSE}
+knitr::include_graphics(system.file("comics/data_cleaning.jpg", package = "moo4feed"))
+```
+
+# Meet Ollie 🦦
+
+> *“Hey there, friend!* I’m **Ollie the Otter** , a curious river-explorer and data‑scientist‑in‑training. One morning while gliding along my favorite stream, I spotted a dairy barn where **hundreds of cows** were visiting automatic feeders and drinkers. The beeping RFID readers and steady munch-munch-munching created a beautiful data symphony!
+>
+> Each night, back at my mossy den, I curl up with my otter‑sized laptop and learn about R. The friendly farmers have shared their raw visit logs, so I can uncover the hidden tales behind my cow friends. I’m fascinated by how **every single cow writes its own story in the data**—and tonight we’re going to read their stories together using the **`moo4feed`** package. Ready to splash in? Let's go!”
+
+------------------------------------------------------------------------
+
+## 1. Why Clean Your Data? 🧹
+
+Raw data from automatic feeders is like my muddy riverbank - full of treasures but also plenty of muck! You'll find weird timestamps, strange visit records, and inconsistent file names. Cleaning transforms this mess into a crystal-clear stream perfect for analysis!
+
+## 2. Gather Your Tools 🧰
+
+```{r setup-packages}
+library(moo4feed)   # 🐮 Your cow data helper!
+```
+
+Good news! `moo4feed` comes with sample files from friendly farmers, so you can follow along without your own data. Or use the same code with your files when you're ready!
+
+------------------------------------------------------------------------
+
+## 3. Where Are Your Files? 📂
+
+```{r paths}
+# 📝 USING YOUR OWN DATA? Edit this line: ---------------------------------
+# extdata_path <- "/path/to/my/raw/files"  # ← your folder goes here
+
+# JUST TRYING THE DEMO? No changes needed below: --------------------------
+extdata_path <- system.file("extdata", package = "moo4feed")
+```
+
+### Feeders and drinkers in different folders?
+
+No problem! Create two separate paths instead:
+
+```{r echo=TRUE, eval=FALSE}
+extdata_path_f <- "/path/to/feeder/files"    # 🐄 For feed data
+extdata_path_w <- "/path/to/drinker/files"   # 🚰 For water data
+```
+
+Then use the appropriate path in the steps below!
+
+------------------------------------------------------------------------
+
+## 4. Round Up Your Files 🤠
+
+We use filename patterns to separate feeder data from drinker data:
+
+```{r list-files}
+# Find all feeder files (VR*.DAT)
+fileNames.f <- list.files(
+  path       = extdata_path,     # 🐄 Where to look
+  pattern    = "^VR.*\\.DAT$",   # 🐄 Pattern to match
+  recursive  = TRUE,             # Look in subfolders too
+  full.names = TRUE              # Include full path
+) |> sort()                      # Keep them in order
+
+# Find all drinker files (VW*.DAT)
+fileNames.w <- list.files(
+  path       = extdata_path,     # 🚰 Where to look
+  pattern    = "^VW.*\\.DAT$",   # 🚰 Pattern to match
+  recursive  = TRUE,
+  full.names = TRUE
+) |> sort()
+```
+
+> **Ollie's Tip:** 💡 Using different filenames? Just change the `pattern`! For example, if your files are named `FEED_20250715.csv`, you could use `pattern = "^FEED_.*\\.csv$"`.
+
+> ⚠️ **Important File Naming Rules:**
+>
+> All your filenames must include the date as six digits (YYMMDD) somewhere in the name. My code finds the first six-digit sequence and treats it as the date!
+>
+> ✅ These work great:
+>
+> \- `VR200306.DAT`
+>
+> \- `Feeder_data_200306.DAT`
+>
+> \- `wat_200306_01.DAT`
+>
+> ❌ This won't work:
+>
+> \- `wat_01_200306.DAT` (because "01" appears before the date)
+>
+> For easiest results, name your files like mine: - Feeder data: `VRYYMMDD.DAT` - Water data: `VWYYMMDD.DAT`
+
+------------------------------------------------------------------------
+
+## 5. Handle Daylight Saving Time ⏰
+
+Daylight saving time changes can mess up our timestamps! Let's identify when those pesky clock changes happened:
+
+```{r}
+# Find the DST change dates for your data years
+# 👉 IMPORTANT: Change these values to match your study period!
+dst_df <- get_dst_switch_info(
+  years = c(2020, 2021),     # 📅 EDIT THIS to match your data years!
+  tz = "America/Chicago"     # EDIT THIS to your timezone if needed
+                             # `Sys.timezone()` uses the timezone your computer is located at. 
+)
+print(dst_df)
+```
+
+> **Ollie's Note:** 🌎 This currently works for North American time zones. Using data from elsewhere? Reach out to the package maintainer - we'd love to help add support for your region!
+
+------------------------------------------------------------------------
+
+## 6. Process Your Data 🔄
+
+### Keep only matching days
+
+If you want to analyze only days with both feeder AND drinker data:
+
+```{r}
+# Match up feeder and drinker files by date
+date_compare <- compare_files(fileNames.f, fileNames.w)
+fileNames.f <- date_compare$feed    # Updated feeder file list
+fileNames.w <- date_compare$water   # Updated drinker file list
+cat("Filenames for your feeder data: \n\n", fileNames.f)
+cat("\n\n")
+cat("Filenames for your drinker data: \n\n", fileNames.w)
+
+# Get the overall date range of your dataset
+date_result <- get_date_range(fileNames.f)
+cat("\n\n")
+cat("Date range of your dataset: ", date_result)
+```
+
+### Process feeder data
+
+Now let's clean up all those feeder logs!
+
+```{r}
+# 🔄 CHANGE THESE VALUES to match your data format! 🔄
+
+# Define your column names (if your files don't have headers)
+# 👉 EDIT THIS to match your data file structure
+col_names <- c("transponder", "cow", "bin", "start", "end", "duration", 
+              "startweight", "endweight", "comment", "intake", "intake2", 
+              "X1", "X2", "X3", "X4", "x5")
+
+# IDs to remove (test tags, etc.)
+# 👉 EDIT THIS to remove any test tags or invalid IDs in your data
+drop_ids <- c(0, 1556, 5015, 1111, 1112, 1113, 1114)
+
+# Which feeding bins are part of your study?
+# 👉 EDIT THIS to include only the bin numbers you want to analyze
+bins = 1:30  # This keeps bins 1 through 30 - adjust as needed!
+
+# Which columns do you want to keep?
+# 👉 EDIT THIS to keep only the columns you need for analysis
+select_cols <- c("transponder", "cow", "bin", "start", "end", 
+                "duration", "startweight", "endweight", "intake")
+
+# Process all feeder files!
+all_fed <- process_all_feed(
+    files = fileNames.f,
+    col_names   = col_names,     # Column names for your data
+    id_col      = "cow",         # 👉 EDIT if your ID column has a different name
+    drop_ids    = drop_ids,      # IDs to remove
+    trans_col   = "transponder", # 👉 EDIT if your transponder column has a different name
+    start_col   = "start",       # 👉 EDIT if your start time column has a different name
+    end_col     = "end",         # 👉 EDIT if your end time column has a different name
+    drop_trans  = NULL,          # 👉 Add transponder IDs to remove if needed
+    bin_col     = "bin",         # 👉 EDIT if your bin column has a different name
+    bins        = bins,          # Bins to include (from above)
+    select_cols = select_cols,   # Columns to keep (from above)
+    sep         = ",",           # 👉 EDIT if your files use a different separator (tab="\t")
+    header      = FALSE,         # 👉 Change to TRUE if your files have header rows
+    daylight_change_duration = 60, # DST time shift (usually 60 minutes)
+    tz          = "America/Vancouver", # 👉 EDIT to your timezone!
+    adjust_dst  = TRUE           # Set to FALSE if you don't want DST corrections
+)
+
+print(str(all_fed))
+```
+
+Now you can inspect the output `all_fed` by reading it in using:
+
+```{r, echo=TRUE, eval=FALSE}
+load(system.file("extdata", "all_fed.rda", package = "moo4feed"))
+```
+
+### Process water data
+
+And now for the drinker logs:
+
+```{r}
+# 🔄 CHANGE THESE VALUES for your water/drinker data! 🔄
+
+# Column names for water data
+# 👉 EDIT THIS if your water data has different columns
+col_names_wat <- c("transponder", "cow", "bin", "start", "end", 
+                  "duration", "startweight", "endweight", "intake")
+
+# Which water bins to include
+# 👉 EDIT THIS to match the drinker bin numbers at your facility
+bins_water = 1:5  # This includes drinker bins 1-5
+
+# Columns to keep
+# 👉 EDIT THIS to keep only the columns you need
+select_cols_wat <- c("transponder", "cow", "bin", "start", "end", 
+                    "duration", "startweight", "endweight", "intake")
+
+# Process all water files!
+all_wat <- process_all_water(
+    files = fileNames.w,
+    col_names   = col_names_wat, # Column names from above
+    id_col      = "cow",         # 👉 EDIT if your ID column has a different name
+    drop_ids    = drop_ids,      # IDs to remove (using same list as feeder data)
+    trans_col   = "transponder", # 👉 EDIT if your transponder column has a different name
+    start_col   = "start",       # 👉 EDIT if your start time column has a different name
+    end_col     = "end",         # 👉 EDIT if your end time column has a different name
+    drop_trans  = NULL,          # 👉 Add transponder IDs to remove if needed
+    bin_col     = "bin",         # 👉 EDIT if your bin column has a different name
+    bins        = bins_water,    # Bins to include (from above)
+    select_cols = select_cols_wat, # Columns to keep (from above)
+    bin_offset  = 100,           # 👉 EDIT if you want a different offset for water bin IDs
+                                 # This helps distinguish water bins from feed bins
+    sep         = ",",           # 👉 EDIT if your files use a different separator
+    header      = FALSE,         # 👉 Change to TRUE if your files have header rows
+    daylight_change_duration = 60, # DST time shift
+    tz          = "America/Vancouver", # 👉 EDIT to match your timezone!
+    adjust_dst  = TRUE           # Set to FALSE if you don't want DST corrections
+)
+
+print(str(all_wat))
+```
+
+Now you can inspect the output `all_wat` by reading it in using:
+
+```{r, echo=TRUE, eval=FALSE}
+load(system.file("extdata", "all_wat.rda", package = "moo4feed"))
+```
+
+------------------------------------------------------------------------
+
+## 🎉 Congratulations!
+
+You've now got clean, organized feeding and drinking data ready for analysis! Ollie is proud of you!
+
+Stay tuned for the next vignette where we'll explore what these dairy cows are actually up to!
+
+> **Ollie's Final Tips:** 🦦
+>
+> -   If you get errors, double-check the values you customized (look for the 👉 emoji markers)
+> -   Make sure your file naming follows the date format rules
+> -   For more help on any function, use `?function_name` (e.g., `?process_all_feed`)
+> -   Use `OlsonNames()` to see all timezone options
+> -   Need detailed examples? Look at the sample data with: `list.files(system.file("extdata", package = "moo4feed"))`

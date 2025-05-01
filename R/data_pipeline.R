@@ -501,7 +501,7 @@ process_all <- function(
   date_meta <- file_name_processing(files, col_name = "path")
   date_meta$date <- lubridate::ymd(date_meta$date, tz = tz)
   years         <- unique(lubridate::year(date_meta$date))
-  dst_df        <- dst_switch_day(years = years, tz = tz)
+  dst_df        <- get_dst_switch_info(years = years, tz = tz)
 
   # 3) Pre‑allocate output --------------------------------------------------
   out <- vector("list", length(files))
@@ -564,10 +564,15 @@ process_all <- function(
           tz                       = tz
         )
 
+        df[[start_col]] <- lubridate::ymd_hms(paste(date, add_hour_prefix(as.character( df[[start_col]]) )), tz = tz)
+        df[[end_col]]   <- lubridate::ymd_hms(paste(date, add_hour_prefix(as.character( df[[end_col]]) )),   tz = tz)
+
+      } else {
+        df[[start_col]] <- lubridate::ymd_hms(paste(date, df[[start_col]]), tz = tz)
+        df[[end_col]]   <- lubridate::ymd_hms(paste(date, df[[end_col]]),   tz = tz)
+
       }
 
-      df[[start_col]] <- lubridate::ymd_hms(paste(date, df[[start_col]]), tz = tz)
-      df[[end_col]]   <- lubridate::ymd_hms(paste(date, df[[end_col]]),   tz = tz)
       df[["date"]] <- lubridate::date(df[[start_col]]) # extract date
     }
 
@@ -593,4 +598,20 @@ process_all <- function(
 #' @noRd
 is_north_american_tz <- function(tz) {
   grepl("^America/|^Canada/", tz)
+}
+
+#' Ensure hour component is present in a vector of time strings
+#'
+#' This function checks whether each time string in a vector includes an hour component.
+#' If not, it prepends "0H " to standardize the format.
+#'
+#' @param time_vec A character vector of time strings (e.g., "3M 26S", "1H 2M 3S").
+#'
+#' @return A character vector with each time string guaranteed to include an hour component.
+#'
+#' @noRd
+add_hour_prefix <- function(time_vec) {
+  has_hour <- grepl("\\d+H", time_vec)
+  time_vec[!has_hour] <- paste0("0H ", time_vec[!has_hour])
+  time_vec
 }
