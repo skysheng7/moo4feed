@@ -120,6 +120,16 @@ git push -u origin &lt;fix-name-of-your-bugfix&gt;</code></pre>
 <li>the <code>git push -u origin &lt;fix-name-of-your-bugfix&gt;</code> only needs to be run once. <code>-u</code> will tells Git to remember the remote branch so you can just run <code>git push</code> or <code>git pull</code> next time (instead of specifying the branch again). <code>origin</code> refers to your remote repository.</li>
 </ul></li>
 <li>
+<p>Style your code using tidyverse style</p>
+<p>If you have created/modified 1 or a few new R scripts, run:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">styler</span><span class="fu">::</span><span class="fu"><a href="https://styler.r-lib.org/reference/style_file.html" class="external-link">style_file</a></span><span class="op">(</span><span class="st">"path/to/your/r/scripts"</span><span class="op">)</span></span></code></pre></div>
+<p>If you wish to style an entire directory, run:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">styler</span><span class="fu">::</span><span class="fu"><a href="https://styler.r-lib.org/reference/style_dir.html" class="external-link">style_dir</a></span><span class="op">(</span><span class="st">"path/to/your/folder"</span><span class="op">)</span></span></code></pre></div>
+<p>Remember to commit and push your changes.</p>
+</li>
+<li>
 <p>Open a Pull Request</p>
 <ul><li>Go to the repository on GitHub</li>
 <li>Navigate to your branch</li>
@@ -163,6 +173,16 @@ git push</code></pre>
 <p>Once your work is ready, you’ll open a pull request within your own fork to merge the changes from <code>&lt;new-branch-name&gt;</code> into the main (or master) branch within your fork.</p>
 </li>
 <li>
+<p>Style your code using tidyverse style</p>
+<p>If you have created/modified 1 or a few new R scripts, run:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">styler</span><span class="fu">::</span><span class="fu"><a href="https://styler.r-lib.org/reference/style_file.html" class="external-link">style_file</a></span><span class="op">(</span><span class="st">"path/to/your/r/scripts"</span><span class="op">)</span></span></code></pre></div>
+<p>If you wish to style an entire directory, run:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">styler</span><span class="fu">::</span><span class="fu"><a href="https://styler.r-lib.org/reference/style_dir.html" class="external-link">style_dir</a></span><span class="op">(</span><span class="st">"path/to/your/folder"</span><span class="op">)</span></span></code></pre></div>
+<p>Remember to commit and push your changes.</p>
+</li>
+<li>
 <p>Submit a Pull Request to the original <a href="https://github.com/skysheng7/moo4feed.git" class="external-link">moo4feed repository</a>:</p>
 <ul><li>Go to your fork on GitHub</li>
 <li>You’ll see a banner suggesting “Compare &amp; Pull Request” — click it</li>
@@ -182,11 +202,11 @@ git push</code></pre>
 <h2 id="development-setup">Development Setup<a class="anchor" aria-label="anchor" href="#development-setup"></a></h2>
 <ol style="list-style-type: decimal"><li>
 <p>Install dependencies and load the package:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install any missing dependencies</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_deps</span><span class="op">(</span>dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load code without sourcing individual R files and functions</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">load_all</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <blockquote>
@@ -195,15 +215,15 @@ git push</code></pre>
 </li>
 <li>
 <p>When adding a new package dependency:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_package</span><span class="op">(</span><span class="st">"pkgName"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/use_package.html" class="external-link">use_package</a></span><span class="op">(</span><span class="st">"pkgName"</span><span class="op">)</span></span></code></pre></div>
 <blockquote>
 <p>⚠️ <strong>Never use <code><a href="https://rdrr.io/r/base/library.html" class="external-link">library()</a></code> calls</strong> in R package development.</p>
 </blockquote>
 </li>
 <li>
 <p>Run tests and checks regularly:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run all tests</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">test</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -217,12 +237,12 @@ git push</code></pre>
 <div class="section level2">
 <h2 id="local-development-tips">Local Development Tips<a class="anchor" aria-label="anchor" href="#local-development-tips"></a></h2>
 <ul><li><p>Use <code>devtools::load_all()</code> instead of <code><a href="https://rdrr.io/r/base/source.html" class="external-link">source()</a></code> for proper namespace handling</p></li>
-<li><p>Add packages via <code>usethis::use_package()</code> rather than <code><a href="https://rdrr.io/r/base/library.html" class="external-link">library()</a></code> calls</p></li>
+<li><p>Add packages via <code><a href="https://usethis.r-lib.org/reference/use_package.html" class="external-link">usethis::use_package()</a></code> rather than <code><a href="https://rdrr.io/r/base/library.html" class="external-link">library()</a></code> calls</p></li>
 <li><p>Run <code>devtools::check()</code> regularly to catch issues early</p></li>
 <li><p>Avoid hard-coding file paths—the directory structure shifts as the package moves from source to bundle to build. Instead, obtain paths programmatically with <code>system.file("folder-name", package = "moo4feed")</code>.</p></li>
 <li>
 <p>Build the pkgdown site (if applicable) with:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">pkgdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">build_site</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <blockquote>
 <p>⚠️ <strong>Note:</strong> If you built the <strong>pkgdown</strong> site locally using the code above,<br>
@@ -258,7 +278,7 @@ Therefore, the <code>pkgdown/</code> directory should not be committed — the s
 <h2 id="testing-documentation">Testing Documentation<a class="anchor" aria-label="anchor" href="#testing-documentation"></a></h2>
 <ul><li>
 <p>All <code>@examples</code> must run without errors. Test by running:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">document</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">run_examples</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </li>
@@ -267,13 +287,13 @@ Therefore, the <code>pkgdown/</code> directory should not be committed — the s
 <h2 id="building-documentation">Building Documentation<a class="anchor" aria-label="anchor" href="#building-documentation"></a></h2>
 <ul><li>
 <p>After updating <code>.R</code> files and roxygen comments, rebuild documentation:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">document</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </li>
 <li><p>Inspect the generated files in the <code>man/</code> directory to ensure quality</p></li>
 <li>
 <p>You can also inspect it on the website by re-building the pkgdown site with:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">pkgdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">build_site</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </li>
 </ul><hr></div>
@@ -285,12 +305,12 @@ Therefore, the <code>pkgdown/</code> directory should not be committed — the s
 <ol style="list-style-type: decimal"><li><p>Find existing tests in the <code>tests/testthat</code> directory</p></li>
 <li>
 <p>When creating a new function:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create new R script for your function</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_r</span><span class="op">(</span><span class="st">"your_new_function_name"</span><span class="op">)</span></span>
+<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/use_r.html" class="external-link">use_r</a></span><span class="op">(</span><span class="st">"your_new_function_name"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Create associated test file</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_test</span><span class="op">(</span><span class="st">"your_new_function_name"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/use_r.html" class="external-link">use_test</a></span><span class="op">(</span><span class="st">"your_new_function_name"</span><span class="op">)</span></span></code></pre></div>
 <p>This creates:</p>
 <ul><li>
 <code>R/your_new_function_name.R</code> for the function</li>
@@ -305,12 +325,12 @@ Therefore, the <code>pkgdown/</code> directory should not be committed — the s
 </ul></li>
 <li>
 <p>Run the entire test suite:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">test</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </li>
 <li>
 <p>Check test coverage:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">covr</span><span class="fu">::</span><span class="fu"><a href="http://covr.r-lib.org/reference/package_coverage.html" class="external-link">package_coverage</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>We aim for 80-95% code coverage.</p>
 </li>
