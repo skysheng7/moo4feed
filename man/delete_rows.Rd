@@ -27,9 +27,9 @@ by their ID, or certain sensors/transponders/insentec bins.
 }
 \examples{
 df <- data.frame(
-  cow         = c("A", "B", "C"),
+  cow = c("A", "B", "C"),
   transponder = c("X1", "X2", "X3"),
-  Value       = 1:3,
+  Value = 1:3,
   stringsAsFactors = FALSE
 )
 print(df)

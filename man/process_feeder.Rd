@@ -72,10 +72,10 @@ Reads, cleans, and filters a feeder file:
 \examples{
 # Create a toy feeder data frame
 original <- data.frame(
-  cow         = c("A","B","C","A"),
-  transponder = c("X1","X2","X3","X2"),
-  bin         = c(1,2,3,2),
-  value       = c(10,20,30,40),
+  cow = c("A", "B", "C", "A"),
+  transponder = c("X1", "X2", "X3", "X2"),
+  bin = c(1, 2, 3, 2),
+  value = c(10, 20, 30, 40),
   stringsAsFactors = FALSE
 )
 print(original)
@@ -84,11 +84,11 @@ write.csv(original, tmp, row.names = FALSE)
 
 # Drop cow "A" and transponder "X2", keep bins 2:3, select only cow, bin, value
 process_feeder(
-  file        = tmp,
-  drop_ids    = "A",
-  drop_trans  = "X2",
-  bins        = 2:3,
-  select_cols = c("cow","bin","value"),
+  file = tmp,
+  drop_ids = "A",
+  drop_trans = "X2",
+  bins = 2:3,
+  select_cols = c("cow", "bin", "value"),
   header = TRUE
 )
 unlink(tmp)

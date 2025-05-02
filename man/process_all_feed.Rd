@@ -116,23 +116,24 @@ for (i in seq_along(files)) {
   write.csv(
     data.frame(
       cow         = c("A", "B", "C"),
-      transponder = c("X1","X2","X3"),
+      transponder = c("X1", "X2", "X3"),
       bin         = i + 0:2,
       start       = c("01:00:00", "02:00:00", "03:00:00"),
       end         = c("01:05:00", "02:06:01", "03:03:00")
     ),
-    file      = files[i],
+    file = files[i],
     row.names = FALSE
-   )
+  )
 }
 
 res <- process_all_feed(
-files       = files,
-bins        = 1:10,
-select_cols = c("cow","bin","start","end"),
-sep         = ",",
-header      = TRUE,
-tz          = "America/Vancouver")
+  files       = files,
+  bins        = 1:10,
+  select_cols = c("cow", "bin", "start", "end"),
+  sep         = ",",
+  header      = TRUE,
+  tz          = "America/Vancouver"
+)
 
 res
 

@@ -20,8 +20,8 @@ each corresponding pair. The combined data frames are returned in a new list, gr
 }
 \examples{
 fed_list <- list(
-"2024-01-01" = data.frame(cow = 1:2, intake = c(10, 20)),
-"2024-01-02" = data.frame(cow = 3:4, intake = c(30, 40))
+  "2024-01-01" = data.frame(cow = 1:2, intake = c(10, 20)),
+  "2024-01-02" = data.frame(cow = 3:4, intake = c(30, 40))
 )
 wat_list <- list(
   "2024-01-01" = data.frame(cow = 1:2, intake = c(5, 15)),

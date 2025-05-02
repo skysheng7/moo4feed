@@ -31,8 +31,8 @@ automatically extract the continuous digits out of the filename
 }
 \examples{
 file_name_processing(
- file_names = c(" feed/VR200715.DAT ", "feed/VR200716.DAT", "feed/VR200718.DAT"),
- col_name = "Feed_dir"
+  file_names = c(" feed/VR200715.DAT ", "feed/VR200716.DAT", "feed/VR200718.DAT"),
+  col_name = "Feed_dir"
 )
 
 }

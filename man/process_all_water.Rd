@@ -113,15 +113,15 @@ Steps:
 }
 \examples{
 # 1) create three small water‐data CSVs in a temporary directory
-tmp   <- tempdir()
+tmp <- tempdir()
 files <- file.path(tmp, paste0("VW2023042", 0:3, ".csv"))
 for (i in seq_along(files)) {
   toy <- data.frame(
-    cow         = c("A", "B", "C"),
+    cow = c("A", "B", "C"),
     transponder = c("W1", "W2", "W3"),
-    bin         = i + c(1, 2, 3),
-    start       = c("06:00:00", "07:00:00", "08:00:00"),
-    end         = c("06:05:00", "07:05:00", "08:05:00"),
+    bin = i + c(1, 2, 3),
+    start = c("06:00:00", "07:00:00", "08:00:00"),
+    end = c("06:05:00", "07:05:00", "08:05:00"),
     stringsAsFactors = FALSE
   )
   write.csv(toy, files[i], row.names = FALSE)

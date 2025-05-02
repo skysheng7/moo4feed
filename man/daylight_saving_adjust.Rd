@@ -79,14 +79,17 @@ appropriate time correction logic. The adjustment logic for each case is as foll
 }
 \examples{
 dst_info <- get_dst_switch_info(years = 2021, tz = "America/Vancouver")
-df <- data.frame(Start = c("01:30:00", "02:30:00", "04:00:00"),
-                 End = c("02:00:00", "03:00:00", "04:30:00"))
+df <- data.frame(
+  Start = c("01:30:00", "02:30:00", "04:00:00"),
+  End = c("02:00:00", "03:00:00", "04:30:00")
+)
 print(df)
 daylight_saving_adjust(df,
-                      date = "2021-11-07",
-                      start_col = "Start",
-                      end_col = "End",
-                      dst_df = dst_info,
-                      tz = "America/Vancouver")
+  date = "2021-11-07",
+  start_col = "Start",
+  end_col = "End",
+  dst_df = dst_info,
+  tz = "America/Vancouver"
+)
 
 }

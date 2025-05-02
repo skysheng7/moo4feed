@@ -34,6 +34,6 @@ In the case of ambiguous or unresolvable transitions, \code{NULL} is returned wi
 \examples{
 dst_switch_hm("2020-03-08", tz = "America/Vancouver")
 dst_switch_hm("2020-11-01", tz = "America/Vancouver")
-dst_switch_hm("2020-07-01", tz = "Etc/UTC")  # No DST change
+dst_switch_hm("2020-07-01", tz = "Etc/UTC") # No DST change
 
 }

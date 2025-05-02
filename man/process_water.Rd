@@ -76,10 +76,10 @@ Reads, cleans, filters, and offsets a water file:
 \examples{
 # create a toy data file
 original <- data.frame(
-  cow         = c("D","E","F","D"),
-  transponder = c("Y1","Y2","Y3","Y2"),
-  bin         = c(5,6,7,6),
-  value       = c(50,60,70,80),
+  cow = c("D", "E", "F", "D"),
+  transponder = c("Y1", "Y2", "Y3", "Y2"),
+  bin = c(5, 6, 7, 6),
+  value = c(50, 60, 70, 80),
   stringsAsFactors = FALSE
 )
 print(original)
@@ -88,13 +88,13 @@ write.table(original, tmp, sep = ",", row.names = FALSE, col.names = FALSE)
 
 # Drop nothing, keep bins 5:7, offset +100, select cow, bin, value
 process_water(
-  file        = tmp,
-  col_names   = c("cow", "transponder", "bin", "value"),
-  drop_ids    = NULL,
-  drop_trans  = NULL,
-  bins        = 5:7,
-  select_cols = c("cow","bin","value"),
-  bin_offset  = 100,
+  file = tmp,
+  col_names = c("cow", "transponder", "bin", "value"),
+  drop_ids = NULL,
+  drop_trans = NULL,
+  bins = 5:7,
+  select_cols = c("cow", "bin", "value"),
+  bin_offset = 100,
   header = FALSE
 )
 unlink(tmp)
