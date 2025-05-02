@@ -1,8 +1,8 @@
 ---
-title: "data_cleaning"
+title: "Data cleaning"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{data_cleaning}
+  %\VignetteIndexEntry{Data cleaning}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -198,11 +198,7 @@ all_fed <- process_all_feed(
 print(str(all_fed))
 ```
 
-Now you can inspect the output `all_fed` by reading it in using:
-
-```{r, echo=TRUE, eval=FALSE}
-load(system.file("extdata", "all_fed.rda", package = "moo4feed"))
-```
+You can now directly inspect the `all_fed` dataset, as it's lazy-loaded with the package (it won't consume memory until you actually use it).
 
 ### Process water data
 
@@ -250,11 +246,7 @@ all_wat <- process_all_water(
 print(str(all_wat))
 ```
 
-Now you can inspect the output `all_wat` by reading it in using:
-
-```{r, echo=TRUE, eval=FALSE}
-load(system.file("extdata", "all_wat.rda", package = "moo4feed"))
-```
+You can now directly inspect the `all_wat` dataset, as it's lazy-loaded with the package (it won't consume memory until you actually use it).
 
 ------------------------------------------------------------------------
 
