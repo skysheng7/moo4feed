@@ -126,19 +126,22 @@ used to determine DST rules. Use <code><a href="https://rdrr.io/r/base/timezones
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">dst_info</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_dst_switch_info.html">get_dst_switch_info</a></span><span class="op">(</span>years <span class="op">=</span> <span class="fl">2021</span>, tz <span class="op">=</span> <span class="st">"America/Vancouver"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"01:30:00"</span>, <span class="st">"02:30:00"</span>, <span class="st">"04:00:00"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                 End <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"02:00:00"</span>, <span class="st">"03:00:00"</span>, <span class="st">"04:30:00"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  Start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"01:30:00"</span>, <span class="st">"02:30:00"</span>, <span class="st">"04:00:00"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  End <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"02:00:00"</span>, <span class="st">"03:00:00"</span>, <span class="st">"04:30:00"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      Start      End</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 01:30:00 02:00:00</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2 02:30:00 03:00:00</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3 04:00:00 04:30:00</span>
 <span class="r-in"><span><span class="fu">daylight_saving_adjust</span><span class="op">(</span><span class="va">df</span>,</span></span>
-<span class="r-in"><span>                      date <span class="op">=</span> <span class="st">"2021-11-07"</span>,</span></span>
-<span class="r-in"><span>                      start_col <span class="op">=</span> <span class="st">"Start"</span>,</span></span>
-<span class="r-in"><span>                      end_col <span class="op">=</span> <span class="st">"End"</span>,</span></span>
-<span class="r-in"><span>                      dst_df <span class="op">=</span> <span class="va">dst_info</span>,</span></span>
-<span class="r-in"><span>                      tz <span class="op">=</span> <span class="st">"America/Vancouver"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  date <span class="op">=</span> <span class="st">"2021-11-07"</span>,</span></span>
+<span class="r-in"><span>  start_col <span class="op">=</span> <span class="st">"Start"</span>,</span></span>
+<span class="r-in"><span>  end_col <span class="op">=</span> <span class="st">"End"</span>,</span></span>
+<span class="r-in"><span>  dst_df <span class="op">=</span> <span class="va">dst_info</span>,</span></span>
+<span class="r-in"><span>  tz <span class="op">=</span> <span class="st">"America/Vancouver"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      Start       End</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 3H 0M 0S 3H 30M 0S</span>
 <span class="r-in"><span></span></span>

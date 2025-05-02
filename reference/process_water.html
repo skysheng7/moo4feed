@@ -154,10 +154,10 @@ this to <code>TRUE</code>.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># create a toy data file</span></span></span>
 <span class="r-in"><span><span class="va">original</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  cow         <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"D"</span>,<span class="st">"E"</span>,<span class="st">"F"</span>,<span class="st">"D"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  transponder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Y1"</span>,<span class="st">"Y2"</span>,<span class="st">"Y3"</span>,<span class="st">"Y2"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  bin         <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">6</span>,<span class="fl">7</span>,<span class="fl">6</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  value       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>,<span class="fl">60</span>,<span class="fl">70</span>,<span class="fl">80</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  cow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"D"</span>, <span class="st">"E"</span>, <span class="st">"F"</span>, <span class="st">"D"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  transponder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Y1"</span>, <span class="st">"Y2"</span>, <span class="st">"Y3"</span>, <span class="st">"Y2"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  bin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">6</span>, <span class="fl">7</span>, <span class="fl">6</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">60</span>, <span class="fl">70</span>, <span class="fl">80</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">original</span><span class="op">)</span></span></span>
@@ -171,13 +171,13 @@ this to <code>TRUE</code>.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Drop nothing, keep bins 5:7, offset +100, select cow, bin, value</span></span></span>
 <span class="r-in"><span><span class="fu">process_water</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  file        <span class="op">=</span> <span class="va">tmp</span>,</span></span>
-<span class="r-in"><span>  col_names   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cow"</span>, <span class="st">"transponder"</span>, <span class="st">"bin"</span>, <span class="st">"value"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  drop_ids    <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
-<span class="r-in"><span>  drop_trans  <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
-<span class="r-in"><span>  bins        <span class="op">=</span> <span class="fl">5</span><span class="op">:</span><span class="fl">7</span>,</span></span>
-<span class="r-in"><span>  select_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cow"</span>,<span class="st">"bin"</span>,<span class="st">"value"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  bin_offset  <span class="op">=</span> <span class="fl">100</span>,</span></span>
+<span class="r-in"><span>  file <span class="op">=</span> <span class="va">tmp</span>,</span></span>
+<span class="r-in"><span>  col_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cow"</span>, <span class="st">"transponder"</span>, <span class="st">"bin"</span>, <span class="st">"value"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  drop_ids <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>  drop_trans <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>  bins <span class="op">=</span> <span class="fl">5</span><span class="op">:</span><span class="fl">7</span>,</span></span>
+<span class="r-in"><span>  select_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cow"</span>, <span class="st">"bin"</span>, <span class="st">"value"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  bin_offset <span class="op">=</span> <span class="fl">100</span>,</span></span>
 <span class="r-in"><span>  header <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   cow bin value</span>
