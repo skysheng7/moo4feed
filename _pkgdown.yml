@@ -58,3 +58,12 @@ reference:
   contents:
   - cap_first
   - lower_first
+
+- title: Data
+
+- subtitle: Example clean data
+  desc: >
+    Example of clean data output from code in "Data cleaning" article
+  contents:
+  - all_fed
+  - all_wat
