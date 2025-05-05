@@ -110,6 +110,9 @@ If you're already added as a collaborator to the GitHub repository:
    
 7. Open a Pull Request
 
+   > ⚠️ **Heads‑up:** If you generated the site locally with `pkgdown::build_site()`,  
+   > delete the resulting `pkgdown/` folder **before** opening a PR to `main`.
+   
    - Go to the repository on GitHub
    - Navigate to your branch
    - Click "Open Pull Request", or "Compare & Pull Request" banner
@@ -123,74 +126,32 @@ If you're already added as a collaborator to the GitHub repository:
 
 # For External Contributors
 
-If you're not a direct collaborator on the repository:
+If you do **not** have direct push access to the repo:
 
-## Getting Started
+1. **Fork** the repository → <https://github.com/skysheng7/moo4feed>
 
-1. Fork the repository on GitHub: <https://github.com/skysheng7/moo4feed>
-   
-2. Clone your fork locally:
+2. **Clone** your fork:
 
-   ```shell
-   git clone git@github.com:your_name_here/moo4feed.git
+   ```bash
+   git clone git@github.com:your‑username/moo4feed.git
+   cd moo4feed
    ```
 
-3. You can work directly on the main branch of your fork or create a feature branch if preferred
+3. (Optional) Create a feature branch:
 
-4. Double click on `moo4feed` R project object in the root directory on your local computer. 
-
-   This will open a new R studio window showing the R package. There should be a `Git` panel on the top right side. You can double check after you click on `Git`, there should be a drop down button named after your new branch name `(fix-name-of-your-bugfix)`.
-
-
-5. Make your changes and follow the [common development guidelines](#common-development-guidelines)
-
-   If you want to create new functions please follow the guidelines in [Writing Tests](#writing-tests).
-
-6. Commit and push your changes to your current branch:
-
-   ```shell
-   git add .
-   git commit -m "fix: summarize your changes"
-   git push
+   ```bash
+   git checkout -b feat‑cool‑thing
    ```
    
-   If you're working on a new branch called `<new-branch-name>`, you'll need to run:
+4. Now follow Steps 3--7 in the [Internal Collaborators workflow](#for-internal-collaborators)
 
-   ```shell
-   git push -u origin <new-branch-name>
-   ```
-   This command pushes your new branch to your fork on GitHub and sets up tracking so future push and pull commands know where to go. 
-   
-   Once your work is ready, you’ll open a pull request within your own fork to merge the changes from `<new-branch-name>` into the main (or master) branch within your fork.
+   open the R Project, develop, style, test, etc.
 
-7. List your new functions in `_pkgdown.yml`
-   
-   If you added new functions into `R/`, please remember to organize the new functions into the `_pkgdown.yml` index. Github actions workflow will fail if new functions are not indexed at the pkgdown website.
+5. Push your changes to your forked repository or new branch → open a PR from your fork back to `skysheng7/moo4feed`:
 
-8. Style your code using tidyverse style
-   
-   If you have created/modified 1 or a few new R scripts, run:
-   
-   ```r
-   styler::style_file("path/to/your/r/scripts")
-   ```
-   
-   If you wish to style an entire directory, run:
-   
-   ```r
-   styler::style_dir("path/to/your/folder")
-   ```
-   
-   Remember to commit and push your changes.
-   
-9. Submit a Pull Request to the original [moo4feed repository](https://github.com/skysheng7/moo4feed.git):
-   - Go to your fork on GitHub
-   - You'll see a banner suggesting "Compare & Pull Request" — click it
-   - Ensure the base repository is the original repo and the base branch is main
-   - Submit your pull request with a clear title and description
-   - 3 Github actions will be triggered to [1] check if your new changes passes R CMD checks, [2] pkgdown website can be built and [3] calculate code coverage.
+   - click “Compare & pull request” on GitHub and fill in the details.
 
-   > 🚀 Only open a PR when your code passes all tests and checks without errors/warnings/notes.
+   >🚀 Open the PR only after all checks pass with no errors/warnings/notes.
 
 ---
 
