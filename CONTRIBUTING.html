@@ -131,6 +131,10 @@ git push -u origin &lt;fix-name-of-your-bugfix&gt;</code></pre>
 </li>
 <li>
 <p>Open a Pull Request</p>
+<blockquote>
+<p>⚠️ <strong>Heads‑up:</strong> If you generated the site locally with <code><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">pkgdown::build_site()</a></code>,<br>
+delete the resulting <code>pkgdown/</code> folder <strong>before</strong> opening a PR to <code>main</code>.</p>
+</blockquote>
 <ul><li>Go to the repository on GitHub</li>
 <li>Navigate to your branch</li>
 <li>Click “Open Pull Request”, or “Compare &amp; Pull Request” banner</li>
@@ -145,60 +149,29 @@ git push -u origin &lt;fix-name-of-your-bugfix&gt;</code></pre>
 </div>
 <div class="section level1">
 <h1 id="for-external-contributors">For External Contributors<a class="anchor" aria-label="anchor" href="#for-external-contributors"></a></h1>
-<p>If you’re not a direct collaborator on the repository:</p>
-<div class="section level2">
-<h2 id="getting-started-1">Getting Started<a class="anchor" aria-label="anchor" href="#getting-started-1"></a></h2>
-<ol style="list-style-type: decimal"><li><p>Fork the repository on GitHub: <a href="https://github.com/skysheng7/moo4feed" class="external-link uri">https://github.com/skysheng7/moo4feed</a></p></li>
+<p>If you do <strong>not</strong> have direct push access to the repo:</p>
+<ol style="list-style-type: decimal"><li><p><strong>Fork</strong> the repository → <a href="https://github.com/skysheng7/moo4feed" class="external-link uri">https://github.com/skysheng7/moo4feed</a></p></li>
 <li>
-<p>Clone your fork locally:</p>
-<pre class="shell"><code>git clone git@github.com:your_name_here/moo4feed.git</code></pre>
-</li>
-<li><p>You can work directly on the main branch of your fork or create a feature branch if preferred</p></li>
-<li>
-<p>Double click on <code>moo4feed</code> R project object in the root directory on your local computer.</p>
-<p>This will open a new R studio window showing the R package. There should be a <code>Git</code> panel on the top right side. You can double check after you click on <code>Git</code>, there should be a drop down button named after your new branch name <code>(fix-name-of-your-bugfix)</code>.</p>
+<p><strong>Clone</strong> your fork:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">git</span> clone git@github.com:your‑username/moo4feed.git</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="bu">cd</span> moo4feed</span></code></pre></div>
 </li>
 <li>
-<p>Make your changes and follow the <a href="#common-development-guidelines">common development guidelines</a></p>
-<p>If you want to create new functions please follow the guidelines in <a href="#writing-tests">Writing Tests</a>.</p>
+<p>(Optional) Create a feature branch:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">git</span> checkout <span class="at">-b</span> feat‑cool‑thing</span></code></pre></div>
 </li>
 <li>
-<p>Commit and push your changes to your current branch:</p>
-<pre class="shell"><code>git add .
-git commit -m "fix: summarize your changes"
-git push</code></pre>
-<p>If you’re working on a new branch called <code>&lt;new-branch-name&gt;</code>, you’ll need to run:</p>
-<pre class="shell"><code>git push -u origin &lt;new-branch-name&gt;</code></pre>
-<p>This command pushes your new branch to your fork on GitHub and sets up tracking so future push and pull commands know where to go.</p>
-<p>Once your work is ready, you’ll open a pull request within your own fork to merge the changes from <code>&lt;new-branch-name&gt;</code> into the main (or master) branch within your fork.</p>
+<p>Now follow Steps 3–7 in the <a href="#for-internal-collaborators">Internal Collaborators workflow</a></p>
+<p>open the R Project, develop, style, test, etc.</p>
 </li>
 <li>
-<p>List your new functions in <code>_pkgdown.yml</code></p>
-<p>If you added new functions into <code>R/</code>, please remember to organize the new functions into the <code>_pkgdown.yml</code> index. Github actions workflow will fail if new functions are not indexed at the pkgdown website.</p>
-</li>
-<li>
-<p>Style your code using tidyverse style</p>
-<p>If you have created/modified 1 or a few new R scripts, run:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">styler</span><span class="fu">::</span><span class="fu"><a href="https://styler.r-lib.org/reference/style_file.html" class="external-link">style_file</a></span><span class="op">(</span><span class="st">"path/to/your/r/scripts"</span><span class="op">)</span></span></code></pre></div>
-<p>If you wish to style an entire directory, run:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">styler</span><span class="fu">::</span><span class="fu"><a href="https://styler.r-lib.org/reference/style_dir.html" class="external-link">style_dir</a></span><span class="op">(</span><span class="st">"path/to/your/folder"</span><span class="op">)</span></span></code></pre></div>
-<p>Remember to commit and push your changes.</p>
-</li>
-<li>
-<p>Submit a Pull Request to the original <a href="https://github.com/skysheng7/moo4feed.git" class="external-link">moo4feed repository</a>:</p>
-<ul><li>Go to your fork on GitHub</li>
-<li>You’ll see a banner suggesting “Compare &amp; Pull Request” — click it</li>
-<li>Ensure the base repository is the original repo and the base branch is main</li>
-<li>Submit your pull request with a clear title and description</li>
-<li>3 Github actions will be triggered to [1] check if your new changes passes R CMD checks, [2] pkgdown website can be built and [3] calculate code coverage.</li>
+<p>Push your changes to your forked repository or new branch → open a PR from your fork back to <code>skysheng7/moo4feed</code>:</p>
+<ul><li>click “Compare &amp; pull request” on GitHub and fill in the details.</li>
 </ul><blockquote>
-<p>🚀 Only open a PR when your code passes all tests and checks without errors/warnings/notes.</p>
+<p>🚀 Open the PR only after all checks pass with no errors/warnings/notes.</p>
 </blockquote>
 </li>
 </ol><hr></div>
-</div>
 <div class="section level1">
 <h1 id="common-development-guidelines">Common Development Guidelines<a class="anchor" aria-label="anchor" href="#common-development-guidelines"></a></h1>
 <p>These guidelines apply to both internal and external contributors:</p>
@@ -206,11 +179,11 @@ git push</code></pre>
 <h2 id="development-setup">Development Setup<a class="anchor" aria-label="anchor" href="#development-setup"></a></h2>
 <ol style="list-style-type: decimal"><li>
 <p>Install dependencies and load the package:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install any missing dependencies</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_deps</span><span class="op">(</span>dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load code without sourcing individual R files and functions</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">load_all</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <blockquote>
@@ -219,7 +192,7 @@ git push</code></pre>
 </li>
 <li>
 <p>When adding a new package dependency:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/use_package.html" class="external-link">use_package</a></span><span class="op">(</span><span class="st">"pkgName"</span><span class="op">)</span></span></code></pre></div>
 <blockquote>
 <p>⚠️ <strong>Never use <code><a href="https://rdrr.io/r/base/library.html" class="external-link">library()</a></code> calls</strong> in R package development.</p>
@@ -227,7 +200,7 @@ git push</code></pre>
 </li>
 <li>
 <p>Run tests and checks regularly:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run all tests</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">test</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -246,7 +219,7 @@ git push</code></pre>
 <li><p>Avoid hard-coding file paths—the directory structure shifts as the package moves from source to bundle to build. Instead, obtain paths programmatically with <code>system.file("folder-name", package = "moo4feed")</code>.</p></li>
 <li>
 <p>Build the pkgdown site (if applicable) with:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">pkgdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">build_site</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <blockquote>
 <p>⚠️ <strong>Note:</strong> If you built the <strong>pkgdown</strong> site locally using the code above,<br>
@@ -282,7 +255,7 @@ Therefore, the <code>pkgdown/</code> directory should not be committed — the s
 <h2 id="testing-documentation">Testing Documentation<a class="anchor" aria-label="anchor" href="#testing-documentation"></a></h2>
 <ul><li>
 <p>All <code>@examples</code> must run without errors. Test by running:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">document</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">run_examples</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </li>
@@ -291,13 +264,13 @@ Therefore, the <code>pkgdown/</code> directory should not be committed — the s
 <h2 id="building-documentation">Building Documentation<a class="anchor" aria-label="anchor" href="#building-documentation"></a></h2>
 <ul><li>
 <p>After updating <code>.R</code> files and roxygen comments, rebuild documentation:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">document</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </li>
 <li><p>Inspect the generated files in the <code>man/</code> directory to ensure quality</p></li>
 <li>
 <p>You can also inspect it on the website by re-building the pkgdown site with:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">pkgdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">build_site</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </li>
 </ul><hr></div>
@@ -309,7 +282,7 @@ Therefore, the <code>pkgdown/</code> directory should not be committed — the s
 <ol style="list-style-type: decimal"><li><p>Find existing tests in the <code>tests/testthat</code> directory</p></li>
 <li>
 <p>When creating a new function:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create new R script for your function</span></span>
 <span><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/use_r.html" class="external-link">use_r</a></span><span class="op">(</span><span class="st">"your_new_function_name"</span><span class="op">)</span></span>
 <span></span>
@@ -329,12 +302,12 @@ Therefore, the <code>pkgdown/</code> directory should not be committed — the s
 </ul></li>
 <li>
 <p>Run the entire test suite:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">test</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </li>
 <li>
 <p>Check test coverage:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">covr</span><span class="fu">::</span><span class="fu"><a href="http://covr.r-lib.org/reference/package_coverage.html" class="external-link">package_coverage</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>We aim for 80-95% code coverage.</p>
 </li>
