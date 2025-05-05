@@ -163,7 +163,11 @@ If you're not a direct collaborator on the repository:
    
    Once your work is ready, you’ll open a pull request within your own fork to merge the changes from `<new-branch-name>` into the main (or master) branch within your fork.
 
-7. Style your code using tidyverse style
+7. List your new functions in `_pkgdown.yml`
+   
+   If you added new functions into `R/`, please remember to organize the new functions into the `_pkgdown.yml` index. Github actions workflow will fail if new functions are not indexed at the pkgdown website.
+
+8. Style your code using tidyverse style
    
    If you have created/modified 1 or a few new R scripts, run:
    
@@ -179,7 +183,7 @@ If you're not a direct collaborator on the repository:
    
    Remember to commit and push your changes.
    
-8. Submit a Pull Request to the original [moo4feed repository](https://github.com/skysheng7/moo4feed.git):
+9. Submit a Pull Request to the original [moo4feed repository](https://github.com/skysheng7/moo4feed.git):
    - Go to your fork on GitHub
    - You'll see a banner suggesting "Compare & Pull Request" — click it
    - Ensure the base repository is the original repo and the base branch is main
