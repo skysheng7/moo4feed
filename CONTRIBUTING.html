@@ -173,6 +173,10 @@ git push</code></pre>
 <p>Once your work is ready, you’ll open a pull request within your own fork to merge the changes from <code>&lt;new-branch-name&gt;</code> into the main (or master) branch within your fork.</p>
 </li>
 <li>
+<p>List your new functions in <code>_pkgdown.yml</code></p>
+<p>If you added new functions into <code>R/</code>, please remember to organize the new functions into the <code>_pkgdown.yml</code> index. Github actions workflow will fail if new functions are not indexed at the pkgdown website.</p>
+</li>
+<li>
 <p>Style your code using tidyverse style</p>
 <p>If you have created/modified 1 or a few new R scripts, run:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
