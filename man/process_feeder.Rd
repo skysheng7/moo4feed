@@ -7,12 +7,12 @@
 process_feeder(
   file,
   col_names = NULL,
-  id_col = "cow",
+  id_col = the$id_col,
   drop_ids = NULL,
-  trans_col = "transponder",
+  trans_col = the$trans_col,
   drop_trans = NULL,
-  bin_col = "bin",
-  bins,
+  bin_col = the$bin_col,
+  bins = the$bins_feed,
   select_cols = NULL,
   sep = ",",
   header = FALSE
@@ -42,8 +42,8 @@ you wish to remove (default: \code{NULL}, so remove nothing).}
 \item{bin_col}{What's the name of the column recording the ID of the bin for each visit?
 This should be a single string. (default: \code{"bin"}).}
 
-\item{bins}{Which bins are included in your study? This should be a
-numeric vector indicating bin IDs to keep (e.g. \code{2:4} or \code{c(1,5)}).}
+\item{bins}{Which feed bins are included in your study? This should be a
+numeric vector indicating bin IDs to keep (e.g. \code{2:4} or \code{c(1,5)}). Default is 1:30.}
 
 \item{select_cols}{Which columns in the dataframe do you wish to keep in your
 original data frame after cleaning? This should be a character vector indicating

@@ -61,9 +61,10 @@ reference:
 
 - title: Data
 
-- subtitle: Example clean data
+- subtitle: Example data
   desc: >
-    Example of clean data output from code in "Data cleaning" article
+    Example data and functions used in code in "Data cleaning" article
   contents:
   - all_fed
   - all_wat
+  - moo4feed_example

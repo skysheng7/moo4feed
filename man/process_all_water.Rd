@@ -7,20 +7,20 @@
 process_all_water(
   files,
   col_names = NULL,
-  id_col = "cow",
+  id_col = the$id_col,
   drop_ids = NULL,
-  trans_col = "transponder",
-  start_col = "start",
-  end_col = "end",
+  trans_col = the$trans_col,
+  start_col = the$start_col,
+  end_col = the$end_col,
   drop_trans = NULL,
-  bin_col = "bin",
-  bins,
+  bin_col = the$bin_col,
+  bins = the$bins_wat,
   select_cols = NULL,
-  bin_offset = 100,
+  bin_offset = the$bin_offset,
   sep = ",",
   header = FALSE,
   daylight_change_duration = 60,
-  tz = Sys.timezone(),
+  tz = the$tz,
   adjust_dst = TRUE
 )
 }
@@ -53,8 +53,9 @@ you wish to remove (default: \code{NULL}, so remove nothing).}
 \item{bin_col}{What's the name of the column recording the ID of the bin for each visit?
 This should be a single string. (default: \code{"bin"}).}
 
-\item{bins}{Which bins are included in your study? This should be a
-numeric vector indicating bin IDs to keep (e.g. \code{2:4} or \code{c(1,5)}).}
+\item{bins}{Which water bins are included in your study for analysis? This should be
+a numeric vector of bin IDs to keep. You can supply individual
+values (e.g. \code{c(1, 3, 5)}) or a sequence (e.g. \code{2:4}). Default is 1:5}
 
 \item{select_cols}{Which columns in the dataframe do you wish to keep in your
 original data frame after cleaning? This should be a character vector indicating
@@ -73,7 +74,7 @@ this to \code{TRUE}.}
 on the day of daylight saving change? This should be an integer for the
 duration in minutes (default = 60).}
 
-\item{tz}{A valid time zone name (default is the time zone of your current physical location),
+\item{tz}{A valid time zone name (default is "America/Vancouver"),
 used to determine DST rules. Use \code{OlsonNames()} to see all valid options.}
 
 \item{adjust_dst}{Do you want to apply the function (\code{\link[=daylight_saving_adjust]{daylight_saving_adjust()}})

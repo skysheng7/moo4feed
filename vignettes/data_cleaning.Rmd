@@ -262,4 +262,4 @@ Stay tuned for the next vignette where we'll explore what these dairy cows are a
 > -   Make sure your file naming follows the date format rules
 > -   For more help on any function, use `?function_name` (e.g., `?process_all_feed`)
 > -   Use `OlsonNames()` to see all timezone options
-> -   Need detailed examples? Look at the sample data with: `list.files(system.file("extdata", package = "moo4feed"))`
+> -   Need detailed examples? Look at the sample data with: `moo4feed_example()`

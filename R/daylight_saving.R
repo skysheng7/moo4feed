@@ -11,7 +11,7 @@
 #' @param years A numeric vector specifying the range of years to evaluate.
 #'  Use the format `c(start_year, end_year)`, e.g., `years = c(2020, 2021)`.
 #'  Must contain at least one numeric value.
-#' @param tz A valid time zone name (default is the time zone of your current physical location),
+#' @param tz A valid time zone name (default is "America/Vancouver"),
 #'  used to determine DST rules. Use `OlsonNames()` to see all valid options.
 #' @param interval An integer (1–59) specifying the time resolution in minutes
 #'  used to detect DST changes (default: 1, meaning 1 minute). You almost never need
@@ -38,7 +38,7 @@
 #' dst_full <- get_dst_switch_info(years = 2021:2022, tz = "America/Vancouver")
 #'
 #' @export
-get_dst_switch_info <- function(years = c(2020, 2021), tz = Sys.timezone(), interval = 1) {
+get_dst_switch_info <- function(years = c(2020, 2021), tz = the$tz, interval = 1) {
   # --- Error handling ---
   if (!is.numeric(interval) || interval %% 1 != 0 || interval < 1 || interval > 59) {
     stop("`interval` must be an integer between 1 and 59 (unit is minutes).")
@@ -99,7 +99,7 @@ get_dst_switch_info <- function(years = c(2020, 2021), tz = Sys.timezone(), inte
 #'
 #' @examples
 #' dst_switch_day(years = c(2020, 2021), tz = "America/Vancouver")
-dst_switch_day <- function(years = c(2020, 2021), tz = Sys.timezone()) {
+dst_switch_day <- function(years = c(2020, 2021), tz = the$tz) {
   # --- Error handling ---
   if (!is.numeric(years)) {
     stop("`years` must be a numeric vector.")
@@ -178,7 +178,7 @@ dst_switch_day <- function(years = c(2020, 2021), tz = Sys.timezone()) {
 #' dst_switch_hm("2020-07-01", tz = "Etc/UTC") # No DST change
 #'
 #' @export
-dst_switch_hm <- function(date, tz = Sys.timezone(), interval = 1) {
+dst_switch_hm <- function(date, tz = the$tz, interval = 1) {
   # --- Error handling ---
   if (!inherits(date, "Date") && !is.character(date)) {
     stop("`date` should be either a string object or a Date object.")
@@ -312,7 +312,7 @@ dst_switch_hm <- function(date, tz = Sys.timezone(), interval = 1) {
 #' )
 #'
 #' @export
-daylight_saving_adjust <- function(data_frame, date, start_col = "start", end_col = "end", dst_df, daylight_change_duration = 60, tz = Sys.timezone()) {
+daylight_saving_adjust <- function(data_frame, date, start_col = the$start_col, end_col = the$end_col, dst_df, daylight_change_duration = 60, tz = the$tz) {
   # --- Error handling ---
   if (!inherits(date, "Date")) {
     date <- tryCatch(

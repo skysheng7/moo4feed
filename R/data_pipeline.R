@@ -29,8 +29,8 @@
 #'  you wish to remove (default: `NULL`, so remove nothing).
 #' @param bin_col      What's the name of the column recording the ID of the bin for each visit?
 #'  This should be a single string. (default: `"bin"`).
-#' @param bins         Which bins are included in your study? This should be a
-#'  numeric vector indicating bin IDs to keep (e.g. `2:4` or `c(1,5)`).
+#' @param bins         Which feed bins are included in your study? This should be a
+#'  numeric vector indicating bin IDs to keep (e.g. `2:4` or `c(1,5)`). Default is 1:30.
 #' @param select_cols  Which columns in the dataframe do you wish to keep in your
 #'  original data frame after cleaning? This should be a character vector indicating
 #'  columns to retain in the final output. Default is `NULL`, so we select all columns.
@@ -64,12 +64,12 @@
 #' @export
 process_feeder <- function(file,
                            col_names = NULL,
-                           id_col = "cow",
+                           id_col = the$id_col,
                            drop_ids = NULL,
-                           trans_col = "transponder",
+                           trans_col = the$trans_col,
                            drop_trans = NULL,
-                           bin_col = "bin",
-                           bins,
+                           bin_col = the$bin_col,
+                           bins = the$bins_feed,
                            select_cols = NULL,
                            sep = ",",
                            header = FALSE) {
@@ -102,6 +102,10 @@ process_feeder <- function(file,
 #' @inheritParams process_feeder
 #' @param bin_offset A single numeric value to add to each matching bin ID. Default is 100.
 #'
+#' @param bins Which water bins are included in your study for analysis? This should be
+#'  a numeric vector of bin IDs to keep. You can supply individual
+#'  values (e.g. `c(1, 3, 5)`) or a sequence (e.g. `2:4`). Default is set to 1:5
+#'
 #' @return A cleaned water data frame with shifted bin IDs.
 #'
 #' @examples
@@ -133,14 +137,14 @@ process_feeder <- function(file,
 #' @export
 process_water <- function(file,
                           col_names = NULL,
-                          id_col = "cow",
+                          id_col = the$id_col,
                           drop_ids = NULL,
-                          trans_col = "transponder",
+                          trans_col = the$trans_col,
                           drop_trans = NULL,
-                          bin_col = "bin",
-                          bins,
+                          bin_col = the$bin_col,
+                          bins = the$bins_wat,
                           select_cols = NULL,
-                          bin_offset = 100,
+                          bin_offset = the$bin_offset,
                           sep = ",",
                           header = FALSE) {
   out <- process_data_generic(
@@ -175,6 +179,9 @@ process_water <- function(file,
 #'  changes or not? This should be logical, default is TRUE. The timestamp adjustment
 #'  would only be applied if `adjust_dst` is TRUE and `tz` is set to be a timezone
 #'  in North America.
+#' @param bins Which feed bins are included in your study for analysis? This should be
+#'  a numeric vector of bin IDs to keep. You can supply individual
+#'  values (e.g. `c(1, 3, 5)`) or a sequence (e.g. `2:4`). Default is set to 1:30
 #'
 #' @return
 #' A **named** list of data frames, one per input file, named by date (YYYY‑MM-DD).
@@ -237,19 +244,19 @@ process_water <- function(file,
 process_all_feed <- function(
     files,
     col_names = NULL,
-    id_col = "cow",
+    id_col = the$id_col,
     drop_ids = NULL,
-    trans_col = "transponder",
-    start_col = "start",
-    end_col = "end",
+    trans_col = the$trans_col,
+    start_col = the$start_col,
+    end_col = the$end_col,
     drop_trans = NULL,
-    bin_col = "bin",
-    bins,
+    bin_col = the$bin_col,
+    bins = the$bins_feed,
     select_cols = NULL,
     sep = ",",
     header = FALSE,
     daylight_change_duration = 60,
-    tz = Sys.timezone(),
+    tz = the$tz,
     adjust_dst = TRUE) {
   process_all(
     files = files,
@@ -278,6 +285,9 @@ process_all_feed <- function(
 #'
 #' @inheritParams process_all_feed
 #' @param bin_offset A single numeric value to add to each matching bin ID. Default is 100.
+#' @param bins Which water bins are included in your study for analysis? This should be
+#'  a numeric vector of bin IDs to keep. You can supply individual
+#'  values (e.g. `c(1, 3, 5)`) or a sequence (e.g. `2:4`). Default is 1:5
 #'
 #' @examples
 #' # 1) create three small water‐data CSVs in a temporary directory
@@ -312,20 +322,20 @@ process_all_feed <- function(
 process_all_water <- function(
     files,
     col_names = NULL,
-    id_col = "cow",
+    id_col = the$id_col,
     drop_ids = NULL,
-    trans_col = "transponder",
-    start_col = "start",
-    end_col = "end",
+    trans_col = the$trans_col,
+    start_col = the$start_col,
+    end_col = the$end_col,
     drop_trans = NULL,
-    bin_col = "bin",
-    bins,
+    bin_col = the$bin_col,
+    bins = the$bins_wat,
     select_cols = NULL,
-    bin_offset = 100,
+    bin_offset = the$bin_offset,
     sep = ",",
     header = FALSE,
     daylight_change_duration = 60,
-    tz = Sys.timezone(),
+    tz = the$tz,
     adjust_dst = TRUE) {
   process_all(
     files = files,
@@ -373,11 +383,11 @@ process_all_water <- function(
 process_data_generic <- function(
     file,
     col_names = NULL,
-    id_col = "cow",
+    id_col = the$id_col,
     drop_ids = NULL,
-    trans_col = "transponder",
+    trans_col = the$trans_col,
     drop_trans = NULL,
-    bin_col = "bin",
+    bin_col = the$bin_col,
     bins,
     select_cols = NULL,
     sep = ",",
@@ -466,20 +476,20 @@ process_all <- function(
     files,
     file_type = "feed",
     col_names = NULL,
-    id_col = "cow",
+    id_col = the$id_col,
     drop_ids = NULL,
-    trans_col = "transponder",
-    start_col = "start",
-    end_col = "end",
+    trans_col = the$trans_col,
+    start_col = the$start_col,
+    end_col = the$end_col,
     drop_trans = NULL,
-    bin_col = "bin",
+    bin_col = the$bin_col,
     bins,
     select_cols = NULL,
-    bin_offset = 100,
+    bin_offset = the$bin_offset,
     sep = ",",
     header = FALSE,
     daylight_change_duration = 60,
-    tz = Sys.timezone(),
+    tz = the$tz,
     adjust_dst = TRUE) {
   # ---- input validation ----
   if (!is.character(files) || length(files) < 1) {

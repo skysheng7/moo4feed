@@ -4,14 +4,14 @@
 \alias{get_dst_switch_info}
 \title{Get Daylight Saving Time (DST) Switch Dates and Exact Transition Times}
 \usage{
-get_dst_switch_info(years = c(2020, 2021), tz = Sys.timezone(), interval = 1)
+get_dst_switch_info(years = c(2020, 2021), tz = the$tz, interval = 1)
 }
 \arguments{
 \item{years}{A numeric vector specifying the range of years to evaluate.
 Use the format \code{c(start_year, end_year)}, e.g., \code{years = c(2020, 2021)}.
 Must contain at least one numeric value.}
 
-\item{tz}{A valid time zone name (default is the time zone of your current physical location),
+\item{tz}{A valid time zone name (default is "America/Vancouver"),
 used to determine DST rules. Use \code{OlsonNames()} to see all valid options.}
 
 \item{interval}{An integer (1–59) specifying the time resolution in minutes

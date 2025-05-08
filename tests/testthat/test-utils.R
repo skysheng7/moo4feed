@@ -1,4 +1,4 @@
-# --------------------##-- test for read_data_safely() -------------------##---#
+# ----------------------- test for read_data_safely() -------------------------#
 
 test_that("reads a well-formed CSV file correctly", {
   df_orig <- data.frame(a = 1:3, b = 4:6)
@@ -75,4 +75,35 @@ test_that("errors on invalid `file` argument", {
     read_data_safely(letters[1:2]),
     "`file` must be a single character string"
   )
+})
+
+
+# ----------------------- test for moo4feed_example() -------------------------#
+test_that("moo4feed_example() lists the six bundled .DAT files", {
+  files <- moo4feed_example()
+
+  # The listing should be character, length 6, and match the expected names
+  expect_type(files, "character")
+  expect_length(files, 6)
+  expect_setequal(
+    files,
+    c(
+      "VR201031.DAT", "VR201101.DAT", "VR201102.DAT",
+      "VW201031.DAT", "VW201101.DAT", "VW201102.DAT"
+    )
+  )
+})
+
+test_that("moo4feed_example() returns a valid absolute path", {
+  # Retrieve one of the files (same as in your example)
+  fp <- moo4feed_example("VR201102.DAT")
+
+  # It should exist on disk and end with the correct filename
+  expect_true(file.exists(fp))
+  expect_true(grepl("VR201102\\.DAT$", fp))
+})
+
+test_that("moo4feed_example() errors on a missing file name", {
+  # Intentionally ask for something that is NOT in extdata
+  expect_error(moo4feed_example("totally_not_there.DAT"))
 })

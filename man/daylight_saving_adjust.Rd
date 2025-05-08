@@ -7,11 +7,11 @@
 daylight_saving_adjust(
   data_frame,
   date,
-  start_col = "start",
-  end_col = "end",
+  start_col = the$start_col,
+  end_col = the$end_col,
   dst_df,
   daylight_change_duration = 60,
-  tz = Sys.timezone()
+  tz = the$tz
 )
 }
 \arguments{
@@ -31,7 +31,7 @@ containing DST change dates and times for each year.}
 on the day of daylight saving change? This should be an integer for the
 duration in minutes (default = 60).}
 
-\item{tz}{A valid time zone name (default is the time zone of your current physical location),
+\item{tz}{A valid time zone name (default is "America/Vancouver"),
 used to determine DST rules. Use \code{OlsonNames()} to see all valid options.}
 }
 \value{

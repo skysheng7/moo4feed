@@ -33,7 +33,7 @@
 #' delete_rows(df, c("X2"), "transponder")
 #'
 #' @export
-delete_rows <- function(df, to_delete, col_name = "cow") {
+delete_rows <- function(df, to_delete, col_name = the$id_col) {
   if (!is.data.frame(df)) {
     stop("`df` must be a data frame.")
   }
@@ -99,7 +99,7 @@ delete_rows <- function(df, to_delete, col_name = "cow") {
 #' # 5   5    15
 #'
 #' @export
-keep_bins <- function(df, bins, bin_col = "bin") {
+keep_bins <- function(df, bins, bin_col = the$bin_col) {
   # -- 1) df must be a data frame
   if (!is.data.frame(df)) {
     stop("`df` must be a data frame.")
@@ -154,7 +154,7 @@ keep_bins <- function(df, bins, bin_col = "bin") {
 #' rename_bins(df, bins = 2:4, bin_offset = 100, bin_col = "Bin")
 #'
 #' @export
-rename_bins <- function(df, bins, bin_offset, bin_col = "bin") {
+rename_bins <- function(df, bins, bin_offset = the$bin_offset, bin_col = the$bin_col) {
   # -- 1) df must be a data frame
   if (!is.data.frame(df)) {
     stop("`df` must be a data frame.")

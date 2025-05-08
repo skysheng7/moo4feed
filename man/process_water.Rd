@@ -7,14 +7,14 @@
 process_water(
   file,
   col_names = NULL,
-  id_col = "cow",
+  id_col = the$id_col,
   drop_ids = NULL,
-  trans_col = "transponder",
+  trans_col = the$trans_col,
   drop_trans = NULL,
-  bin_col = "bin",
-  bins,
+  bin_col = the$bin_col,
+  bins = the$bins_wat,
   select_cols = NULL,
-  bin_offset = 100,
+  bin_offset = the$bin_offset,
   sep = ",",
   header = FALSE
 )
@@ -43,8 +43,9 @@ you wish to remove (default: \code{NULL}, so remove nothing).}
 \item{bin_col}{What's the name of the column recording the ID of the bin for each visit?
 This should be a single string. (default: \code{"bin"}).}
 
-\item{bins}{Which bins are included in your study? This should be a
-numeric vector indicating bin IDs to keep (e.g. \code{2:4} or \code{c(1,5)}).}
+\item{bins}{Which water bins are included in your study for analysis? This should be
+a numeric vector of bin IDs to keep. You can supply individual
+values (e.g. \code{c(1, 3, 5)}) or a sequence (e.g. \code{2:4}). Default is set to 1:5}
 
 \item{select_cols}{Which columns in the dataframe do you wish to keep in your
 original data frame after cleaning? This should be a character vector indicating

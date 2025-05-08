@@ -4,14 +4,14 @@
 \alias{dst_switch_day}
 \title{Detect Daylight Saving Time (DST) Change Dates}
 \usage{
-dst_switch_day(years = c(2020, 2021), tz = Sys.timezone())
+dst_switch_day(years = c(2020, 2021), tz = the$tz)
 }
 \arguments{
 \item{years}{A numeric vector specifying the range of years to evaluate.
 Use the format \code{c(start_year, end_year)}, e.g., \code{years = c(2020, 2021)}.
 Must contain at least one numeric value.}
 
-\item{tz}{A valid time zone name (default is the time zone of your current physical location),
+\item{tz}{A valid time zone name (default is "America/Vancouver"),
 used to determine DST rules. Use \code{OlsonNames()} to see all valid options.}
 }
 \value{
