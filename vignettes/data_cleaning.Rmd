@@ -14,7 +14,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-
 # Meet Ollie 🦦
 
 > *“Hey there, my dear friends!"* I’m **Ollie the Otter** , a curious river-explorer and data‑scientist‑in‑training. One morning while gliding along my favorite stream, I spotted a dairy barn where **hundreds of cows** were visiting automatic feeders and drinkers. The beeping RFID readers and steady munch-munch-munching created a beautiful data symphony!
@@ -149,12 +148,44 @@ cat("\n\n")
 cat("Date range of your dataset: ", date_result)
 ```
 
-### Process feeder data
+### 📌 customize the package to know column names in your dataframes
 
-Now let's clean up all those feeder logs!
+Run this **once at the start of your session** or **everytime after you call `library(moo4feed)`** so every downstream helper automatically knows your column names, bin list, and time-zone. After that, every helper function will pick up these settings automatically, so you can omit those arguments in subsequent calls.
+
+```{r reset-global-options}
+
+# ── Time zone ──────────────────────────────────────────────────────────────
+set_tz2("America/Vancouver")   # governs the handling of timestamp data
+
+# ── Column names in the raw feeder/drinker files ──────────────────────────────
+set_id_col2("cow")             # animal ID
+set_trans_col2("transponder")  # ID of transponder
+set_start_col2("start")        # visit start time
+set_end_col2("end")            # visit end time
+set_bin_col2("bin")            # feed-bin identifier
+
+# ── Binning rules ──────────────────────────────────────────────────────────
+set_bins_feed2(1:30)           # the ID of 30 feed bins present in the barn
+set_bins_wat2(1:5)             # the ID of 5 water bins present in the barn
+set_bin_offset2(100)           # add 100 to water bin ID to differentiate from feeder ID
+```
+
+You can verify any setting at any time with the corresponding getter functions:
 
 ```{r}
-# 🔄 CHANGE THESE VALUES to match your data format! 🔄
+tz2()        
+id_col2()    
+bins_feed2() 
+```
+
+------------------------------------------------------------------------
+
+### 🔄 Process feeder data **without repeating arguments**
+
+Because the defaults were set above, you now supply **only what truly varies file-to-file**—column **values** or clean-up vectors—while the helper pulls the rest from the global options.
+
+```{r process-feeder}
+# 🔄 CHANGE THESE VALUES to match your data files! 🔄
 
 # Define your column names (if your files don't have headers)
 # 👉 EDIT THIS to match your data file structure
@@ -166,10 +197,6 @@ col_names <- c("transponder", "cow", "bin", "start", "end", "duration",
 # 👉 EDIT THIS to remove any test tags or invalid IDs in your data
 drop_ids <- c(0, 1556, 5015, 1111, 1112, 1113, 1114)
 
-# Which feeding bins are part of your study?
-# 👉 EDIT THIS to include only the bin numbers you want to analyze
-bins = 1:30  # This keeps bins 1 through 30 - adjust as needed!
-
 # Which columns do you want to keep?
 # 👉 EDIT THIS to keep only the columns you need for analysis
 select_cols <- c("transponder", "cow", "bin", "start", "end", 
@@ -179,71 +206,68 @@ select_cols <- c("transponder", "cow", "bin", "start", "end",
 all_fed <- process_all_feed(
     files = fileNames.f,
     col_names   = col_names,     # Column names for your data
-    id_col      = "cow",         # 👉 EDIT if your ID column has a different name
     drop_ids    = drop_ids,      # IDs to remove
-    trans_col   = "transponder", # 👉 EDIT if your transponder column has a different name
-    start_col   = "start",       # 👉 EDIT if your start time column has a different name
-    end_col     = "end",         # 👉 EDIT if your end time column has a different name
-    drop_trans  = NULL,          # 👉 Add transponder IDs to remove if needed
-    bin_col     = "bin",         # 👉 EDIT if your bin column has a different name
-    bins        = bins,          # Bins to include (from above)
     select_cols = select_cols,   # Columns to keep (from above)
     sep         = ",",           # 👉 EDIT if your files use a different separator (tab="\t")
     header      = FALSE,         # 👉 Change to TRUE if your files have header rows
-    daylight_change_duration = 60, # DST time shift (usually 60 minutes)
-    tz          = "America/Vancouver", # 👉 EDIT to your timezone!
     adjust_dst  = TRUE           # Set to FALSE if you don't want DST corrections
 )
 
-print(str(all_fed))
+str(all_fed)
+```
+
+Notice we **didn’t** specify `id_col`, `trans_col`, `start_col`, `end_col`, `bin_col`, `bins`, or `tz`—they’re all filled in automatically from the global settings you defined above. If you ever need a one-off override (for example, a different time-zone just for this call) you can still pass that argument directly:
+
+``` r
+process_all_feed(files = fileNames.f, tz = "UTC", adjust_dst = FALSE)
 ```
 
 You can now directly inspect the `all_fed` dataset, as it's lazy-loaded with the package (it won't consume memory until you actually use it).
 
-### Process water data
+------------------------------------------------------------------------
 
-And now for the drinker logs:
+**Rewriting process_all_water**
 
-```{r}
-# 🔄 CHANGE THESE VALUES for your water/drinker data! 🔄
+I need to rewrite the process_all_water section, following the new pattern. It should consist of two parts: one for customization using the setter block, and another for the "feeder" process, similar to what we did for feed.
 
-# Column names for water data
-# 👉 EDIT THIS if your water data has different columns
-col_names_wat <- c("transponder", "cow", "bin", "start", "end", 
-                  "duration", "startweight", "endweight", "intake")
+Since we don't need to reset the global variables, I'll make sure we use them implicitly and only pass varying items. The original snippet sets variables like id_col—I'll remove those and use the global defaults instead. I'll also add the necessary instructions as comments for clarity.
 
-# Which water bins to include
-# 👉 EDIT THIS to match the drinker bin numbers at your facility
-bins_water = 1:5  # This includes drinker bins 1-5
+Thought for 11 seconds
 
-# Columns to keep
-# 👉 EDIT THIS to keep only the columns you need
-select_cols_wat <- c("transponder", "cow", "bin", "start", "end", 
-                    "duration", "startweight", "endweight", "intake")
+#### 🔄 Process water data **without repeating arguments**
 
-# Process all water files!
-all_wat <- process_all_water(
-    files = fileNames.w,
-    col_names   = col_names_wat, # Column names from above
-    id_col      = "cow",         # 👉 EDIT if your ID column has a different name
-    drop_ids    = drop_ids,      # IDs to remove (using same list as feeder data)
-    trans_col   = "transponder", # 👉 EDIT if your transponder column has a different name
-    start_col   = "start",       # 👉 EDIT if your start time column has a different name
-    end_col     = "end",         # 👉 EDIT if your end time column has a different name
-    drop_trans  = NULL,          # 👉 Add transponder IDs to remove if needed
-    bin_col     = "bin",         # 👉 EDIT if your bin column has a different name
-    bins        = bins_water,    # Bins to include (from above)
-    select_cols = select_cols_wat, # Columns to keep (from above)
-    bin_offset  = 100,           # 👉 EDIT if you want a different offset for water bin IDs
-                                 # This helps distinguish water bins from feed bins
-    sep         = ",",           # 👉 EDIT if your files use a different separator
-    header      = FALSE,         # 👉 Change to TRUE if your files have header rows
-    daylight_change_duration = 60, # DST time shift
-    tz          = "America/Vancouver", # 👉 EDIT to match your timezone!
-    adjust_dst  = TRUE           # Set to FALSE if you don't want DST corrections
+Because we already set the global defaults (time-zone, column names, bin rules) in the *reset-global-options* chunk, the drinker workflow is just as terse as the feeder one—supply only what differs from file to file.
+
+```{r process-water}
+# 🔄 CHANGE THESE VALUES to match your water files! 🔄
+
+# Column names (only needed because drinker files have no headers)
+col_names_wat <- c(
+  "transponder", "cow", "bin", "start", "end",
+  "duration", "startweight", "endweight", "intake"
 )
 
-print(str(all_wat))
+# Same ID clean-up list we used for feeder data
+drop_ids <- c(0, 1556, 5015, 1111:1114)
+
+# Columns you want to keep
+select_cols_wat <- c(
+  "transponder", "cow", "bin", "start", "end",
+  "duration", "startweight", "endweight", "intake"
+)
+
+# Process all drinker logs
+all_wat <- process_all_water(
+  files        = fileNames.w,
+  col_names    = col_names_wat,
+  drop_ids     = drop_ids,
+  select_cols  = select_cols_wat,
+  sep          = ",",
+  header       = FALSE,
+  adjust_dst   = TRUE          # Disable if you don’t need DST correction
+)
+
+str(all_wat)
 ```
 
 You can now directly inspect the `all_wat` dataset, as it's lazy-loaded with the package (it won't consume memory until you actually use it).
