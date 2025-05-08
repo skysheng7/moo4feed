@@ -68,3 +68,27 @@ reference:
   - all_fed
   - all_wat
   - moo4feed_example
+
+- subtitle: Global variables
+  desc: >
+    Checking and setting global variables to customize fit your data
+  contents:
+  - tz2
+  - set_tz2
+  - id_col2
+  - set_id_col2
+  - trans_col2
+  - set_trans_col2
+  - start_col2
+  - set_start_col2
+  - end_col2
+  - set_end_col2
+  - bin_col2
+  - set_bin_col2
+  - bin_offset2
+  - set_bin_offset2
+  - bins_feed2
+  - set_bins_feed2
+  - bins_wat2
+  - set_bins_wat2
+
