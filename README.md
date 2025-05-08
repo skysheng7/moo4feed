@@ -62,6 +62,10 @@ Full documentation and examples are available at the [package website](https://s
 - **Contributor:** Nicole Lopez  
   - Affiliation: University of British Columbia  
   - Email: <nicoleangelpty@gmail.com>
+
+- **Contributor:** Colombe Tolokin
+  - Affiliation: University of British Columbia  
+  - Email: <colombe.tolokin@outlook.com>
   
 ## Acknowledgements
 
