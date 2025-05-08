@@ -44,7 +44,7 @@ on a given date in a specified time zone.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">dst_switch_hm</span><span class="op">(</span><span class="va">date</span>, tz <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/timezones.html" class="external-link">Sys.timezone</a></span><span class="op">(</span><span class="op">)</span>, interval <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">dst_switch_hm</span><span class="op">(</span><span class="va">date</span>, tz <span class="op">=</span> <span class="va">the</span><span class="op">$</span><span class="va">tz</span>, interval <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -56,7 +56,7 @@ on a given date in a specified time zone.</p>
 
 
 <dt id="arg-tz">tz<a class="anchor" aria-label="anchor" href="#arg-tz"></a></dt>
-<dd><p>A valid time zone name (default is the time zone of your current physical location),
+<dd><p>A valid time zone name (default is "America/Vancouver"),
 used to determine DST rules. Use <code><a href="https://rdrr.io/r/base/timezones.html" class="external-link">OlsonNames()</a></code> to see all valid options.</p></dd>
 
 
@@ -97,7 +97,7 @@ In the case of ambiguous or unresolvable transitions, <code>NULL</code> is retur
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Kehan (Sky) Sheng.</p>
+  <p>Developed by Kehan (Sky) Sheng, Borbala Foris, Daniel Weary, Marina von Keyserlingk.</p>
 </div>
 
 <div class="pkgdown-footer-right">

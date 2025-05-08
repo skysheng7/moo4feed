@@ -44,7 +44,7 @@ Saving Time for each year in the input range.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">dst_switch_day</span><span class="op">(</span>years <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2020</span>, <span class="fl">2021</span><span class="op">)</span>, tz <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/timezones.html" class="external-link">Sys.timezone</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">dst_switch_day</span><span class="op">(</span>years <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2020</span>, <span class="fl">2021</span><span class="op">)</span>, tz <span class="op">=</span> <span class="va">the</span><span class="op">$</span><span class="va">tz</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -58,7 +58,7 @@ Must contain at least one numeric value.</p></dd>
 
 
 <dt id="arg-tz">tz<a class="anchor" aria-label="anchor" href="#arg-tz"></a></dt>
-<dd><p>A valid time zone name (default is the time zone of your current physical location),
+<dd><p>A valid time zone name (default is "America/Vancouver"),
 used to determine DST rules. Use <code><a href="https://rdrr.io/r/base/timezones.html" class="external-link">OlsonNames()</a></code> to see all valid options.</p></dd>
 
 </dl></div>
@@ -93,7 +93,7 @@ the function returns an empty data frame and issues a warning.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Kehan (Sky) Sheng.</p>
+  <p>Developed by Kehan (Sky) Sheng, Borbala Foris, Daniel Weary, Marina von Keyserlingk.</p>
 </div>
 
 <div class="pkgdown-footer-right">
