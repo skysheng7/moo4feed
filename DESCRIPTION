@@ -11,7 +11,9 @@ Authors@R:
       person("Marina", "von Keyserlingk", email = "nina@mail.ubc.ca", role = c("aut", "cph", "fnd"),
            comment = c(ORCID = "0000-0002-1427-3152")),
       person("Kratika", "Rathi", email = "kratikar2011@gmail.com", role = c("ctb")),
-      person("Nicole", "Lopez", email = "nicoleangelpty@gmail.com", role = c("ctb")))
+      person("Nicole", "Lopez", email = "nicoleangelpty@gmail.com", role = c("ctb")),
+      person("Colombe", "Tolokin", email = "colombe.tolokin@outlook.com", role = c("ctb")))
+
 Description: An end-to-end toolkit for turning raw electronic feeder or drinker logs into biologically meaningful metrics. Users submit visit-level feeding and drinking data, and the package automatically cleans the data; derives core variables such as meal length, intake, rate, and bout duration; generates other innovative features including exploratory and social behaviours, and environmental competitiveness. 
 License: MIT + file LICENSE
 Depends: R (>= 4.1.0)
