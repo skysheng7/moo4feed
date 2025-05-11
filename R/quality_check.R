@@ -110,6 +110,7 @@ qc_config <- function(
 #'  if you don't have water data
 #' @param cfg   A configuration list created by [qc_config()].
 #' @param tz    Time-zone for all analysis related to timestamps.  Defaults to [tz2()].
+#' @param verbose Logical. If TRUE, print details of data where errors were detected
 #'
 #' @return A list with four elements:
 #' \describe{
@@ -126,9 +127,10 @@ qc_config <- function(
 #' out$warnings
 #' @export
 qc <- function(feed      = NULL,
-                        water     = NULL,
-                        cfg       = qc_config(),
-                        tz        = tz2()) {
+               water     = NULL,
+               cfg       = qc_config(),
+               tz        = tz2(),
+               verbose = TRUE) {
 
   # --- 0. combine ----------------------------------------------------------
   if (!is.null(feed) && !is.null(water)) {
@@ -148,7 +150,7 @@ qc <- function(feed      = NULL,
 
   # --- 2. run QC modules ---------------------------------------------------
   warn <- qc_total_cows(comb, warn, cfg)
-  warn <- qc_double_detection(comb, warn)
+  warn <- qc_double_detection(comb, warn, verbose = verbose)
   warn <- qc_negatives(comb, warn)
   warn <- qc_long_duration(feed,  warn, cfg, "feed")
   warn <- qc_long_duration(water, warn, cfg, "water")
@@ -203,8 +205,8 @@ qc_warning_skeleton <- function(comb,
 
   # Adding additional columns with default values (blank)
   general_columns <- c(
-    "total_cows", "missing_cow", "double_bin_detect",
-    "double_cow_detect", "negative_duration", "negative_intake",
+    "total_cows", "missing_cow", "double_detection_bins",
+    "negative_duration", "negative_intake",
     "cows_disappeared_after_noon", "bins_never_visited", "bins_low_traffic"
   )
 
@@ -249,13 +251,13 @@ qc_warning_skeleton <- function(comb,
 #' flags potential issues if the count differs from expected.
 #'
 #' @inheritParams qc_warning_skeleton
+#' @inheritParams qc
 #' @param warn Warning data frame to update
-#' @param cfg Configuration list with expected cow counts
 #'
 #' @return Updated warning data frame with total cow information
 #' @keywords internal
 #' @noRd
-qc_total_cows <- function(comb, warn, cfg) {
+qc_total_cows <- function(comb, warn, cfg = qc_config()) {
   # Iterate through each day's data
   for (i in seq_along(comb)) {
     date <- names(comb)[i]
@@ -266,30 +268,35 @@ qc_total_cows <- function(comb, warn, cfg) {
     }
 
     # Count unique cows
-    cow_count <- length(unique(comb[[i]]$Cow))
+    cow_count <- length(unique(comb[[i]][[id_col2()]]))
     warn$total_cows[day_idx] <- as.character(cow_count)
 
     # Check against expected count if provided
-    if (!is.na(cfg$total_cows_expected) && cow_count < cfg$total_cows_expected) {
+    if (!is.na(cfg$total_cows_expected) && (cow_count < cfg$total_cows_expected)) {
       warn$missing_cow[day_idx] <- "Yes"
     }
   }
 
+  warn$total_cows <- as.integer(warn$total_cows)
+
   return(warn)
 }
 
-#' Check for double detection issues
+
+#' Check for double detection issues efficiently
 #'
-#' Identifies and records cases where the same cow is detected at multiple bins
-#' simultaneously, or when multiple cows are detected at the same bin simultaneously.
+#' Identifies and records all types of concurrent detection problems:
+#' 1. Same animal at multiple bins simultaneously
+#' 2. Multiple animals at the same bin simultaneously
+#' Records all problematic bins in a single column for easier review.
 #'
-#' @param comb List of combined daily data frames
-#' @param warn Warning data frame to update
+#' @inheritParams qc_total_cows
+#' @inheritParams qc
 #'
-#' @return Updated warning data frame with double detection information
+#' @return Updated warning data frame with consolidated double detection information
 #' @keywords internal
 #' @noRd
-qc_double_detection <- function(comb, warn) {
+qc_double_detection <- function(comb, warn, verbose) {
   # Process each day
   for (i in seq_along(comb)) {
     date <- names(comb)[i]
@@ -299,96 +306,103 @@ qc_double_detection <- function(comb, warn) {
       next
     }
 
-    # Sort data by cow and start time for processing
-    day_data <- comb[[i]]
+    # Get all problematic bins in a single efficient call
+    problematic_bins <- qc_detect_all_double_detections(comb[[i]], verbose=verbose)
 
-    # Check for 1 cow at 2 bins (double bin detection)
-    double_bin_detect <- qc_detect_double_bins(day_data)
-    if (nrow(double_bin_detect) > 0) {
-      faulty_bins <- sort(unique(double_bin_detect$Bin))
-      warn$double_bin_detect[day_idx] <- paste(faulty_bins, collapse = "; ")
-    }
-
-    # Check for 1 bin with 2 cows (double cow detection)
-    double_cow_detect <- qc_detect_double_cows(day_data)
-    if (nrow(double_cow_detect) > 0) {
-      faulty_bins <- sort(unique(double_cow_detect$Bin))
-      warn$double_cow_detect[day_idx] <- paste(faulty_bins, collapse = "; ")
+    # Update warning with all problematic bins in a single column
+    if (length(problematic_bins) > 0) {
+      warn$double_detection_bins[day_idx] <- paste(sort(problematic_bins), collapse = "; ")
     }
   }
 
   return(warn)
 }
 
-#' Detect when the same cow is recorded at multiple bins simultaneously
+#' Detect all types of double detections efficiently
+#'
+#' Uses data.table for faster processing to detect both types of double detections:
+#' - Same animal at multiple bins simultaneously (only the first bin is flagged as problematic)
+#' - Multiple animals at the same bin simultaneously (all such bins are flagged)
 #'
 #' @param day_data A single day's data frame
+#' @inheritParams qc
 #'
-#' @return Data frame with rows where double bin detections occurred
+#' @return Vector of unique bin IDs with detection issues
 #' @keywords internal
 #' @noRd
-qc_detect_double_bins <- function(day_data) {
-  # Sort the data by cow ID and start time
-  day_data <- day_data[order(day_data$Cow, day_data$Start), ]
+qc_detect_all_double_detections <- function(day_data, verbose) {
+  # Get column names from global settings
+  id_col <- id_col2()
+  start_col <- start_col2()
+  end_col <- end_col2()
+  bin_col <- bin_col2()
 
-  # Create a data frame to store double detections
-  double_detect <- data.frame()
+  # Convert to data.table for better performance
+  dt <- data.table::as.data.table(day_data)
+  problematic_bins <- integer(0)
 
-  # Get unique cows
-  cows <- unique(day_data$Cow)
+  # 1. Check for same animal at different bins
+  if (nrow(dt) > 0) {
+    # Sort by animal ID and start time
+    data.table::setorderv(dt, cols = c(id_col, start_col))
 
-  # Check each cow's data for overlapping visits
-  for (cow in cows) {
-    cow_data <- day_data[day_data$Cow == cow, ]
+    # For each animal, find overlapping time intervals
+    dt[, overlap_prev := c(FALSE, get(start_col)[-1] < get(end_col)[-.N]), by = id_col]
 
-    if (nrow(cow_data) > 1) {
-      for (k in 2:nrow(cow_data)) {
-        # If the start time of current visit is before the end time of previous visit
-        if (cow_data$Start[k] < cow_data$End[k-1]) {
-          # This is a double detection - add both rows
-          double_detect <- rbind(double_detect, cow_data[(k-1):k, ])
-        }
+    # Print double detection details if requested
+    if (any(dt$overlap_prev)) {
+      overlap_indices <- which(dt$overlap_prev)
+      prev_indices <- overlap_indices - 1
+
+      # Extract the bin IDs for these previous rows
+      first_problematic_bins <- unique(dt[prev_indices, get(bin_col)])
+
+      #Get only the FIRST bin in each overlapping pair (it's the problematic one)
+      problematic_bins <- c(problematic_bins, first_problematic_bins)
+
+      # Combine indices and ensure they're sorted by animal and start time
+      all_overlap_row_indices <- sort(c(overlap_indices, prev_indices))
+
+      # Print the double detection rows
+      if (verbose) {
+        cat("\n==== SAME ANIMAL RECORDED AT DIFFERENT BINS SIMULTANEOUSLY ====\n")
+        print(dt[all_overlap_row_indices])
       }
+
     }
+
+    # 2. Check for different animals at same bin
+    # Sort by bin ID and start time
+    data.table::setorderv(dt, cols = c(bin_col, start_col))
+
+    # For each bin, find overlapping time intervals with different animals
+    dt[, overlap_prev_bin := c(FALSE, get(start_col)[-1] < get(end_col)[-.N]), by = bin_col]
+
+    # Print bin-based overlaps if requested
+    if (any(dt$overlap_prev_bin)) {
+      bin_overlap_indices <- which(dt$overlap_prev_bin)
+      bin_prev_indices <- bin_overlap_indices - 1
+
+      # Combine indices and ensure they're sorted by bin and start time
+      all_bin_overlap_indices <- sort(c(bin_overlap_indices, bin_prev_indices))
+
+      # Get bins involved in bin-based overlaps (all such bins are problematic)
+      bin_overlap_bins <- dt[all_bin_overlap_indices, unique(get(bin_col))]
+      problematic_bins <- c(problematic_bins, bin_overlap_bins)
+
+      if(verbose){
+        cat("\n==== DIFFERENT ANIMALS DETECTED AT SAME BIN SIMULTANEOUSLY ====\n")
+        print(dt[all_bin_overlap_indices])
+      }
+
+    }
+
   }
 
-  return(double_detect)
+  # Return unique problematic bins
+  return(unique(problematic_bins))
 }
 
-#' Detect when multiple cows are recorded at the same bin simultaneously
-#'
-#' @param day_data A single day's data frame
-#'
-#' @return Data frame with rows where double cow detections occurred
-#' @keywords internal
-#' @noRd
-qc_detect_double_cows <- function(day_data) {
-  # Sort the data by bin ID and start time
-  day_data <- day_data[order(day_data$Bin, day_data$Start), ]
-
-  # Create a data frame to store double detections
-  double_detect <- data.frame()
-
-  # Get unique bins
-  bins <- unique(day_data$Bin)
-
-  # Check each bin's data for overlapping visits
-  for (bin in bins) {
-    bin_data <- day_data[day_data$Bin == bin, ]
-
-    if (nrow(bin_data) > 1) {
-      for (k in 2:nrow(bin_data)) {
-        # If the start time of current visit is before the end time of previous visit
-        if (bin_data$Start[k] < bin_data$End[k-1]) {
-          # This is a double detection - add both rows
-          double_detect <- rbind(double_detect, bin_data[(k-1):k, ])
-        }
-      }
-    }
-  }
-
-  return(double_detect)
-}
 
 #' Check for negative durations and intakes
 #'
@@ -401,6 +415,9 @@ qc_detect_double_cows <- function(day_data) {
 #' @keywords internal
 #' @noRd
 qc_negatives <- function(comb, warn) {
+  # Get column names from global settings
+  bin_col <- bin_col2()
+
   # Process each day
   for (i in seq_along(comb)) {
     date <- names(comb)[i]
@@ -415,14 +432,14 @@ qc_negatives <- function(comb, warn) {
     # Check for negative durations
     neg_duration <- day_data[day_data$Duration < 0, ]
     if (nrow(neg_duration) > 0) {
-      neg_bins <- sort(unique(neg_duration$Bin))
+      neg_bins <- sort(unique(neg_duration[[bin_col]]))
       warn$negative_duration[day_idx] <- paste(neg_bins, collapse = "; ")
     }
 
     # Check for significant negative intakes (< -1)
     neg_intake <- day_data[day_data$Intake < 0 & abs(day_data$Intake) > 1, ]
     if (nrow(neg_intake) > 0) {
-      neg_bins <- sort(unique(neg_intake$Bin))
+      neg_bins <- sort(unique(neg_intake[[bin_col]]))
       warn$negative_intake[day_idx] <- paste(neg_bins, collapse = "; ")
     }
   }
