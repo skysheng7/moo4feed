@@ -175,10 +175,10 @@ qc <- function(feed      = NULL,
 # ------------------------ Internal helper functions --------------------------#
 # -----------------------------------------------------------------------------#
 
-#' Create an empty warnings tibble with one row per day
+#' Create an empty warnings dataframe with one row per day
 #'
+#' @inheritParams qc
 #' @param comb      List of daily data frames (feed, water or combined).
-#' @param tz        Character.  Time‑zone for parsing the date names.
 #' @param has_feed  Logical.  Whether *feed*‑specific columns are needed.
 #' @param has_water Logical.  Whether *water*‑specific columns are needed.
 #'
@@ -199,7 +199,7 @@ qc_warning_skeleton <- function(comb,
   date_list <- names(comb)
 
   # Create the initial data frame
-  warn_df <- data.frame(date = ymd(date_list, tz = tz))
+  warn_df <- data.frame(date = lubridate::ymd(date_list, tz = tz))
 
   # Adding additional columns with default values (blank)
   general_columns <- c(
@@ -248,7 +248,7 @@ qc_warning_skeleton <- function(comb,
 #' Computes the total number of unique cows in each day's data and
 #' flags potential issues if the count differs from expected.
 #'
-#' @param comb List of combined daily data frames
+#' @inheritParams qc_warning_skeleton
 #' @param warn Warning data frame to update
 #' @param cfg Configuration list with expected cow counts
 #'
