@@ -16,7 +16,7 @@
 #' @return Updated warning data frame with consolidated double detection information
 #' @keywords internal
 #' @noRd
-qc_double_detection <- function(comb, warn, verbose) {
+qc_double_detection <- function(comb, warn, verbose = TRUE) {
   # Process each day
   for (i in seq_along(comb)) {
     date <- names(comb)[i]
@@ -50,75 +50,69 @@ qc_double_detection <- function(comb, warn, verbose) {
 #' @return Vector of unique bin IDs with detection issues
 #' @keywords internal
 #' @noRd
-qc_detect_all_double_detections <- function(day_data, verbose) {
-  # Get column names from global settings
-  id_col <- id_col2()
-  start_col <- start_col2()
-  end_col <- end_col2()
-  bin_col <- bin_col2()
+qc_detect_all_double_detections <- function(day_data, verbose = TRUE) {
+  # -------------------------------------------------------------------
+  # Column names supplied by your own helpers (leave these un-prefixed)
+  id_col    <- id_col2()      # e.g. "cow_id"
+  start_col <- start_col2()   # e.g. "start_time"
+  end_col   <- end_col2()     # e.g. "end_time"
+  bin_col   <- bin_col2()     # e.g. "bin_id"
+  # -------------------------------------------------------------------
 
-  # Convert to data.table for better performance
-  dt <- data.table::as.data.table(day_data)
-  problematic_bins <- integer(0)
+  if (nrow(day_data) == 0L) return(integer(0))
 
-  # 1. Check for same animal at different bins
-  if (nrow(dt) > 0) {
-    # Sort by animal ID and start time
-    data.table::setorderv(dt, cols = c(id_col, start_col))
+  # Turn the character names into symbols for tidy-eval
+  id_sym    <- rlang::sym(id_col)
+  start_sym <- rlang::sym(start_col)
+  end_sym   <- rlang::sym(end_col)
+  bin_sym   <- rlang::sym(bin_col)
 
-    # For each animal, find overlapping time intervals
-    dt[, overlap_prev := c(FALSE, get(start_col)[-1] < get(end_col)[-.N]), by = id_col]
+  #####################################################################
+  # 1. SAME ANIMAL RECORDED AT >1 BIN DURING AN OVERLAP
+  #####################################################################
+  same_animal_overlap <- day_data |>
+    dplyr::arrange(!!id_sym, !!start_sym) |>
+    dplyr::group_by(!!id_sym)|>
+    dplyr::mutate(
+      overlap = (!!end_sym) > dplyr::lead(!!start_sym)
+    ) |>
+    dplyr::ungroup()
 
-    # Print double detection details if requested
-    if (any(dt$overlap_prev)) {
-      overlap_indices <- which(dt$overlap_prev)
-      prev_indices <- overlap_indices - 1
+  same_animal_overlap_bins <- same_animal_overlap |>
+    dplyr::filter(overlap) |>
+    dplyr::pull(!!bin_sym) |>
+    unique()
 
-      # Extract the bin IDs for these previous rows
-      first_problematic_bins <- unique(dt[prev_indices, get(bin_col)])
-
-      #Get only the FIRST bin in each overlapping pair (it's the problematic one)
-      problematic_bins <- c(problematic_bins, first_problematic_bins)
-
-      # Combine indices and ensure they're sorted by animal and start time
-      all_overlap_row_indices <- sort(c(overlap_indices, prev_indices))
-
-      # Print the double detection rows
-      if (verbose) {
-        cat("\n==== SAME ANIMAL RECORDED AT DIFFERENT BINS SIMULTANEOUSLY ====\n")
-        print(dt[all_overlap_row_indices])
-      }
-
-    }
-
-    # 2. Check for different animals at same bin
-    # Sort by bin ID and start time
-    data.table::setorderv(dt, cols = c(bin_col, start_col))
-
-    # For each bin, find overlapping time intervals with different animals
-    dt[, overlap_prev_bin := c(FALSE, get(start_col)[-1] < get(end_col)[-.N]), by = bin_col]
-
-    # Print bin-based overlaps if requested
-    if (any(dt$overlap_prev_bin)) {
-      bin_overlap_indices <- which(dt$overlap_prev_bin)
-      bin_prev_indices <- bin_overlap_indices - 1
-
-      # Combine indices and ensure they're sorted by bin and start time
-      all_bin_overlap_indices <- sort(c(bin_overlap_indices, bin_prev_indices))
-
-      # Get bins involved in bin-based overlaps (all such bins are problematic)
-      bin_overlap_bins <- dt[all_bin_overlap_indices, unique(get(bin_col))]
-      problematic_bins <- c(problematic_bins, bin_overlap_bins)
-
-      if(verbose){
-        cat("\n==== DIFFERENT ANIMALS DETECTED AT SAME BIN SIMULTANEOUSLY ====\n")
-        print(dt[all_bin_overlap_indices])
-      }
-
-    }
-
+  if (verbose && nrow(same_animal_overlap) > 0) {
+    cat("\n==== SAME ANIMAL RECORDED AT DIFFERENT BINS SIMULTANEOUSLY ====\n")
+    print(
+      same_animal_overlap %>%
+        dplyr::filter(overlap | dplyr::lag(overlap))
+    )
   }
 
-  # Return unique problematic bins
-  return(unique(problematic_bins))
+  #####################################################################
+  # 2. DIFFERENT ANIMALS RECORDED AT THE SAME BIN DURING AN OVERLAP
+  #####################################################################
+  diff_animals_1bin_df <- day_data %>%
+    dplyr::arrange(!!bin_sym, !!start_sym) %>%
+    dplyr::group_by(!!bin_sym) %>%
+    dplyr::mutate(
+      overlap = (!!end_sym) > dplyr::lead(!!start_sym)
+    ) %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(overlap | dplyr::lag(overlap))
+
+  diff_animals_1bin_df_bins <- diff_animals_1bin_df %>%
+    dplyr::pull(!!bin_sym) %>%
+    unique()
+
+  if (verbose && nrow(diff_animals_1bin_df) > 0) {
+    cat("\n==== DIFFERENT ANIMALS DETECTED AT SAME BIN SIMULTANEOUSLY ====\n")
+    print(
+      diff_animals_1bin_df
+    )
+  }
+
+  unique(c(same_animal_overlap_bins, diff_animals_1bin_df_bins))
 }

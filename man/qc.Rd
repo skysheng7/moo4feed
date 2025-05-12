@@ -34,6 +34,6 @@ Run full quality-control check on feeder and drinker data
 }
 \examples{
 cfg <- qc_config(high_dur_feed = 2500, low_visit_threshold = 5)
-out <- qc(feed = all_feed, water = all_water, cfg = cfg)
+out <- qc(feed = all_fed, water = all_wat, cfg = cfg)
 out$warnings
 }

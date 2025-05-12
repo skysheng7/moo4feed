@@ -3,14 +3,13 @@
 #' Identifies and flags records with negative duration or intake values,
 #' combining them into a single warning column
 #'
-#' @param comb List of combined daily data frames
-#' @param warn Warning data frame to update
-#' @param verbose Logical indicating whether to print detailed information
+#' @inheritParams qc_double_detection
+#' @inheritParams qc
 #'
 #' @return Updated warning data frame with negative value information
 #' @keywords internal
 #' @noRd
-qc_negatives <- function(comb, warn, verbose = FALSE) {
+qc_negatives <- function(comb, warn, verbose = TRUE, cfg) {
   # Get column names from global settings
   bin_col <- bin_col2()
 
@@ -37,8 +36,8 @@ qc_negatives <- function(comb, warn, verbose = FALSE) {
       }
     }
 
-    # Check for significant negative intakes (< -1)
-    neg_intake <- day_data[day_data$Intake < 0 & abs(day_data$Intake) > 1, ]
+    # Check for significant negative intakes (< negative value of calibration_error)
+    neg_intake <- day_data[day_data$Intake < 0 & abs(day_data$Intake) > cfg$calibration_error, ]
     if (nrow(neg_intake) > 0) {
       intake_bins <- unique(neg_intake[[bin_col]])
       problematic_bins <- c(problematic_bins, intake_bins)
