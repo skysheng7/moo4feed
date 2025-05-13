@@ -1,3 +1,5 @@
+utils::globalVariables(c("Cow", "date"))
+
 #' Summarize Feed or Water Data
 #'
 #' This function aggregates and summarizes the total daily intake, duration, and visits from a data frame
@@ -9,7 +11,7 @@
 #' @return A list containing three data frames: 'intake', 'duration', and 'visits' each summarizing the respective metric for each cow and date.
 #' @export
 summarize_feed_water_data <- function(data_frame, type = "Feeding") {
-  type <- capitalizeFirst(type)
+  type <- cap_first(type)
   # Ensure type is either "Feeding" or "Drinking"
   if(!type %in% c("Feeding", "Drinking")) {
     stop("The type should be either 'Feeding' or 'Drinking'.")
@@ -24,7 +26,9 @@ summarize_feed_water_data <- function(data_frame, type = "Feeding") {
   colnames(duration) <- c("date", "Cow", paste0(type, "_Duration(s)"))
 
   # Visits
-  visits <- count(data_frame, vars = c("date", "Cow"))
+  # visits <- count(data_frame, vars = c("date", "Cow"))
+  visits <- data_frame |>
+    dplyr::count(date, Cow)
   colnames(visits) <- c("date", "Cow", paste0(type, "_Visits"))
 
   # Return a list of the three summary data.frames

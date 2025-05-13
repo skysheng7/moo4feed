@@ -20,7 +20,7 @@ check_intake <- function(intake_data, warning_data, type = c("feeding", "drinkin
                          feed_intake_high_bar = feed_intake_high_bar,
                          water_intake_low_bar = water_intake_low_bar,
                          water_intake_high_bar = water_intake_high_bar) {
-  type <- deCapitalizeFirst(type)
+  type <- lower_first(type)
 
   # Define thresholds based on type and limit
   thresholds <- list(
@@ -55,4 +55,5 @@ check_intake <- function(intake_data, warning_data, type = c("feeding", "drinkin
 
   return(warning_data)
 }
+
 

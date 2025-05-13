@@ -61,18 +61,31 @@ merge_feed_water_summary <- function(master_f = NULL, master_d = NULL, Insentec_
   }
 
   if (length(list_to_join) > 0) {
-    Insentec_final_summary <- join_all(list_to_join, by = c("date", "Cow"))
+    #Insentec_final_summary <- join_all(list_to_join, by = c("date", "Cow"))
+    Insentec_final_summary <- purrr::reduce(list_to_join, dplyr::full_join, by = c("date", "Cow"))
     Insentec_final_summary <- Insentec_final_summary[order(Insentec_final_summary$date, Insentec_final_summary$Cow),]
     Insentec_final_summary[is.na(Insentec_final_summary)] <- 0 # replace NA with 0
 
+    dir.create(here::here("data/results"), recursive = TRUE, showWarnings = FALSE)
+
     save(Insentec_warning, file = (here::here(paste0("data/results/", "Insentec_warning.rdata"))))
     save(Insentec_final_summary, file = (here::here(paste0("data/results/", "Feeding and drinking analysis.rdata"))))
-    cache("Insentec_final_summary")
+    #cache("Insentec_final_summary")
+    if (exists("cache")) cache("Insentec_final_summary")
   }
 
-  return(list(Insentec_final_summary = ifelse(exists("Insentec_final_summary"), Insentec_final_summary, NULL),
-              Insentec_warning = Insentec_warning))
+  #return(list(Insentec_final_summary = ifelse(exists("Insentec_final_summary"), Insentec_final_summary, NULL),
+  #            Insentec_warning = Insentec_warning))
+
+  return(list(
+    Insentec_final_summary = if (exists("Insentec_final_summary")) Insentec_final_summary else NULL,
+    Insentec_warning = Insentec_warning
+  ))
 }
+
+
+
+
 
 
 
