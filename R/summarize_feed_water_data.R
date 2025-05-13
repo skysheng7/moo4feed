@@ -10,6 +10,7 @@ utils::globalVariables(c("Cow", "date"))
 #'
 #' @return A list containing three data frames: 'intake', 'duration', and 'visits' each summarizing the respective metric for each cow and date.
 #' @export
+#' @importFrom stats aggregate
 summarize_feed_water_data <- function(data_frame, type = "Feeding") {
   type <- cap_first(type)
   # Ensure type is either "Feeding" or "Drinking"
