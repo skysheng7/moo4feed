@@ -92,3 +92,13 @@ reference:
   - bins_wat2
   - set_bins_wat2
 
+- title: Summary and Monitoring
+
+  subtitle: Intake summarization and threshold checks
+  desc: >
+    Summarize daily feed/water intake, and flag abnormal values based on thresholds.
+  contents:
+  - summarize_feed_water_data
+  - check_intake
+  - merge_feed_water_summary
+
