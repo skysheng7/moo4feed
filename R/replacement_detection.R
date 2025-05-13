@@ -4,7 +4,7 @@
 
 #' Identify and record replacement events across multiple days
 #'
-#'@description
+#' @description
 #' This function detects potential replacement behaviors in feeding or drinking
 #' bins across multiple days of data. A replacement is defined as instances where the time interval
 #' between one cow leaving and the next entering a bin is < 26 seconds.
@@ -28,7 +28,7 @@
 #'
 #' @export
 record_replacement_days <- function(data_list,
-                                      replacement_threshold = 26) {
+                                    replacement_threshold = 26) {
   replacement_list_by_date <- lapply(names(data_list), function(name) {
     record_replacement_day(data_list[[name]], replacement_threshold)
   })
@@ -111,7 +111,7 @@ record_replacement_day <- function(cur_data,
     cur_data_bin <- sorted_data[sorted_data[[bin_col]] == cur_bin, ]
 
     next_start_list <- cur_data_bin[[start_col]][-1]
-    next_cow_list   <- cur_data_bin[[id_col]][-1]
+    next_cow_list <- cur_data_bin[[id_col]][-1]
     cur_data_bin <- cur_data_bin[-nrow(cur_data_bin), ]
 
     cur_data_bin$next_start <- next_start_list
@@ -178,4 +178,3 @@ check_alibi_day <- function(cur_replacement, cur_feed_wat) {
   result$actor_at_another_bin <- NULL
   return(result)
 }
-
