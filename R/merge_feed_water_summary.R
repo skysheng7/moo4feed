@@ -17,7 +17,7 @@
 #'
 #' @export
 #' @importFrom here here
-#' @importFrom memoise cache
+#' @importFrom memoise cache_filesystem memoise
 merge_feed_water_summary <- function(master_f = NULL, master_d = NULL, Insentec_warning,
                                      feed_intake_low_bar, feed_intake_high_bar,
                                      water_intake_low_bar, water_intake_high_bar) {
@@ -25,16 +25,12 @@ merge_feed_water_summary <- function(master_f = NULL, master_d = NULL, Insentec_
   # Initializing lists
   list_to_join <- list()
 
-  # get feed and drinking summary for each day for each cow
-
   if (!is.null(master_f)) {
     feed_summary <- summarize_feed_water_data(master_f, type = "Feeding")
-    # feeding
     feeding_intake <- feed_summary$intake
     feeding_duration <- feed_summary$duration
     feeding_visits <- feed_summary$visits
 
-    # check for low & high feeding intake
     Insentec_warning <- check_intake(feeding_intake, Insentec_warning, type = "feeding",
                                      limit = "low", feed_intake_low_bar, feed_intake_high_bar,
                                      water_intake_low_bar, water_intake_high_bar)
@@ -47,12 +43,10 @@ merge_feed_water_summary <- function(master_f = NULL, master_d = NULL, Insentec_
 
   if (!is.null(master_d)) {
     drink_summary <- summarize_feed_water_data(master_d, type = "Drinking")
-    # drinking
     drinking_intake <- drink_summary$intake
     drinking_duration <- drink_summary$duration
     drinking_visits <- drink_summary$visits
 
-    # check for low & high drinking intake
     Insentec_warning <- check_intake(drinking_intake, Insentec_warning, type = "drinking",
                                      limit = "low", feed_intake_low_bar, feed_intake_high_bar,
                                      water_intake_low_bar, water_intake_high_bar)
@@ -66,15 +60,20 @@ merge_feed_water_summary <- function(master_f = NULL, master_d = NULL, Insentec_
   if (length(list_to_join) > 0) {
     Insentec_final_summary <- purrr::reduce(list_to_join, dplyr::full_join, by = c("date", "Cow"))
     Insentec_final_summary <- Insentec_final_summary[order(Insentec_final_summary$date, Insentec_final_summary$Cow),]
-    Insentec_final_summary[is.na(Insentec_final_summary)] <- 0 # replace NA with 0
-    # Ensure extdata directory exists
-    dir.create(here::here("inst/extdata"), recursive = TRUE, showWarnings = FALSE)
+    Insentec_final_summary[is.na(Insentec_final_summary)] <- 0
 
-    save(Insentec_warning, file = here::here("inst/extdata/Insentec_warning.rdata"))
-    save(Insentec_final_summary, file = here::here("inst/extdata/feeding_and_drinking_analysis.rdata"))
-    my_cache <- memoise::cache_filesystem(here::here("inst/extdata"))
-    cached_result <- memoise::memoise(function(x) x, cache = my_cache)
-    cached_result("Insentec_final_summary")
+    # Save/cache only in development or interactive mode
+    if (interactive() || Sys.getenv("IN_PKGDEV") == "TRUE") {
+      output_dir <- here::here("inst/extdata")
+      dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
+
+      save(Insentec_warning, file = file.path(output_dir, "Insentec_warning.rdata"))
+      save(Insentec_final_summary, file = file.path(output_dir, "feeding_and_drinking_analysis.rdata"))
+
+      my_cache <- memoise::cache_filesystem(output_dir)
+      cached_result <- memoise::memoise(function(x) x, cache = my_cache)
+      cached_result("Insentec_final_summary")
+    }
   }
 
   return(list(
@@ -82,11 +81,3 @@ merge_feed_water_summary <- function(master_f = NULL, master_d = NULL, Insentec_
     Insentec_warning = Insentec_warning
   ))
 }
-
-
-
-
-
-
-
-
