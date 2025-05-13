@@ -25,7 +25,8 @@ Imports:
     dplyr,
     lubridate,
     rlang,
-    tidyr
+    tidyr,
+    purrr
 Suggests: 
     covr,
     hexSticker,
