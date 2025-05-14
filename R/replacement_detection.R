@@ -29,6 +29,12 @@
 #' @export
 record_replacement_days <- function(data_list,
                                     replacement_threshold = 26) {
+  # ------------------------ Error handling ------------------------ #
+  if (!is.list(data_list)) {
+    stop("`data_list` must be a named list of data frames.")
+  }
+
+  # ------------------------ Main logic ---------------------------- #
   replacement_list_by_date <- lapply(names(data_list), function(name) {
     record_replacement_day(data_list[[name]], replacement_threshold)
   })
@@ -60,6 +66,13 @@ record_replacement_days <- function(data_list,
 #'
 #' @export
 check_alibi_days <- function(replacement_list_by_date, all_comb2) {
+  # ------------------------ Error handling ------------------------ #
+  if (length(replacement_list_by_date) == 0) return(list())
+  if (length(replacement_list_by_date) != length(all_comb2)) {
+    stop("replacement_list_by_date and all_comb2 must be the same length.")
+  }
+
+  # ------------------------ Main logic ---------------------------- #
   out <- lapply(seq_along(all_comb2), function(i) {
     check_alibi_day(replacement_list_by_date[[i]], all_comb2[[i]])
   })
@@ -100,6 +113,13 @@ record_replacement_day <- function(cur_data,
   start_col <- start_col2()
   end_col <- end_col2()
 
+  # ------------------------ Error handling ------------------------ #
+  required_cols <- c(id_col2(), bin_col2(), start_col2(), end_col2())
+  if (!all(required_cols %in% names(cur_data))) {
+    stop("`cur_data` must include id, bin, start, and end columns.")
+  }
+
+  # ------------------------ Main logic ---------------------------- #
   sorted_data <- cur_data[order(cur_data[[bin_col]], cur_data[[start_col]], cur_data[[end_col]]), ]
   sorted_data <- sorted_data[, c(id_col, bin_col, start_col, end_col)]
   sorted_data$date <- lubridate::date(sorted_data[[start_col]])
@@ -160,6 +180,15 @@ check_alibi_day <- function(cur_replacement, cur_feed_wat) {
   start_col <- start_col2()
   end_col <- end_col2()
 
+  # ------------------------ Error handling ------------------------ #
+  if (nrow(cur_replacement) == 0) {
+    return(cur_replacement)
+  }
+  if (!all(c("Actor_cow", "Time") %in% names(cur_replacement))) {
+    stop("`cur_replacement` must include Actor_cow and Time columns.")
+  }
+
+  # ------------------------ Main logic ---------------------------- #
   cur_replacement$actor_at_another_bin <- 0
   for (k in seq_len(nrow(cur_replacement))) {
     cur_time <- cur_replacement$Time[k]
