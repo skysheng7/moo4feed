@@ -61,7 +61,7 @@ test_that("Edge case: empty replacements return empty list", {
 
 test_that("Error handling: mismatched lists cause error", {
   replacements <- record_replacement_days(all_fed)
-  mismatched_data <- all_fed[1]  # length mismatch
+  mismatched_data <- all_fed[1] # length mismatch
 
   expect_error(
     check_alibi_days(replacements, mismatched_data),
@@ -80,7 +80,7 @@ test_that("Internal helper correctly identifies replacements on one day", {
 })
 
 test_that("Edge case: no replacements found on a quiet day", {
-  single_day_empty <- single_day[0, ]  # Empty data frame
+  single_day_empty <- single_day[0, ] # Empty data frame
   result <- record_replacement_day(single_day_empty)
 
   expect_s3_class(result, "data.frame")
