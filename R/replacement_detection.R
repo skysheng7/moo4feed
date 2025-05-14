@@ -67,7 +67,9 @@ record_replacement_days <- function(data_list,
 #' @export
 check_alibi_days <- function(replacement_list_by_date, all_comb2) {
   # ------------------------ Error handling ------------------------ #
-  if (length(replacement_list_by_date) == 0) return(list())
+  if (length(replacement_list_by_date) == 0) {
+    return(list())
+  }
   if (length(replacement_list_by_date) != length(all_comb2)) {
     stop("replacement_list_by_date and all_comb2 must be the same length.")
   }
