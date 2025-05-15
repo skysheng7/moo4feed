@@ -87,7 +87,7 @@ qc_detect_all_double_detections <- function(day_data, verbose = TRUE) {
   if (verbose && nrow(same_animal_overlap) > 0) {
     cat("\n==== SAME ANIMAL RECORDED AT DIFFERENT BINS SIMULTANEOUSLY ====\n")
     print(
-      same_animal_overlap %>%
+      same_animal_overlap |>
         dplyr::filter(overlap | dplyr::lag(overlap, default = FALSE))
     )
   }
@@ -95,18 +95,18 @@ qc_detect_all_double_detections <- function(day_data, verbose = TRUE) {
   #####################################################################
   # 2. DIFFERENT ANIMALS RECORDED AT THE SAME BIN DURING AN OVERLAP
   #####################################################################
-  diff_animals_1bin_df <- day_data %>%
-    dplyr::arrange(!!bin_sym, !!start_sym) %>%
-    dplyr::group_by(!!bin_sym) %>%
+  diff_animals_1bin_df <- day_data |>
+    dplyr::arrange(!!bin_sym, !!start_sym) |>
+    dplyr::group_by(!!bin_sym) |>
     dplyr::mutate(
       overlap = (!!end_sym) > dplyr::lead(!!start_sym),
       overlap = tidyr::replace_na(overlap, FALSE)
-    ) %>%
-    dplyr::ungroup() %>%
+    ) |>
+    dplyr::ungroup() |>
     dplyr::filter(overlap | dplyr::lag(overlap, default = FALSE))
 
-  diff_animals_1bin_df_bins <- diff_animals_1bin_df %>%
-    dplyr::pull(!!bin_sym) %>%
+  diff_animals_1bin_df_bins <- diff_animals_1bin_df |>
+    dplyr::pull(!!bin_sym) |>
     unique()
 
   if (verbose && nrow(diff_animals_1bin_df) > 0) {

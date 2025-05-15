@@ -50,7 +50,7 @@ qc <- function(feed      = NULL,
 
   # --- 2. run QC modules ---------------------------------------------------
   warn <- qc_total_cows(comb, warn, cfg)
-  #warn <- qc_double_detection(comb, warn, verbose = verbose)
+  warn <- qc_double_detection(comb, warn, verbose = verbose)
   #warn <- qc_negatives(comb, warn, verbose = verbose, cfg)
 
 
