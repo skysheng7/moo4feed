@@ -20,6 +20,13 @@ reference:
   - process_feeder
   - process_water
 
+- subtitle: Data quality check
+  desc: >
+    Check abnormal feeding and drinking visits
+  contents:
+  - qc_config
+  - qc
+
 - subtitle: Daylight Saving Time changes
   desc: >
     Adjust timestamps for days affected by Daylight Saving Time changes for North America.

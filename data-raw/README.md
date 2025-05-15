@@ -6,7 +6,7 @@ Everything here is kept for **historical reference only**—new development shou
 | Generation | File(s) | Purpose | Status |
 |---------------------|-----------------|-----------------|-----------------|
 | **1** | `master_script_HOBO_Insentec_combined_Sockeye_v12.R` | \~5,000‑line monolith that performed the entire pipeline end‑to‑end. | *Frozen* – never touch except for archaeology. |
-| **2** | `01‑helpers‑initial data process.R`<br>`02‑helpers‑Insentec warning.R`<br>`03‑helpers‑Insentec summary.R`<br>`04‑helpers‑synchronicity matrix.R`<br>`05‑helpers‑replacement.R`<br>`06‑helpers‑non‑nutritive.R`<br>`globals.R` | First refactor of Gen‑1: extracted \~30‑50 helper functions into seven scripts and wrapped them in an RStudio Project. **No unit tests** but every function has documentation. | *Source* for the forthcoming package. |
+| **2** | `01‑helpers‑initial data process.R`<br>`02‑helpers‑Insentec warning.R`<br>`03‑helpers‑Insentec summary.R`<br>`04‑helpers‑synchronicity matrix.R`<br>`05‑helpers‑replacement.R`<br>`06‑helpers‑non‑nutritive.R`<br>`globals.R` <br> `function_use_example_01-A Insentec data clean and replacement detect.R`| First refactor of Gen‑1: extracted \~30‑50 helper functions into seven scripts and wrapped them in an RStudio Project. **No unit tests** but every function has documentation. | *Source* for the forthcoming package. |
 
 ------------------------------------------------------------------------
 
@@ -22,6 +22,7 @@ Everything here is kept for **historical reference only**—new development shou
         -   Aim for **2‑4 closely‑related functions per file**.\
         -   Exception: a single very large or self‑contained function can live in its own file.\
     -   Add **roxygen2 docstrings** and create minimal **unit tests** as you go.
+    - `function_use_example_01-A Insentec data clean and replacement detect.R` is the script that makes use of the functions in 01-06 R scripts.
 
 3.  **Do not overwrite these originals**
     Commit new, cleaned‑up versions in the package repo instead.
