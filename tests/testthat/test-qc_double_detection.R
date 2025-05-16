@@ -141,3 +141,74 @@ test_that("qc_double_detection() leaves rows untouched when comb is empty", {
   result <- qc_double_detection(list(), warn, verbose = FALSE)
   expect_true(is.na(result$double_detection_bins))
 })
+
+# Test verbose output explicitly
+test_that("qc_detect_all_double_detections() verbose output", {
+  day <- make_day_full(
+    ids   = c(1, 1, 2),
+    bins  = c(10, 11, 10),
+    starts_chr = c(
+      "2025-05-01 11:00:00",
+      "2025-05-01 11:03:00",
+      "2025-05-01 11:02:00"
+    ),
+    ends_chr = c(
+      "2025-05-01 11:05:00",
+      "2025-05-01 11:06:00",
+      "2025-05-01 11:07:00"
+    )
+  )
+
+  expect_output(
+    problematic <- qc_detect_all_double_detections(day, verbose = TRUE),
+    regexp = "SAME ANIMAL RECORDED AT DIFFERENT BINS|DIFFERENT ANIMALS DETECTED AT SAME BIN"
+  )
+
+  expect_setequal(problematic, c(10))
+
+  # test empty day data explicitly
+  problematic <- qc_detect_all_double_detections(day[0,], verbose = FALSE)
+  expect_length(problematic, 0)
+})
+
+
+# Test verbose mode for qc_double_detection
+test_that("qc_double_detection() verbose mode outputs correctly", {
+  comb <- list(
+    "2025-05-01" = make_day_full(
+      ids   = c(1, 1, 2),
+      bins  = c(10, 11, 10),
+      starts_chr = c(
+        "2025-05-01 11:00:00",
+        "2025-05-01 11:03:00",
+        "2025-05-01 11:02:00"
+      ),
+      ends_chr = c(
+        "2025-05-01 11:05:00",
+        "2025-05-01 11:06:00",
+        "2025-05-01 11:07:00"
+      )
+    )
+  )
+
+  warn <- make_warn_df("2025-05-01")
+
+  expect_output(
+    qc_double_detection(comb, warn, verbose = TRUE),
+    regexp = "SAME ANIMAL RECORDED AT DIFFERENT BINS|DIFFERENT ANIMALS DETECTED AT SAME BIN"
+  )
+})
+
+# Additional edge case: overlapping exactly at start/end boundaries
+test_that("qc_detect_all_double_detections() handles boundary overlaps correctly", {
+  day <- make_day_full(
+    ids   = c(1, 1),
+    bins  = c(10, 11),
+    starts_chr = c("2025-05-01 10:00:00", "2025-05-01 10:05:00"),
+    ends_chr = c("2025-05-01 10:05:00", "2025-05-01 10:10:00")
+  )
+
+  problematic <- qc_detect_all_double_detections(day, verbose = FALSE)
+  expect_length(problematic, 0) # exact end/start boundary should not be considered overlap
+})
+

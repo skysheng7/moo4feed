@@ -4,7 +4,7 @@
 \alias{keep_bins}
 \title{Keep only rows for specified bins}
 \usage{
-keep_bins(df, bins, bin_col = the$bin_col)
+keep_bins(df, bins, bin_col = bin_col2())
 }
 \arguments{
 \item{df}{A data frame containing a column of bin IDs.}

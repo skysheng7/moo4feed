@@ -9,12 +9,13 @@
 #'
 #' @inheritParams qc_warning_skeleton
 #' @inheritParams qc
+#' @inheritParams process_feeder
 #' @param warn Warning data frame to update
 #'
 #' @return Updated warning data frame with total cow information
 #' @keywords internal
 #' @noRd
-qc_total_cows <- function(comb, warn, cfg = qc_config()) {
+qc_total_cows <- function(comb, warn, cfg = qc_config(), id_col = id_col2()) {
   # Iterate through each day's data
   for (i in seq_along(comb)) {
     date <- names(comb)[i]
@@ -25,7 +26,7 @@ qc_total_cows <- function(comb, warn, cfg = qc_config()) {
     }
 
     # Count unique cows
-    cow_count <- length(unique(comb[[i]][[id_col2()]]))
+    cow_count <- length(unique(comb[[i]][[id_col]]))
     warn$total_cows[day_idx] <- as.character(cow_count)
 
     # Check against expected count if provided

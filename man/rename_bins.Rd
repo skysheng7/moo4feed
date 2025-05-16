@@ -4,7 +4,7 @@
 \alias{rename_bins}
 \title{Shift specified bin IDs by an offset}
 \usage{
-rename_bins(df, bins, bin_offset = the$bin_offset, bin_col = the$bin_col)
+rename_bins(df, bins, bin_offset = bin_offset2(), bin_col = bin_col2())
 }
 \arguments{
 \item{df}{A data frame containing a column of bin IDs.}

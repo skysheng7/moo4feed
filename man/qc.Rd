@@ -4,7 +4,17 @@
 \alias{qc}
 \title{Run full quality-control check on feeder and drinker data}
 \usage{
-qc(feed = NULL, water = NULL, cfg = qc_config(), tz = tz2(), verbose = TRUE)
+qc(
+  feed = NULL,
+  water = NULL,
+  cfg = qc_config(),
+  tz = tz2(),
+  id_col = id_col2(),
+  start_col = start_col2(),
+  end_col = end_col2(),
+  bin_col = bin_col2(),
+  verbose = TRUE
+)
 }
 \arguments{
 \item{feed}{A list of daily \strong{feed} data frames named by date, or \code{NULL}
@@ -16,6 +26,16 @@ if you don't have water data}
 \item{cfg}{A configuration list created by \code{\link[=qc_config]{qc_config()}}.}
 
 \item{tz}{Time-zone for all analysis related to timestamps.  Defaults to \code{\link[=tz2]{tz2()}}.}
+
+\item{id_col}{What's the name of the column recording animal ID? This should be
+a Single string. (default: \code{"cow"}).}
+
+\item{start_col}{Name of the column recording the start time of an event (quoted), e.g.: start_col = "start"}
+
+\item{end_col}{Name of the column recording the end time of an event (quoted). e.g.: end_col = "end"}
+
+\item{bin_col}{What's the name of the column recording the ID of the bin for each visit?
+This should be a single string. (default: \code{"bin"}).}
 
 \item{verbose}{Logical. If TRUE, print details of data where errors were detected}
 }

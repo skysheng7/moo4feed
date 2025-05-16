@@ -4,7 +4,7 @@
 \alias{dst_switch_day}
 \title{Detect Daylight Saving Time (DST) Change Dates}
 \usage{
-dst_switch_day(years = c(2020, 2021), tz = the$tz)
+dst_switch_day(years = c(2020, 2021), tz = tz2())
 }
 \arguments{
 \item{years}{A numeric vector specifying the range of years to evaluate.

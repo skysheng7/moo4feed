@@ -7,19 +7,19 @@
 process_all_feed(
   files,
   col_names = NULL,
-  id_col = the$id_col,
+  id_col = id_col2(),
   drop_ids = NULL,
-  trans_col = the$trans_col,
-  start_col = the$start_col,
-  end_col = the$end_col,
+  trans_col = trans_col2(),
+  start_col = start_col2(),
+  end_col = end_col2(),
   drop_trans = NULL,
-  bin_col = the$bin_col,
-  bins = the$bins_feed,
+  bin_col = bin_col2(),
+  bins = bins_feed2(),
   select_cols = NULL,
   sep = ",",
   header = FALSE,
   daylight_change_duration = 60,
-  tz = the$tz,
+  tz = tz2(),
   adjust_dst = TRUE
 )
 }

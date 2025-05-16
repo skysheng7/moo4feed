@@ -7,12 +7,12 @@
 process_feeder(
   file,
   col_names = NULL,
-  id_col = the$id_col,
+  id_col = id_col2(),
   drop_ids = NULL,
-  trans_col = the$trans_col,
+  trans_col = trans_col2(),
   drop_trans = NULL,
-  bin_col = the$bin_col,
-  bins = the$bins_feed,
+  bin_col = bin_col2(),
+  bins = bins_feed2(),
   select_cols = NULL,
   sep = ",",
   header = FALSE

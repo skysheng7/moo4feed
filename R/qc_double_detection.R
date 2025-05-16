@@ -12,11 +12,19 @@
 #'
 #' @inheritParams qc_total_cows
 #' @inheritParams qc
+#' @inheritParams process_all_feed
 #'
 #' @return Updated warning data frame with consolidated double detection information
 #' @keywords internal
 #' @noRd
-qc_double_detection <- function(comb, warn, verbose = TRUE) {
+qc_double_detection <- function(comb,
+                                warn,
+                                verbose = TRUE,
+                                id_col = id_col2(), # e.g. "cow_id"
+                                start_col = start_col2(), # e.g. "start_time"
+                                end_col   = end_col2(), # e.g. "end_time"
+                                bin_col   = bin_col2() # e.g. "bin_id"
+                                ) {
   # Process each day
   for (i in seq_along(comb)) {
     date <- names(comb)[i]
@@ -27,7 +35,12 @@ qc_double_detection <- function(comb, warn, verbose = TRUE) {
     }
 
     # Get all problematic bins in a single efficient call
-    problematic_bins <- qc_detect_all_double_detections(comb[[i]], verbose=verbose)
+    problematic_bins <- qc_detect_all_double_detections(comb[[i]],
+                                                        verbose=verbose,
+                                                        id_col = id_col,
+                                                        start_col = start_col,
+                                                        end_col   = end_col,
+                                                        bin_col   = bin_col)
 
     # Update warning with all problematic bins in a single column
     if (length(problematic_bins) > 0) {
@@ -46,18 +59,18 @@ qc_double_detection <- function(comb, warn, verbose = TRUE) {
 #'
 #' @param day_data A single day's data frame
 #' @inheritParams qc
+#' @inheritParams process_all_feed
 #'
 #' @return Vector of unique bin IDs with detection issues
 #' @keywords internal
 #' @noRd
-qc_detect_all_double_detections <- function(day_data, verbose = TRUE) {
-  # -------------------------------------------------------------------
-  # Column names supplied by your own helpers (leave these un-prefixed)
-  id_col    <- id_col2()      # e.g. "cow_id"
-  start_col <- start_col2()   # e.g. "start_time"
-  end_col   <- end_col2()     # e.g. "end_time"
-  bin_col   <- bin_col2()     # e.g. "bin_id"
-  # -------------------------------------------------------------------
+qc_detect_all_double_detections <- function(day_data,
+                                            verbose = TRUE,
+                                            id_col = id_col2(), # e.g. "cow_id"
+                                            start_col = start_col2(), # e.g. "start_time"
+                                            end_col   = end_col2(), # e.g. "end_time"
+                                            bin_col   = bin_col2() # e.g. "bin_id"
+                                            ) {
 
   if (nrow(day_data) == 0L) return(integer(0))
 
