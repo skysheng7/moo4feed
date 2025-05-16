@@ -105,3 +105,53 @@ test_that("overlapping bins after offset are detected", {
     "overlap"
   )
 })
+
+
+# ----------------------------------------------------------------------------- #
+# qc_warning_skeleton() – normal & edge cases                                   #
+# ----------------------------------------------------------------------------- #
+# Normal and Edge Case Tests
+test_that("qc_warning_skeleton works correctly under normal conditions", {
+  comb <- list(
+    "2024-05-01" = data.frame(),
+    "2024-05-02" = data.frame()
+  )
+
+  # Normal case: feed and water
+  result <- qc_warning_skeleton(comb, tz = "UTC", has_feed = TRUE, has_water = TRUE)
+  expect_s3_class(result, "data.frame")
+  expect_equal(nrow(result), 2)
+  expect_true(all(c("long_dur_feeder", "long_dur_drinker") %in% names(result)))
+
+  # Normal case: only feed
+  result_feed_only <- qc_warning_skeleton(comb, tz = "UTC", has_feed = TRUE, has_water = FALSE)
+  expect_true("long_dur_feeder" %in% names(result_feed_only))
+  expect_false("long_dur_drinker" %in% names(result_feed_only))
+
+  # Normal case: only water
+  result_water_only <- qc_warning_skeleton(comb, tz = "UTC", has_feed = FALSE, has_water = TRUE)
+  expect_true("long_dur_drinker" %in% names(result_water_only))
+  expect_false("long_dur_feeder" %in% names(result_water_only))
+})
+
+# Edge case: Single-day input
+test_that("qc_warning_skeleton handles single-day inputs correctly", {
+  comb <- list("2024-05-01" = data.frame())
+  result <- qc_warning_skeleton(comb, tz = "UTC", has_feed = TRUE, has_water = TRUE)
+  expect_equal(nrow(result), 1)
+})
+
+# Error Handling Test
+test_that("qc_warning_skeleton handles empty input lists appropriately", {
+  empty_comb <- list()
+  expect_error(qc_warning_skeleton(empty_comb, tz = "UTC"), "The input list is empty!")
+})
+
+# Edge case: Invalid date names
+test_that("qc_warning_skeleton handles invalid date formats gracefully", {
+  comb_invalid_dates <- list("invalid_date" = data.frame())
+  expect_warning(
+    result <- qc_warning_skeleton(comb_invalid_dates, tz = "UTC"),
+    regexp = "All formats failed to parse"
+  )
+})
