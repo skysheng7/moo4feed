@@ -181,7 +181,6 @@ assert_scalar_int <- function(x, name, allow_na = FALSE, positive = TRUE) {
 #' @keywords internal
 #' @noRd
 qc_warning_skeleton <- function(comb,
-                                tz        = tz2(),
                                 has_feed  = TRUE,
                                 has_water = TRUE) {
   # Ensure the input list is not empty
@@ -193,7 +192,7 @@ qc_warning_skeleton <- function(comb,
   date_list <- names(comb)
 
   # Create the initial data frame
-  warn_df <- tibble::tibble(date = lubridate::ymd(date_list, tz = tz))
+  warn_df <- tibble::tibble(date = date_list)
 
   # Adding additional columns with default values (blank)
   general_columns <- c(

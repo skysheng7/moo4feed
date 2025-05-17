@@ -30,7 +30,8 @@ qc_total_cows <- function(comb, warn, cfg = qc_config(), id_col = id_col2()) {
       dplyr::distinct(!!rlang::sym(id_col)) |>
       dplyr::count() |>
       dplyr::pull(n)
-    warn$total_cows[day_idx] <- as.character(cow_count)
+    warn$total_cows[day_idx] <- cow_count
+    print(str(warn))
 
     # Check against expected count if provided
     if (!is.na(cfg$total_cows_expected) && (cow_count < cfg$total_cows_expected)) {
@@ -38,7 +39,6 @@ qc_total_cows <- function(comb, warn, cfg = qc_config(), id_col = id_col2()) {
     }
   }
 
-  warn$total_cows <- as.integer(warn$total_cows)
 
   return(warn)
 }
