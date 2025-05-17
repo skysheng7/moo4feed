@@ -52,9 +52,11 @@
 #' @examples
 #' # Use all defaults
 #' cfg <- qc_config()
+#' cfg
 #'
 #' # Tighten the "long feeding visit" threshold
 #' cfg2 <- qc_config(high_dur_feed = 1800)
+#' cfg2
 #'
 #' @export
 qc_config <- function(
@@ -191,7 +193,7 @@ qc_warning_skeleton <- function(comb,
   date_list <- names(comb)
 
   # Create the initial data frame
-  warn_df <- data.frame(date = lubridate::ymd(date_list, tz = tz))
+  warn_df <- tibble::tibble(date = lubridate::ymd(date_list, tz = tz))
 
   # Adding additional columns with default values (blank)
   general_columns <- c(
@@ -225,9 +227,13 @@ qc_warning_skeleton <- function(comb,
 
 
   # Add warning columns to the data frame
+  num_cols <- c("total_cows")
+  char_cols <- setdiff(warning_columns, num_cols)
+
   for (col in warning_columns) {
-    warn_df[[col]] <- ""
+    warn_df[[col]] <- if (col %in% num_cols) NA_integer_ else NA_character_
   }
+
 
   return(warn_df)
 

@@ -46,8 +46,8 @@ test_that("qc function behaves correctly under normal conditions with realistic 
   expect_type(result, "list")
   expect_true(all(c("warnings", "feed", "water", "combined") %in% names(result)))
   expect_equal(nrow(result$warnings), 1)
-  #expect_equal(result$warnings$total_cows, 4L)
-  expect_true(result$warnings$missing_cow == "")
+  expect_equal(result$warnings$total_cows, 4L)
+  expect_true(is.na(result$warnings$missing_cow))
 
   # Normal case: feed only
   result_feed_only <- qc(feed = feed,

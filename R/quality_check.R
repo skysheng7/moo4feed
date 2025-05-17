@@ -27,6 +27,7 @@
 #' cfg <- qc_config(high_dur_feed = 2500, low_visit_threshold = 5)
 #' out <- qc(feed = all_fed, water = all_wat, cfg = cfg)
 #' out$warnings
+#' out$feed
 #' @export
 qc <- function(feed      = NULL,
                water     = NULL,
