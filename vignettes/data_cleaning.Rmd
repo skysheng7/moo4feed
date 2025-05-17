@@ -190,7 +190,7 @@ Because the defaults were set above, you now supply **only what truly varies fil
 # Define your column names (if your files don't have headers)
 # 👉 EDIT THIS to match your data file structure
 col_names <- c("transponder", "cow", "bin", "start", "end", "duration", 
-              "startweight", "endweight", "comment", "intake", "intake2", 
+              "start_weight", "end_weight", "comment", "intake", "intake2", 
               "X1", "X2", "X3", "X4", "x5")
 
 # IDs to remove (test tags, etc.)
@@ -200,7 +200,7 @@ drop_ids <- c(0, 1556, 5015, 1111, 1112, 1113, 1114)
 # Which columns do you want to keep?
 # 👉 EDIT THIS to keep only the columns you need for analysis
 select_cols <- c("transponder", "cow", "bin", "start", "end", 
-                "duration", "startweight", "endweight", "intake")
+                "duration", "start_weight", "end_weight", "intake")
 
 # Process all feeder files!
 all_fed <- process_all_feed(
@@ -244,7 +244,7 @@ Because we already set the global defaults (time-zone, column names, bin rules) 
 # Column names (only needed because drinker files have no headers)
 col_names_wat <- c(
   "transponder", "cow", "bin", "start", "end",
-  "duration", "startweight", "endweight", "intake"
+  "duration", "start_weight", "end_weight", "intake"
 )
 
 # Same ID clean-up list we used for feeder data
@@ -253,7 +253,7 @@ drop_ids <- c(0, 1556, 5015, 1111:1114)
 # Columns you want to keep
 select_cols_wat <- c(
   "transponder", "cow", "bin", "start", "end",
-  "duration", "startweight", "endweight", "intake"
+  "duration", "start_weight", "end_weight", "intake"
 )
 
 # Process all drinker logs

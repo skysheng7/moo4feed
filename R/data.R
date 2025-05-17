@@ -14,10 +14,10 @@
 #'   \item{start}{POSIXct, timestamp when feeding event started}
 #'   \item{end}{POSIXct, timestamp when feeding event ended}
 #'   \item{duration}{integer, duration of feeding event in seconds}
-#'   \item{startweight}{numeric, weight of feed (kg) at start of feeding event}
-#'   \item{endweight}{numeric, weight of feed (kg) at end of feeding event}
+#'   \item{start_weight}{numeric, weight of feed (kg) at start of feeding event}
+#'   \item{end_weight}{numeric, weight of feed (kg) at end of feeding event}
 #'   \item{intake}{numeric, amount of feed consumed (kg) during the event
-#'   (calculated as startweight - endweight)}
+#'   (calculated as start_weight - end_weight)}
 #'   \item{date}{Date, calendar date of the feeding event}
 #' }
 #'
@@ -56,10 +56,10 @@
 #'   \item{start}{POSIXct, timestamp when drinking event started}
 #'   \item{end}{POSIXct, timestamp when drinking event ended}
 #'   \item{duration}{integer, duration of drinking event in seconds}
-#'   \item{startweight}{numeric, weight of water (kg) at start of drinking event}
-#'   \item{endweight}{numeric, weight of water (kg) at end of drinking event}
+#'   \item{start_weight}{numeric, weight of water (kg) at start of drinking event}
+#'   \item{end_weight}{numeric, weight of water (kg) at end of drinking event}
 #'   \item{intake}{numeric, amount of water consumed (kg) during the event
-#'   (calculated as startweight - endweight)}
+#'   (calculated as start_weight - end_weight)}
 #'   \item{date}{Date, calendar date of the drinking event}
 #' }
 #'

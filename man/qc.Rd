@@ -13,6 +13,8 @@ qc(
   start_col = start_col2(),
   end_col = end_col2(),
   bin_col = bin_col2(),
+  dur_col = duration_col2(),
+  intake_col = intake_col2(),
   verbose = TRUE
 )
 }
@@ -27,15 +29,17 @@ if you don't have water data}
 
 \item{tz}{Time-zone for all analysis related to timestamps.  Defaults to \code{\link[=tz2]{tz2()}}.}
 
-\item{id_col}{What's the name of the column recording animal ID? This should be
-a Single string. (default: \code{"cow"}).}
+\item{id_col}{Animal ID column name (default current global value)}
 
-\item{start_col}{Name of the column recording the start time of an event (quoted), e.g.: start_col = "start"}
+\item{start_col}{Start time column name (default current global value)}
 
-\item{end_col}{Name of the column recording the end time of an event (quoted). e.g.: end_col = "end"}
+\item{end_col}{End time column name (default current global value)}
 
-\item{bin_col}{What's the name of the column recording the ID of the bin for each visit?
-This should be a single string. (default: \code{"bin"}).}
+\item{bin_col}{Bin ID column name (default current global value)}
+
+\item{dur_col}{Duration column name (default current global value)}
+
+\item{intake_col}{Intake column name (default current global value)}
 
 \item{verbose}{Logical. If TRUE, print details of data where errors were detected}
 }

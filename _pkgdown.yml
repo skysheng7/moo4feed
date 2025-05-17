@@ -80,6 +80,7 @@ reference:
   desc: >
     Checking and setting global variables to customize fit your data
   contents:
+  - set_global_cols
   - tz2
   - set_tz2
   - id_col2
@@ -98,4 +99,12 @@ reference:
   - set_bins_feed2
   - bins_wat2
   - set_bins_wat2
+  - duration_col2
+  - set_duration_col2
+  - intake_col2
+  - set_intake_col2
+  - start_weight_col2
+  - set_start_weight_col2
+  - end_weight_col2
+  - set_end_weight_col2
 
