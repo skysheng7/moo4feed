@@ -26,7 +26,10 @@ qc_total_cows <- function(comb, warn, cfg = qc_config(), id_col = id_col2()) {
     }
 
     # Count unique cows
-    cow_count <- length(unique(comb[[i]][[id_col]]))
+    cow_count <- comb[[i]] |>
+      dplyr::distinct(!!rlang::sym(id_col)) |>
+      dplyr::count() |>
+      dplyr::pull(n)
     warn$total_cows[day_idx] <- as.character(cow_count)
 
     # Check against expected count if provided
