@@ -74,15 +74,15 @@ with each data frame containing the following 10 variables:</p><dl><dt>transpond
 <dt>duration</dt>
 <dd><p>integer, duration of feeding event in seconds</p></dd>
 
-<dt>startweight</dt>
+<dt>start_weight</dt>
 <dd><p>numeric, weight of feed (kg) at start of feeding event</p></dd>
 
-<dt>endweight</dt>
+<dt>end_weight</dt>
 <dd><p>numeric, weight of feed (kg) at end of feeding event</p></dd>
 
 <dt>intake</dt>
 <dd><p>numeric, amount of feed consumed (kg) during the event
-(calculated as startweight - endweight)</p></dd>
+(calculated as start_weight - end_weight)</p></dd>
 
 <dt>date</dt>
 <dd><p>Date, calendar date of the feeding event</p></dd>
@@ -114,11 +114,11 @@ where an animal visited a feed bin.</p>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">all_fed</span><span class="op">[[</span><span class="st">"2020-11-01"</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cow</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2074 3150 4001 4044 4070 4072 4080 5028 5041 5042 5058 5061 5067 5100 5114 5120 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   48   51   42   61   47   53   81   66   94  132   62   70   81   84   53   71 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   48   62   42   61   47   53   81   66   94  128   62   71   80   92   56   78 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5123 5124 5135 5137 5139 5145 6005 6020 6027 6028 6030 6033 6042 6050 6055 6069 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   86   89   53   80   69   87   78   78   91   65   85   74   46   72  130   88 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   86   89   53   80   72   79   78   78  107   65   88   85   46   72  123   88 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6084 6090 6121 6126 6129 7010 7018 7019 7022 7023 7024 7027 7030 7033 7043 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   68   76   75   67   45   56   90   97  105   74   72  130  126   80   57 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   68   79   69   67   40   56   90   93  105   74   73  144  136   85   57 </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

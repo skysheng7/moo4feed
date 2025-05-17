@@ -41,7 +41,19 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">qc</span><span class="op">(</span>feed <span class="op">=</span> <span class="cn">NULL</span>, water <span class="op">=</span> <span class="cn">NULL</span>, cfg <span class="op">=</span> <span class="fu"><a href="qc_config.html">qc_config</a></span><span class="op">(</span><span class="op">)</span>, tz <span class="op">=</span> <span class="fu"><a href="tz2.html">tz2</a></span><span class="op">(</span><span class="op">)</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">qc</span><span class="op">(</span></span>
+<span>  feed <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  water <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cfg <span class="op">=</span> <span class="fu"><a href="qc_config.html">qc_config</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  tz <span class="op">=</span> <span class="fu"><a href="tz2.html">tz2</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  id_col <span class="op">=</span> <span class="fu"><a href="id_col2.html">id_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  start_col <span class="op">=</span> <span class="fu"><a href="start_col2.html">start_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  end_col <span class="op">=</span> <span class="fu"><a href="end_col2.html">end_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  bin_col <span class="op">=</span> <span class="fu"><a href="bin_col2.html">bin_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  dur_col <span class="op">=</span> <span class="fu"><a href="duration_col2.html">duration_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  intake_col <span class="op">=</span> <span class="fu"><a href="intake_col2.html">intake_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -64,6 +76,30 @@ if you don't have water data</p></dd>
 
 <dt id="arg-tz">tz<a class="anchor" aria-label="anchor" href="#arg-tz"></a></dt>
 <dd><p>Time-zone for all analysis related to timestamps.  Defaults to <code><a href="tz2.html">tz2()</a></code>.</p></dd>
+
+
+<dt id="arg-id-col">id_col<a class="anchor" aria-label="anchor" href="#arg-id-col"></a></dt>
+<dd><p>Animal ID column name (default current global value)</p></dd>
+
+
+<dt id="arg-start-col">start_col<a class="anchor" aria-label="anchor" href="#arg-start-col"></a></dt>
+<dd><p>Start time column name (default current global value)</p></dd>
+
+
+<dt id="arg-end-col">end_col<a class="anchor" aria-label="anchor" href="#arg-end-col"></a></dt>
+<dd><p>End time column name (default current global value)</p></dd>
+
+
+<dt id="arg-bin-col">bin_col<a class="anchor" aria-label="anchor" href="#arg-bin-col"></a></dt>
+<dd><p>Bin ID column name (default current global value)</p></dd>
+
+
+<dt id="arg-dur-col">dur_col<a class="anchor" aria-label="anchor" href="#arg-dur-col"></a></dt>
+<dd><p>Duration column name (default current global value)</p></dd>
+
+
+<dt id="arg-intake-col">intake_col<a class="anchor" aria-label="anchor" href="#arg-intake-col"></a></dt>
+<dd><p>Intake column name (default current global value)</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
@@ -101,18 +137,18 @@ per warning code.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1                                                                </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2                                                                </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3                                                                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   long_dur_feeder large_intake_feeder large_intake_rate_feeder</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                                                             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   long_dur_feeder large_intake_visit_feed large_intake_rate_feeder</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                                                                 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   low_daily_feed_intake_cows high_daily_feed_intake_cows feed_add_time_no_found</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1                                                                              </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2                                                                              </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3                                                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   long_dur_drinker large_intake_drinker large_intake_rate_drinker</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                                                                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                                                                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   long_dur_drinker large_intake_visit_wat large_intake_rate_drinker</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                                                                  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   low_daily_water_intake_cows high_daily_water_intake_cows</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1                                                         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2                                                         </span>
