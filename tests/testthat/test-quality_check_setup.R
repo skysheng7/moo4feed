@@ -31,7 +31,7 @@ test_that("qc_config() returns a complete, named list with defaults", {
   cfg <- qc_config()
   expected_names <- c(
     "high_dur_feed", "high_dur_water",
-    "large_intake_feeder", "large_intake_drinker",
+    "large_intake_visit_feed", "large_intake_visit_wat",
     "large_intake_rate_feed", "large_intake_rate_water",
     "low_visit_threshold", "total_cows_expected",
     "low_feed_intake", "high_feed_intake",
