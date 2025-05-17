@@ -11,7 +11,6 @@
 #' @param water A list of daily **water** data frames named by date, or `NULL`
 #'  if you don't have water data
 #' @param cfg   A configuration list created by [qc_config()].
-#' @param tz    Time-zone for all analysis related to timestamps.  Defaults to [tz2()].
 #' @param verbose Logical. If TRUE, print details of data where errors were detected
 #'
 #' @return A list with four elements:
@@ -27,11 +26,11 @@
 #' cfg <- qc_config(high_dur_feed = 2500, low_visit_threshold = 5)
 #' out <- qc(feed = all_fed, water = all_wat, cfg = cfg)
 #' out$warnings
+#' out$feed
 #' @export
 qc <- function(feed      = NULL,
                water     = NULL,
                cfg       = qc_config(),
-               tz        = tz2(),
                id_col    = id_col2(),
                start_col = start_col2(),
                end_col   = end_col2(),
@@ -52,7 +51,7 @@ qc <- function(feed      = NULL,
   }
 
   # --- 1. prepare warning skeleton ----------------------------------------
-  warn  <- qc_warning_skeleton(comb, tz = tz,
+  warn  <- qc_warning_skeleton(comb,
                                has_feed  = !is.null(feed),
                                has_water = !is.null(water))
 

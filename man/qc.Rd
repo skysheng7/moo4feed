@@ -8,7 +8,6 @@ qc(
   feed = NULL,
   water = NULL,
   cfg = qc_config(),
-  tz = tz2(),
   id_col = id_col2(),
   start_col = start_col2(),
   end_col = end_col2(),
@@ -26,8 +25,6 @@ if you don't have feeder data}
 if you don't have water data}
 
 \item{cfg}{A configuration list created by \code{\link[=qc_config]{qc_config()}}.}
-
-\item{tz}{Time-zone for all analysis related to timestamps.  Defaults to \code{\link[=tz2]{tz2()}}.}
 
 \item{id_col}{Animal ID column name (default current global value)}
 
@@ -60,4 +57,5 @@ Run full quality-control check on feeder and drinker data
 cfg <- qc_config(high_dur_feed = 2500, low_visit_threshold = 5)
 out <- qc(feed = all_fed, water = all_wat, cfg = cfg)
 out$warnings
+out$feed
 }

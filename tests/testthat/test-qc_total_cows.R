@@ -4,7 +4,7 @@
 make_warn_df <- function(dates) {
   data.frame(
     date         = dates,
-    total_cows   = as.character(NA),   # character on entry (matches real skeleton)
+    total_cows   = as.integer(NA),   # character on entry (matches real skeleton)
     missing_cow  = "No",
     stringsAsFactors = FALSE
   )
