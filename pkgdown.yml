@@ -3,7 +3,7 @@ pkgdown: 2.1.2
 pkgdown_sha: ~
 articles:
   data_cleaning: data_cleaning.html
-last_built: 2025-05-17T03:27Z
+last_built: 2025-05-17T06:52Z
 urls:
   reference: https://skysheng7.github.io/moo4feed/reference
   article: https://skysheng7.github.io/moo4feed/articles
