@@ -99,3 +99,137 @@ test_that("bins_wat2() / set_bins_wat2() work", {
 
   set_bins_wat2(orig)
 })
+
+# duration_col2 / set_duration_col2 test
+test_that("duration_col2() / set_duration_col2() work", {
+  orig <- duration_col2()
+  new  <- if (orig == "duration") "visit_duration" else "duration"
+
+  out  <- set_duration_col2(new)
+  expect_identical(out, orig)
+  expect_identical(duration_col2(), new)
+
+  set_duration_col2(orig) # restore
+  expect_identical(duration_col2(), orig)
+})
+
+# intake_col2 / set_intake_col2 test
+test_that("intake_col2() / set_intake_col2() work", {
+  orig <- intake_col2()
+  new  <- if (orig == "intake") "feed_intake" else "intake"
+
+  out  <- set_intake_col2(new)
+  expect_identical(out, orig)
+  expect_identical(intake_col2(), new)
+
+  set_intake_col2(orig) # restore
+  expect_identical(intake_col2(), orig)
+})
+
+# start_weight_col2 / set_start_weight_col2 test
+test_that("start_weight_col2() / set_start_weight_col2() work", {
+  orig <- start_weight_col2()
+  new  <- if (orig == "start_weight") "initial_weight" else "start_weight"
+
+  out  <- set_start_weight_col2(new)
+  expect_identical(out, orig)
+  expect_identical(start_weight_col2(), new)
+
+  set_start_weight_col2(orig) # restore
+  expect_identical(start_weight_col2(), orig)
+})
+
+# end_weight_col2 / set_end_weight_col2 test
+test_that("end_weight_col2() / set_end_weight_col2() work", {
+  orig <- end_weight_col2()
+  new  <- if (orig == "end_weight") "final_weight" else "end_weight"
+
+  out  <- set_end_weight_col2(new)
+  expect_identical(out, orig)
+  expect_identical(end_weight_col2(), new)
+
+  set_end_weight_col2(orig) # restore
+  expect_identical(end_weight_col2(), orig)
+})
+
+# Tests for set_global_cols()
+test_that("set_global_cols() correctly sets multiple global variables", {
+  # Save original values
+  orig_tz <- tz2()
+  orig_id_col <- id_col2()
+  orig_trans_col <- trans_col2()
+  orig_start_col <- start_col2()
+  orig_end_col <- end_col2()
+  orig_bin_col <- bin_col2()
+  orig_dur_col <- duration_col2()
+  orig_intake_col <- intake_col2()
+  orig_start_weight_col <- start_weight_col2()
+  orig_end_weight_col <- end_weight_col2()
+  orig_bin_offset <- bin_offset2()
+  orig_bins_feed <- bins_feed2()
+  orig_bins_wat <- bins_wat2()
+
+  # Set new values
+  set_global_cols(
+    tz = "UTC",
+    id_col = "animal_id",
+    trans_col = "tag_id",
+    start_col = "start_time",
+    end_col = "end_time",
+    bin_col = "feeder_bin",
+    dur_col = "visit_duration",
+    intake_col = "feed_intake",
+    start_weight_col = "initial_weight",
+    end_weight_col = "final_weight",
+    bin_offset = 50,
+    bins_feed = 1:20,
+    bins_wat = 1:3
+  )
+
+  # Check if new values are set correctly
+  expect_equal(tz2(), "UTC")
+  expect_equal(id_col2(), "animal_id")
+  expect_equal(trans_col2(), "tag_id")
+  expect_equal(start_col2(), "start_time")
+  expect_equal(end_col2(), "end_time")
+  expect_equal(bin_col2(), "feeder_bin")
+  expect_equal(duration_col2(), "visit_duration")
+  expect_equal(intake_col2(), "feed_intake")
+  expect_equal(start_weight_col2(), "initial_weight")
+  expect_equal(end_weight_col2(), "final_weight")
+  expect_equal(bin_offset2(), 50)
+  expect_equal(bins_feed2(), 1:20)
+  expect_equal(bins_wat2(), 1:3)
+
+  # Restore original values
+  set_global_cols(
+    tz = orig_tz,
+    id_col = orig_id_col,
+    trans_col = orig_trans_col,
+    start_col = orig_start_col,
+    end_col = orig_end_col,
+    bin_col = orig_bin_col,
+    dur_col = orig_dur_col,
+    intake_col = orig_intake_col,
+    start_weight_col = orig_start_weight_col,
+    end_weight_col = orig_end_weight_col,
+    bin_offset = orig_bin_offset,
+    bins_feed = orig_bins_feed,
+    bins_wat = orig_bins_wat
+  )
+
+  # Verify original values are restored
+  expect_equal(tz2(), orig_tz)
+  expect_equal(id_col2(), orig_id_col)
+  expect_equal(trans_col2(), orig_trans_col)
+  expect_equal(start_col2(), orig_start_col)
+  expect_equal(end_col2(), orig_end_col)
+  expect_equal(bin_col2(), orig_bin_col)
+  expect_equal(duration_col2(), orig_dur_col)
+  expect_equal(intake_col2(), orig_intake_col)
+  expect_equal(start_weight_col2(), orig_start_weight_col)
+  expect_equal(end_weight_col2(), orig_end_weight_col)
+  expect_equal(bin_offset2(), orig_bin_offset)
+  expect_equal(bins_feed2(), orig_bins_feed)
+  expect_equal(bins_wat2(), orig_bins_wat)
+})

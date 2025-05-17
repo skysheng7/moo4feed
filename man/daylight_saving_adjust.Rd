@@ -7,11 +7,11 @@
 daylight_saving_adjust(
   data_frame,
   date,
-  start_col = the$start_col,
-  end_col = the$end_col,
+  start_col = start_col2(),
+  end_col = end_col2(),
   dst_df,
   daylight_change_duration = 60,
-  tz = the$tz
+  tz = tz2()
 )
 }
 \arguments{

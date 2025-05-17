@@ -38,7 +38,7 @@
 #' dst_full <- get_dst_switch_info(years = 2021:2022, tz = "America/Vancouver")
 #'
 #' @export
-get_dst_switch_info <- function(years = c(2020, 2021), tz = the$tz, interval = 1) {
+get_dst_switch_info <- function(years = c(2020, 2021), tz = tz2(), interval = 1) {
   # --- Error handling ---
   if (!is.numeric(interval) || interval %% 1 != 0 || interval < 1 || interval > 59) {
     stop("`interval` must be an integer between 1 and 59 (unit is minutes).")
@@ -99,7 +99,7 @@ get_dst_switch_info <- function(years = c(2020, 2021), tz = the$tz, interval = 1
 #'
 #' @examples
 #' dst_switch_day(years = c(2020, 2021), tz = "America/Vancouver")
-dst_switch_day <- function(years = c(2020, 2021), tz = the$tz) {
+dst_switch_day <- function(years = c(2020, 2021), tz = tz2()) {
   # --- Error handling ---
   if (!is.numeric(years)) {
     stop("`years` must be a numeric vector.")
@@ -178,7 +178,7 @@ dst_switch_day <- function(years = c(2020, 2021), tz = the$tz) {
 #' dst_switch_hm("2020-07-01", tz = "Etc/UTC") # No DST change
 #'
 #' @export
-dst_switch_hm <- function(date, tz = the$tz, interval = 1) {
+dst_switch_hm <- function(date, tz = tz2(), interval = 1) {
   # --- Error handling ---
   if (!inherits(date, "Date") && !is.character(date)) {
     stop("`date` should be either a string object or a Date object.")
@@ -312,7 +312,7 @@ dst_switch_hm <- function(date, tz = the$tz, interval = 1) {
 #' )
 #'
 #' @export
-daylight_saving_adjust <- function(data_frame, date, start_col = the$start_col, end_col = the$end_col, dst_df, daylight_change_duration = 60, tz = the$tz) {
+daylight_saving_adjust <- function(data_frame, date, start_col = start_col2(), end_col = end_col2(), dst_df, daylight_change_duration = 60, tz = tz2()) {
   # --- Error handling ---
   if (!inherits(date, "Date")) {
     date <- tryCatch(

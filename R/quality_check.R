@@ -4,6 +4,8 @@
 
 #' Run full quality-control check on feeder and drinker data
 #'
+#' @inheritParams set_global_cols
+#' @inheritParams process_all_feed
 #' @param feed  A list of daily **feed** data frames named by date, or `NULL`
 #'  if you don't have feeder data
 #' @param water A list of daily **water** data frames named by date, or `NULL`
@@ -30,6 +32,12 @@ qc <- function(feed      = NULL,
                water     = NULL,
                cfg       = qc_config(),
                tz        = tz2(),
+               id_col    = id_col2(),
+               start_col = start_col2(),
+               end_col   = end_col2(),
+               bin_col   = bin_col2(),
+               dur_col = duration_col2(),
+               intake_col = intake_col2(),
                verbose = TRUE) {
 
   # --- 0. combine ----------------------------------------------------------
@@ -49,10 +57,23 @@ qc <- function(feed      = NULL,
                                has_water = !is.null(water))
 
   # --- 2. run QC modules ---------------------------------------------------
-  warn <- qc_total_cows(comb, warn, cfg)
-  warn <- qc_double_detection(comb, warn, verbose = verbose)
-  #warn <- qc_negatives(comb, warn, verbose = verbose, cfg)
+  warn <- qc_total_cows(comb, warn, cfg = cfg, id_col = id_col)
 
+  warn <- qc_double_detection(comb,
+                              warn=warn,
+                              verbose = verbose,
+                              id_col = id_col,
+                              start_col = start_col,
+                              end_col   = end_col,
+                              bin_col   = bin_col)
+
+  warn <- qc_negatives(comb,
+                       warn=warn,
+                       verbose = verbose,
+                       cfg = cfg,
+                       bin_col = bin_col,
+                       dur_col = dur_col,
+                       intake_col = intake_col)
 
   # --- 4. return -----------------------------------------------------------
   list(warnings = warn,

@@ -14,10 +14,10 @@ with each data frame containing the following 10 variables:
 \item{start}{POSIXct, timestamp when drinking event started}
 \item{end}{POSIXct, timestamp when drinking event ended}
 \item{duration}{integer, duration of drinking event in seconds}
-\item{startweight}{numeric, weight of water (kg) at start of drinking event}
-\item{endweight}{numeric, weight of water (kg) at end of drinking event}
+\item{start_weight}{numeric, weight of water (kg) at start of drinking event}
+\item{end_weight}{numeric, weight of water (kg) at end of drinking event}
 \item{intake}{numeric, amount of water consumed (kg) during the event
-(calculated as startweight - endweight)}
+(calculated as start_weight - end_weight)}
 \item{date}{Date, calendar date of the drinking event}
 }
 }

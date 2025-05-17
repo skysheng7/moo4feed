@@ -4,7 +4,7 @@
 \alias{delete_rows}
 \title{Remove rows by matching values in a specified column}
 \usage{
-delete_rows(df, to_delete, col_name = the$id_col)
+delete_rows(df, to_delete, col_name = id_col2())
 }
 \arguments{
 \item{df}{A data frame containing a column named \code{col_name}.}
