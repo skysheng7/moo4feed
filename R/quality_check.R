@@ -58,7 +58,7 @@ qc <- function(feed      = NULL,
 
   # --- 2. run QC modules ---------------------------------------------------
   warn <- qc_total_cows(comb, warn, cfg = cfg, id_col = id_col)
-  print(warn)
+
   warn <- qc_double_detection(comb,
                               warn=warn,
                               verbose = verbose,
@@ -66,7 +66,7 @@ qc <- function(feed      = NULL,
                               start_col = start_col,
                               end_col   = end_col,
                               bin_col   = bin_col)
-  print(warn)
+
   warn <- qc_negatives(comb,
                        warn=warn,
                        verbose = verbose,
@@ -74,7 +74,6 @@ qc <- function(feed      = NULL,
                        bin_col = bin_col,
                        dur_col = dur_col,
                        intake_col = intake_col)
-  print(warn)
 
   # --- 4. return -----------------------------------------------------------
   list(warnings = warn,
