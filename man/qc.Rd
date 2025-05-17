@@ -54,8 +54,7 @@ per warning code.}
 Run full quality-control check on feeder and drinker data
 }
 \examples{
-cfg <- qc_config(high_dur_feed = 2500, low_visit_threshold = 5)
-out <- qc(feed = all_fed, water = all_wat, cfg = cfg)
+cfg <- qc_config(high_dur_feed = 2500, low_visit_threshold = 5, total_cows_expected=48)
+out <- qc(feed = all_fed, water = all_wat, cfg = cfg, verbose = FALSE)
 out$warnings
-out$feed
 }

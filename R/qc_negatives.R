@@ -1,3 +1,7 @@
+# -----------------------------------------------------------------------------#
+# ------------------------ Internal helper functions --------------------------#
+# -----------------------------------------------------------------------------#
+
 #' Check for negative durations and intakes
 #'
 #' Identifies and flags records with negative duration or intake values,
