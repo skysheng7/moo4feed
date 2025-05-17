@@ -92,8 +92,10 @@ override only the handful you care about—then pass the resulting list to
 \examples{
 # Use all defaults
 cfg <- qc_config()
+cfg
 
 # Tighten the "long feeding visit" threshold
 cfg2 <- qc_config(high_dur_feed = 1800)
+cfg2
 
 }

@@ -62,7 +62,7 @@ test_that("qc function behaves correctly under normal conditions with realistic 
                          intake_col = "intake")
   expect_null(result_feed_only$water)
   expect_equal(result_feed_only$feed, feed)
-  #expect_equal(result_feed_only$warnings[["total_cows"]][1], 2)
+  expect_equal(result_feed_only$warnings[["total_cows"]][1], 2)
 
   # Normal case: water only
   result_water_only <- qc(feed = NULL,
@@ -77,7 +77,7 @@ test_that("qc function behaves correctly under normal conditions with realistic 
                           intake_col = "intake")
   expect_null(result_water_only$feed)
   expect_equal(result_water_only$water, water)
-  #expect_equal(result_water_only$warnings[["total_cows"]][1], 2)
+  expect_equal(result_water_only$warnings[["total_cows"]][1], 2)
 })
 
 # Edge case: Empty feed and water input

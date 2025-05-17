@@ -31,7 +31,6 @@ qc_total_cows <- function(comb, warn, cfg = qc_config(), id_col = id_col2()) {
       dplyr::count() |>
       dplyr::pull(n)
     warn$total_cows[day_idx] <- cow_count
-    print(str(warn))
 
     # Check against expected count if provided
     if (!is.na(cfg$total_cows_expected) && (cow_count < cfg$total_cows_expected)) {
