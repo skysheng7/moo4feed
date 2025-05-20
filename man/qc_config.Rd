@@ -8,7 +8,7 @@ qc_config(
   high_dur_feed = 2000,
   high_dur_water = 1800,
   large_intake_visit_feed = 8,
-  large_intake_visit_wat = 30,
+  large_intake_visit_water = 30,
   large_intake_rate_feed = 0.008,
   large_intake_rate_water = 0.35,
   low_visit_threshold = 10,
@@ -33,7 +33,7 @@ qc_config(
 \item{large_intake_visit_feed}{Numeric. Kilograms that flag a single, unusually
 large \strong{feed} intake event.}
 
-\item{large_intake_visit_wat}{Numeric. Litres that flag a single, unusually
+\item{large_intake_visit_water}{Numeric. Litres that flag a single, unusually
 large \strong{water} intake event.}
 
 \item{large_intake_rate_feed}{Numeric. Kilograms/s considered a

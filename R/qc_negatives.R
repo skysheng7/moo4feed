@@ -10,6 +10,7 @@
 #' @inheritParams qc_double_detection
 #' @inheritParams qc
 #' @inheritParams set_global_cols
+#' @param comb A named list of daily feed or water data frames.
 #'
 #' @return Updated warning data frame with negative value information
 #' @keywords internal
@@ -71,3 +72,69 @@ qc_negatives <- function(comb,
 
   return(warn)
 }
+
+
+#' Process negative values in feed or water data
+#'
+#' Handles negative values in feed or water data by:
+#' 1. Removing records with negative durations or intakes
+#' 2. Setting negative weights to zero and recalculating intake
+#' 3. Recalculating intake rates
+#'
+#' @inheritParams qc_negatives
+#' @inheritParams set_global_cols
+#'
+#' @return The processed data list with negative values handled.
+#' @keywords internal
+#' @noRd
+delete_negatives <- function(comb,
+                                  dur_col = duration_col2(),
+                                  intake_col = intake_col2(),
+                                  start_weight_col = start_weight_col2(),
+                                  end_weight_col = end_weight_col2()) {
+  
+  # Process each day's data
+  for (i in seq_along(comb)) {
+    dat <- comb[[i]]
+    
+    # Remove records with negative duration or intake
+    dat <- dat |>
+      dplyr::filter(!!rlang::sym(dur_col) >= 0 & !!rlang::sym(intake_col) >= 0)
+    
+    # Set negative weights to zero
+    dat <- dat |>
+      dplyr::mutate(
+        !!rlang::sym(start_weight_col) := dplyr::if_else(
+          !!rlang::sym(start_weight_col) < 0,
+          0,
+          !!rlang::sym(start_weight_col)
+        ),
+        !!rlang::sym(end_weight_col) := dplyr::if_else(
+          !!rlang::sym(end_weight_col) < 0,
+          0,
+          !!rlang::sym(end_weight_col)
+        )
+      )
+    
+    # Recalculate intake
+    dat <- dat |>
+      dplyr::mutate(
+        !!rlang::sym(intake_col) := !!rlang::sym(start_weight_col) - !!rlang::sym(end_weight_col)
+      )
+    
+    # Remove records with negative intake after recalculation
+    dat <- dat |>
+      dplyr::filter(!!rlang::sym(intake_col) >= 0)
+    
+    # Calculate rate
+    dat <- dat |>
+      dplyr::mutate(
+        rate = !!rlang::sym(intake_col) / !!rlang::sym(dur_col),
+        rate = dplyr::if_else(is.infinite(rate), 0, rate)
+      )
+    
+    comb[[i]] <- dat
+  }
+  
+  return(comb)
+} 
