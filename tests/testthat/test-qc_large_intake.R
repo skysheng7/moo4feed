@@ -18,7 +18,7 @@ test_that("qc_large_intake() identifies large intake values correctly", {
     date = c("2025-05-01", "2025-05-02"),
     large_intake_feed_visit = NA_character_
   )
-  cfg <- list(large_intake_visit_feed = 8)
+  cfg <- qc_config(large_intake_visit_feed = 8)
 
   result <- qc_large_intake(
     comb, warn, verbose = FALSE, cfg = cfg,
@@ -47,7 +47,7 @@ test_that("qc_large_intake() identifies rapid intake rates correctly", {
     date = c("2025-05-01", "2025-05-02"),
     large_intake_feed_visit = NA_character_
   )
-  cfg <- list(
+  cfg <- qc_config(
     large_intake_visit_feed = 8,
     large_intake_rate_feed = 0.01
   )
@@ -83,7 +83,7 @@ test_that("qc_large_intake() combines large intake and rapid rate warnings corre
     date = c("2025-05-01", "2025-05-02"),
     large_intake_feed_visit = NA_character_
   )
-  cfg <- list(
+  cfg <- qc_config(
     large_intake_visit_feed = 8,
     large_intake_rate_feed = 0.01
   )
@@ -114,7 +114,7 @@ test_that("qc_large_intake() handles water data correctly", {
     date = "2025-05-01",
     large_intake_water_visit = NA_character_
   )
-  cfg <- list(
+  cfg <- qc_config(
     large_intake_visit_water = 30,
     large_intake_rate_water = 0.3
   )
@@ -148,8 +148,8 @@ test_that("qc_large_intake() handles empty data correctly", {
     date = c("2025-05-01", "2025-05-02"),
     large_intake_feed_visit = NA_character_
   )
-  cfg <- list(
-    large_intake_visit_feed = 8,
+  cfg <- qc_config(
+    large_intake_visit_feed = 8,    
     large_intake_rate_feed = 0.01
   )
 
@@ -175,7 +175,7 @@ test_that("qc_large_intake() verbose mode outputs correctly", {
     date = "2025-05-01",
     large_intake_feed_visit = NA_character_
   )
-  cfg <- list(
+  cfg <- qc_config(
     large_intake_visit_feed = 8,
     large_intake_rate_feed = 0.01
   )
@@ -211,7 +211,7 @@ test_that("qc_all_large_intakes() handles both feed and water data correctly", {
     large_intake_feed_visit = NA_character_,
     large_intake_water_visit = NA_character_
   )
-  cfg <- list(
+  cfg <- qc_config(
     large_intake_visit_feed = 8,
     large_intake_rate_feed = 0.01,
     large_intake_visit_water = 30,
@@ -242,7 +242,7 @@ test_that("qc_all_large_intakes() handles NULL inputs correctly", {
     large_intake_feed_visit = NA_character_,
     large_intake_water_visit = NA_character_
   )
-  cfg <- list(
+  cfg <- qc_config(
     large_intake_visit_feed = 8,
     large_intake_rate_feed = 0.01
   )
