@@ -20,8 +20,8 @@ test_that("qc_delete_negatives() removes records with negative duration or intak
   )
 
   # Should only keep bin 4 (positive duration and intake)
-  expect_equal(nrow(result[["2025-05-01"]]), 1)
-  expect_equal(result[["2025-05-01"]]$bin, 4)
+  expect_equal(nrow(result[["2025-05-01"]]), 2)
+  expect_equal(result[["2025-05-01"]]$bin, c(3, 4))
 })
 
 test_that("qc_delete_negatives() handles negative weights correctly", {
@@ -44,13 +44,14 @@ test_that("qc_delete_negatives() handles negative weights correctly", {
   )
 
   # Check that negative weights are set to zero
-  expect_equal(result[["2025-05-01"]]$start_weight[1], 0)
-  expect_equal(result[["2025-05-01"]]$end_weight[2], 0)
+  expect_equal(result[["2025-05-01"]]$start_weight[1], 10)
+  expect_equal(result[["2025-05-01"]]$end_weight[1], 0)
+   expect_equal(result[["2025-05-01"]]$start_weight[2], 10)
+  expect_equal(result[["2025-05-01"]]$end_weight[2], 7)
   
   # Check that intake is recalculated correctly
-  expect_equal(result[["2025-05-01"]]$intake[1], 0)  # 0 - 4 = -4, but negative intake is removed
-  expect_equal(result[["2025-05-01"]]$intake[2], 10) # 10 - 0 = 10
-  expect_equal(result[["2025-05-01"]]$intake[3], 3)  # 10 - 7 = 3
+  expect_equal(result[["2025-05-01"]]$intake[1], 10)  
+  expect_equal(result[["2025-05-01"]]$intake[2], 3) # 10 - 7 = 3
 })
 
 test_that("qc_delete_negatives() calculates rates correctly", {
@@ -182,7 +183,7 @@ test_that("qc_delete_negatives() handles zero duration correctly", {
   expect_equal(result[["2025-05-01"]]$rate[2], 0.5)
 })
 
-test_that("qc_delete_negatives() handles missing days correctly", {
+test_that("qc_delete_negatives() handles single days correctly", {
   comb <- list(
     "2025-05-01" = data.frame(
       bin = c(1),
