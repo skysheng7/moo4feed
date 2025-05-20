@@ -7,11 +7,28 @@ test_that("qc function behaves correctly under normal conditions with realistic 
       bin = c(13, 24),
       start = lubridate::ymd_hms(c("2020-10-31 00:03:24", "2020-10-31 00:05:32"), tz = tz2()),
       end = lubridate::ymd_hms(c("2020-10-31 00:04:01", "2020-10-31 00:09:25"), tz = tz2()),
-      duration = c(37, 233),
+      duration = c(1000, 1000),
       start_weight = c(18.7, 8.6),
       end_weight = c(19.4, 7.4),
       intake = c(-0.7, 1.2),
-      date = as.Date("2020-10-31")
+      date = as.Date("2020-10-31"),
+      rate = c(-0.0007, 0.0012)
+    )
+  )
+
+  feed_expect <- list(
+    "2020-10-31" = data.frame(
+      transponder = c(11954040),
+      cow = c(4070),
+      bin = c(24),
+      start = lubridate::ymd_hms(c("2020-10-31 00:05:32"), tz = tz2()),
+      end = lubridate::ymd_hms(c("2020-10-31 00:09:25"), tz = tz2()),
+      duration = c(1000),
+      start_weight = c(8.6),
+      end_weight = c(7.4),
+      intake = c(1.2),
+      date = as.Date("2020-10-31"),
+      rate = c(0.0012)
     )
   )
 
@@ -22,11 +39,12 @@ test_that("qc function behaves correctly under normal conditions with realistic 
       bin = c(12, 30),
       start = lubridate::ymd_hms(c("2020-10-31 00:10:00", "2020-10-31 00:12:00"), tz = tz2()),
       end = lubridate::ymd_hms(c("2020-10-31 00:11:00", "2020-10-31 00:13:00"), tz = tz2()),
-      duration = c(60, 60),
+      duration = c(1000, 1000),
       start_weight = c(5.0, 7.5),
       end_weight = c(4.5, 7.0),
       intake = c(0.5, 0.5),
-      date = as.Date("2020-10-31")
+      date = as.Date("2020-10-31"),
+      rate = c(0.0005, 0.0005)
     )
   )
 
@@ -42,7 +60,9 @@ test_that("qc function behaves correctly under normal conditions with realistic 
                end_col = "end",
                bin_col = "bin",
                dur_col = "duration",
-               intake_col = "intake")
+               intake_col = "intake",
+               start_weight_col = "start_weight",
+               end_weight_col = "end_weight")
   expect_type(result, "list")
   expect_true(all(c("warnings", "feed", "water", "combined") %in% names(result)))
   expect_equal(nrow(result$warnings), 1)
@@ -59,9 +79,11 @@ test_that("qc function behaves correctly under normal conditions with realistic 
                          end_col = "end",
                          bin_col = "bin",
                          dur_col = "duration",
-                         intake_col = "intake")
+                         intake_col = "intake",
+                         start_weight_col = "start_weight",
+                         end_weight_col = "end_weight")
   expect_null(result_feed_only$water)
-  expect_equal(result_feed_only$feed, feed)
+  expect_equal(result_feed_only$feed, feed_expect)
   expect_equal(result_feed_only$warnings[["total_cows"]][1], 2)
 
   # Normal case: water only
@@ -74,7 +96,9 @@ test_that("qc function behaves correctly under normal conditions with realistic 
                           end_col = "end",
                           bin_col = "bin",
                           dur_col = "duration",
-                          intake_col = "intake")
+                          intake_col = "intake",
+                          start_weight_col = "start_weight",
+                          end_weight_col = "end_weight")
   expect_null(result_water_only$feed)
   expect_equal(result_water_only$water, water)
   expect_equal(result_water_only$warnings[["total_cows"]][1], 2)

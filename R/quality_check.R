@@ -36,6 +36,8 @@ qc <- function(feed      = NULL,
                bin_col   = bin_col2(),
                dur_col = duration_col2(),
                intake_col = intake_col2(),
+               start_weight_col = start_weight_col2(),
+               end_weight_col = end_weight_col2(),
                verbose = TRUE) {
 
   # --- 0. combine ----------------------------------------------------------
@@ -72,6 +74,38 @@ qc <- function(feed      = NULL,
                        bin_col = bin_col,
                        dur_col = dur_col,
                        intake_col = intake_col)
+
+  warn <- qc_all_large_intakes(feed = feed,
+                              water = water,
+                              warn = warn,
+                              cfg = cfg,
+                              verbose = verbose,
+                              bin_col = bin_col,
+                              intake_col = intake_col,
+                              dur_col = dur_col)
+
+
+  # --- 3. delete negatives -------------------------------------------------
+  comb <- delete_negatives(comb,
+                          dur_col = dur_col,
+                          intake_col = intake_col,
+                          start_weight_col = start_weight_col,
+                          end_weight_col = end_weight_col)
+  if (!is.null(feed)) {
+    feed <- delete_negatives(feed,
+                            dur_col = dur_col,
+                            intake_col = intake_col,
+                            start_weight_col = start_weight_col,
+                            end_weight_col = end_weight_col)
+  } 
+
+  if (!is.null(water)) {
+    water <- delete_negatives(water,
+                            dur_col = dur_col,
+                            intake_col = intake_col,
+                            start_weight_col = start_weight_col,
+                            end_weight_col = end_weight_col)
+  } 
 
   # --- 4. return -----------------------------------------------------------
   list(warnings = warn,
