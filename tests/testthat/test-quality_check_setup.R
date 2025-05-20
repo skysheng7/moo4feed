@@ -31,7 +31,7 @@ test_that("qc_config() returns a complete, named list with defaults", {
   cfg <- qc_config()
   expected_names <- c(
     "high_dur_feed", "high_dur_water",
-    "large_intake_visit_feed", "large_intake_visit_wat",
+    "large_intake_visit_feed", "large_intake_visit_water",
     "large_intake_rate_feed", "large_intake_rate_water",
     "low_visit_threshold", "total_cows_expected",
     "low_feed_intake", "high_feed_intake",
@@ -122,16 +122,21 @@ test_that("qc_warning_skeleton works correctly under normal conditions", {
   expect_s3_class(result, "data.frame")
   expect_equal(nrow(result), 2)
   expect_true(all(c("long_dur_feeder", "long_dur_drinker") %in% names(result)))
+  expect_true(all(c("large_intake_feed_visit", "large_intake_water_visit") %in% names(result)))
+  expect_false(any(c("large_intake_visit_feed", "large_intake_rate_feed",
+                    "large_intake_visit_water", "large_intake_rate_water") %in% names(result)))
 
   # Normal case: only feed
   result_feed_only <- qc_warning_skeleton(comb, has_feed = TRUE, has_water = FALSE)
-  expect_true("long_dur_feeder" %in% names(result_feed_only))
-  expect_false("long_dur_drinker" %in% names(result_feed_only))
+  expect_true("large_intake_feed_visit" %in% names(result_feed_only))
+  expect_false("large_intake_water_visit" %in% names(result_feed_only))
+  expect_false(any(c("large_intake_visit_feed", "large_intake_rate_feed") %in% names(result_feed_only)))
 
   # Normal case: only water
   result_water_only <- qc_warning_skeleton(comb, has_feed = FALSE, has_water = TRUE)
-  expect_true("long_dur_drinker" %in% names(result_water_only))
-  expect_false("long_dur_feeder" %in% names(result_water_only))
+  expect_true("large_intake_water_visit" %in% names(result_water_only))
+  expect_false("large_intake_feed_visit" %in% names(result_water_only))
+  expect_false(any(c("large_intake_visit_water", "large_intake_rate_water") %in% names(result_water_only)))
 })
 
 # Edge case: Single-day input

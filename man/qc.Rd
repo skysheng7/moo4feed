@@ -14,6 +14,8 @@ qc(
   bin_col = bin_col2(),
   dur_col = duration_col2(),
   intake_col = intake_col2(),
+  start_weight_col = start_weight_col2(),
+  end_weight_col = end_weight_col2(),
   verbose = TRUE
 )
 }
@@ -37,6 +39,10 @@ if you don't have water data}
 \item{dur_col}{Duration column name (default current global value)}
 
 \item{intake_col}{Intake column name (default current global value)}
+
+\item{start_weight_col}{Start weight column name (default current global value)}
+
+\item{end_weight_col}{End weight column name (default current global value)}
 
 \item{verbose}{Logical. If TRUE, print details of data where errors were detected}
 }

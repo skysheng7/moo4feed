@@ -16,7 +16,7 @@
 #' @param high_dur_water Numeric. Seconds that define a *long* drinking visit.
 #' @param large_intake_visit_feed  Numeric. Kilograms that flag a single, unusually
 #'   large **feed** intake event.
-#' @param large_intake_visit_wat Numeric. Litres that flag a single, unusually
+#' @param large_intake_visit_water Numeric. Litres that flag a single, unusually
 #'   large **water** intake event.
 #' @param large_intake_rate_feed  Numeric. Kilograms/s considered a
 #'   rapid feed-intake rate.
@@ -63,7 +63,7 @@ qc_config <- function(
     high_dur_feed           = 2000,
     high_dur_water          = 1800,
     large_intake_visit_feed       = 8,     # kg per bout
-    large_intake_visit_wat      = 30,     # L per bout
+    large_intake_visit_water      = 30,     # L per bout
     large_intake_rate_feed  = 0.008,  # kg/s
     large_intake_rate_water = 0.35,  # L/s
     low_visit_threshold     = 10,
@@ -86,7 +86,7 @@ qc_config <- function(
   assert_scalar_num(high_dur_feed,           "high_dur_feed")
   assert_scalar_num(high_dur_water,          "high_dur_water")
   assert_scalar_num(large_intake_visit_feed,     "large_intake_visit_feed")
-  assert_scalar_num(large_intake_visit_wat,    "large_intake_visit_wat")
+  assert_scalar_num(large_intake_visit_water,    "large_intake_visit_water")
   assert_scalar_num(large_intake_rate_feed,  "large_intake_rate_feed")
   assert_scalar_num(large_intake_rate_water, "large_intake_rate_water")
   assert_scalar_int(low_visit_threshold,     "low_visit_threshold")
@@ -120,7 +120,7 @@ qc_config <- function(
       high_dur_feed           = high_dur_feed,
       high_dur_water          = high_dur_water,
       large_intake_visit_feed       = large_intake_visit_feed,
-      large_intake_visit_wat      = large_intake_visit_wat,
+      large_intake_visit_water      = large_intake_visit_water,
       large_intake_rate_feed  = large_intake_rate_feed,
       large_intake_rate_water = large_intake_rate_water,
       low_visit_threshold     = low_visit_threshold,
@@ -202,16 +202,14 @@ qc_warning_skeleton <- function(comb,
   )
 
   feed_columns <- c(
-    "long_dur_feeder", "large_intake_visit_feed",
-    "large_intake_rate_feeder",
+    "long_dur_feeder", "large_intake_feed_visit",
     "low_daily_feed_intake_cows",
     "high_daily_feed_intake_cows",
     "feed_add_time_no_found"
   )
 
   wat_columns <- c(
-    "long_dur_drinker", "large_intake_visit_wat",
-    "large_intake_rate_drinker",
+    "long_dur_drinker", "large_intake_water_visit",
     "low_daily_water_intake_cows",
     "high_daily_water_intake_cows"
   )
