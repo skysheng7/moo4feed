@@ -87,7 +87,7 @@ qc_negatives <- function(comb,
 #' @return The processed data list with negative values handled.
 #' @keywords internal
 #' @noRd
-delete_negatives <- function(comb,
+qc_delete_negatives <- function(comb,
                                   dur_col = duration_col2(),
                                   intake_col = intake_col2(),
                                   start_weight_col = start_weight_col2(),

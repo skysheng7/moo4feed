@@ -86,13 +86,13 @@ qc <- function(feed      = NULL,
 
 
   # --- 3. delete negatives -------------------------------------------------
-  comb <- delete_negatives(comb,
+  comb <- qc_delete_negatives(comb,
                           dur_col = dur_col,
                           intake_col = intake_col,
                           start_weight_col = start_weight_col,
                           end_weight_col = end_weight_col)
   if (!is.null(feed)) {
-    feed <- delete_negatives(feed,
+    feed <- qc_delete_negatives(feed,
                             dur_col = dur_col,
                             intake_col = intake_col,
                             start_weight_col = start_weight_col,
@@ -100,7 +100,7 @@ qc <- function(feed      = NULL,
   } 
 
   if (!is.null(water)) {
-    water <- delete_negatives(water,
+    water <- qc_delete_negatives(water,
                             dur_col = dur_col,
                             intake_col = intake_col,
                             start_weight_col = start_weight_col,
