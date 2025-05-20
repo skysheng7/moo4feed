@@ -51,6 +51,8 @@
 <span>  bin_col <span class="op">=</span> <span class="fu"><a href="bin_col2.html">bin_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  dur_col <span class="op">=</span> <span class="fu"><a href="duration_col2.html">duration_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  intake_col <span class="op">=</span> <span class="fu"><a href="intake_col2.html">intake_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  start_weight_col <span class="op">=</span> <span class="fu"><a href="start_weight_col2.html">start_weight_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  end_weight_col <span class="op">=</span> <span class="fu"><a href="end_weight_col2.html">end_weight_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -97,6 +99,14 @@ if you don't have water data</p></dd>
 <dd><p>Intake column name (default current global value)</p></dd>
 
 
+<dt id="arg-start-weight-col">start_weight_col<a class="anchor" aria-label="anchor" href="#arg-start-weight-col"></a></dt>
+<dd><p>Start weight column name (default current global value)</p></dd>
+
+
+<dt id="arg-end-weight-col">end_weight_col<a class="anchor" aria-label="anchor" href="#arg-end-weight-col"></a></dt>
+<dd><p>End weight column name (default current global value)</p></dd>
+
+
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>Logical. If TRUE, print details of data where errors were detected</p></dd>
 
@@ -124,18 +134,17 @@ per warning code.</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">cfg</span> <span class="op">&lt;-</span> <span class="fu"><a href="qc_config.html">qc_config</a></span><span class="op">(</span>high_dur_feed <span class="op">=</span> <span class="fl">2500</span>, low_visit_threshold <span class="op">=</span> <span class="fl">5</span>, total_cows_expected<span class="op">=</span><span class="fl">48</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">qc</span><span class="op">(</span>feed <span class="op">=</span> <span class="va">all_fed</span>, water <span class="op">=</span> <span class="va">all_wat</span>, cfg <span class="op">=</span> <span class="va">cfg</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">out</span><span class="op">$</span><span class="va">warnings</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 3 × 19</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 3 × 17</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   date       total_cows missing_cow double_detection_bins negative_visit_bins</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 2020-10-31         47 Yes         30                    6; 12; 13          </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> 2020-11-01         47 Yes         3; 5; 6; 18           6; 12; 13; 30      </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> 2020-11-02         48 <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>                    13; 30             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 14 more variables: cows_disappeared_after_noon &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 12 more variables: cows_disappeared_after_noon &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   bins_never_visited &lt;chr&gt;, bins_low_traffic &lt;chr&gt;, long_dur_feeder &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   large_intake_visit_feed &lt;chr&gt;, large_intake_rate_feeder &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   low_daily_feed_intake_cows &lt;chr&gt;, high_daily_feed_intake_cows &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   feed_add_time_no_found &lt;chr&gt;, long_dur_drinker &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   large_intake_visit_wat &lt;chr&gt;, large_intake_rate_drinker &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   large_intake_feed_visit &lt;chr&gt;, low_daily_feed_intake_cows &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   high_daily_feed_intake_cows &lt;chr&gt;, feed_add_time_no_found &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   long_dur_drinker &lt;chr&gt;, large_intake_water_visit &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   low_daily_water_intake_cows &lt;chr&gt;, high_daily_water_intake_cows &lt;chr&gt;</span></span>
 </code></pre></div>
     </div>
