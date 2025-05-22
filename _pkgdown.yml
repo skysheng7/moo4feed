@@ -68,7 +68,7 @@ reference:
 
 - title: Data Summary
 
-  subtitle: Feeding and Drinking Summary
+- subtitle: Feeding and Drinking Summary
   desc: >
     Summarize daily feed/water intake, duration, and visit counts.
   contents:
