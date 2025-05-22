@@ -3,22 +3,20 @@
 #' @description
 #' Add warnings to `warn` when cows exceed low or high daily intake thresholds for feed or water.
 #'
+#' @inheritParams qc
 #' @param df A data frame from `summarize_feed_water_data()`.
-#' @param warn A warnings skeleton (see `qc_warning_skeleton()`).
-#' @param type Either `"feeding"` or `"drinking"`.
-#' @param cfg A config list, default from [qc_config()].
+#' @param warn A warnings dataframe (see `qc_warning_skeleton()`).
+#' @param type Either `"feed"` or `"water"`.
 #'
 #' @return An updated warning data frame with intake alerts added.
 #' @keywords internal
 #' @noRd
 #' 
-#' @inheritParams qc
-#' @inheritParams qc_total_cows
 #' @examples
 #' df <- tibble::tibble(
 #'   date = as.Date(c("2024-01-01", "2024-01-01", "2024-01-02")),
 #'   cow = c("A", "B", "A"),
-#'   feeding_intake = c(5, 200, 10)
+#'   feed_intake = c(5, 200, 10)
 #' )
 #' warn <- tibble::tibble(
 #'   date = as.Date(c("2024-01-01", "2024-01-02")),
@@ -27,12 +25,13 @@
 #'   low_daily_water_intake_cows = NA_character_,
 #'   high_daily_water_intake_cows = NA_character_
 #' )
-#' set_id_col2("cow")
 #' cfg <- qc_config()
-#' check_intake(df, warn, type = "feeding", cfg = cfg)
-#' 
-#' @importFrom rlang sym .data
-check_intake <- function(df, warn, type = c("feeding", "drinking"), cfg = qc_config()) {
+#' qc_check_intake(df, warn, type = "feed", cfg = cfg, id_col = "cow")
+qc_check_intake <- function(df, 
+                            warn, 
+                            type = c("feed", "water"), 
+                            cfg = qc_config(),
+                            id_col = id_col2()) {
 
   # input validation
   if (!is.data.frame(df))   stop("`df`   must be a data frame.")
@@ -40,12 +39,12 @@ check_intake <- function(df, warn, type = c("feeding", "drinking"), cfg = qc_con
   if (!inherits(cfg, "list")) stop("`cfg` must be a list, as returned by qc_config().")
 
   type <- match.arg(type)
-  id_col <- rlang::sym(id_col2())
+  id_col <- rlang::sym(id_col)
   intake_col <- rlang::sym(paste0(type, "_intake"))
 
   # Thresholds
-  low_thresh  <- cfg[[paste0("low_", ifelse(type == "feeding", "feed", "wat"), "_intake")]]
-  high_thresh <- cfg[[paste0("high_", ifelse(type == "feeding", "feed", "wat"), "_intake")]]
+  low_thresh  <- cfg[[paste0("low_", ifelse(type == "feed", "feed", "wat"), "_intake")]]
+  high_thresh <- cfg[[paste0("high_", ifelse(type == "feed", "feed", "wat"), "_intake")]]
 
   limits <- list(
     low  = df[df[[as.character(intake_col)]] < low_thresh, ],
@@ -59,7 +58,7 @@ check_intake <- function(df, warn, type = c("feeding", "drinking"), cfg = qc_con
       for (i in seq_len(nrow(warn))) {
         cur_date <- warn$date[i]
         these <- flagged[flagged$date == cur_date, "comb_str", drop = TRUE]
-        colname <- paste0(lim, "_daily_", ifelse(type == "feeding", "feed", "water"), "_intake_cows")
+        colname <- paste0(lim, "_daily_", ifelse(type == "feed", "feed", "water"), "_intake_cows")
         warn[[colname]][i] <- if (length(these) > 0) paste(sort(these), collapse = "; ") else NA_character_
       }
     }
