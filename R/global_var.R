@@ -1,6 +1,6 @@
 utils::globalVariables(c(
   "season", "fall", "spring", "start", "end", "overlap", "n", "rate",
-  "date", "cow", "comb_str",
+  "date", "cow",
   "feeding_intake", "feeding_duration", "feeding_visits",
   "drinking_intake", "drinking_duration", "drinking_visits"
 ))

@@ -1,4 +1,6 @@
 #' Summarize daily intake, duration, and visit counts
+#' 
+#' @importFrom dplyr group_by summarise n ungroup
 #'
 #' @description
 #' Summarize feeding or drinking visits **per cow per day**.

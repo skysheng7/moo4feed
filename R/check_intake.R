@@ -1,7 +1,5 @@
 #' Check low/high intake levels
 #' 
-#' @inheritParams qc
-#' @inheritParams qc_total_cows
 #' @description
 #' Add warnings to `warn` when cows exceed low or high daily intake thresholds for feed or water.
 #'
@@ -13,7 +11,9 @@
 #' @return An updated warning data frame with intake alerts added.
 #' @keywords internal
 #' @noRd
-#'
+#' 
+#' @inheritParams qc
+#' @inheritParams qc_total_cows
 #' @examples
 #' df <- tibble::tibble(
 #'   date = as.Date(c("2024-01-01", "2024-01-01", "2024-01-02")),
@@ -33,6 +33,12 @@
 #' 
 #' @importFrom rlang sym .data
 check_intake <- function(df, warn, type = c("feeding", "drinking"), cfg = qc_config()) {
+
+  # input validation
+  if (!is.data.frame(df))   stop("`df`   must be a data frame.")
+  if (!is.data.frame(warn)) stop("`warn` must be a data frame.")
+  if (!inherits(cfg, "list")) stop("`cfg` must be a list, as returned by qc_config().")
+
   type <- match.arg(type)
   id_col <- rlang::sym(id_col2())
   intake_col <- rlang::sym(paste0(type, "_intake"))

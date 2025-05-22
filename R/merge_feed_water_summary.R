@@ -1,4 +1,6 @@
 #' Summarize and check feed & water intake
+#' 
+#' @importFrom dplyr full_join
 #'
 #' @description
 #' This function summarizes daily feed and water intake, visit duration, and counts,
@@ -13,6 +15,8 @@
 #' - `summary`: merged data frame of daily intake, duration, and visit counts
 #' - `warn`: updated warnings
 #'
+#' @inheritParams qc
+#' @inheritParams qc_total_cows
 #' @examples
 #' feed <- tibble::tibble(
 #'   date = as.Date(c("2024-01-01", "2024-01-01")),
