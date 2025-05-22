@@ -1,4 +1,9 @@
-utils::globalVariables(c("season", "fall", "spring", "start", "end", "overlap", "n", "rate"))
+utils::globalVariables(c(
+  "season", "fall", "spring", "start", "end", "overlap", "n", "rate",
+  "date", "cow", "comb_str",
+  "feeding_intake", "feeding_duration", "feeding_visits",
+  "drinking_intake", "drinking_duration", "drinking_visits"
+))
 
 # internal environment that stores the run-time global variable options
 the <- new.env(parent = emptyenv())

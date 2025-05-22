@@ -14,9 +14,37 @@
 #' - `warn`: updated warnings
 #'
 #' @examples
-#' # (example usage will go here later)
+#' feed <- tibble::tibble(
+#'   date = as.Date(c("2024-01-01", "2024-01-01")),
+#'   cow = c("A", "B"),
+#'   intake = c(20, 80),
+#'   duration = c(200, 300)
+#' )
+#'
+#' water <- tibble::tibble(
+#'   date = as.Date(c("2024-01-01", "2024-01-01")),
+#'   cow = c("A", "B"),
+#'   intake = c(50, 200),
+#'   duration = c(100, 150)
+#' )
+#'
+#' warn <- tibble::tibble(
+#'   date = as.Date("2024-01-01"),
+#'   low_daily_feed_intake_cows = NA_character_,
+#'   high_daily_feed_intake_cows = NA_character_,
+#'   low_daily_water_intake_cows = NA_character_,
+#'   high_daily_water_intake_cows = NA_character_
+#' )
+#'
+#' cfg <- qc_config()
+#' merge_feed_water_summary(feed, water, warn, cfg)
+#'
 #' @export
 merge_feed_water_summary <- function(feed = NULL, water = NULL, warn, cfg = qc_config()) {
+  if (!is.data.frame(warn)) stop("`warn` must be a data frame.")
+  if (!is.null(feed) && !is.data.frame(feed)) stop("`feed` must be a data frame or NULL.")
+  if (!is.null(water) && !is.data.frame(water)) stop("`water` must be a data frame or NULL.")
+
   list_to_merge <- list()
 
   if (!is.null(feed)) {
@@ -31,7 +59,6 @@ merge_feed_water_summary <- function(feed = NULL, water = NULL, warn, cfg = qc_c
     list_to_merge <- append(list_to_merge, list(water_sum))
   }
 
-  # Merge all summary data
   if (length(list_to_merge) > 0) {
     summary_df <- Reduce(function(x, y) dplyr::full_join(x, y, by = c("date", id_col2())), list_to_merge)
     summary_df <- summary_df[order(summary_df$date, summary_df[[id_col2()]]), ]
