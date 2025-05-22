@@ -1,8 +1,8 @@
 # ----------------------------------------------------------------------------- #
-# summarize_feed_water_data()                                                   #
+# sum_visits()                                                   #
 # ----------------------------------------------------------------------------- #
 
-test_that("summarize_feed_water_data() correctly summarizes intake, duration, and visits", {
+test_that("sum_visits() correctly summarizes intake, duration, and visits", {
   df <- tibble::tibble(
     date = as.Date(c("2024-01-01", "2024-01-01", "2024-01-01")),
     cow = c(1, 1, 2),
@@ -14,10 +14,10 @@ test_that("summarize_feed_water_data() correctly summarizes intake, duration, an
   set_intake_col2("intake")
   set_duration_col2("duration")
 
-  result <- summarize_feed_water_data(df, type = "feeding")
+  result <- sum_visits(df, type = "feed")
 
   expect_s3_class(result, "data.frame")
-  expect_named(result, c("date", "cow", "feeding_intake", "feeding_duration", "feeding_visits"))
+  expect_named(result, c("date", "cow", "feed_intake", "feed_duration", "feed_visits"))
   expect_equal(nrow(result), 2)
-  expect_equal(result$feeding_visits[1], 2)
+  expect_equal(result$feed_visits[1], 2)
 })
