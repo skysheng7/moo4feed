@@ -25,12 +25,14 @@ test_that("qc_no_show() correctly identifies cows that disappeared after noon", 
     cows_disappeared_after_noon = NA_character_
   )
   
+  # Test with verbose = FALSE to avoid console output during tests
   result <- qc_no_show(
     test_data,
     warn_df,
     id_col = "cow",
     end_col = "end",
-    tz = "UTC"
+    tz = "UTC",
+    verbose = FALSE
   )
   
   # Check cow warnings
@@ -54,7 +56,7 @@ test_that("qc_no_show() handles empty data frames correctly", {
     cows_disappeared_after_noon = NA_character_
   )
   
-  result <- qc_no_show(empty_data, warn_df, tz = "UTC")
+  result <- qc_no_show(empty_data, warn_df, tz = "UTC", verbose = FALSE)
   expect_true(all(is.na(result[1, -1])))  # All columns except date should be NA
 })
 
@@ -71,7 +73,7 @@ test_that("qc_no_show() handles single-record data frames", {
     cows_disappeared_after_noon = NA_character_
   )
   
-  result <- qc_no_show(single_record, warn_df, tz = "UTC")
+  result <- qc_no_show(single_record, warn_df, tz = "UTC", verbose = FALSE)
   expect_equal(result$cows_disappeared_after_noon[1], "1, 10:00:00")
 })
 
@@ -86,6 +88,16 @@ test_that("qc_no_show() validates inputs correctly", {
   expect_error(
     qc_no_show(list(), warn_df),
     "`comb` must be a non-empty list of data frames"
+  )
+  
+  # Test list with non-data frame items
+  invalid_list <- list(
+    "2024-01-01" = data.frame(cow = 1),
+    "2024-01-02" = "not a data frame"
+  )
+  expect_error(
+    qc_no_show(invalid_list, warn_df),
+    "All elements in `comb` list must be data frames"
   )
   
   # Test non-data frame warn
@@ -113,7 +125,10 @@ test_that("qc_determine_last_seen() finds correct last seen times", {
     )
   )
   
-  result <- qc_determine_last_seen(df, rlang::sym("id"), rlang::sym("end"))
+  # Using unquoted symbols directly as per updated function
+  id_sym <- rlang::sym("id")
+  end_sym <- rlang::sym("end")
+  result <- qc_determine_last_seen(df, id_sym, end_sym)
   
   expect_equal(nrow(result), 2)  # One row per unique ID
   expect_equal(
@@ -141,11 +156,14 @@ test_that("qc_extract_warnings() formats warnings correctly", {
   
   cutoff <- lubridate::ymd_hms("2024-01-01 12:00:00", tz = "UTC")
   
-  result <- qc_extract_warnings(df, "id", "end", cutoff)
+  # Using unquoted symbols directly as per updated function
+  id_sym <- rlang::sym("id")
+  end_sym <- rlang::sym("end")
+  result <- qc_extract_warnings(df, id_sym, end_sym, cutoff)
   expect_equal(result, "1, 10:00:00; 2, 11:00:00")
   
   # Test with no warnings
   late_cutoff <- lubridate::ymd_hms("2024-01-01 09:00:00", tz = "UTC")
-  result_no_warnings <- qc_extract_warnings(df, "id", "end", late_cutoff)
+  result_no_warnings <- qc_extract_warnings(df, id_sym, end_sym, late_cutoff)
   expect_true(is.na(result_no_warnings))
 }) 
