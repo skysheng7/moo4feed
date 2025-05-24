@@ -45,21 +45,17 @@ qc_no_show <- function(comb,
       next
     }
     
-    # Convert column names to symbols for tidy evaluation
-    id_sym <- rlang::sym(id_col)
-    end_sym <- rlang::sym(end_col)
-    
     # Define cutoff time (noon)
     noon_cutoff <- lubridate::ymd_hms(paste(date, "11:59:59"), tz = tz)
     
     # Get last seen times for cows
-    last_seen_cows <- qc_determine_last_seen(comb[[i]], !!id_sym, !!end_sym)
+    last_seen_cows <- qc_determine_last_seen(comb[[i]], id_col, end_col)
     
     # Check cows not seen after noon
     warn$cows_disappeared_after_noon[day_idx] <- qc_extract_warnings(
       last_seen_cows, 
-      !!id_sym,
-      !!end_sym,
+      id_col,
+      end_col,
       cutoff_time = noon_cutoff
     )
   }
@@ -70,17 +66,21 @@ qc_no_show <- function(comb,
 #' Determine last seen time for each entity
 #'
 #' @inheritParams qc_no_show
-#' @param id_sym Column containing entity IDs (unquoted)
-#' @param end_sym Column containing end times (unquoted)
+#' @param id_col Column containing entity IDs (character string)
+#' @param end_col Column containing end times (character string)
 #' @param df A data frame containing visit records
 #' 
 #' @return A data frame with last seen times for each entity
 #' @keywords internal
 #' @noRd
-qc_determine_last_seen <- function(df, id_sym, end_sym) {
+qc_determine_last_seen <- function(df, id_col, end_col) {
+  # Convert column names to symbols for tidy evaluation
+  id_sym <- rlang::sym(id_col)
+  end_sym <- rlang::sym(end_col)
+  
   df |>
-    dplyr::arrange(id_sym, end_sym) |>
-    dplyr::group_by(id_sym) |>
+    dplyr::arrange(!!id_sym, !!end_sym) |>
+    dplyr::group_by(!!id_sym) |>
     dplyr::slice_tail(n = 1) |>
     dplyr::ungroup()
 }
@@ -93,13 +93,17 @@ qc_determine_last_seen <- function(df, id_sym, end_sym) {
 #' @return A character string with warnings, or NA if no warnings
 #' @keywords internal
 #' @noRd
-qc_extract_warnings <- function(df, id_sym, end_sym, cutoff_time) {
+qc_extract_warnings <- function(df, id_col, end_col, cutoff_time) {
+  # Convert column names to symbols for tidy evaluation
+  id_sym <- rlang::sym(id_col)
+  end_sym <- rlang::sym(end_col)
+  
   not_seen <- df |>
-    dplyr::filter(end_sym < cutoff_time) |>
+    dplyr::filter(!!end_sym < cutoff_time) |>
     dplyr::mutate(
       warning_str = paste(
-        id_sym,
-        format(end_sym, "%H:%M:%S"),
+        !!id_sym,
+        format(!!end_sym, "%H:%M:%S"),
         sep = ", "
       )
     ) |>

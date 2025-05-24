@@ -125,10 +125,8 @@ test_that("qc_determine_last_seen() finds correct last seen times", {
     )
   )
   
-  # Using unquoted symbols directly as per updated function
-  id_sym <- rlang::sym("id")
-  end_sym <- rlang::sym("end")
-  result <- qc_determine_last_seen(df, id_sym, end_sym)
+  # Pass character column names instead of symbols
+  result <- qc_determine_last_seen(df, "id", "end")
   
   expect_equal(nrow(result), 2)  # One row per unique ID
   expect_equal(
@@ -156,14 +154,12 @@ test_that("qc_extract_warnings() formats warnings correctly", {
   
   cutoff <- lubridate::ymd_hms("2024-01-01 12:00:00", tz = "UTC")
   
-  # Using unquoted symbols directly as per updated function
-  id_sym <- rlang::sym("id")
-  end_sym <- rlang::sym("end")
-  result <- qc_extract_warnings(df, id_sym, end_sym, cutoff)
+  # Pass character column names instead of symbols
+  result <- qc_extract_warnings(df, "id", "end", cutoff)
   expect_equal(result, "1, 10:00:00; 2, 11:00:00")
   
   # Test with no warnings
   late_cutoff <- lubridate::ymd_hms("2024-01-01 09:00:00", tz = "UTC")
-  result_no_warnings <- qc_extract_warnings(df, id_sym, end_sym, late_cutoff)
+  result_no_warnings <- qc_extract_warnings(df, "id", "end", late_cutoff)
   expect_true(is.na(result_no_warnings))
 }) 
