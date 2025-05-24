@@ -197,8 +197,8 @@ qc_warning_skeleton <- function(comb,
   # Adding additional columns with default values (blank)
   general_columns <- c(
     "total_cows", "missing_cow", "double_detection_bins",
-    "negative_visit_bins",
-    "cows_disappeared_after_noon", "bins_never_visited", "bins_low_traffic"
+    "negative_visit_bins", "cows_disappeared_after_noon",
+    "bins_never_visited", "bins_low_traffic"
   )
 
   feed_columns <- c(
@@ -222,7 +222,6 @@ qc_warning_skeleton <- function(comb,
     warning_columns <- c(general_columns, wat_columns)
   }
 
-
   # Add warning columns to the data frame
   num_cols <- c("total_cows")
   char_cols <- setdiff(warning_columns, num_cols)
@@ -231,7 +230,5 @@ qc_warning_skeleton <- function(comb,
     warn_df[[col]] <- if (col %in% num_cols) NA_integer_ else NA_character_
   }
 
-
   return(warn_df)
-
 }

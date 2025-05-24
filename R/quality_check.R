@@ -12,6 +12,7 @@
 #'  if you don't have water data
 #' @param cfg   A configuration list created by [qc_config()].
 #' @param verbose Logical. If TRUE, print details of data where errors were detected
+#' @param tz Time zone string for date-time operations
 #'
 #' @return A list with four elements:
 #' \describe{
@@ -38,6 +39,7 @@ qc <- function(feed      = NULL,
                intake_col = intake_col2(),
                start_weight_col = start_weight_col2(),
                end_weight_col = end_weight_col2(),
+               tz = tz2(),
                verbose = TRUE) {
 
   # --- 0. combine ----------------------------------------------------------
@@ -84,6 +86,12 @@ qc <- function(feed      = NULL,
                               intake_col = intake_col,
                               dur_col = dur_col)
 
+  warn <- qc_no_show(comb,
+                     warn = warn,
+                     id_col = id_col,
+                     end_col = end_col,
+                     tz = tz,
+                     verbose = verbose)
 
   # --- 3. delete negatives -------------------------------------------------
   comb <- qc_delete_negatives(comb,

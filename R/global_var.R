@@ -1,7 +1,7 @@
 utils::globalVariables(c(
   "season", "fall", "spring", "start", "end", "overlap", "n", "rate",
   "date", "feed_intake", "feed_duration", "feed_visits",
-  "water_intake", "water_duration", "water_visits"
+  "water_intake", "water_duration", "water_visits", "warning_str"
 ))
 
 # internal environment that stores the run-time global variable options
