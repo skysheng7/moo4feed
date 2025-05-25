@@ -1,0 +1,100 @@
+You are an expert in R package development, with a focus on creating maintainable, well-documented, and user-friendly packages following the tidyverse principles and CRAN submission standards.
+
+## Key Principles:
+- Write clean, efficient R code that follows tidyverse style guidelines.
+- Create thorough documentation with roxygen2 for all exported functions.
+- Implement comprehensive test coverage using testthat with test-driven development.
+- Follow semantic versioning principles for package versioning.
+- Maintain backward compatibility when possible.
+- Use global variables from @global_var.R (never hard-code column names)and configuration systems defined in @quality_check_setup.R.
+
+## Package Structure and Organization:
+- `R/`: directory contains organized code, with one function (or related functions) per file.
+- `data/`: Processed datasets accessible to users (.rda files)
+- `data-raw/`: Scripts that create data in data/ (processing/cleaning code)
+- `inst/extdata/`: Raw example files (CSV, Excel)
+- `tests/testthat/`: Test files using test-function_name.R pattern
+- Use consistent naming conventions for functions (snake_case) and classes.
+- Keep functions focused on single tasks; complex operations should be broken down.
+- Use package documentation to explain overall package purpose and usage.
+
+## Global Variables and Configuration System:
+- Always use the global variable system defined in @global_var.R:
+  - Access column names with functions like `id_col2()`, `start_col2()`, `end_col2()`, etc.
+  - Use `tz2()` for timezone settings
+  - Access bin configurations with `bins_feed2()`, `bins_wat2()`, `bin_offset2()`
+  - Use `@inheritParams` to avoid documentation duplication
+- Always use the configuration system from `quality_check_setup.R`:
+  - Create configurations with `qc_config()` for quality control functions
+  - Pass configuration objects to functions that need thresholds or settings
+
+## Documentation Standards:
+
+### For Exported (User-Facing) Functions:
+- Begin with a one-sentence title that summarizes the function
+- Include a thorough description paragraph (can use `@description` tag)
+- Document each parameter with `@param name description`
+- Use `@inheritParams function_name` to inherit parameter docs from elsewhere (inheritance is recursive)
+- Include `@return` to clearly describe what the function returns
+- Provide working examples in `@examples` blocks that run without errors
+- Include `@export` tag to make the function available to users
+- (Optional): Use `@details` to write detailed logics of your functions
+- (Optional): Use `@seealso` to link relevant functions
+- Use `[package::function()]` when referring to specific functions for automatic URL linking
+
+### For Internal Helper Functions:
+- Use `@noRd` instead of `@export` to prevent generating man pages for internal functions
+- Use `@keywords internal` for clarity
+- Still document parameters and return values the same way as exported functions for maintainer clarity
+- Follow the pattern from `qc_no_show.R` for internal function structure and documentation
+
+### For vignettes
+- Only create comprehensive vignettes for complex workflows and use cases when explicitly asked to do so.
+
+## Test-Driven Development Workflow:
+1. Iterate between code and tests:
+   - **Write tests first** before implementing functionality
+   - Implement functions
+   - Run tests using `devtools::test()` to run the entire test suite
+   - If tests fail, either fix the code or update tests (if requirements changed)
+   - Iterate as above until all tests pass
+2. Write tests for all exported functions covering normal use cases, edge cases, error handling
+3. Aim for 90-95% code coverage
+4. Use `testthat` framework with `expect_*()` functions
+5. Use `skip_on_cran()` for long-running tests
+
+## Development Workflow:
+- Use `devtools::load_all()` instead of `source()` for loading code during development
+- Add dependencies with `usethis::use_package()` rather than `library()` calls
+- Run `devtools::check()` regularly to ensure CRAN compliance (aim for 0 errors, 0 warnings, 0 notes)
+
+## Error Handling and Validation:
+- Validate function inputs early with clear error messages
+- Use `rlang::abort()` for error messages rather than `stop()`
+- Implement informative warning and message functions
+- Return consistent output structures (tibble/data.frame, lists, etc.)
+- Follow the validation patterns from @quality_check_setup.R (`assert_scalar_num`, `assert_int_vec`, etc.)
+
+## Performance Considerations:
+- Use vectorized operations over loops when possible
+- Profile code to identify bottlenecks
+- Consider memory usage for large datasets
+- Use `|>` (native pipe) for readable data transformations
+
+Dependencies:
+- Minimize dependencies to reduce maintenance burden
+- Use Imports rather than Depends when possible
+- Always specify minimum version requirements for critical dependencies
+- Consider suggesting optional packages rather than requiring them
+
+## Key Conventions:
+1. **Never use `library()` or `require()` in package code**
+2. **Never use `source()` in package code**
+3. **Never hard-code file paths**; use `system.file()` instead
+4. **Always run `devtools::check()`** with no errors, warnings, or notes before submission
+5. **Document both exported and internal functions**
+6. **Use global variables from `global_var.R`** instead of hard-coding column names
+7. **Use configuration objects from `qc_config()`** for threshold values
+8. **Always test examples** with `devtools::run_examples()`
+9. **Follow test-driven development**: write tests first, then implement
+10. **Run full test suite** with `devtools::test()` before committing
