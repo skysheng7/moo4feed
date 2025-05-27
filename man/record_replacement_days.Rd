@@ -2,7 +2,7 @@
 % Please edit documentation in R/replacement_detection.R
 \name{record_replacement_days}
 \alias{record_replacement_days}
-\title{Identify and record replacement events across multiple days}
+\title{Identify and validate replacement events across multiple days}
 \usage{
 record_replacement_days(data_list, replacement_threshold = 26)
 }
@@ -14,20 +14,23 @@ of feeding or drinking data.}
 and the next cow entering to be considered a replacement.}
 }
 \value{
-A named list of data frames, one per day, containing replacement events.
+A named list of data frames, one per day, containing validated replacement events.
 }
 \description{
 This function detects potential replacement behaviors in feeding or drinking
-bins across multiple days of data. A replacement is defined as instances where the time interval
-between one cow leaving and the next entering a bin is < 26 seconds.
+bins across multiple days of data, and validates them by checking if actor cows
+were simultaneously engaged elsewhere (i.e., have an alibi). A replacement is
+defined as instances where the time interval between one cow leaving and the next
+entering a bin is < 26 seconds.
 }
 \details{
-This function wraps \code{record_replacement_day()} and applies it across all
-elements of \code{data_list}. It ensures consistent column formatting and filtering.
+This function first call \code{record_replacement_day()} and applies it across all
+elements of \code{data_list} to identify replacements. It then calls \code{check_alibi_days()}
+to validate those events by removing actor cows with an alibi.
 }
 \examples{
 # Use example data from the built-in all_fed dataset
-replacements <- record_replacement_days(all_fed)
+valid_replacements <- record_replacement_days(all_fed)
 
 }
 \seealso{
