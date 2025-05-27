@@ -20,6 +20,13 @@ reference:
   - process_feeder
   - process_water
 
+- subtitle: Data quality check
+  desc: >
+    Check abnormal feeding and drinking visits
+  contents:
+  - qc_config
+  - qc
+
 - subtitle: Daylight Saving Time changes
   desc: >
     Adjust timestamps for days affected by Daylight Saving Time changes for North America.
@@ -59,6 +66,14 @@ reference:
   - cap_first
   - lower_first
 
+- title: Data Summary
+
+- subtitle: Feeding and Drinking Summary
+  desc: >
+    Summarize daily feed/water intake, duration, and visit counts.
+  contents:
+  - feed_water_summary
+  
 - title: Data
 
 - subtitle: Example data
@@ -73,6 +88,7 @@ reference:
   desc: >
     Checking and setting global variables to customize fit your data
   contents:
+  - set_global_cols
   - tz2
   - set_tz2
   - id_col2
@@ -91,10 +107,23 @@ reference:
   - set_bins_feed2
   - bins_wat2
   - set_bins_wat2
+  - duration_col2
+  - set_duration_col2
+  - intake_col2
+  - set_intake_col2
+  - start_weight_col2
+  - set_start_weight_col2
+  - end_weight_col2
+  - set_end_weight_col2
 
+<<<<<<< HEAD
 - subtitle: Record and Validate Replacements
   desc: >
     Functions to identify replacement behavior across multiple days, and validate those events by checking whether the actor cow was already present at another bin.
   contents:
   - record_replacement_days
   - check_alibi_days
+=======
+
+  
+>>>>>>> origin

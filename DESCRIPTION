@@ -25,6 +25,7 @@ Imports:
     dplyr,
     lubridate,
     rlang,
+    tibble,
     tidyr
 Suggests: 
     covr,

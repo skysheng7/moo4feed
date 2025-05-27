@@ -4,7 +4,7 @@
 \alias{get_dst_switch_info}
 \title{Get Daylight Saving Time (DST) Switch Dates and Exact Transition Times}
 \usage{
-get_dst_switch_info(years = c(2020, 2021), tz = the$tz, interval = 1)
+get_dst_switch_info(years = c(2020, 2021), tz = tz2(), interval = 1)
 }
 \arguments{
 \item{years}{A numeric vector specifying the range of years to evaluate.

@@ -4,7 +4,7 @@
 \alias{dst_switch_hm}
 \title{Detect the Exact Time (hour and minute; hm) of Daylight Saving Time (DST) Change}
 \usage{
-dst_switch_hm(date, tz = the$tz, interval = 1)
+dst_switch_hm(date, tz = tz2(), interval = 1)
 }
 \arguments{
 \item{date}{A string in "YYYY-MM-DD" format or a Date object.}

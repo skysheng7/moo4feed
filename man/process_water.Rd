@@ -7,14 +7,14 @@
 process_water(
   file,
   col_names = NULL,
-  id_col = the$id_col,
+  id_col = id_col2(),
   drop_ids = NULL,
-  trans_col = the$trans_col,
+  trans_col = trans_col2(),
   drop_trans = NULL,
-  bin_col = the$bin_col,
-  bins = the$bins_wat,
+  bin_col = bin_col2(),
+  bins = bins_wat2(),
   select_cols = NULL,
-  bin_offset = the$bin_offset,
+  bin_offset = bin_offset2(),
   sep = ",",
   header = FALSE
 )

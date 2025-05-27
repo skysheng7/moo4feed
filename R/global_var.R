@@ -1,4 +1,8 @@
-utils::globalVariables(c("season", "fall", "spring", "start", "end"))
+utils::globalVariables(c(
+  "season", "fall", "spring", "start", "end", "overlap", "n", "rate",
+  "date", "feed_intake", "feed_duration", "feed_visits",
+  "water_intake", "water_duration", "water_visits", "warning_str"
+))
 
 # internal environment that stores the run-time global variable options
 the <- new.env(parent = emptyenv())
@@ -10,6 +14,10 @@ the$trans_col   <- "transponder"
 the$start_col   <- "start"
 the$end_col     <- "end"
 the$bin_col     <- "bin"
+the$dur_col     <- "duration"
+the$intake_col     <- "intake"
+the$start_weight_col     <- "start_weight"
+the$end_weight_col     <- "end_weight"
 the$bin_offset  <- 100
 the$bins_feed   <- 1:30
 the$bins_wat    <- 1:5
@@ -316,4 +324,169 @@ set_bins_wat2 <- function(new_bins = 1:5) {
   old <- the$bins_wat
   the$bins_wat <- new_bins
   invisible(old)
+}
+
+# -- duration_col --------------------------------------------------------------
+
+#' Get the name of the column recording visit duration
+#'
+#' What's the name of the column recording the duration for each visit?
+#' Default is "duration".
+#'
+#' @return A single character string stating the duration column name.
+#' @examples
+#' duration_col2()
+#' @export
+duration_col2 <- function() the$dur_col
+
+#' Set the name of the duration column as global variable
+#'
+#' @param new_name A single string indicating the new duration column name.
+#'
+#' @return Called for its side-effects
+#' @examples
+#' set_duration_col2("visit_duration")
+#' duration_col2()
+#' @export
+set_duration_col2 <- function(new_name = "duration") {
+  old <- the$dur_col
+  the$dur_col <- new_name
+  invisible(old)
+}
+
+# -- intake_col ----------------------------------------------------------------
+
+#' Get the name of the column recording feed/water intake
+#'
+#' What's the name of the column recording the intake per visit?
+#' Default is "intake".
+#'
+#' @return A single character string stating the intake column name.
+#' @examples
+#' intake_col2()
+#' @export
+intake_col2 <- function() the$intake_col
+
+#' Set the name of the intake column as global variable
+#'
+#' @param new_name A single string indicating the new intake column name.
+#'
+#' @return Called for its side-effects
+#' @examples
+#' set_intake_col2("feed_intake")
+#' intake_col2()
+#' @export
+set_intake_col2 <- function(new_name = "intake") {
+  old <- the$intake_col
+  the$intake_col <- new_name
+  invisible(old)
+}
+
+# -- start_weight_col ----------------------------------------------------------
+
+#' Get the name of the column recording start weight
+#'
+#' What's the name of the column recording the start weight per visit?
+#' Default is "start_weight".
+#'
+#' @return A single character string stating the start weight column name.
+#' @examples
+#' start_weight_col2()
+#' @export
+start_weight_col2 <- function() the$start_weight_col
+
+#' Set the name of the start weight column as global variable
+#'
+#' @param new_name A single string indicating the new start weight column name.
+#'
+#' @return Called for its side-effects
+#' @examples
+#' set_start_weight_col2("initial_weight")
+#' start_weight_col2()
+#' @export
+set_start_weight_col2 <- function(new_name = "start_weight") {
+  old <- the$start_weight_col
+  the$start_weight_col <- new_name
+  invisible(old)
+}
+
+# -- end_weight_col ------------------------------------------------------------
+
+#' Get the name of the column recording end weight
+#'
+#' What's the name of the column recording the end weight per visit?
+#' Default is "end_weight".
+#'
+#' @return A single character string stating the end weight column name.
+#' @examples
+#' end_weight_col2()
+#' @export
+end_weight_col2 <- function() the$end_weight_col
+
+#' Set the name of the end weight column as global variable
+#'
+#' @param new_name A single string indicating the new end weight column name.
+#'
+#' @return Called for its side-effects
+#' @examples
+#' set_end_weight_col2("final_weight")
+#' end_weight_col2()
+#' @export
+set_end_weight_col2 <- function(new_name = "end_weight") {
+  old <- the$end_weight_col
+  the$end_weight_col <- new_name
+  invisible(old)
+}
+
+#' Set multiple global variables at once
+#'
+#' This function allows users to set multiple global variables simultaneously.
+#' Each parameter defaults to its current global value if unspecified.
+#'
+#' @param tz Timezone (default current global value)
+#' @param id_col Animal ID column name (default current global value)
+#' @param trans_col Transponder column name (default current global value)
+#' @param start_col Start time column name (default current global value)
+#' @param end_col End time column name (default current global value)
+#' @param bin_col Bin ID column name (default current global value)
+#' @param dur_col Duration column name (default current global value)
+#' @param intake_col Intake column name (default current global value)
+#' @param start_weight_col Start weight column name (default current global value)
+#' @param end_weight_col End weight column name (default current global value)
+#' @param bin_offset Numeric bin offset (default current global value)
+#' @param bins_feed Integer vector of feed bins (default current global value)
+#' @param bins_wat Integer vector of water bins (default current global value)
+#'
+#' @return Called for its side-effects
+#' @examples
+#' set_global_cols(tz = "UTC", id_col = "animal_id", dur_col = "visit_duration")
+#' @export
+set_global_cols <- function(tz = tz2(),
+                            id_col = id_col2(),
+                            trans_col = trans_col2(),
+                            start_col = start_col2(),
+                            end_col = end_col2(),
+                            bin_col = bin_col2(),
+                            dur_col = duration_col2(),
+                            intake_col = intake_col2(),
+                            start_weight_col = start_weight_col2(),
+                            end_weight_col = end_weight_col2(),
+                            bin_offset = bin_offset2(),
+                            bins_feed = bins_feed2(),
+                            bins_wat = bins_wat2()) {
+  set_tz2(tz)
+  set_id_col2(id_col)
+  set_trans_col2(trans_col)
+  set_start_col2(start_col)
+  set_end_col2(end_col)
+  set_bin_col2(bin_col)
+  set_duration_col2(dur_col)
+  set_intake_col2(intake_col)
+  set_start_weight_col2(start_weight_col)
+  set_end_weight_col2(end_weight_col)
+  set_bin_offset2(bin_offset)
+  set_bins_feed2(bins_feed)
+  set_bins_wat2(bins_wat)
+
+  invisible(NULL)
 }
