@@ -2,29 +2,32 @@
 # -------------------- External user-facing functions -------------------------#
 # -----------------------------------------------------------------------------#
 
-#' Identify and record replacement events across multiple days
+#' Identify and validate replacement events across multiple days
 #'
 #' @description
 #' This function detects potential replacement behaviors in feeding or drinking
-#' bins across multiple days of data. A replacement is defined as instances where the time interval
-#' between one cow leaving and the next entering a bin is < 26 seconds.
+#' bins across multiple days of data, and validates them by checking if actor cows
+#' were simultaneously engaged elsewhere (i.e., have an alibi). A replacement is
+#' defined as instances where the time interval between one cow leaving and the next
+#' entering a bin is < 26 seconds.
 #'
 #' @param data_list A named list of data frames, each representing one day's worth
 #'   of feeding or drinking data.
 #' @param replacement_threshold Time threshold (in seconds) between a cow leaving
 #'   and the next cow entering to be considered a replacement.
 #'
-#' @return A named list of data frames, one per day, containing replacement events.
+#' @return A named list of data frames, one per day, containing validated replacement events.
 #'
 #' @details
-#' This function wraps `record_replacement_day()` and applies it across all
-#' elements of `data_list`. It ensures consistent column formatting and filtering.
+#' This function first call `record_replacement_day()` and applies it across all
+#' elements of `data_list` to identify replacements. It then calls `check_alibi_days()`
+#' to validate those events by removing actor cows with an alibi.
 #'
 #' @seealso [check_alibi_days()]
 #'
 #' @examples
 #' # Use example data from the built-in all_fed dataset
-#' replacements <- record_replacement_days(all_fed)
+#' valid_replacements <- record_replacement_days(all_fed)
 #'
 #' @export
 record_replacement_days <- function(data_list,
@@ -39,47 +42,9 @@ record_replacement_days <- function(data_list,
     record_replacement_day(data_list[[name]], replacement_threshold)
   })
   names(replacement_list_by_date) <- names(data_list)
-  return(replacement_list_by_date)
-}
 
-#' Validate replacements by checking cow alibis across days
-#'
-#' @description
-#' This function verifies validity of detected replacement events across multiple days by
-#' checking if the actor cow was simultaneously active at another bin (i.e., have an alibi).
-#'
-#' @param replacement_list_by_date A list of data frames, one per day, containing replacement events.
-#' @param all_comb2 A list of data frames, one per day, containing feeding and drinking data.
-#'
-#' @return A list of data frames with valid replacements.
-#'
-#' @details This function wraps `check_alibi_day()` and applies it across all elements of
-#' `replacement_list_by_date`. A replacement is removed if the actor cow is found to be engaged
-#' in another feeding or drinking event at the replacement timestamp.
-#'
-#' @seealso [record_replacement_days()]
-#'
-#' @examples
-#' # Use example data from the built-in all_fed dataset
-#' replacements <- record_replacement_days(all_fed)
-#' valid_replacements <- check_alibi_days(replacements, all_fed)
-#'
-#' @export
-check_alibi_days <- function(replacement_list_by_date, all_comb2) {
-  # ------------------------ Error handling ------------------------ #
-  if (length(replacement_list_by_date) == 0) {
-    return(list())
-  }
-  if (length(replacement_list_by_date) != length(all_comb2)) {
-    stop("replacement_list_by_date and all_comb2 must be the same length.")
-  }
-
-  # ------------------------ Main logic ---------------------------- #
-  out <- lapply(seq_along(all_comb2), function(i) {
-    check_alibi_day(replacement_list_by_date[[i]], all_comb2[[i]])
-  })
-  names(out) <- names(all_comb2)
-  return(out)
+  validated <- check_alibi_days(replacement_list_by_date, data_list)
+  return(validated)
 }
 
 # -----------------------------------------------------------------------------#
@@ -155,6 +120,41 @@ record_replacement_day <- function(cur_data,
   }
 
   return(master_df)
+}
+
+#' Validate replacements by checking cow alibis across days
+#'
+#' @description
+#' This function verifies validity of detected replacement events across multiple days by
+#' checking if the actor cow was simultaneously active at another bin (i.e., have an alibi).
+#'
+#' @param replacement_list_by_date A list of data frames, one per day, containing replacement events.
+#' @param all_comb2 A list of data frames, one per day, containing feeding and drinking data.
+#'
+#' @return A list of data frames with valid replacements.
+#'
+#' @details This function wraps `check_alibi_day()` and applies it across all elements of
+#' `replacement_list_by_date`. A replacement is removed if the actor cow is found to be engaged
+#' in another feeding or drinking event at the replacement timestamp.
+#'
+#' @seealso [record_replacement_days()]
+#'
+#' @noRd
+check_alibi_days <- function(replacement_list_by_date, all_comb2) {
+  # ------------------------ Error handling ------------------------ #
+  if (length(replacement_list_by_date) == 0) {
+    return(list())
+  }
+  if (length(replacement_list_by_date) != length(all_comb2)) {
+    stop("replacement_list_by_date and all_comb2 must be the same length.")
+  }
+
+  # ------------------------ Main logic ---------------------------- #
+  out <- lapply(seq_along(all_comb2), function(i) {
+    check_alibi_day(replacement_list_by_date[[i]], all_comb2[[i]])
+  })
+  names(out) <- names(all_comb2)
+  return(out)
 }
 
 #' Filter invalid replacements based on cow alibi on a single day
