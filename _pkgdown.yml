@@ -73,7 +73,7 @@ reference:
     Summarize daily feed/water intake, duration, and visit counts.
   contents:
   - feed_water_summary
-  
+
 - title: Data
 
 - subtitle: Example data
@@ -116,14 +116,9 @@ reference:
   - end_weight_col2
   - set_end_weight_col2
 
-<<<<<<< HEAD
 - subtitle: Record and Validate Replacements
   desc: >
     Functions to identify replacement behavior across multiple days, and validate those events by checking whether the actor cow was already present at another bin.
   contents:
   - record_replacement_days
   - check_alibi_days
-=======
-
-  
->>>>>>> origin
