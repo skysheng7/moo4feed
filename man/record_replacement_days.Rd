@@ -4,14 +4,11 @@
 \alias{record_replacement_days}
 \title{Identify and validate replacement events across multiple days}
 \usage{
-record_replacement_days(data_list, replacement_threshold = 26)
+record_replacement_days(data_list)
 }
 \arguments{
 \item{data_list}{A named list of data frames, each representing one day's worth
 of feeding or drinking data.}
-
-\item{replacement_threshold}{Time threshold (in seconds) between a cow leaving
-and the next cow entering to be considered a replacement.}
 }
 \value{
 A named list of data frames, one per day, containing validated replacement events.
@@ -32,7 +29,4 @@ to validate those events by removing actor cows with an alibi.
 # Use example data from the built-in all_fed dataset
 valid_replacements <- record_replacement_days(all_fed)
 
-}
-\seealso{
-\code{\link[=check_alibi_days]{check_alibi_days()}}
 }

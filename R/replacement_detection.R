@@ -13,8 +13,6 @@
 #'
 #' @param data_list A named list of data frames, each representing one day's worth
 #'   of feeding or drinking data.
-#' @param replacement_threshold Time threshold (in seconds) between a cow leaving
-#'   and the next cow entering to be considered a replacement.
 #'
 #' @return A named list of data frames, one per day, containing validated replacement events.
 #'
@@ -23,15 +21,13 @@
 #' elements of `data_list` to identify replacements. It then calls `check_alibi_days()`
 #' to validate those events by removing actor cows with an alibi.
 #'
-#' @seealso [check_alibi_days()]
 #'
 #' @examples
 #' # Use example data from the built-in all_fed dataset
 #' valid_replacements <- record_replacement_days(all_fed)
 #'
 #' @export
-record_replacement_days <- function(data_list,
-                                    replacement_threshold = 26) {
+record_replacement_days <- function(data_list) {
   # ------------------------ Error handling ------------------------ #
   if (!is.list(data_list)) {
     stop("`data_list` must be a named list of data frames.")
@@ -39,7 +35,7 @@ record_replacement_days <- function(data_list,
 
   # ------------------------ Main logic ---------------------------- #
   replacement_list_by_date <- lapply(names(data_list), function(name) {
-    record_replacement_day(data_list[[name]], replacement_threshold)
+    record_replacement_day(data_list[[name]])
   })
   names(replacement_list_by_date) <- names(data_list)
 
@@ -60,7 +56,6 @@ record_replacement_days <- function(data_list,
 #'
 #' @param cur_data A data frame containing feeding/drinking events for a single day.
 #' Must include columns: `Cow`, `Bin`, `Start`, `End`.
-#' @param replacement_threshold Numeric time threshold (in seconds) for defining replacement.
 #'
 #' @return A data frame of detected replacement events filtered by bins, with columns:
 #' `Reactor_cow`, `Bin`, `Time`, `date`, `Actor_cow`, `Bout_interval`.
@@ -73,8 +68,10 @@ record_replacement_days <- function(data_list,
 #' @seealso [record_replacement_days()]
 #'
 #' @noRd
-record_replacement_day <- function(cur_data,
-                                   replacement_threshold = 26) {
+record_replacement_day <- function(cur_data) {
+  cfg <- qc_config()
+  replacement_threshold <- cfg$replacement_threshold
+
   id_col <- id_col2()
   bin_col <- bin_col2()
   start_col <- start_col2()
