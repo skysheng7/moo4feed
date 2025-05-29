@@ -17,6 +17,9 @@ qc(
   start_weight_col = start_weight_col2(),
   end_weight_col = end_weight_col2(),
   tz = tz2(),
+  bins_feed = bins_feed2(),
+  bins_wat = bins_wat2(),
+  bin_offset = bin_offset2(),
   verbose = TRUE
 )
 }
@@ -46,6 +49,12 @@ if you don't have water data}
 \item{end_weight_col}{End weight column name (default current global value)}
 
 \item{tz}{Time zone string for date-time operations}
+
+\item{bins_feed}{Integer vector of feed bins (default current global value)}
+
+\item{bins_wat}{Integer vector of water bins (default current global value)}
+
+\item{bin_offset}{Numeric bin offset (default current global value)}
 
 \item{verbose}{Logical. If TRUE, print details of data where errors were detected}
 }

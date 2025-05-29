@@ -36,8 +36,7 @@ test_that("qc_config() returns a complete, named list with defaults", {
     "low_visit_threshold", "total_cows_expected",
     "low_feed_intake", "high_feed_intake",
     "low_wat_intake", "high_wat_intake",
-    "replacement_threshold", "calibration_error",
-    "bin_offset", "bins_feed", "bins_wat"
+    "replacement_threshold", "calibration_error"
   )
   expect_type(cfg, "list")
   expect_setequal(names(cfg), expected_names)

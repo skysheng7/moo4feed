@@ -113,7 +113,7 @@ qc_config <- function(
       low_wat_intake          = low_wat_intake,
       high_wat_intake         = high_wat_intake,
       replacement_threshold   = replacement_threshold,
-      calibration_error       = calibration_error,
+      calibration_error       = calibration_error
     ),
     list(...)
   )
