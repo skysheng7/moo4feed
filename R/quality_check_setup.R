@@ -26,8 +26,6 @@
 #'   times per day are flagged as *low traffic*.
 #' @param total_cows_expected Integer. Expected herd size; if `NA` (default) the
 #'   pipeline counts unique IDs automatically.
-#' @param bin_offset Integer. Offset added to water-bin IDs so they do not
-#'   overlap with feed-bin IDs. Default derives from [bin_offset2()].
 #' @param low_feed_intake  Numeric. kg/day.  Daily feed intake flagged as *low*
 #'  for a animal (default **35**).
 #' @param high_feed_intake Numeric. kg/day. Daily feed intake flagged as *high*
@@ -39,10 +37,6 @@
 #' @param replacement_threshold Numeric. Seconds. Time gap to classify replacement
 #'   behaviour (default **26 s**).
 #' @param calibration_error Numeric. Allowed feeder calibration error (default **0.5** kg/L).
-#' @param bins_feed Integer vector. Valid **feed** bin IDs. Default
-#'   [bins_feed2()].
-#' @param bins_wat  Integer vector. Valid **water** bin IDs. Default
-#'   [bins_wat2()].
 #' @param ... Reserved for future or project-specific tweaks. Named elements
 #'   here are appended to the returned list.
 #'
@@ -74,9 +68,6 @@ qc_config <- function(
     high_wat_intake         = 180,
     replacement_threshold   = 26,
     calibration_error       = 0.5,
-    bin_offset              = bin_offset2(),
-    bins_feed               = bins_feed2(),
-    bins_wat                = bins_wat2(),
     ...
 ) {
 
@@ -97,20 +88,12 @@ qc_config <- function(
   assert_scalar_num(high_wat_intake,         "high_wat_intake")
   assert_scalar_num(replacement_threshold,   "replacement_threshold")
   assert_scalar_num(calibration_error,       "calibration_error", positive = TRUE)
-  assert_scalar_int(bin_offset,              "bin_offset", positive = FALSE)
 
   if (low_feed_intake >= high_feed_intake)
     stop("`low_feed_intake` must be smaller than `high_feed_intake`.", call. = FALSE)
 
   if (low_wat_intake >= high_wat_intake)
     stop("`low_wat_intake` must be smaller than `high_wat_intake`.", call. = FALSE)
-
-  assert_int_vec(bins_feed, "bins_feed")
-  assert_int_vec(bins_wat,  "bins_wat")
-
-  # Ensure feed and water bins do not overlap after applying offset
-  if (anyDuplicated(c(bins_feed, bin_offset + bins_wat)))
-    stop("Feed bins and (water bins + bin_offset) must not overlap.", call. = FALSE)
 
   ## ------------------------------------------------------------------------ ##
   ## Build configuration list                                                 ##
@@ -131,9 +114,6 @@ qc_config <- function(
       high_wat_intake         = high_wat_intake,
       replacement_threshold   = replacement_threshold,
       calibration_error       = calibration_error,
-      bin_offset              = bin_offset,
-      bins_feed               = bins_feed,
-      bins_wat                = bins_wat
     ),
     list(...)
   )

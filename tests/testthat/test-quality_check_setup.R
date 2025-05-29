@@ -54,14 +54,6 @@ test_that("qc_config() accepts overrides & `...` extras", {
   expect_equal(cfg$my_extra, "hello")
 })
 
-test_that("qc_config() works with negative bin_offset (allowed)", {
-  cfg <- qc_config(
-    bin_offset = -50L,
-    bins_feed  = c(1L, 2L),
-    bins_wat   = c(1L, 2L)
-  )
-  expect_equal(cfg$bin_offset, -50L)
-})
 
 test_that("qc_config() allows NA for total_cows_expected", {
   expect_silent(qc_config(total_cows_expected = NA))
@@ -95,16 +87,6 @@ test_that("high_dur_* must be positive numerics", {
   expect_error(qc_config(high_dur_water = "abc"), "numeric")
 })
 
-test_that("overlapping bins after offset are detected", {
-  expect_error(
-    qc_config(
-      bin_offset = 0L,
-      bins_feed  = c(1L, 2L, 3L),
-      bins_wat   = c(3L, 4L)
-    ),
-    "overlap"
-  )
-})
 
 
 # ----------------------------------------------------------------------------- #
