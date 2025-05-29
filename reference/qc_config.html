@@ -71,9 +71,6 @@ override only the handful you care about—then pass the resulting list to
 <span>  high_wat_intake <span class="op">=</span> <span class="fl">180</span>,</span>
 <span>  replacement_threshold <span class="op">=</span> <span class="fl">26</span>,</span>
 <span>  calibration_error <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>  bin_offset <span class="op">=</span> <span class="fu"><a href="bin_offset2.html">bin_offset2</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  bins_feed <span class="op">=</span> <span class="fu"><a href="bins_feed2.html">bins_feed2</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  bins_wat <span class="op">=</span> <span class="fu"><a href="bins_wat2.html">bins_wat2</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -149,21 +146,6 @@ behaviour (default <strong>26 s</strong>).</p></dd>
 <dd><p>Numeric. Allowed feeder calibration error (default <strong>0.5</strong> kg/L).</p></dd>
 
 
-<dt id="arg-bin-offset">bin_offset<a class="anchor" aria-label="anchor" href="#arg-bin-offset"></a></dt>
-<dd><p>Integer. Offset added to water-bin IDs so they do not
-overlap with feed-bin IDs. Default derives from <code><a href="bin_offset2.html">bin_offset2()</a></code>.</p></dd>
-
-
-<dt id="arg-bins-feed">bins_feed<a class="anchor" aria-label="anchor" href="#arg-bins-feed"></a></dt>
-<dd><p>Integer vector. Valid <strong>feed</strong> bin IDs. Default
-<code><a href="bins_feed2.html">bins_feed2()</a></code>.</p></dd>
-
-
-<dt id="arg-bins-wat">bins_wat<a class="anchor" aria-label="anchor" href="#arg-bins-wat"></a></dt>
-<dd><p>Integer vector. Valid <strong>water</strong> bin IDs. Default
-<code><a href="bins_wat2.html">bins_wat2()</a></code>.</p></dd>
-
-
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Reserved for future or project-specific tweaks. Named elements
 here are appended to the returned list.</p></dd>
@@ -222,16 +204,6 @@ helpers.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $calibration_error</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $bin_offset</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 100</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $bins_feed</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [26] 26 27 28 29 30</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $bins_wat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1 2 3 4 5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Tighten the "long feeding visit" threshold</span></span></span>
 <span class="r-in"><span><span class="va">cfg2</span> <span class="op">&lt;-</span> <span class="fu">qc_config</span><span class="op">(</span>high_dur_feed <span class="op">=</span> <span class="fl">1800</span><span class="op">)</span></span></span>
@@ -277,16 +249,6 @@ helpers.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $calibration_error</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $bin_offset</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 100</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $bins_feed</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [26] 26 27 28 29 30</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $bins_wat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1 2 3 4 5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

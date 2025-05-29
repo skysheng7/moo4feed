@@ -34,15 +34,9 @@
     </div>
 
     <div class="section level2">
-      <h2 id="data-cleaning">Data cleaning<a class="anchor" aria-label="anchor" href="#data-cleaning"></a></h2>
+      <h2 id="getting-started">Getting Started<a class="anchor" aria-label="anchor" href="#getting-started"></a></h2>
 
-
-
-
-    </div><div class="section level2">
-
-      <h3 id="read-data">Read data<a class="anchor" aria-label="anchor" href="#read-data"></a></h3>
-      <div class="section-desc"><p>Read in data safely.</p></div>
+      <div class="section-desc"><p>Core functions for reading and processing data.</p></div>
 
 
     </div><div class="section level2">
@@ -56,18 +50,7 @@
 
         </dt>
         <dd>Safely Read Data from a File</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="data-cleaning-pipeline">Data cleaning pipeline<a class="anchor" aria-label="anchor" href="#data-cleaning-pipeline"></a></h3>
-      <div class="section-desc"><p>Functions that automate the entire data cleaning pipeline for you on either a single file or a collection of files.</p></div>
-
-
-    </div><div class="section level2">
-
-
-
-
-      <dl><dt>
+      </dl><dl><dt>
 
           <code><a href="process_all_feed.html">process_all_feed()</a></code>
 
@@ -92,9 +75,15 @@
         </dt>
         <dd>Process 1 water data file</dd>
       </dl></div><div class="section level2">
+      <h2 id="data-cleaning-and-preparation">Data Cleaning and Preparation<a class="anchor" aria-label="anchor" href="#data-cleaning-and-preparation"></a></h2>
 
-      <h3 id="data-quality-check">Data quality check<a class="anchor" aria-label="anchor" href="#data-quality-check"></a></h3>
-      <div class="section-desc"><p>Check abnormal feeding and drinking visits</p></div>
+
+
+
+    </div><div class="section level2">
+
+      <h3 id="data-quality-checks">Data Quality Checks<a class="anchor" aria-label="anchor" href="#data-quality-checks"></a></h3>
+      <div class="section-desc"><p>Check and validate feeding and drinking visits.</p></div>
 
 
     </div><div class="section level2">
@@ -116,8 +105,37 @@
         <dd>Run full quality-control check on feeder and drinker data</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="daylight-saving-time-changes">Daylight Saving Time changes<a class="anchor" aria-label="anchor" href="#daylight-saving-time-changes"></a></h3>
-      <div class="section-desc"><p>Adjust timestamps for days affected by Daylight Saving Time changes for North America.</p></div>
+      <h3 id="data-filtering">Data Filtering<a class="anchor" aria-label="anchor" href="#data-filtering"></a></h3>
+      <div class="section-desc"><p>Filter data relevant to animals and sensors in your study.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="delete_rows.html">delete_rows()</a></code>
+
+        </dt>
+        <dd>Remove rows by matching values in a specified column</dd>
+      </dl><dl><dt>
+
+          <code><a href="keep_bins.html">keep_bins()</a></code>
+
+        </dt>
+        <dd>Keep only rows for specified bins</dd>
+      </dl><dl><dt>
+
+          <code><a href="rename_bins.html">rename_bins()</a></code>
+
+        </dt>
+        <dd>Shift specified bin IDs by an offset</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="time-adjustments">Time Adjustments<a class="anchor" aria-label="anchor" href="#time-adjustments"></a></h3>
+      <div class="section-desc"><p>Handle Daylight Saving Time changes for North America.</p></div>
 
 
     </div><div class="section level2">
@@ -151,8 +169,8 @@
         <dd>Detect the Exact Time (hour and minute; hm) of Daylight Saving Time (DST) Change</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="date-extraction-from-file-names">Date extraction from file names<a class="anchor" aria-label="anchor" href="#date-extraction-from-file-names"></a></h3>
-      <div class="section-desc"><p>Extracts information about date from file names</p></div>
+      <h3 id="file-management">File Management<a class="anchor" aria-label="anchor" href="#file-management"></a></h3>
+      <div class="section-desc"><p>Extract date information from file names and compare files.</p></div>
 
 
     </div><div class="section level2">
@@ -178,39 +196,22 @@
 
         </dt>
         <dd>Get the overall date range for a set of files</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="data-filtering">Data filtering<a class="anchor" aria-label="anchor" href="#data-filtering"></a></h3>
-      <div class="section-desc"><p>Filters for data relevant to animals and sensors included in your study.</p></div>
-
-
-    </div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="delete_rows.html">delete_rows()</a></code>
-
-        </dt>
-        <dd>Remove rows by matching values in a specified column</dd>
       </dl><dl><dt>
 
-          <code><a href="keep_bins.html">keep_bins()</a></code>
+          <code><a href="cap_first.html">cap_first()</a></code>
 
         </dt>
-        <dd>Keep only rows for specified bins</dd>
+        <dd>Capitalize the First Letter of a String</dd>
       </dl><dl><dt>
 
-          <code><a href="rename_bins.html">rename_bins()</a></code>
+          <code><a href="lower_first.html">lower_first()</a></code>
 
         </dt>
-        <dd>Shift specified bin IDs by an offset</dd>
+        <dd>De-capitalize the First Letter of a String to Lower Case</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="data-merging-and-combination">Data merging and combination<a class="anchor" aria-label="anchor" href="#data-merging-and-combination"></a></h3>
-      <div class="section-desc"><p>Functions to combine feeding and drinking visits into unified datasets.</p></div>
+      <h3 id="data-integration">Data Integration<a class="anchor" aria-label="anchor" href="#data-integration"></a></h3>
+      <div class="section-desc"><p>Combine feeding and drinking data into unified datasets.</p></div>
 
 
     </div><div class="section level2">
@@ -231,37 +232,14 @@
         </dt>
         <dd>Merge a List of Data Frames</dd>
       </dl></div><div class="section level2">
-
-      <h3 id="capitalize-and-de-capitalize-string">Capitalize and de-capitalize String<a class="anchor" aria-label="anchor" href="#capitalize-and-de-capitalize-string"></a></h3>
-      <div class="section-desc"><p>Small helper functions for formatting strings (e.g., column names).</p></div>
-
-
-    </div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="cap_first.html">cap_first()</a></code>
-
-        </dt>
-        <dd>Capitalize the First Letter of a String</dd>
-      </dl><dl><dt>
-
-          <code><a href="lower_first.html">lower_first()</a></code>
-
-        </dt>
-        <dd>De-capitalize the First Letter of a String to Lower Case</dd>
-      </dl></div><div class="section level2">
-      <h2 id="data-summary">Data Summary<a class="anchor" aria-label="anchor" href="#data-summary"></a></h2>
+      <h2 id="data-analysis-and-summaries">Data Analysis and Summaries<a class="anchor" aria-label="anchor" href="#data-analysis-and-summaries"></a></h2>
 
 
 
 
     </div><div class="section level2">
 
-      <h3 id="feeding-and-drinking-summary">Feeding and Drinking Summary<a class="anchor" aria-label="anchor" href="#feeding-and-drinking-summary"></a></h3>
+      <h3 id="feed-and-water-metrics">Feed and Water Metrics<a class="anchor" aria-label="anchor" href="#feed-and-water-metrics"></a></h3>
       <div class="section-desc"><p>Summarize daily feed/water intake, duration, and visit counts.</p></div>
 
 
@@ -277,15 +255,9 @@
         </dt>
         <dd>Summarize and check for abnormal feed &amp; water intake</dd>
       </dl></div><div class="section level2">
-      <h2 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a></h2>
 
-
-
-
-    </div><div class="section level2">
-
-      <h3 id="example-data">Example data<a class="anchor" aria-label="anchor" href="#example-data"></a></h3>
-      <div class="section-desc"><p>Example data and functions used in code in “Data cleaning” article</p></div>
+      <h3 id="bin-usage-analysis">Bin Usage Analysis<a class="anchor" aria-label="anchor" href="#bin-usage-analysis"></a></h3>
+      <div class="section-desc"><p>Analyze bin visit patterns.</p></div>
 
 
     </div><div class="section level2">
@@ -295,26 +267,20 @@
 
       <dl><dt>
 
-          <code><a href="all_fed.html">all_fed</a></code>
+          <code><a href="unique_bin_visits.html">unique_bin_visits()</a></code>
 
         </dt>
-        <dd>Cattle feeding behavior and visit record data</dd>
-      </dl><dl><dt>
-
-          <code><a href="all_wat.html">all_wat</a></code>
-
-        </dt>
-        <dd>Cattle water drinking behavior and visit record data</dd>
-      </dl><dl><dt>
-
-          <code><a href="moo4feed_example.html">moo4feed_example()</a></code>
-
-        </dt>
-        <dd>Access Example Data Files Shipped with <strong>moo4feed</strong></dd>
+        <dd>Analyze Bin Visit Patterns For Each Cow</dd>
       </dl></div><div class="section level2">
+      <h2 id="configuration-and-customization">Configuration and Customization<a class="anchor" aria-label="anchor" href="#configuration-and-customization"></a></h2>
 
-      <h3 id="global-variables">Global variables<a class="anchor" aria-label="anchor" href="#global-variables"></a></h3>
-      <div class="section-desc"><p>Checking and setting global variables to customize fit your data</p></div>
+
+
+
+    </div><div class="section level2">
+
+      <h3 id="global-variables">Global Variables<a class="anchor" aria-label="anchor" href="#global-variables"></a></h3>
+      <div class="section-desc"><p>Configure global variables to customize for your data structure.</p></div>
 
 
     </div><div class="section level2">
@@ -484,6 +450,35 @@
 
         </dt>
         <dd>Set the name of the end weight column as global variable</dd>
+      </dl></div><div class="section level2">
+      <h2 id="example-data">Example Data<a class="anchor" aria-label="anchor" href="#example-data"></a></h2>
+
+      <div class="section-desc"><p>Example datasets and functions for demonstration.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="all_fed.html">all_fed</a></code>
+
+        </dt>
+        <dd>Cattle feeding behavior and visit record data</dd>
+      </dl><dl><dt>
+
+          <code><a href="all_wat.html">all_wat</a></code>
+
+        </dt>
+        <dd>Cattle water drinking behavior and visit record data</dd>
+      </dl><dl><dt>
+
+          <code><a href="moo4feed_example.html">moo4feed_example()</a></code>
+
+        </dt>
+        <dd>Access Example Data Files Shipped with <strong>moo4feed</strong></dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
