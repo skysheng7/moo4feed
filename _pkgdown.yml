@@ -14,95 +14,92 @@ reference:
   - process_water
 
 - title: Data Cleaning and Preparation
+- subtitle: Data Quality Checks
+  desc: >
+    Check and validate feeding and drinking visits.
+  contents:
+  - qc_config
+  - qc
   
-  - subtitle: Data Quality Checks
-    desc: >
-      Check and validate feeding and drinking visits.
-    contents:
-    - qc_config
-    - qc
+- subtitle: Data Filtering
+  desc: >
+    Filter data relevant to animals and sensors in your study.
+  contents:
+  - delete_rows
+  - keep_bins
+  - rename_bins
   
-  - subtitle: Data Filtering
-    desc: >
-      Filter data relevant to animals and sensors in your study.
-    contents:
-    - delete_rows
-    - keep_bins
-    - rename_bins
+- subtitle: Time Adjustments
+  desc: >
+    Handle Daylight Saving Time changes for North America.
+  contents:
+  - daylight_saving_adjust
+  - get_dst_switch_info
+  - dst_switch_day
+  - dst_switch_hm
   
-  - subtitle: Time Adjustments
-    desc: >
-      Handle Daylight Saving Time changes for North America.
-    contents:
-    - daylight_saving_adjust
-    - get_dst_switch_info
-    - dst_switch_day
-    - dst_switch_hm
+- subtitle: File Management
+  desc: >
+    Extract date information from file names and compare files.
+  contents:
+  - file_name_processing
+  - compare_files
+  - get_date_range
+  - cap_first
+  - lower_first
   
-  - subtitle: File Management
-    desc: >
-      Extract date information from file names and compare files.
-    contents:
-    - file_name_processing
-    - compare_files
-    - get_date_range
-    - cap_first
-    - lower_first
-  
-  - subtitle: Data Integration
-    desc: >
-      Combine feeding and drinking data into unified datasets.
-    contents:
-    - combine_feed_water
-    - merge_list_df
+- subtitle: Data Integration
+  desc: >
+    Combine feeding and drinking data into unified datasets.
+  contents:
+  - combine_feed_water
+  - merge_list_df
 
 - title: Data Analysis and Summaries
+- subtitle: Feed and Water Metrics
+  desc: >
+    Summarize daily feed/water intake, duration, and visit counts.
+  contents:
+  - feed_water_summary
   
-  - subtitle: Feed and Water Metrics
-    desc: >
-      Summarize daily feed/water intake, duration, and visit counts.
-    contents:
-    - feed_water_summary
-  
-  - subtitle: Bin Usage Analysis
-    desc: >
-      Analyze bin visit patterns.
-    contents:
-    - unique_bin_visits
+- subtitle: Bin Usage Analysis
+  desc: >
+    Analyze bin visit patterns.
+  contents:
+  - unique_bin_visits
 
 - title: Configuration and Customization
-  
-  - subtitle: Global Variables
-    desc: >
-      Configure global variables to customize for your data structure.
-    contents:
-    - set_global_cols
-    - tz2
-    - set_tz2
-    - id_col2
-    - set_id_col2
-    - trans_col2
-    - set_trans_col2
-    - start_col2
-    - set_start_col2
-    - end_col2
-    - set_end_col2
-    - bin_col2
-    - set_bin_col2
-    - bin_offset2
-    - set_bin_offset2
-    - bins_feed2
-    - set_bins_feed2
-    - bins_wat2
-    - set_bins_wat2
-    - duration_col2
-    - set_duration_col2
-    - intake_col2
-    - set_intake_col2
-    - start_weight_col2
-    - set_start_weight_col2
-    - end_weight_col2
-    - set_end_weight_col2
+- subtitle: Global Variables
+  desc: >
+    Configure global variables to customize for your data structure.
+  contents:
+  - set_global_cols
+  - tz2
+  - set_tz2
+  - id_col2
+  - set_id_col2
+  - trans_col2
+  - set_trans_col2
+  - start_col2
+  - set_start_col2
+  - end_col2
+  - set_end_col2
+  - bin_col2
+  - set_bin_col2
+  - bin_offset2
+  - set_bin_offset2
+  - bins_feed2
+  - set_bins_feed2
+  - bins_wat2
+  - set_bins_wat2
+  - duration_col2
+  - set_duration_col2
+  - intake_col2
+  - set_intake_col2
+  - start_weight_col2
+  - set_start_weight_col2
+  - end_weight_col2
+  - set_end_weight_col2
 
 - title: Example Data
   desc: >
