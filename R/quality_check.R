@@ -40,15 +40,21 @@ qc <- function(feed      = NULL,
                start_weight_col = start_weight_col2(),
                end_weight_col = end_weight_col2(),
                tz = tz2(),
+               bins_feed = bins_feed2(),
+               bins_wat = bins_wat2(),
+               bin_offset = bin_offset2(),
                verbose = TRUE) {
 
   # --- 0. combine ----------------------------------------------------------
   if (!is.null(feed) && !is.null(water)) {
     comb <- combine_feed_water(feed, water)
+    all_bins <- c(bins_feed, bin_offset + bins_wat)
   } else if (!is.null(feed)) {
     comb <- feed
+    all_bins <- bins_feed
   } else if (!is.null(water)) {
     comb <- water
+    all_bins <- bin_offset + bins_wat
   } else {
     stop("`feed` and `water` can't all be NULL. One of them needs to be a list of dataframe.")
   }
@@ -93,6 +99,14 @@ qc <- function(feed      = NULL,
                      tz = tz,
                      verbose = verbose)
 
+  warn <- qc_bin_visits(comb,
+                        warn = warn,
+                        cfg = cfg,
+                        id_col = id_col,
+                        bin_col = bin_col,
+                        all_bins = all_bins,
+                        verbose = verbose)
+
   # --- 3. delete negatives -------------------------------------------------
   comb <- qc_delete_negatives(comb,
                           dur_col = dur_col,
@@ -105,6 +119,7 @@ qc <- function(feed      = NULL,
                             intake_col = intake_col,
                             start_weight_col = start_weight_col,
                             end_weight_col = end_weight_col)
+
   } 
 
   if (!is.null(water)) {
