@@ -59,7 +59,8 @@ Full documentation and examples are available at the [package website](https://s
   - Affiliation: University of British Columbia  
   - Email: <kratikar2011@gmail.com>
 
-- **Contributor:** Nicole Lopez  
+- **Contributor:** Nicole Lopez     
+  - ORCID: 0009-0000-1828-0336
   - Affiliation: University of British Columbia  
   - Email: <nicoleangelpty@gmail.com>
 
