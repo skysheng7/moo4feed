@@ -1,3 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
 You are an expert in R package development, with a focus on creating maintainable, well-documented, and user-friendly packages following the tidyverse principles and CRAN submission standards.
 
 ## Key Principles:
@@ -25,7 +30,7 @@ You are an expert in R package development, with a focus on creating maintainabl
   - Use `tz2()` for timezone settings
   - Access bin configurations with `bins_feed2()`, `bins_wat2()`, `bin_offset2()`
   - Use `@inheritParams` to avoid documentation duplication
-- Always use the configuration system from `quality_check_setup.R`:
+- Always use the configuration system from [quality_check_setup.R](mdc:R/quality_check_setup.R) : 
   - Create configurations with `qc_config()` for quality control functions
   - Pass configuration objects to functions that need thresholds or settings
 
@@ -94,8 +99,9 @@ Dependencies:
 3. **Never hard-code file paths**; use `system.file()` instead
 4. **Always run `devtools::check()`** with no errors, warnings, or notes before submission
 5. **Document both exported and internal functions**
-6. **Use global variables from `global_var.R`** instead of hard-coding column names
-7. **Use configuration objects from `qc_config()`** for threshold values
+6. **Use global variables from** [global_var.R](mdc:R/global_var.R) instead of hard-coding column names
+7. **Use configuration objects from**  [quality_check_setup.R](mdc:R/quality_check_setup.R) for quality control functions
 8. **Always test examples** with `devtools::run_examples()`
 9. **Follow test-driven development**: write tests first, then implement
 10. **Run full test suite** with `devtools::test()` before committing
+11. Use [qc_total_cows.R](mdc:R/qc_total_cows.R) as an example code script
