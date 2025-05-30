@@ -20,7 +20,8 @@ qc(
   bins_feed = bins_feed2(),
   bins_wat = bins_wat2(),
   bin_offset = bin_offset2(),
-  verbose = TRUE
+  verbose = TRUE,
+  fix_double_detections = TRUE
 )
 }
 \arguments{
@@ -57,6 +58,9 @@ if you don't have water data}
 \item{bin_offset}{Numeric bin offset (default current global value)}
 
 \item{verbose}{Logical. If TRUE, print details of data where errors were detected}
+
+\item{fix_double_detections}{Logical. If TRUE, applies corrections to double detection issues
+by adjusting end times of overlapping bouts. Default is TRUE.}
 }
 \value{
 A list with four elements:
