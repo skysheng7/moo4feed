@@ -57,7 +57,8 @@
 <span>  bins_feed <span class="op">=</span> <span class="fu"><a href="bins_feed2.html">bins_feed2</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  bins_wat <span class="op">=</span> <span class="fu"><a href="bins_wat2.html">bins_wat2</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  bin_offset <span class="op">=</span> <span class="fu"><a href="bin_offset2.html">bin_offset2</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  fix_double_detections <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -129,6 +130,11 @@ if you don't have water data</p></dd>
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>Logical. If TRUE, print details of data where errors were detected</p></dd>
+
+
+<dt id="arg-fix-double-detections">fix_double_detections<a class="anchor" aria-label="anchor" href="#arg-fix-double-detections"></a></dt>
+<dd><p>Logical. If TRUE, applies corrections to double detection issues
+by adjusting end times of overlapping bouts. Default is TRUE.</p></dd>
 
 </dl></div>
     <div class="section level2">
