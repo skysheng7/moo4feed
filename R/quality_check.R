@@ -13,6 +13,8 @@
 #' @param cfg   A configuration list created by [qc_config()].
 #' @param verbose Logical. If TRUE, print details of data where errors were detected
 #' @param tz Time zone string for date-time operations
+#' @param fix_double_detections Logical. If TRUE, applies corrections to double detection issues
+#'   by adjusting end times of overlapping bouts. Default is TRUE.
 #'
 #' @return A list with four elements:
 #' \describe{
@@ -43,7 +45,8 @@ qc <- function(feed      = NULL,
                bins_feed = bins_feed2(),
                bins_wat = bins_wat2(),
                bin_offset = bin_offset2(),
-               verbose = TRUE) {
+               verbose = TRUE,
+               fix_double_detections = TRUE) {
 
   # --- 0. combine ----------------------------------------------------------
   if (!is.null(feed) && !is.null(water)) {
@@ -107,7 +110,25 @@ qc <- function(feed      = NULL,
                         all_bins = all_bins,
                         verbose = verbose)
 
-  # --- 3. delete negatives -------------------------------------------------
+  # --- 3. Fix double detections if requested ------------------------------
+  if (fix_double_detections) {
+    fixed_data <- handle_all_double_detections(
+      feed = feed,
+      water = water,
+      id_col = id_col,
+      bin_col = bin_col,
+      start_col = start_col,
+      end_col = end_col,
+      dur_col = dur_col,
+      bin_offset = bin_offset
+    )
+    
+    feed <- fixed_data$feed
+    water <- fixed_data$water
+    comb <- fixed_data$combined
+  }
+
+  # --- 4. delete negatives -------------------------------------------------
   comb <- qc_delete_negatives(comb,
                           dur_col = dur_col,
                           intake_col = intake_col,
@@ -130,7 +151,7 @@ qc <- function(feed      = NULL,
                             end_weight_col = end_weight_col)
   } 
 
-  # --- 4. return -----------------------------------------------------------
+  # --- 5. return -----------------------------------------------------------
   list(warnings = warn,
        feed     = feed,
        water    = water,
