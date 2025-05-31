@@ -5,12 +5,12 @@
 single_day <- all_fed[[1]]
 replacements <- record_replacement_day(single_day)
 empty_replacements <- data.frame(
-  Reactor_cow = character(),
-  Bin = integer(),
-  Time = as.POSIXct(character()),
+  reactor_cow = character(),
+  bin = integer(),
+  time = as.POSIXct(character()),
   date = as.Date(character()),
-  Actor_cow = character(),
-  Bout_interval = lubridate::as.duration(numeric())
+  actor_cow = character(),
+  bout_interval = lubridate::as.duration(numeric())
 )
 
 # -----------------------------------------------------------------------------#
@@ -76,7 +76,7 @@ test_that("Internal helper correctly identifies replacements on one day", {
   result <- record_replacement_day(single_day)
 
   expect_s3_class(result, "data.frame")
-  expect_named(result, c("Reactor_cow", "Bin", "Time", "date", "Actor_cow", "Bout_interval"))
+  expect_named(result, c("reactor_cow", "bin", "time", "date", "actor_cow", "bout_interval"))
 })
 
 test_that("Edge case: no replacements found on a quiet day", {
@@ -103,7 +103,7 @@ test_that("Internal helper correctly filters valid replacements", {
   valid_replacements <- check_alibi_day(replacements, single_day)
 
   expect_s3_class(valid_replacements, "data.frame")
-  expect_named(valid_replacements, c("Reactor_cow", "Bin", "Time", "date", "Actor_cow", "Bout_interval"))
+  expect_named(valid_replacements, c("reactor_cow", "bin", "time", "date", "actor_cow", "bout_interval"))
 })
 
 test_that("Edge case: no replacements provided returns empty frame", {
@@ -118,6 +118,6 @@ test_that("Error handling: incorrect input structure triggers error", {
   incorrect_replacements <- data.frame(wrong_col = 1:2)
   expect_error(
     check_alibi_day(incorrect_replacements, single_day),
-    "must include Actor_cow"
+    "must include actor_cow"
   )
 })
