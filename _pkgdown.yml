@@ -3,90 +3,75 @@ template:
   bootstrap: 5
 
 reference:
-- title: Data cleaning
-
-- subtitle: Read data
+- title: Getting Started
   desc: >
-    Read in data safely.
+    Core functions for reading and processing data.
   contents:
   - read_data_safely
-
-- subtitle: Data cleaning pipeline
-  desc: >
-    Functions that automate the entire data cleaning pipeline for you on either a single file or a collection of files.
-  contents:
   - process_all_feed
   - process_all_water
   - process_feeder
   - process_water
 
-- subtitle: Data quality check
+- title: Data Cleaning and Preparation
+- subtitle: Data Quality Checks
   desc: >
-    Check abnormal feeding and drinking visits
+    Check and validate feeding and drinking visits.
   contents:
   - qc_config
   - qc
 
-- subtitle: Daylight Saving Time changes
+- subtitle: Data Filtering
   desc: >
-    Adjust timestamps for days affected by Daylight Saving Time changes for North America.
+    Filter data relevant to animals and sensors in your study.
+  contents:
+  - delete_rows
+  - keep_bins
+  - rename_bins
+
+- subtitle: Time Adjustments
+  desc: >
+    Handle Daylight Saving Time changes for North America.
   contents:
   - daylight_saving_adjust
   - get_dst_switch_info
   - dst_switch_day
   - dst_switch_hm
 
-- subtitle: Date extraction from file names
+- subtitle: File Management
   desc: >
-    Extracts information about date from file names
+    Extract date information from file names and compare files.
   contents:
   - file_name_processing
   - compare_files
   - get_date_range
+  - cap_first
+  - lower_first
 
-- subtitle: Data filtering
+- subtitle: Data Integration
   desc: >
-    Filters for data relevant to animals and sensors included in your study.
-  contents:
-  - delete_rows
-  - keep_bins
-  - rename_bins
-
-- subtitle: Data merging and combination
-  desc: >
-    Functions to combine feeding and drinking visits into unified datasets.
+    Combine feeding and drinking data into unified datasets.
   contents:
   - combine_feed_water
   - merge_list_df
 
-- subtitle: Capitalize and de-capitalize String
-  desc: >
-    Small helper functions for formatting strings (e.g., column names).
-  contents:
-  - cap_first
-  - lower_first
-
-- title: Data Summary
-
-- subtitle: Feeding and Drinking Summary
+- title: Data Analysis and Summaries
+- subtitle: Feed and Water Metrics
   desc: >
     Summarize daily feed/water intake, duration, and visit counts.
   contents:
   - feed_water_summary
 
-- title: Data
-
-- subtitle: Example data
+- subtitle: Bin Usage Analysis
   desc: >
-    Example data and functions used in code in "Data cleaning" article
+    Analyze bin visit patterns.
   contents:
-  - all_fed
-  - all_wat
-  - moo4feed_example
+  - unique_bin_visits
 
-- subtitle: Global variables
+- title: Configuration and Customization
+- subtitle: Global Variables
   desc: >
-    Checking and setting global variables to customize fit your data
+    Configure global variables to customize for your data structure.
   contents:
   - set_global_cols
   - tz2
@@ -116,8 +101,18 @@ reference:
   - end_weight_col2
   - set_end_weight_col2
 
+- title: Example Data
+  desc: >
+    Example datasets and functions for demonstration.
+  contents:
+  - all_fed
+  - all_wat
+  - moo4feed_example
+
+- title: Replacement detection
 - subtitle: Record and Validate Replacements
   desc: >
     Functions to identify replacement behavior across multiple days, and validate those events by checking whether the actor cow was already present at another bin.
   contents:
   - record_replacement_days
+

@@ -19,9 +19,6 @@ qc_config(
   high_wat_intake = 180,
   replacement_threshold = 26,
   calibration_error = 0.5,
-  bin_offset = bin_offset2(),
-  bins_feed = bins_feed2(),
-  bins_wat = bins_wat2(),
   ...
 )
 }
@@ -64,15 +61,6 @@ for an animal (default \strong{180}).}
 behaviour (default \strong{26 s}).}
 
 \item{calibration_error}{Numeric. Allowed feeder calibration error (default \strong{0.5} kg/L).}
-
-\item{bin_offset}{Integer. Offset added to water-bin IDs so they do not
-overlap with feed-bin IDs. Default derives from \code{\link[=bin_offset2]{bin_offset2()}}.}
-
-\item{bins_feed}{Integer vector. Valid \strong{feed} bin IDs. Default
-\code{\link[=bins_feed2]{bins_feed2()}}.}
-
-\item{bins_wat}{Integer vector. Valid \strong{water} bin IDs. Default
-\code{\link[=bins_wat2]{bins_wat2()}}.}
 
 \item{...}{Reserved for future or project-specific tweaks. Named elements
 here are appended to the returned list.}

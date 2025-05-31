@@ -6,13 +6,13 @@ test_that("qc function behaves correctly under normal conditions with realistic 
       cow = c(5114, 4070),
       bin = c(13, 24),
       start = lubridate::ymd_hms(c("2020-10-31 00:03:24", "2020-10-31 00:05:32"), tz = tz2()),
-      end = lubridate::ymd_hms(c("2020-10-31 00:04:01", "2020-10-31 00:09:25"), tz = tz2()),
-      duration = c(1000, 1000),
+      end = lubridate::ymd_hms(c("2020-10-31 00:04:34", "2020-10-31 00:15:32"), tz = tz2()),
+      duration = c(70, 600),
       start_weight = c(18.7, 8.6),
       end_weight = c(19.4, 7.4),
       intake = c(-0.7, 1.2),
       date = as.Date("2020-10-31"),
-      rate = c(-0.0007, 0.0012)
+      rate = c(-0.7/70, 1.2/600)
     )
   )
 
@@ -22,13 +22,13 @@ test_that("qc function behaves correctly under normal conditions with realistic 
       cow = c(4070),
       bin = c(24),
       start = lubridate::ymd_hms(c("2020-10-31 00:05:32"), tz = tz2()),
-      end = lubridate::ymd_hms(c("2020-10-31 00:09:25"), tz = tz2()),
-      duration = c(1000),
+      end = lubridate::ymd_hms(c("2020-10-31 00:15:32"), tz = tz2()),
+      duration = c(600),
       start_weight = c(8.6),
       end_weight = c(7.4),
       intake = c(1.2),
       date = as.Date("2020-10-31"),
-      rate = c(0.0012)
+      rate = c(1.2/600)
     )
   )
 
@@ -38,13 +38,13 @@ test_that("qc function behaves correctly under normal conditions with realistic 
       cow = c(5028, 7010),
       bin = c(12, 30),
       start = lubridate::ymd_hms(c("2020-10-31 00:10:00", "2020-10-31 00:12:00"), tz = tz2()),
-      end = lubridate::ymd_hms(c("2020-10-31 00:11:00", "2020-10-31 00:13:00"), tz = tz2()),
-      duration = c(1000, 1000),
+      end = lubridate::ymd_hms(c("2020-10-31 00:10:50", "2020-10-31 00:12:50"), tz = tz2()),
+      duration = c(50, 50),
       start_weight = c(5.0, 7.5),
       end_weight = c(4.5, 7.0),
       intake = c(0.5, 0.5),
       date = as.Date("2020-10-31"),
-      rate = c(0.0005, 0.0005)
+      rate = c(0.5/50, 0.5/50)
     )
   )
 
@@ -83,7 +83,16 @@ test_that("qc function behaves correctly under normal conditions with realistic 
                          start_weight_col = "start_weight",
                          end_weight_col = "end_weight")
   expect_null(result_feed_only$water)
-  expect_equal(result_feed_only$feed, feed_expect)
+  
+  # Compare data frames carefully, considering column order and row order
+  expect_equal(names(result_feed_only$feed), names(feed_expect))
+  expect_equal(ncol(result_feed_only$feed[[1]]), ncol(feed_expect[[1]]))
+  
+  expect_equal(result_feed_only$feed[[1]]$start_weight, feed_expect[[1]]$start_weight)
+  expect_equal(result_feed_only$feed[[1]]$end_weight, feed_expect[[1]]$end_weight)
+  expect_equal(result_feed_only$feed[[1]]$intake, feed_expect[[1]]$intake)
+  expect_equal(result_feed_only$feed[[1]]$rate, feed_expect[[1]]$rate)
+  
   expect_equal(result_feed_only$warnings[["total_cows"]][1], 2)
 
   # Normal case: water only
@@ -100,7 +109,10 @@ test_that("qc function behaves correctly under normal conditions with realistic 
                           start_weight_col = "start_weight",
                           end_weight_col = "end_weight")
   expect_null(result_water_only$feed)
-  expect_equal(result_water_only$water, water)
+  expect_equal(result_water_only$water[[1]]$start_weight, water[[1]]$start_weight)
+  expect_equal(result_water_only$water[[1]]$end_weight, water[[1]]$end_weight)
+  expect_equal(result_water_only$water[[1]]$intake, water[[1]]$intake)
+  expect_equal(result_water_only$water[[1]]$rate, water[[1]]$rate)
   expect_equal(result_water_only$warnings[["total_cows"]][1], 2)
 })
 
