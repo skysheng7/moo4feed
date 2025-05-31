@@ -55,10 +55,10 @@ record_replacement_days <- function(data_list) {
 #' leaving and the next entering a bin is < 26 seconds.
 #'
 #' @param cur_data A data frame containing feeding/drinking events for a single day.
-#' Must include columns: `Cow`, `Bin`, `Start`, `End`.
+#' Must include columns: `cow`, `bin`, `start`, `end`.
 #'
 #' @return A data frame of detected replacement events filtered by bins, with columns:
-#' `Reactor_cow`, `Bin`, `Time`, `date`, `Actor_cow`, `Bout_interval`.
+#' `reactor_cow`, `bin`, `time`, `date`, `actor_cow`, `bout_interval`.
 #'
 #' @details
 #' The function iterates over each bin and computes the time interval between
@@ -111,7 +111,7 @@ record_replacement_day <- function(cur_data) {
     ]
 
     cur_data_bin <- cur_data_bin[, c(id_col, bin_col, end_col, "date", "next_cow", "time_dif")]
-    colnames(cur_data_bin) <- c("Reactor_cow", "Bin", "Time", "date", "Actor_cow", "Bout_interval")
+    colnames(cur_data_bin) <- c("reactor_cow", "bin", "time", "date", "actor_cow", "bout_interval")
 
     master_df <- rbind(master_df, cur_data_bin)
   }
@@ -161,9 +161,9 @@ check_alibi_days <- function(replacement_list_by_date, all_comb2) {
 #' In which case, the replacement is potentially invalid (e.g., the actor cow has an alibi).
 #'
 #' @param cur_replacement A data frame of replacements for a single day.
-#' Must include columns `Actor_cow` and `Time`.
+#' Must include columns `actor_cow` and `time`.
 #' @param cur_feed_wat A data frame of feeding/drinking events for that day.
-#' Must include `Cow`, `Start`, and `End` columns.
+#' Must include `cow`, `start`, and `end` columns.
 #'
 #' @return A filtered data frame of valid replacements (i.e., actor cows had no alibi).
 #'
@@ -183,8 +183,8 @@ check_alibi_day <- function(cur_replacement, cur_feed_wat) {
   if (nrow(cur_replacement) == 0) {
     return(cur_replacement)
   }
-  if (!all(c("Actor_cow", "Time") %in% names(cur_replacement))) {
-    stop("`cur_replacement` must include Actor_cow and Time columns.")
+  if (!all(c("actor_cow", "time") %in% names(cur_replacement))) {
+    stop("`cur_replacement` must include actor_cow and time columns.")
   }
 
   # ------------------------ Main logic ---------------------------- #
