@@ -55,7 +55,7 @@ record_replacement_days <- function(data_list) {
 #' leaving and the next entering a bin is < 26 seconds.
 #'
 #' @param cur_data A data frame containing feeding/drinking events for a single day.
-#' Must include columns: `cow`, `bin`, `start`, `end`.
+#' Must include columns specified by [id_col2()], [bin_col2()], [start_col2()], and [end_col2()].
 #'
 #' @return A data frame of detected replacement events filtered by bins, with columns:
 #' `reactor_cow`, `bin`, `time`, `date`, `actor_cow`, `bout_interval`.
@@ -157,13 +157,13 @@ check_alibi_days <- function(replacement_list_by_date, all_comb2) {
 #' Filter invalid replacements based on cow alibi on a single day
 #'
 #' @description
-#' This function determines whether actor cows were engaged in another bout at the time of the event.
-#' In which case, the replacement is potentially invalid (e.g., the actor cow has an alibi).
+#' Internal helper for `check_alibi_days()`. For a single day's data, this function filters out replacement events
+#' (from `record_replacement_day()`) where the actor cow was simultaneously engaged in another feeding or drinking
+#' event (i.e., has an alibi).
 #'
-#' @param cur_replacement A data frame of replacements for a single day.
-#' Must include columns `actor_cow` and `time`.
-#' @param cur_feed_wat A data frame of feeding/drinking events for that day.
-#' Must include `cow`, `start`, and `end` columns.
+#' @param cur_replacement A data frame of replacement events for one day, as returned by `record_replacement_day()`.
+#' @param cur_feed_wat A data frame of feeding/drinking events for the same day.
+#' Must include columns as defined by `id_col2()`, `start_col2()`, and `end_col2()`.
 #'
 #' @return A filtered data frame of valid replacements (i.e., actor cows had no alibi).
 #'
