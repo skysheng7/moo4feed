@@ -91,7 +91,7 @@ test_that("Error handling: incorrect data format for single day detection", {
   incorrect_data <- data.frame(wrong_col = 1:3)
   expect_error(
     record_replacement_day(data.frame(wrong_col = 1:3)),
-    "must include id.*columns"
+    "must include columns"
   )
 })
 
