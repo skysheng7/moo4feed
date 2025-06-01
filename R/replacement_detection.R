@@ -80,7 +80,7 @@ record_replacement_day <- function(cur_data) {
   # ------------------------ Error handling ------------------------ #
   required_cols <- c(id_col2(), bin_col2(), start_col2(), end_col2())
   if (!all(required_cols %in% names(cur_data))) {
-    stop("`cur_data` must include id, bin, start, and end columns.")
+    stop(paste("`cur_data` must include columns:", paste(required_cols, collapse = ", ")))
   }
 
   # ------------------------ Main logic ---------------------------- #
