@@ -134,8 +134,8 @@ record_replacement_day <- function(cur_data,
 #' This function verifies validity of detected replacement events across multiple days by
 #' checking if the actor cow was simultaneously active at another bin (i.e., have an alibi).
 #'
+#' @inheritParams qc_warning_skeleton
 #' @param replacement_list_by_date A list of data frames, one per day, containing replacement events.
-#' @param all_comb2 A list of data frames, one per day, containing feeding and drinking data.
 #' @param id_col,start_col,end_col Column names to use (default: from global getters).
 #'
 #' @return A list of data frames with valid replacements.
@@ -147,7 +147,7 @@ record_replacement_day <- function(cur_data,
 #' @seealso [record_replacement_days()]
 #'
 #' @noRd
-check_alibi_days <- function(replacement_list_by_date, all_comb2,
+check_alibi_days <- function(replacement_list_by_date, comb,
                              id_col = id_col2(),
                              start_col = start_col2(),
                              end_col = end_col2()) {
@@ -155,15 +155,15 @@ check_alibi_days <- function(replacement_list_by_date, all_comb2,
   if (length(replacement_list_by_date) == 0) {
     return(list())
   }
-  if (length(replacement_list_by_date) != length(all_comb2)) {
-    stop("replacement_list_by_date and all_comb2 must be the same length.")
+  if (length(replacement_list_by_date) != length(comb)) {
+    stop("replacement_list_by_date and comb must be the same length.")
   }
 
   # ------------------------ Main logic ---------------------------- #
-  out <- lapply(seq_along(all_comb2), function(i) {
-    check_alibi_day(replacement_list_by_date[[i]], all_comb2[[i]])
+  out <- lapply(seq_along(comb), function(i) {
+    check_alibi_day(replacement_list_by_date[[i]], comb[[i]])
   })
-  names(out) <- names(all_comb2)
+  names(out) <- names(comb)
   return(out)
 }
 
