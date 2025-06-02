@@ -4,11 +4,25 @@
 \alias{record_replacement_days}
 \title{Identify and validate replacement events across multiple days}
 \usage{
-record_replacement_days(data_list)
+record_replacement_days(
+  data_list,
+  id_col = id_col2(),
+  bin_col = bin_col2(),
+  start_col = start_col2(),
+  end_col = end_col2()
+)
 }
 \arguments{
 \item{data_list}{A named list of data frames, each representing one day's worth
 of feeding or drinking data.}
+
+\item{id_col}{Column name for cow ID (default: id_col2()).}
+
+\item{bin_col}{Column name for bin ID (default: bin_col2()).}
+
+\item{start_col}{Column name for start time (default: start_col2()).}
+
+\item{end_col}{Column name for end time (default: end_col2()).}
 }
 \value{
 A named list of data frames, one per day, containing validated replacement events.

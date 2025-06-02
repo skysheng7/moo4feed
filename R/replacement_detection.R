@@ -13,6 +13,10 @@
 #'
 #' @param data_list A named list of data frames, each representing one day's worth
 #'   of feeding or drinking data.
+#' @param id_col Column name for cow ID (default: id_col2()).
+#' @param bin_col Column name for bin ID (default: bin_col2()).
+#' @param start_col Column name for start time (default: start_col2()).
+#' @param end_col Column name for end time (default: end_col2()).
 #'
 #' @return A named list of data frames, one per day, containing validated replacement events.
 #'
@@ -27,7 +31,11 @@
 #' valid_replacements <- record_replacement_days(all_fed)
 #'
 #' @export
-record_replacement_days <- function(data_list) {
+record_replacement_days <- function(data_list,
+                                    id_col = id_col2(),
+                                    bin_col = bin_col2(),
+                                    start_col = start_col2(),
+                                    end_col = end_col2()) {
   # ------------------------ Error handling ------------------------ #
   if (!is.list(data_list)) {
     stop("`data_list` must be a named list of data frames.")
@@ -55,7 +63,9 @@ record_replacement_days <- function(data_list) {
 #' leaving and the next entering a bin is < 26 seconds.
 #'
 #' @param cur_data A data frame containing feeding/drinking events for a single day.
-#' Must include columns specified by [id_col2()], [bin_col2()], [start_col2()], and [end_col2()].
+#' Must include columns specified by [id_col], [bin_col], [start_col], and [end_col].
+#' @param cfg Configuration list (default: qc_config()) containing replacement_threshold.
+#' @param id_col,bin_col,start_col,end_col Column names to use (default: from global getters).
 #'
 #' @return A data frame of detected replacement events filtered by bins, with columns:
 #' `reactor_cow`, `bin`, `time`, `date`, `actor_cow`, `bout_interval`.
@@ -68,17 +78,16 @@ record_replacement_days <- function(data_list) {
 #' @seealso [record_replacement_days()]
 #'
 #' @noRd
-record_replacement_day <- function(cur_data) {
-  cfg <- qc_config()
+record_replacement_day <- function(cur_data,
+                                   cfg = qc_config(),
+                                   id_col = id_col2(),
+                                   bin_col = bin_col2(),
+                                   start_col = start_col2(),
+                                   end_col = end_col2()) {
   replacement_threshold <- cfg$replacement_threshold
 
-  id_col <- id_col2()
-  bin_col <- bin_col2()
-  start_col <- start_col2()
-  end_col <- end_col2()
-
   # ------------------------ Error handling ------------------------ #
-  required_cols <- c(id_col2(), bin_col2(), start_col2(), end_col2())
+  required_cols <- c(id_col, bin_col, start_col, end_col)
   if (!all(required_cols %in% names(cur_data))) {
     stop(paste("`cur_data` must include columns:", paste(required_cols, collapse = ", ")))
   }
@@ -127,6 +136,7 @@ record_replacement_day <- function(cur_data) {
 #'
 #' @param replacement_list_by_date A list of data frames, one per day, containing replacement events.
 #' @param all_comb2 A list of data frames, one per day, containing feeding and drinking data.
+#' @param id_col,start_col,end_col Column names to use (default: from global getters).
 #'
 #' @return A list of data frames with valid replacements.
 #'
@@ -137,7 +147,10 @@ record_replacement_day <- function(cur_data) {
 #' @seealso [record_replacement_days()]
 #'
 #' @noRd
-check_alibi_days <- function(replacement_list_by_date, all_comb2) {
+check_alibi_days <- function(replacement_list_by_date, all_comb2,
+                             id_col = id_col2(),
+                             start_col = start_col2(),
+                             end_col = end_col2()) {
   # ------------------------ Error handling ------------------------ #
   if (length(replacement_list_by_date) == 0) {
     return(list())
@@ -163,7 +176,7 @@ check_alibi_days <- function(replacement_list_by_date, all_comb2) {
 #'
 #' @param cur_replacement A data frame of replacement events for one day, as returned by `record_replacement_day()`.
 #' @param cur_feed_wat A data frame of feeding/drinking events for the same day.
-#' Must include columns as defined by `id_col2()`, `start_col2()`, and `end_col2()`.
+#' @param id_col,start_col,end_col Column names to use (default: from global getters).
 #'
 #' @return A filtered data frame of valid replacements (i.e., actor cows had no alibi).
 #'
@@ -174,10 +187,10 @@ check_alibi_days <- function(replacement_list_by_date, all_comb2) {
 #' @seealso [check_alibi_days()]
 #'
 #' @noRd
-check_alibi_day <- function(cur_replacement, cur_feed_wat) {
-  id_col <- id_col2()
-  start_col <- start_col2()
-  end_col <- end_col2()
+check_alibi_day <- function(cur_replacement, cur_feed_wat,
+                            id_col = id_col2(),
+                            start_col = start_col2(),
+                            end_col = end_col2()) {
 
   # ------------------------ Error handling ------------------------ #
   if (nrow(cur_replacement) == 0) {
