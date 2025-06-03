@@ -226,14 +226,6 @@ You can now directly inspect the `all_fed` dataset, as it's lazy-loaded with the
 
 ------------------------------------------------------------------------
 
-**Rewriting process_all_water**
-
-I need to rewrite the process_all_water section, following the new pattern. It should consist of two parts: one for customization using the setter block, and another for the "feeder" process, similar to what we did for feed.
-
-Since we don't need to reset the global variables, I'll make sure we use them implicitly and only pass varying items. The original snippet sets variables like id_col—I'll remove those and use the global defaults instead. I'll also add the necessary instructions as comments for clarity.
-
-Thought for 11 seconds
-
 #### 🔄 Process water data **without repeating arguments**
 
 Because we already set the global defaults (time-zone, column names, bin rules) in the *reset-global-options* chunk, the drinker workflow is just as terse as the feeder one—supply only what differs from file to file.
