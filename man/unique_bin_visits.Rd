@@ -22,15 +22,15 @@ if you don't have feeder data}
 \item{water}{A list of daily \strong{water} data frames named by date, or \code{NULL}
 if you don't have water data}
 
-\item{id_col}{Animal ID column name (default current global value)}
+\item{id_col}{Animal ID column name (default current global value from \code{\link[=id_col2]{id_col2()}})}
 
-\item{bin_col}{Bin ID column name (default current global value)}
+\item{bin_col}{Bin ID column name (default current global value from \code{\link[=bin_col2]{bin_col2()}})}
 
-\item{bin_offset}{Numeric bin offset (default current global value)}
+\item{bin_offset}{Numeric bin offset (default current global value from \code{\link[=bin_offset2]{bin_offset2()}})}
 
-\item{bins_feed}{Integer vector of feed bins (default current global value)}
+\item{bins_feed}{Integer vector of feed bins (default current global value from \code{\link[=bins_feed2]{bins_feed2()}})}
 
-\item{bins_wat}{Integer vector of water bins (default current global value)}
+\item{bins_wat}{Integer vector of water bins (default current global value from \code{\link[=bins_wat2]{bins_wat2()}})}
 
 \item{return_list}{Logical. Whether to return a list of dataframes or a single dataframe.}
 }

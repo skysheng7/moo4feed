@@ -33,29 +33,29 @@ if you don't have water data}
 
 \item{cfg}{A configuration list created by \code{\link[=qc_config]{qc_config()}}.}
 
-\item{id_col}{Animal ID column name (default current global value)}
+\item{id_col}{Animal ID column name (default current global value from \code{\link[=id_col2]{id_col2()}})}
 
-\item{start_col}{Start time column name (default current global value)}
+\item{start_col}{Start time column name (default current global value from \code{\link[=start_col2]{start_col2()}})}
 
-\item{end_col}{End time column name (default current global value)}
+\item{end_col}{End time column name (default current global value from \code{\link[=end_col2]{end_col2()}})}
 
-\item{bin_col}{Bin ID column name (default current global value)}
+\item{bin_col}{Bin ID column name (default current global value from \code{\link[=bin_col2]{bin_col2()}})}
 
-\item{dur_col}{Duration column name (default current global value)}
+\item{dur_col}{Duration column name (default current global value from \code{\link[=duration_col2]{duration_col2()}})}
 
-\item{intake_col}{Intake column name (default current global value)}
+\item{intake_col}{Intake column name (default current global value from \code{\link[=intake_col2]{intake_col2()}})}
 
-\item{start_weight_col}{Start weight column name (default current global value)}
+\item{start_weight_col}{Start weight column name (default current global value from \code{\link[=start_weight_col2]{start_weight_col2()}})}
 
-\item{end_weight_col}{End weight column name (default current global value)}
+\item{end_weight_col}{End weight column name (default current global value from \code{\link[=end_weight_col2]{end_weight_col2()}})}
 
 \item{tz}{Time zone string for date-time operations}
 
-\item{bins_feed}{Integer vector of feed bins (default current global value)}
+\item{bins_feed}{Integer vector of feed bins (default current global value from \code{\link[=bins_feed2]{bins_feed2()}})}
 
-\item{bins_wat}{Integer vector of water bins (default current global value)}
+\item{bins_wat}{Integer vector of water bins (default current global value from \code{\link[=bins_wat2]{bins_wat2()}})}
 
-\item{bin_offset}{Numeric bin offset (default current global value)}
+\item{bin_offset}{Numeric bin offset (default current global value from \code{\link[=bin_offset2]{bin_offset2()}})}
 
 \item{verbose}{Logical. If TRUE, print details of data where errors were detected}
 

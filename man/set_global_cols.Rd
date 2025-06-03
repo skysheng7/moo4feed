@@ -21,31 +21,31 @@ set_global_cols(
 )
 }
 \arguments{
-\item{tz}{Timezone (default current global value)}
+\item{tz}{Timezone (default current global value from \code{\link[=tz2]{tz2()}})}
 
-\item{id_col}{Animal ID column name (default current global value)}
+\item{id_col}{Animal ID column name (default current global value from \code{\link[=id_col2]{id_col2()}})}
 
-\item{trans_col}{Transponder column name (default current global value)}
+\item{trans_col}{Transponder column name (default current global value from \code{\link[=trans_col2]{trans_col2()}})}
 
-\item{start_col}{Start time column name (default current global value)}
+\item{start_col}{Start time column name (default current global value from \code{\link[=start_col2]{start_col2()}})}
 
-\item{end_col}{End time column name (default current global value)}
+\item{end_col}{End time column name (default current global value from \code{\link[=end_col2]{end_col2()}})}
 
-\item{bin_col}{Bin ID column name (default current global value)}
+\item{bin_col}{Bin ID column name (default current global value from \code{\link[=bin_col2]{bin_col2()}})}
 
-\item{dur_col}{Duration column name (default current global value)}
+\item{dur_col}{Duration column name (default current global value from \code{\link[=duration_col2]{duration_col2()}})}
 
-\item{intake_col}{Intake column name (default current global value)}
+\item{intake_col}{Intake column name (default current global value from \code{\link[=intake_col2]{intake_col2()}})}
 
-\item{start_weight_col}{Start weight column name (default current global value)}
+\item{start_weight_col}{Start weight column name (default current global value from \code{\link[=start_weight_col2]{start_weight_col2()}})}
 
-\item{end_weight_col}{End weight column name (default current global value)}
+\item{end_weight_col}{End weight column name (default current global value from \code{\link[=end_weight_col2]{end_weight_col2()}})}
 
-\item{bin_offset}{Numeric bin offset (default current global value)}
+\item{bin_offset}{Numeric bin offset (default current global value from \code{\link[=bin_offset2]{bin_offset2()}})}
 
-\item{bins_feed}{Integer vector of feed bins (default current global value)}
+\item{bins_feed}{Integer vector of feed bins (default current global value from \code{\link[=bins_feed2]{bins_feed2()}})}
 
-\item{bins_wat}{Integer vector of water bins (default current global value)}
+\item{bins_wat}{Integer vector of water bins (default current global value from \code{\link[=bins_wat2]{bins_wat2()}})}
 }
 \value{
 Called for its side-effects

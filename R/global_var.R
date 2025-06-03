@@ -2,7 +2,7 @@ utils::globalVariables(c(
   "season", "fall", "spring", "start", "end", "overlap", "n", "rate",
   "date", "feed_intake", "feed_duration", "feed_visits",
   "water_intake", "water_duration", "water_visits", "warning_str", "unique_feed_bins_visited",
-  "unique_water_bins_visited", "visit_freq"
+  "unique_water_bins_visited", "visit_freq", "next_cow", "time_dif", "actor_at_another_bin"
 ))
 
 # internal environment that stores the run-time global variable options
@@ -444,19 +444,19 @@ set_end_weight_col2 <- function(new_name = "end_weight") {
 #' This function allows users to set multiple global variables simultaneously.
 #' Each parameter defaults to its current global value if unspecified.
 #'
-#' @param tz Timezone (default current global value)
-#' @param id_col Animal ID column name (default current global value)
-#' @param trans_col Transponder column name (default current global value)
-#' @param start_col Start time column name (default current global value)
-#' @param end_col End time column name (default current global value)
-#' @param bin_col Bin ID column name (default current global value)
-#' @param dur_col Duration column name (default current global value)
-#' @param intake_col Intake column name (default current global value)
-#' @param start_weight_col Start weight column name (default current global value)
-#' @param end_weight_col End weight column name (default current global value)
-#' @param bin_offset Numeric bin offset (default current global value)
-#' @param bins_feed Integer vector of feed bins (default current global value)
-#' @param bins_wat Integer vector of water bins (default current global value)
+#' @param tz Timezone (default current global value from [tz2()])
+#' @param id_col Animal ID column name (default current global value from [id_col2()])
+#' @param trans_col Transponder column name (default current global value from [trans_col2()])
+#' @param start_col Start time column name (default current global value from [start_col2()])
+#' @param end_col End time column name (default current global value from [end_col2()])
+#' @param bin_col Bin ID column name (default current global value from [bin_col2()])
+#' @param dur_col Duration column name (default current global value from [duration_col2()])
+#' @param intake_col Intake column name (default current global value from [intake_col2()])
+#' @param start_weight_col Start weight column name (default current global value from [start_weight_col2()])
+#' @param end_weight_col End weight column name (default current global value from [end_weight_col2()])
+#' @param bin_offset Numeric bin offset (default current global value from [bin_offset2()])
+#' @param bins_feed Integer vector of feed bins (default current global value from [bins_feed2()])
+#' @param bins_wat Integer vector of water bins (default current global value from [bins_wat2()])
 #'
 #' @return Called for its side-effects
 #' @examples

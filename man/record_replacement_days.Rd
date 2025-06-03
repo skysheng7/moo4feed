@@ -5,7 +5,8 @@
 \title{Identify and validate replacement events across multiple days}
 \usage{
 record_replacement_days(
-  data_list,
+  comb,
+  cfg = qc_config(),
   id_col = id_col2(),
   bin_col = bin_col2(),
   start_col = start_col2(),
@@ -13,16 +14,17 @@ record_replacement_days(
 )
 }
 \arguments{
-\item{data_list}{A named list of data frames, each representing one day's worth
-of feeding or drinking data.}
+\item{comb}{List of daily data frames (feed, water or combined).}
 
-\item{id_col}{Column name for cow ID (default: id_col2()).}
+\item{cfg}{A configuration list created by \code{\link[=qc_config]{qc_config()}}.}
 
-\item{bin_col}{Column name for bin ID (default: bin_col2()).}
+\item{id_col}{Animal ID column name (default current global value from \code{\link[=id_col2]{id_col2()}})}
 
-\item{start_col}{Column name for start time (default: start_col2()).}
+\item{bin_col}{Bin ID column name (default current global value from \code{\link[=bin_col2]{bin_col2()}})}
 
-\item{end_col}{Column name for end time (default: end_col2()).}
+\item{start_col}{Start time column name (default current global value from \code{\link[=start_col2]{start_col2()}})}
+
+\item{end_col}{End time column name (default current global value from \code{\link[=end_col2]{end_col2()}})}
 }
 \value{
 A named list of data frames, one per day, containing validated replacement events.
@@ -35,12 +37,13 @@ defined as instances where the time interval between one cow leaving and the nex
 entering a bin is < 26 seconds.
 }
 \details{
-This function first call \code{record_replacement_day()} and applies it across all
-elements of \code{data_list} to identify replacements. It then calls \code{check_alibi_days()}
+This function first calls internal function \code{record_replacement_day()} and applies it across all
+elements of \code{comb} to identify replacements. It then calls internal function \code{check_alibi_days()}
 to validate those events by removing actor cows with an alibi.
 }
 \examples{
 # Use example data from the built-in all_fed dataset
 valid_replacements <- record_replacement_days(all_fed)
+valid_replacements
 
 }

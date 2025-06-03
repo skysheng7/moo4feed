@@ -27,11 +27,11 @@ If providing a list, each data frame must have a 'date' column.}
 
 \item{cfg}{A configuration list created by \code{\link[=qc_config]{qc_config()}}.}
 
-\item{id_col}{Animal ID column name (default current global value)}
+\item{id_col}{Animal ID column name (default current global value from \code{\link[=id_col2]{id_col2()}})}
 
-\item{intake_col}{Intake column name (default current global value)}
+\item{intake_col}{Intake column name (default current global value from \code{\link[=intake_col2]{intake_col2()}})}
 
-\item{dur_col}{Duration column name (default current global value)}
+\item{dur_col}{Duration column name (default current global value from \code{\link[=duration_col2]{duration_col2()}})}
 }
 \value{
 A list of:

@@ -11,43 +11,40 @@
 #' defined as instances where the time interval between one cow leaving and the next
 #' entering a bin is < 26 seconds.
 #'
-#' @param data_list A named list of data frames, each representing one day's worth
-#'   of feeding or drinking data.
-#' @param id_col Column name for cow ID (default: id_col2()).
-#' @param bin_col Column name for bin ID (default: bin_col2()).
-#' @param start_col Column name for start time (default: start_col2()).
-#' @param end_col Column name for end time (default: end_col2()).
+#' @inheritParams qc
+#' @param comb      List of daily data frames (feed, water or combined).
 #'
 #' @return A named list of data frames, one per day, containing validated replacement events.
 #'
 #' @details
-#' This function first call `record_replacement_day()` and applies it across all
-#' elements of `data_list` to identify replacements. It then calls `check_alibi_days()`
+#' This function first calls internal function `record_replacement_day()` and applies it across all
+#' elements of `comb` to identify replacements. It then calls internal function `check_alibi_days()`
 #' to validate those events by removing actor cows with an alibi.
-#'
 #'
 #' @examples
 #' # Use example data from the built-in all_fed dataset
 #' valid_replacements <- record_replacement_days(all_fed)
+#' valid_replacements
 #'
 #' @export
-record_replacement_days <- function(data_list,
+record_replacement_days <- function(comb,
+                                    cfg = qc_config(),
                                     id_col = id_col2(),
                                     bin_col = bin_col2(),
                                     start_col = start_col2(),
                                     end_col = end_col2()) {
   # ------------------------ Error handling ------------------------ #
-  if (!is.list(data_list)) {
-    stop("`data_list` must be a named list of data frames.")
+  if (!is.list(comb)) {
+    stop("`comb` must be a named list of data frames.")
   }
 
   # ------------------------ Main logic ---------------------------- #
-  replacement_list_by_date <- lapply(names(data_list), function(name) {
-    record_replacement_day(data_list[[name]])
+  replacement_list_by_date <- lapply(names(comb), function(name) {
+    record_replacement_day(comb[[name]], cfg = cfg, id_col = id_col, bin_col = bin_col, start_col = start_col, end_col = end_col)
   })
-  names(replacement_list_by_date) <- names(data_list)
+  names(replacement_list_by_date) <- names(comb)
 
-  validated <- check_alibi_days(replacement_list_by_date, data_list)
+  validated <- check_alibi_days(replacement_list_by_date, comb, id_col = id_col, start_col = start_col, end_col = end_col)
   return(validated)
 }
 
@@ -77,6 +74,7 @@ record_replacement_days <- function(data_list,
 #'
 #' @seealso [record_replacement_days()]
 #'
+#' @keywords internal
 #' @noRd
 record_replacement_day <- function(cur_data,
                                    cfg = qc_config(),
@@ -93,15 +91,19 @@ record_replacement_day <- function(cur_data,
   }
 
   # ------------------------ Main logic ---------------------------- #
-  sorted_data <- cur_data[order(cur_data[[bin_col]], cur_data[[start_col]], cur_data[[end_col]]), ]
-  sorted_data <- sorted_data[, c(id_col, bin_col, start_col, end_col)]
+  sorted_data <- cur_data |>
+    dplyr::arrange(!!rlang::sym(bin_col), !!rlang::sym(start_col), !!rlang::sym(end_col)) |>
+    dplyr::select(!!rlang::sym(id_col), !!rlang::sym(bin_col), 
+                 !!rlang::sym(start_col), !!rlang::sym(end_col))
+  
   sorted_data$date <- lubridate::date(sorted_data[[start_col]])
 
   bin_list <- sort(unique(sorted_data[[bin_col]]))
   master_df <- data.frame()
 
   for (cur_bin in bin_list) {
-    cur_data_bin <- sorted_data[sorted_data[[bin_col]] == cur_bin, ]
+    cur_data_bin <- sorted_data |>
+      dplyr::filter(!!rlang::sym(bin_col) == cur_bin)
 
     next_start_list <- cur_data_bin[[start_col]][-1]
     next_cow_list <- cur_data_bin[[id_col]][-1]
@@ -114,12 +116,13 @@ record_replacement_day <- function(cur_data,
     cur_data_bin$time_dif <- lubridate::as.duration(time_interval)
 
     replace_cutoff <- lubridate::as.duration(paste0(replacement_threshold, "s"))
-    cur_data_bin <- cur_data_bin[
-      cur_data_bin$time_dif <= replace_cutoff &
-        cur_data_bin[[id_col]] != cur_data_bin$next_cow,
-    ]
-
-    cur_data_bin <- cur_data_bin[, c(id_col, bin_col, end_col, "date", "next_cow", "time_dif")]
+    
+    cur_data_bin <- cur_data_bin |>
+      dplyr::filter(time_dif <= replace_cutoff, 
+                   !!rlang::sym(id_col) != next_cow) |>
+      dplyr::select(!!rlang::sym(id_col), !!rlang::sym(bin_col), 
+                   !!rlang::sym(end_col), date, next_cow, time_dif)
+    
     colnames(cur_data_bin) <- c("reactor_cow", "bin", "time", "date", "actor_cow", "bout_interval")
 
     master_df <- rbind(master_df, cur_data_bin)
@@ -146,6 +149,7 @@ record_replacement_day <- function(cur_data,
 #'
 #' @seealso [record_replacement_days()]
 #'
+#' @keywords internal
 #' @noRd
 check_alibi_days <- function(replacement_list_by_date, comb,
                              id_col = id_col2(),
@@ -161,7 +165,7 @@ check_alibi_days <- function(replacement_list_by_date, comb,
 
   # ------------------------ Main logic ---------------------------- #
   out <- lapply(seq_along(comb), function(i) {
-    check_alibi_day(replacement_list_by_date[[i]], comb[[i]])
+    check_alibi_day(replacement_list_by_date[[i]], comb[[i]], id_col = id_col, start_col = start_col, end_col = end_col)
   })
   names(out) <- names(comb)
   return(out)
@@ -186,6 +190,7 @@ check_alibi_days <- function(replacement_list_by_date, comb,
 #'
 #' @seealso [check_alibi_days()]
 #'
+#' @keywords internal
 #' @noRd
 check_alibi_day <- function(cur_replacement, cur_feed_wat,
                             id_col = id_col2(),
@@ -203,19 +208,22 @@ check_alibi_day <- function(cur_replacement, cur_feed_wat,
   # ------------------------ Main logic ---------------------------- #
   cur_replacement$actor_at_another_bin <- 0
   for (k in seq_len(nrow(cur_replacement))) {
-    cur_time <- cur_replacement$Time[k]
-    cur_actor <- cur_replacement$Actor_cow[k]
-    overlapping <- cur_feed_wat[
-      cur_feed_wat[[id_col]] == cur_actor &
-        cur_feed_wat[[start_col]] <= cur_time &
-        cur_feed_wat[[end_col]] >= cur_time,
-    ]
+    cur_time <- cur_replacement$time[k]  
+    cur_actor <- cur_replacement$actor_cow[k]  
+    
+    overlapping <- cur_feed_wat |>
+      dplyr::filter(!!rlang::sym(id_col) == cur_actor,
+                   !!rlang::sym(start_col) <= cur_time,
+                   !!rlang::sym(end_col) >= cur_time)
+    
     if (nrow(overlapping) > 0) {
       cur_replacement$actor_at_another_bin[k] <- 1
     }
   }
 
-  result <- cur_replacement[cur_replacement$actor_at_another_bin == 0, ]
-  result$actor_at_another_bin <- NULL
+  result <- cur_replacement |>
+    dplyr::filter(actor_at_another_bin == 0) |>
+    dplyr::select(-actor_at_another_bin)
+    
   return(result)
 }
