@@ -632,6 +632,197 @@ specific needs:</p>
 more details! Need detailed examples? Look at the sample data with:
 <code><a href="../reference/moo4feed_example.html">moo4feed_example()</a></code></p>
 </blockquote>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="code-cheatsheet">10. Code Cheatsheet 📋<a class="anchor" aria-label="anchor" href="#code-cheatsheet"></a>
+</h3>
+<p>Here’s a copy-paste friendly version of all the code used in this
+vignette:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># === 1. Load packages ===</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/skysheng7/moo4feed" class="external-link">moo4feed</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># === 2. Set paths to data files ===</span></span>
+<span><span class="co"># For your own data:</span></span>
+<span><span class="co"># extdata_path &lt;- "/path/to/my/raw/files"</span></span>
+<span></span>
+<span><span class="co"># Or for the demo data:</span></span>
+<span><span class="va">extdata_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, package <span class="op">=</span> <span class="st">"moo4feed"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># If feeders and drinkers are in different folders:</span></span>
+<span><span class="co"># extdata_path_f &lt;- "/path/to/feeder/files"</span></span>
+<span><span class="co"># extdata_path_w &lt;- "/path/to/drinker/files"</span></span>
+<span></span>
+<span><span class="co"># === 3. Find data files ===</span></span>
+<span><span class="co"># Find all feeder files (VR*.DAT)</span></span>
+<span><span class="va">fileNames.f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span></span>
+<span>  path       <span class="op">=</span> <span class="va">extdata_path</span>,</span>
+<span>  pattern    <span class="op">=</span> <span class="st">"^VR.*\\.DAT$"</span>,</span>
+<span>  recursive  <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  full.names <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Find all drinker files (VW*.DAT)</span></span>
+<span><span class="va">fileNames.w</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span></span>
+<span>  path       <span class="op">=</span> <span class="va">extdata_path</span>,</span>
+<span>  pattern    <span class="op">=</span> <span class="st">"^VW.*\\.DAT$"</span>,</span>
+<span>  recursive  <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  full.names <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># === 4. Handle daylight saving time ===</span></span>
+<span><span class="va">dst_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_dst_switch_info.html">get_dst_switch_info</a></span><span class="op">(</span></span>
+<span>  years <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2020</span>, <span class="fl">2021</span><span class="op">)</span>,</span>
+<span>  tz <span class="op">=</span> <span class="st">"America/Chicago"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># === 5. Match files by date ===</span></span>
+<span><span class="va">date_compare</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compare_files.html">compare_files</a></span><span class="op">(</span><span class="va">fileNames.f</span>, <span class="va">fileNames.w</span><span class="op">)</span></span>
+<span><span class="va">fileNames.f</span> <span class="op">&lt;-</span> <span class="va">date_compare</span><span class="op">$</span><span class="va">feed</span></span>
+<span><span class="va">fileNames.w</span> <span class="op">&lt;-</span> <span class="va">date_compare</span><span class="op">$</span><span class="va">water</span></span>
+<span></span>
+<span><span class="co"># Get the overall date range</span></span>
+<span><span class="va">date_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_date_range.html">get_date_range</a></span><span class="op">(</span><span class="va">fileNames.f</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># === 6. Configure global settings ===</span></span>
+<span><span class="co"># Option 1: All at once</span></span>
+<span><span class="fu"><a href="../reference/set_global_cols.html">set_global_cols</a></span><span class="op">(</span></span>
+<span>  <span class="co"># Time zone</span></span>
+<span>  tz <span class="op">=</span> <span class="st">"America/Vancouver"</span>,</span>
+<span>  </span>
+<span>  <span class="co"># Column names in your data files</span></span>
+<span>  id_col <span class="op">=</span> <span class="st">"cow"</span>,</span>
+<span>  trans_col <span class="op">=</span> <span class="st">"transponder"</span>,</span>
+<span>  start_col <span class="op">=</span> <span class="st">"start"</span>,</span>
+<span>  end_col <span class="op">=</span> <span class="st">"end"</span>,</span>
+<span>  bin_col <span class="op">=</span> <span class="st">"bin"</span>,</span>
+<span>  dur_col <span class="op">=</span> <span class="st">"duration"</span>,</span>
+<span>  intake_col <span class="op">=</span> <span class="st">"intake"</span>,</span>
+<span>  start_weight_col <span class="op">=</span> <span class="st">"start_weight"</span>,</span>
+<span>  end_weight_col <span class="op">=</span> <span class="st">"end_weight"</span>,</span>
+<span>  </span>
+<span>  <span class="co"># Bin settings</span></span>
+<span>  bins_feed <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">30</span>,</span>
+<span>  bins_wat <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,</span>
+<span>  bin_offset <span class="op">=</span> <span class="fl">100</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Option 2: Individual settings (alternative)</span></span>
+<span><span class="co"># set_tz2("America/Vancouver")</span></span>
+<span><span class="co"># set_id_col2("cow")</span></span>
+<span><span class="co"># set_trans_col2("transponder")</span></span>
+<span><span class="co"># set_start_col2("start")</span></span>
+<span><span class="co"># set_end_col2("end")</span></span>
+<span><span class="co"># set_bin_col2("bin")</span></span>
+<span><span class="co"># set_bins_feed2(1:30)</span></span>
+<span><span class="co"># set_bins_wat2(1:5)</span></span>
+<span><span class="co"># set_bin_offset2(100)</span></span>
+<span></span>
+<span><span class="co"># === 7. Process feeder data ===</span></span>
+<span><span class="co"># Define column names for feeder files</span></span>
+<span><span class="va">col_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"transponder"</span>, <span class="st">"cow"</span>, <span class="st">"bin"</span>, <span class="st">"start"</span>, <span class="st">"end"</span>, <span class="st">"duration"</span>, </span>
+<span>              <span class="st">"start_weight"</span>, <span class="st">"end_weight"</span>, <span class="st">"comment"</span>, <span class="st">"intake"</span>, <span class="st">"intake2"</span>, </span>
+<span>              <span class="st">"X1"</span>, <span class="st">"X2"</span>, <span class="st">"X3"</span>, <span class="st">"X4"</span>, <span class="st">"x5"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># IDs to remove</span></span>
+<span><span class="va">drop_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1556</span>, <span class="fl">5015</span>, <span class="fl">1111</span>, <span class="fl">1112</span>, <span class="fl">1113</span>, <span class="fl">1114</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Columns to keep</span></span>
+<span><span class="va">select_cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"transponder"</span>, <span class="st">"cow"</span>, <span class="st">"bin"</span>, <span class="st">"start"</span>, <span class="st">"end"</span>, </span>
+<span>                <span class="st">"duration"</span>, <span class="st">"start_weight"</span>, <span class="st">"end_weight"</span>, <span class="st">"intake"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Process all feeder files</span></span>
+<span><span class="va">all_fed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_all_feed.html">process_all_feed</a></span><span class="op">(</span></span>
+<span>    files <span class="op">=</span> <span class="va">fileNames.f</span>,</span>
+<span>    col_names   <span class="op">=</span> <span class="va">col_names</span>,</span>
+<span>    drop_ids    <span class="op">=</span> <span class="va">drop_ids</span>,</span>
+<span>    select_cols <span class="op">=</span> <span class="va">select_cols</span>,</span>
+<span>    sep         <span class="op">=</span> <span class="st">","</span>,</span>
+<span>    header      <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    adjust_dst  <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># === 8. Process water data ===</span></span>
+<span><span class="co"># Column names for water files</span></span>
+<span><span class="va">col_names_wat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"transponder"</span>, <span class="st">"cow"</span>, <span class="st">"bin"</span>, <span class="st">"start"</span>, <span class="st">"end"</span>,</span>
+<span>  <span class="st">"duration"</span>, <span class="st">"start_weight"</span>, <span class="st">"end_weight"</span>, <span class="st">"intake"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Use same IDs to remove</span></span>
+<span><span class="va">drop_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1556</span>, <span class="fl">5015</span>, <span class="fl">1111</span><span class="op">:</span><span class="fl">1114</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Columns to keep</span></span>
+<span><span class="va">select_cols_wat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"transponder"</span>, <span class="st">"cow"</span>, <span class="st">"bin"</span>, <span class="st">"start"</span>, <span class="st">"end"</span>,</span>
+<span>  <span class="st">"duration"</span>, <span class="st">"start_weight"</span>, <span class="st">"end_weight"</span>, <span class="st">"intake"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Process all water files</span></span>
+<span><span class="va">all_wat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_all_water.html">process_all_water</a></span><span class="op">(</span></span>
+<span>  files        <span class="op">=</span> <span class="va">fileNames.w</span>,</span>
+<span>  col_names    <span class="op">=</span> <span class="va">col_names_wat</span>,</span>
+<span>  drop_ids     <span class="op">=</span> <span class="va">drop_ids</span>,</span>
+<span>  select_cols  <span class="op">=</span> <span class="va">select_cols_wat</span>,</span>
+<span>  sep          <span class="op">=</span> <span class="st">","</span>,</span>
+<span>  header       <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  adjust_dst   <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># === 9. Quality check configuration ===</span></span>
+<span><span class="va">my_qc_config</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qc_config.html">qc_config</a></span><span class="op">(</span></span>
+<span>  <span class="co"># Feed thresholds</span></span>
+<span>  high_dur_feed <span class="op">=</span> <span class="fl">2000</span>,</span>
+<span>  large_intake_visit_feed <span class="op">=</span> <span class="fl">8</span>,</span>
+<span>  large_intake_rate_feed <span class="op">=</span> <span class="fl">0.008</span>,</span>
+<span>  low_feed_intake <span class="op">=</span> <span class="fl">35</span>,</span>
+<span>  high_feed_intake <span class="op">=</span> <span class="fl">75</span>,</span>
+<span>  </span>
+<span>  <span class="co"># Water thresholds</span></span>
+<span>  high_dur_water <span class="op">=</span> <span class="fl">1800</span>,</span>
+<span>  large_intake_visit_water <span class="op">=</span> <span class="fl">30</span>,</span>
+<span>  large_intake_rate_water <span class="op">=</span> <span class="fl">0.35</span>,</span>
+<span>  low_wat_intake <span class="op">=</span> <span class="fl">60</span>,</span>
+<span>  high_wat_intake <span class="op">=</span> <span class="fl">180</span>,</span>
+<span>  </span>
+<span>  <span class="co"># General settings</span></span>
+<span>  low_visit_threshold <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  total_cows_expected <span class="op">=</span> <span class="fl">48</span>,</span>
+<span>  replacement_threshold <span class="op">=</span> <span class="fl">26</span>,</span>
+<span>  calibration_error <span class="op">=</span> <span class="fl">0.5</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># === 10. Run quality check ===</span></span>
+<span><span class="va">qc_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qc.html">qc</a></span><span class="op">(</span></span>
+<span>  feed <span class="op">=</span> <span class="va">all_fed</span>,</span>
+<span>  water <span class="op">=</span> <span class="va">all_wat</span>,</span>
+<span>  cfg <span class="op">=</span> <span class="va">my_qc_config</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  fix_double_detections <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Store warnings</span></span>
+<span><span class="va">warning</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">warnings</span></span>
+<span></span>
+<span><span class="co"># === 11. Extract cleaned data ===</span></span>
+<span><span class="va">clean_feed</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">feed</span></span>
+<span><span class="va">clean_water</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">water</span></span>
+<span><span class="va">clean_combined</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">combined</span></span>
+<span></span>
+<span><span class="co"># === 12. Create daily summaries ===</span></span>
+<span><span class="va">daily_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/feed_water_summary.html">feed_water_summary</a></span><span class="op">(</span></span>
+<span>  feed <span class="op">=</span> <span class="va">clean_feed</span>,</span>
+<span>  water <span class="op">=</span> <span class="va">clean_water</span>,</span>
+<span>  warn <span class="op">=</span> <span class="va">warning</span>,</span>
+<span>  cfg <span class="op">=</span> <span class="va">my_qc_config</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Get summary dataframe</span></span>
+<span><span class="va">summary_df</span> <span class="op">&lt;-</span> <span class="va">daily_summary</span><span class="op">$</span><span class="va">summary</span></span>
+<span></span>
+<span><span class="co"># Get updated warnings</span></span>
+<span><span class="va">warning</span> <span class="op">&lt;-</span> <span class="va">daily_summary</span><span class="op">$</span><span class="va">warn</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -304,6 +304,39 @@ regrouping, facility changes, or diet adjustments</li>
 <p>Keep analyzing, and your cows will keep telling you their stories!
 🐄📊</p>
 </blockquote>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="code-cheatsheet">5. Code Cheatsheet 📋<a class="anchor" aria-label="anchor" href="#code-cheatsheet"></a>
+</h3>
+<p>Here’s a copy-paste friendly version of all the code used in this
+vignette:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># === 1. Load packages and data ===</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/skysheng7/moo4feed" class="external-link">moo4feed</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Load example cleaned data from the package</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">clean_feed</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">clean_water</span><span class="op">)</span></span>
+<span><span class="co"># Or use your own cleaned data from the previous vignette:</span></span>
+<span><span class="co"># clean_feed &lt;- qc_results$feed</span></span>
+<span><span class="co"># clean_water &lt;- qc_results$water</span></span>
+<span></span>
+<span><span class="co"># === 2. Analyze exploratory behavior ===</span></span>
+<span><span class="co"># Calculate unique bin visits for each cow across all days</span></span>
+<span><span class="va">bin_visits</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unique_bin_visits.html">unique_bin_visits</a></span><span class="op">(</span></span>
+<span>  feed <span class="op">=</span> <span class="va">clean_feed</span>,</span>
+<span>  water <span class="op">=</span> <span class="va">clean_water</span>,</span>
+<span>  return_list <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># === 3. Analyze social dynamics (replacement events) ===</span></span>
+<span><span class="co"># Process feed replacement events for all days</span></span>
+<span><span class="va">replacements</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/record_replacement_days.html">record_replacement_days</a></span><span class="op">(</span></span>
+<span>  comb <span class="op">=</span> <span class="va">clean_feed</span>,</span>
+<span>  cfg <span class="op">=</span> <span class="fu"><a href="../reference/qc_config.html">qc_config</a></span><span class="op">(</span>replacement_threshold <span class="op">=</span> <span class="fl">26</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
