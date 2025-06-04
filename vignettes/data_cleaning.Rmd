@@ -16,9 +16,9 @@ knitr::opts_chunk$set(
 
 # Meet Ollie 🦦
 
-> *“Hey there, my dear friends!"* I’m **Ollie the Otter** , a curious river-explorer and data‑scientist‑in‑training. One morning while gliding along my favorite stream, I spotted a dairy barn where **hundreds of cows** were visiting automatic feeders and drinkers. The beeping RFID readers and steady munch-munch-munching created a beautiful data symphony!
+> *"Hey there, my dear friends!"* I'm **Ollie the Otter** , a curious river-explorer and data‑scientist‑in‑training. One morning while gliding along my favorite stream, I spotted a dairy barn where **hundreds of cows** were visiting automatic feeders and drinkers. The beeping RFID readers and steady munch-munch-munching created a beautiful data symphony!
 >
-> Each night, back at my mossy den, I curl up with my otter‑sized laptop and learn about R. The friendly farmers have shared their raw visit logs, so I can uncover the hidden tales behind my cow friends. I’m fascinated by how **every single cow writes its own story in the data**—and tonight we’re going to read their stories together using the **`moo4feed`** package. Ready to splash in? Let's go!
+> Each night, back at my mossy den, I curl up with my otter‑sized laptop and learn about R. The friendly farmers have shared their raw visit logs, so I can uncover the hidden tales behind my cow friends. I'm fascinated by how **every single cow writes its own story in the data**—and tonight we're going to read their stories together using the **`moo4feed`** package. Ready to splash in? Let's go!
 
 ```{r, echo=FALSE}
 knitr::include_graphics("comics/data_cleaning.jpg")
@@ -148,12 +148,43 @@ cat("\n\n")
 cat("Date range of your dataset: ", date_result)
 ```
 
-### 📌 customize the package to know column names in your dataframes
+### 📌 Configure global settings for your data
 
-Run this **once at the start of your session** or **everytime after you call `library(moo4feed)`** so every downstream helper automatically knows your column names, bin list, and time-zone. After that, every helper function will pick up these settings automatically, so you can omit those arguments in subsequent calls.
+There are two ways to set up global variables for your data:
 
-```{r reset-global-options}
+#### Option 1: Configure all settings at once with `set_global_cols()`
 
+This is the simplest approach - set everything in one function call:
+
+```{r global-setup-all-at-once}
+# Configure all global variables in one call
+set_global_cols(
+  # Time zone
+  tz = "America/Vancouver",
+  
+  # Column names in your data files
+  id_col = "cow",             # animal ID column
+  trans_col = "transponder",  # transponder ID column
+  start_col = "start",        # visit start time column
+  end_col = "end",            # visit end time column
+  bin_col = "bin",            # bin ID column
+  dur_col = "duration",       # duration column
+  intake_col = "intake",      # intake column
+  start_weight_col = "start_weight",  # start weight column
+  end_weight_col = "end_weight",      # end weight column
+  
+  # Bin settings
+  bins_feed = 1:30,           # feed bin IDs in your barn
+  bins_wat = 1:5,             # water bin IDs in your barn
+  bin_offset = 100            # add this to water bin IDs to differentiate from feeder IDs
+)
+```
+
+#### Option 2: Configure settings individually
+
+Alternatively, you can set each variable separately:
+
+```{r global-setup-individual, eval=FALSE}
 # ── Time zone ──────────────────────────────────────────────────────────────
 set_tz2("America/Vancouver")   # governs the handling of timestamp data
 
@@ -170,6 +201,8 @@ set_bins_wat2(1:5)             # the ID of 5 water bins present in the barn
 set_bin_offset2(100)           # add 100 to water bin ID to differentiate from feeder ID
 ```
 
+> **Ollie's Tip:** 💡 After setting these global variables, all helper functions automatically use them. However, you can still override any setting for a specific function call by directly providing the parameter.
+
 You can verify any setting at any time with the corresponding getter functions:
 
 ```{r}
@@ -180,7 +213,7 @@ bins_feed2()
 
 ------------------------------------------------------------------------
 
-### 🔄 Process feeder data **without repeating arguments**
+### 🔄 Process feeder data
 
 Because the defaults were set above, you now supply **only what truly varies file-to-file**—column **values** or clean-up vectors—while the helper pulls the rest from the global options.
 
@@ -216,7 +249,7 @@ all_fed <- process_all_feed(
 str(all_fed)
 ```
 
-Notice we **didn’t** specify `id_col`, `trans_col`, `start_col`, `end_col`, `bin_col`, `bins`, or `tz`—they’re all filled in automatically from the global settings you defined above. If you ever need a one-off override (for example, a different time-zone just for this call) you can still pass that argument directly:
+Notice we **didn't** specify `id_col`, `trans_col`, `start_col`, `end_col`, `bin_col`, `bins`, or `tz`—they're all filled in automatically from the global settings you defined above. If you ever need a one-off override (for example, a different time-zone just for this call) you can still pass that argument directly:
 
 ``` r
 process_all_feed(files = fileNames.f, tz = "UTC", adjust_dst = FALSE)
@@ -226,17 +259,9 @@ You can now directly inspect the `all_fed` dataset, as it's lazy-loaded with the
 
 ------------------------------------------------------------------------
 
-**Rewriting process_all_water**
+#### 🔄 Process water data
 
-I need to rewrite the process_all_water section, following the new pattern. It should consist of two parts: one for customization using the setter block, and another for the "feeder" process, similar to what we did for feed.
-
-Since we don't need to reset the global variables, I'll make sure we use them implicitly and only pass varying items. The original snippet sets variables like id_col—I'll remove those and use the global defaults instead. I'll also add the necessary instructions as comments for clarity.
-
-Thought for 11 seconds
-
-#### 🔄 Process water data **without repeating arguments**
-
-Because we already set the global defaults (time-zone, column names, bin rules) in the *reset-global-options* chunk, the drinker workflow is just as terse as the feeder one—supply only what differs from file to file.
+Because we already set the global defaults (time-zone, column names, bin rules), the drinker workflow is just as terse as the feeder one—supply only what differs from file to file.
 
 ```{r process-water}
 # 🔄 CHANGE THESE VALUES to match your water files! 🔄
@@ -264,7 +289,7 @@ all_wat <- process_all_water(
   select_cols  = select_cols_wat,
   sep          = ",",
   header       = FALSE,
-  adjust_dst   = TRUE          # Disable if you don’t need DST correction
+  adjust_dst   = TRUE          # Disable if you don't need DST correction
 )
 
 str(all_wat)
@@ -274,16 +299,131 @@ You can now directly inspect the `all_wat` dataset, as it's lazy-loaded with the
 
 ------------------------------------------------------------------------
 
-## 🎉 Congratulations!
+## 7. Quality Check Your Data 🕵️‍♀️
 
-You've now got clean, organized feeding and drinking data ready for analysis! Ollie is proud of you!
+> **Ollie says:** Even after our initial processing, our cow data still has some fishy bits (and I know fishy when I see it!). Let's run quality checks to catch problems like overlapping visits, impossible intake values, and missing records!
+
+### Create custom quality check thresholds
+
+```{r qc-config}
+# 👉 EDIT THESE VALUES to match your study parameters! 👉
+my_qc_config <- qc_config(
+  # Feed thresholds
+  high_dur_feed = 2000,          # Flag feed visits longer than 2000 seconds
+  large_intake_visit_feed = 8,   # Flag feed visits with more than 8kg intake
+  large_intake_rate_feed = 0.008, # Flag feed intake rates above 0.008 kg/s
+  low_feed_intake = 35,          # Flag cows eating less than 35kg/day
+  high_feed_intake = 75,         # Flag cows eating more than 75kg/day
+  
+  # Water thresholds
+  high_dur_water = 1800,         # Flag water visits longer than 1800 seconds
+  large_intake_visit_water = 30, # Flag water visits with more than 30L intake
+  large_intake_rate_water = 0.35, # Flag water intake rates above 0.35 L/s
+  low_wat_intake = 60,           # Flag cows drinking less than 60L/day
+  high_wat_intake = 180,         # Flag cows drinking more than 180L/day
+  
+  # General settings
+  low_visit_threshold = 10,      # Flag bins with fewer than 10 visits/day
+  total_cows_expected = 48,      # Set to your herd size
+  replacement_threshold = 26,    # Time gap (s) to classify replacement behavior
+  calibration_error = 0.5        # Feeder/drinkercalibration error (kg/L)
+)
+```
+
+> **Ollie's Tip:** 💡 The `qc_config()` function creates a configuration list that you can pass to quality check functions. This approach keeps your threshold values organized and makes your code more readable!
+
+### Run the quality check
+
+```{r run-qc}
+# Run the full quality check
+qc_results <- qc(
+  feed = all_fed,               # Your processed feeder data
+  water = all_wat,              # Your processed drinker data
+  cfg = my_qc_config,           # Your custom thresholds
+  verbose = FALSE,               # Do not show detailed error messages, set to TRUE to see them
+  fix_double_detections = TRUE  # Automatically fix overlapping visits
+)
+
+# store the warnings summary
+warning <- qc_results$warnings
+```
+
+> **Note:** 📝 Like other functions in `moo4feed`, the `qc()` function also uses the global variables you configured earlier (column names, bin settings, etc.). You can override these for a specific call by providing the parameters directly.
+
+> **What just happened?** 🦦
+>
+> The `qc()` function performed a comprehensive quality check on our data:
+>
+> 1. Combined feed and water data for analysis
+> 2. Checked if we have the expected number of cows each day
+> 3. Flagged double detections (when the same cow is detected at different bins at the same time) and fixed them
+> 4. Flagged negative values in duration, intake, or weight measurements
+> 5. Removed records with negative durations or intakes
+> 6. Identified abnormally large feed/water intakes
+> 7. Flags cows that did not feed or drink after noon (potentially lost ear tag or due to illness)
+> 8. Flagged bins with very low traffic or no visits at all
+> 
+
+### Use the cleaned data
+
+```{r cleaned-data}
+# The qc_results contains our cleaned data
+clean_feed <- qc_results$feed     # Cleaned feeder data
+clean_water <- qc_results$water   # Cleaned drinker data
+clean_combined <- qc_results$combined   # Merged feed+water data
+```
+
+## 8. Summarize Daily Intakes 📊
+
+> **Ollie says:** Now that we've cleaned our data, let's create daily summaries of feed and water intake for each cow. This is where the juicy insights swim to the surface!
+
+```{r daily-summary}
+# Create daily summaries of feed and water intake
+daily_summary <- feed_water_summary(
+  feed = clean_feed,           # Your cleaned feed data 
+  water = clean_water,         # Your cleaned water data
+  warn = warning,              # Warning dataframe to update
+  cfg = my_qc_config           # Quality check configuration
+)
+
+# Inspect the summary results
+summary_df <- daily_summary$summary
+head(summary_df)
+
+# Look at the updated warnings that include intake anomalies
+warning <- daily_summary$warn
+head(warning)
+```
+
+> **What's in the summary?** 🦦
+>
+> For each cow on each day, we now know:
+>
+> - Total feed intake (kg)
+> - Total feeding duration (seconds)
+> - Number of feed visits
+> - Total water intake (L)
+> - Total drinking duration (seconds)
+> - Number of water visits
+>
+> Plus, we've updated our warnings to flag cows with abnormally high or low daily intakes!
+
+## 9. What's Next? 🌟
+
+Congratulations! You've now processed, cleaned, and summarized your cow feeding and drinking data. Your data is now sparkling clean and ready for analysis!
 
 Stay tuned for the next vignette where we'll explore what these dairy cows are actually up to!
 
-> **Ollie's Final Tips:** 🦦
+> **Ollie's Final Tips:** 
 >
-> -   If you get errors, double-check the values you customized (look for the 👉 emoji markers)
-> -   Make sure your file naming follows the date format rules
-> -   For more help on any function, use `?function_name` (e.g., `?process_all_feed`)
-> -   Use `OlsonNames()` to see all timezone options
-> -   Need detailed examples? Look at the sample data with: `moo4feed_example()`
+> Remember, you can customize any part of this workflow for your specific needs:
+>
+> - Make sure your file naming follows the date format rules
+> - Adjust column names with `set_id_col2()`, `set_start_col2()`, etc.
+> - Modify quality check thresholds with `qc_config()`
+> - Process just feed or just water data if that's all you have
+> - Use `OlsonNames()` to see all timezone options
+>
+> Dive deep into documentation with `?function_name` for more details!
+> Need detailed examples? Look at the sample data with: `moo4feed_example()`
+

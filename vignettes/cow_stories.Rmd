@@ -1,0 +1,172 @@
+---
+title: "Extracting Cow Stories"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Extracting Cow Stories}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Discover Cow Stories 🐄📖
+
+> *"Well hello again, my wonderful friends!"* I'm **Ollie the Otter** and I'm back with more data adventures! Remember how we cleaned all that messy cow data in our last vignette? Now we're going to do something amazing—we're going to read the **personal stories** hidden in each cow's behavior!
+>
+> Every cow has her own personality, preferences, and social relationships. Some are explorers who visit many different feeding stations. Others are creatures of habit who stick to their favorite spots. Some are bold and frequently displace other cows from feeders, while others are more submissive.
+>
+> Today, we'll analyze two fascinating aspects of cow behavior:
+> 
+> 1. **Exploratory behavior** - Which cows explore many different feeding and drinking stations?
+> 2. **Social dynamics** - Which cows frequently replace others at feeding stations, and which ones get replaced?
+>
+> Grab your data binoculars and let's dive in!
+
+
+------------------------------------------------------------------------
+
+## 1. Prerequisites: Clean Data First! 🧹
+
+Before we can analyze cow behaviors, we need clean data. If you haven't already processed your raw feeder and drinker data, please follow the instructions in the **"Data Cleaning"** vignette first!
+
+```{r setup-packages}
+library(moo4feed)   # 🐮 Your cow data helper!
+library(dplyr)      # For data manipulation
+```
+
+For this vignette, we'll use the cleaned data from the previous vignette:
+
+```{r}
+# Load the example cleaned data from the package
+data(clean_feed)
+data(clean_water)
+
+# If you're using your own data from the cleaning vignette, use this instead:
+# clean_feed <- qc_results$feed     # From your QC results
+# clean_water <- qc_results$water   # From your QC results
+```
+
+------------------------------------------------------------------------
+
+## 2. Exploratory Behavior: Which Cows Visit Many Bins? 🔍
+
+Cows differ in how widely they explore their environment. Some visit many different feeding and drinking stations, while others prefer to stick to just a few favorite spots.
+
+The `unique_bin_visits()` function helps us quantify this exploratory behavior:
+
+```{r unique-bin-analysis}
+# Calculate unique bin visits for each cow across all days
+bin_visits <- unique_bin_visits(
+  feed = clean_feed,            # Our cleaned feed data
+  water = clean_water,          # Our cleaned water data
+  return_list = FALSE           # Return a single dataframe instead of a list by day
+)
+
+# Look at the results
+head(bin_visits)
+```
+
+> **What's in this data?** 🦦
+>
+> For each cow on each day, we now know:
+>
+> - How many different **feed bins** they visited
+> - How many different **water bins** they visited
+> - The **total number of unique bins** visited (feed + water)
+>
+> This tells us which cows are "explorers" (visiting many bins) versus "creatures of habit" (sticking to fewer bins).
+
+### Identify your most exploratory cows
+
+Let's find the cows that consistently explore the most bins:
+
+```{r exploratory-cows}
+# Calculate the average number of unique bins visited per cow
+avg_bin_visits <- bin_visits |>
+  dplyr::group_by(cow) |>
+  dplyr::summarize(
+    avg_feed_bins = mean(unique_feed_bins_visited),
+    avg_water_bins = mean(unique_water_bins_visited),
+    avg_total_bins = mean(total_bins_visited),
+    days_observed = dplyr::n()
+  ) |>
+  dplyr::arrange(dplyr::desc(avg_total_bins))
+
+# Display the top 10 most exploratory cows
+head(avg_bin_visits, 10)
+
+```
+
+------------------------------------------------------------------------
+
+## 3. Social Dynamics: Detecting Replacement Events 🏆
+
+Dairy cows establish complex social hierarchies. One key social behaviour is when one cow replaces another at feeding or drinking stations.
+
+### Detect replacement events
+
+Now, let's use the `record_replacement_days()` function to detect replacement events across all days in our dataset:
+
+- The `replacement_threshold` parameter is critical - if a cow is feeding at a bin, and the next cow that enters the same bin within 26 seconds, it is considered a replacement event. This threshold is validated by preivous studies.
+
+```{r replacement-analysis}
+# Process feed replacement events for all days
+replacements <- record_replacement_days(
+  comb = clean_feed,           # Our cleaned feed data
+  cfg = qc_config(replacement_threshold = 26)      # Time gap (seconds) to classify replacement behavior
+)
+
+# Look at the first few replacement events for the first day
+head(replacements[[1]])
+```
+
+> **What's in this data?** 🦦
+>
+> This is a list of data frames, one per day. Each row represents a replacement event:
+>
+> - **reactor_cow**: The cow that was replaced (had to leave the bin)
+> - **actor_cow**: The cow that initiated the replacement (took over the bin)
+> - **bin**: Which feed bin this happened at
+> - **time**: When the replacement occurred
+> - **date**: Which day this happened
+> - **bout_interval**: The time gap between when one cow left and the next arrived
+
+> **What does this tell us?** 🦦
+>
+> Patterns in replacement events can reveal:
+>
+> - Days with high social tension in the herd
+> - Changes in social dynamics over time
+> - Effects of management changes on social behavior
+> - Potential welfare issues when replacement events spike
+>
+> Importantly, the function validates each replacement event by checking if the actor cow has an "alibi" - if the cow was recorded at another bin when the previous cow left, the event is excluded. This ensures we're capturing true social replacement events rather than coincidental timings.
+
+------------------------------------------------------------------------
+
+## 4. What's Next? 🌟
+
+Congratulations! You've now started uncovering the hidden stories in your cow data by:
+
+1. Quantifying exploratory behavior to identify which cows visit many different bins
+2. Detecting replacement events to understand social dynamics in the herd
+
+This is just the beginning of what you can learn from your feeding and drinking data. With these fundamental metrics, you can:
+
+- Identify potentially vulnerable animals
+- Understand individual cow preferences and habits
+- Track changes in social behavior over time
+
+> **Ollie's Final Tips:** 🦦
+>
+> - The `replacement_threshold` parameter in `qc_config()` controls how quickly one cow must replace another to count as a social displacement (default is 26 seconds)
+> - Use `unique_bin_visits()` with `return_list = TRUE` if you want to analyze bin visits day by day
+> - Replacement events can be further analyzed to calculate dominance hierarchies
+> - Remember that behavior patterns can change after major events like regrouping, facility changes, or diet adjustments
+>
+> Keep analyzing, and your cows will keep telling you their stories! 🐄📊
