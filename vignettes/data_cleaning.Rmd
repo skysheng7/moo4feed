@@ -427,3 +427,195 @@ Stay tuned for the next vignette where we'll explore what these dairy cows are a
 > Dive deep into documentation with `?function_name` for more details!
 > Need detailed examples? Look at the sample data with: `moo4feed_example()`
 
+------------------------------------------------------------------------
+
+## 10. Code Cheatsheet 📋
+
+Here's a copy-paste friendly version of all the code used in this vignette:
+
+```{r cheatsheet, eval=FALSE}
+# === 1. Load packages ===
+library(moo4feed)
+
+# === 2. Set paths to data files ===
+# For your own data:
+# extdata_path <- "/path/to/my/raw/files"
+
+# Or for the demo data:
+extdata_path <- system.file("extdata", package = "moo4feed")
+
+# If feeders and drinkers are in different folders:
+# extdata_path_f <- "/path/to/feeder/files"
+# extdata_path_w <- "/path/to/drinker/files"
+
+# === 3. Find data files ===
+# Find all feeder files (VR*.DAT)
+fileNames.f <- list.files(
+  path       = extdata_path,
+  pattern    = "^VR.*\\.DAT$",
+  recursive  = TRUE,
+  full.names = TRUE
+) |> sort()
+
+# Find all drinker files (VW*.DAT)
+fileNames.w <- list.files(
+  path       = extdata_path,
+  pattern    = "^VW.*\\.DAT$",
+  recursive  = TRUE,
+  full.names = TRUE
+) |> sort()
+
+# === 4. Handle daylight saving time ===
+dst_df <- get_dst_switch_info(
+  years = c(2020, 2021),
+  tz = "America/Chicago"
+)
+
+# === 5. Match files by date ===
+date_compare <- compare_files(fileNames.f, fileNames.w)
+fileNames.f <- date_compare$feed
+fileNames.w <- date_compare$water
+
+# Get the overall date range
+date_result <- get_date_range(fileNames.f)
+
+# === 6. Configure global settings ===
+# Option 1: All at once
+set_global_cols(
+  # Time zone
+  tz = "America/Vancouver",
+  
+  # Column names in your data files
+  id_col = "cow",
+  trans_col = "transponder",
+  start_col = "start",
+  end_col = "end",
+  bin_col = "bin",
+  dur_col = "duration",
+  intake_col = "intake",
+  start_weight_col = "start_weight",
+  end_weight_col = "end_weight",
+  
+  # Bin settings
+  bins_feed = 1:30,
+  bins_wat = 1:5,
+  bin_offset = 100
+)
+
+# Option 2: Individual settings (alternative)
+# set_tz2("America/Vancouver")
+# set_id_col2("cow")
+# set_trans_col2("transponder")
+# set_start_col2("start")
+# set_end_col2("end")
+# set_bin_col2("bin")
+# set_bins_feed2(1:30)
+# set_bins_wat2(1:5)
+# set_bin_offset2(100)
+
+# === 7. Process feeder data ===
+# Define column names for feeder files
+col_names <- c("transponder", "cow", "bin", "start", "end", "duration", 
+              "start_weight", "end_weight", "comment", "intake", "intake2", 
+              "X1", "X2", "X3", "X4", "x5")
+
+# IDs to remove
+drop_ids <- c(0, 1556, 5015, 1111, 1112, 1113, 1114)
+
+# Columns to keep
+select_cols <- c("transponder", "cow", "bin", "start", "end", 
+                "duration", "start_weight", "end_weight", "intake")
+
+# Process all feeder files
+all_fed <- process_all_feed(
+    files = fileNames.f,
+    col_names   = col_names,
+    drop_ids    = drop_ids,
+    select_cols = select_cols,
+    sep         = ",",
+    header      = FALSE,
+    adjust_dst  = TRUE
+)
+
+# === 8. Process water data ===
+# Column names for water files
+col_names_wat <- c(
+  "transponder", "cow", "bin", "start", "end",
+  "duration", "start_weight", "end_weight", "intake"
+)
+
+# Use same IDs to remove
+drop_ids <- c(0, 1556, 5015, 1111:1114)
+
+# Columns to keep
+select_cols_wat <- c(
+  "transponder", "cow", "bin", "start", "end",
+  "duration", "start_weight", "end_weight", "intake"
+)
+
+# Process all water files
+all_wat <- process_all_water(
+  files        = fileNames.w,
+  col_names    = col_names_wat,
+  drop_ids     = drop_ids,
+  select_cols  = select_cols_wat,
+  sep          = ",",
+  header       = FALSE,
+  adjust_dst   = TRUE
+)
+
+# === 9. Quality check configuration ===
+my_qc_config <- qc_config(
+  # Feed thresholds
+  high_dur_feed = 2000,
+  large_intake_visit_feed = 8,
+  large_intake_rate_feed = 0.008,
+  low_feed_intake = 35,
+  high_feed_intake = 75,
+  
+  # Water thresholds
+  high_dur_water = 1800,
+  large_intake_visit_water = 30,
+  large_intake_rate_water = 0.35,
+  low_wat_intake = 60,
+  high_wat_intake = 180,
+  
+  # General settings
+  low_visit_threshold = 10,
+  total_cows_expected = 48,
+  replacement_threshold = 26,
+  calibration_error = 0.5
+)
+
+# === 10. Run quality check ===
+qc_results <- qc(
+  feed = all_fed,
+  water = all_wat,
+  cfg = my_qc_config,
+  verbose = FALSE,
+  fix_double_detections = TRUE
+)
+
+# Store warnings
+warning <- qc_results$warnings
+
+# === 11. Extract cleaned data ===
+clean_feed <- qc_results$feed
+clean_water <- qc_results$water
+clean_combined <- qc_results$combined
+
+# === 12. Create daily summaries ===
+daily_summary <- feed_water_summary(
+  feed = clean_feed,
+  water = clean_water,
+  warn = warning,
+  cfg = my_qc_config
+)
+
+# Get summary dataframe
+summary_df <- daily_summary$summary
+
+# Get updated warnings
+warning <- daily_summary$warn
+```
+

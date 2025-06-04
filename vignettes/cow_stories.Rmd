@@ -170,3 +170,38 @@ This is just the beginning of what you can learn from your feeding and drinking 
 > - Remember that behavior patterns can change after major events like regrouping, facility changes, or diet adjustments
 >
 > Keep analyzing, and your cows will keep telling you their stories! 🐄📊
+
+------------------------------------------------------------------------
+
+## 5. Code Cheatsheet 📋
+
+Here's a copy-paste friendly version of all the code used in this vignette:
+
+```{r cheatsheet, eval=FALSE}
+# === 1. Load packages and data ===
+library(moo4feed)
+library(dplyr)
+
+# Load example cleaned data from the package
+data(clean_feed)
+data(clean_water)
+# Or use your own cleaned data from the previous vignette:
+# clean_feed <- qc_results$feed
+# clean_water <- qc_results$water
+
+# === 2. Analyze exploratory behavior ===
+# Calculate unique bin visits for each cow across all days
+bin_visits <- unique_bin_visits(
+  feed = clean_feed,
+  water = clean_water,
+  return_list = FALSE
+)
+
+# === 3. Analyze social dynamics (replacement events) ===
+# Process feed replacement events for all days
+replacements <- record_replacement_days(
+  comb = clean_feed,
+  cfg = qc_config(replacement_threshold = 26)
+)
+
+```
