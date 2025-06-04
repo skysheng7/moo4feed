@@ -73,7 +73,24 @@ per warning code.}
 }
 }
 \description{
-Run full quality-control check on feeder and drinker data
+This function performs comprehensive quality control checks on feeder and drinker data,
+identifying and handling various data quality issues.
+}
+\details{
+\enumerate{
+\item Combines feed and water data (if both are provided)
+\item Checks for expected number of cows and reports missing animals
+\item Detects and optionally fixes double detections (when the same cow is detected at different bins at the same time)
+\item Flags negative values in duration, intake, or weight measurements
+\item Removes records with negative durations or intakes
+\item Identifies abnormally large feed/water intakes based on thresholds
+\item Flags cows that did not feed or drink after noon (potentially lost ear tag or due to illness)
+\item Flgas bins with very low traffic or no visits at all
+}
+
+Use this function after initial data processing with \code{process_all_feed()} and
+\code{process_all_water()} to clean your data and prepare it for analysis.
+Customize thresholds using \code{qc_config()} to match your specific study parameters.
 }
 \examples{
 cfg <- qc_config(high_dur_feed = 2500, low_visit_threshold = 5, total_cows_expected=48)

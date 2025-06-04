@@ -4,6 +4,24 @@
 
 #' Run full quality-control check on feeder and drinker data
 #'
+#' @description
+#' This function performs comprehensive quality control checks on feeder and drinker data,
+#' identifying and handling various data quality issues.
+#' 
+#' @details 
+#' 1. Combines feed and water data (if both are provided)
+#' 2. Checks for expected number of cows and reports missing animals
+#' 3. Detects and optionally fixes double detections (when the same cow is detected at different bins at the same time)
+#' 4. Flags negative values in duration, intake, or weight measurements
+#' 5. Removes records with negative durations or intakes
+#' 6. Identifies abnormally large feed/water intakes based on thresholds
+#' 7. Flags cows that did not feed or drink after noon (potentially lost ear tag or due to illness)
+#' 8. Flgas bins with very low traffic or no visits at all
+#' 
+#' Use this function after initial data processing with `process_all_feed()` and 
+#' `process_all_water()` to clean your data and prepare it for analysis.
+#' Customize thresholds using `qc_config()` to match your specific study parameters.
+#'
 #' @inheritParams set_global_cols
 #' @inheritParams process_all_feed
 #' @param feed  A list of daily **feed** data frames named by date, or `NULL`

@@ -68,6 +68,12 @@ reference:
   contents:
   - unique_bin_visits
 
+- subtitle: Replacement Behavior Analysis
+  desc: >
+    Functions to identify replacement behavior across multiple days, and validate those events by checking whether the actor cow was already present at another bin.
+  contents:
+  - record_replacement_days
+
 - title: Configuration and Customization
 - subtitle: Global Variables
   desc: >
@@ -107,12 +113,11 @@ reference:
   contents:
   - all_fed
   - all_wat
+  - clean_feed
+  - clean_water
+  - summary_df
+  - warning
+  - bin_visits
+  - replacements
   - moo4feed_example
-
-- title: Replacement detection
-- subtitle: Record and Validate Replacements
-  desc: >
-    Functions to identify replacement behavior across multiple days, and validate those events by checking whether the actor cow was already present at another bin.
-  contents:
-  - record_replacement_days
 

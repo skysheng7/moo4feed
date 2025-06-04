@@ -44,6 +44,6 @@ to validate those events by removing actor cows with an alibi.
 \examples{
 # Use example data from the built-in all_fed dataset
 valid_replacements <- record_replacement_days(all_fed)
-valid_replacements
+head(valid_replacements[[1]])
 
 }
