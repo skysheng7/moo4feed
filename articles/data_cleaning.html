@@ -33,7 +33,8 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/data_cleaning.html">Data cleaning</a></li>
+<li><a class="dropdown-item" href="../articles/cow_stories.html">Extracting Cow Stories</a></li>
+    <li><a class="dropdown-item" href="../articles/data_cleaning.html">Data cleaning</a></li>
   </ul>
 </li>
       </ul>
@@ -222,18 +223,44 @@ data:</p>
 <span><span class="co">#&gt; Date range of your dataset:  201031_201102</span></span></code></pre></div>
 </div>
 <div class="section level4">
-<h4 id="customize-the-package-to-know-column-names-in-your-dataframes">📌 customize the package to know column names in your
-dataframes<a class="anchor" aria-label="anchor" href="#customize-the-package-to-know-column-names-in-your-dataframes"></a>
+<h4 id="configure-global-settings-for-your-data">📌 Configure global settings for your data<a class="anchor" aria-label="anchor" href="#configure-global-settings-for-your-data"></a>
 </h4>
-<p>Run this <strong>once at the start of your session</strong> or
-<strong>everytime after you call <code><a href="https://github.com/skysheng7/moo4feed" class="external-link">library(moo4feed)</a></code></strong>
-so every downstream helper automatically knows your column names, bin
-list, and time-zone. After that, every helper function will pick up
-these settings automatically, so you can omit those arguments in
-subsequent calls.</p>
+<p>There are two ways to set up global variables for your data:</p>
+<div class="section level5">
+<h5 id="option-1-configure-all-settings-at-once-with-set_global_cols">Option 1: Configure all settings at once with
+<code>set_global_cols()</code><a class="anchor" aria-label="anchor" href="#option-1-configure-all-settings-at-once-with-set_global_cols"></a>
+</h5>
+<p>This is the simplest approach - set everything in one function
+call:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="co"># ── Time zone ──────────────────────────────────────────────────────────────</span></span>
+<code class="sourceCode R"><span><span class="co"># Configure all global variables in one call</span></span>
+<span><span class="fu"><a href="../reference/set_global_cols.html">set_global_cols</a></span><span class="op">(</span></span>
+<span>  <span class="co"># Time zone</span></span>
+<span>  tz <span class="op">=</span> <span class="st">"America/Vancouver"</span>,</span>
+<span>  </span>
+<span>  <span class="co"># Column names in your data files</span></span>
+<span>  id_col <span class="op">=</span> <span class="st">"cow"</span>,             <span class="co"># animal ID column</span></span>
+<span>  trans_col <span class="op">=</span> <span class="st">"transponder"</span>,  <span class="co"># transponder ID column</span></span>
+<span>  start_col <span class="op">=</span> <span class="st">"start"</span>,        <span class="co"># visit start time column</span></span>
+<span>  end_col <span class="op">=</span> <span class="st">"end"</span>,            <span class="co"># visit end time column</span></span>
+<span>  bin_col <span class="op">=</span> <span class="st">"bin"</span>,            <span class="co"># bin ID column</span></span>
+<span>  dur_col <span class="op">=</span> <span class="st">"duration"</span>,       <span class="co"># duration column</span></span>
+<span>  intake_col <span class="op">=</span> <span class="st">"intake"</span>,      <span class="co"># intake column</span></span>
+<span>  start_weight_col <span class="op">=</span> <span class="st">"start_weight"</span>,  <span class="co"># start weight column</span></span>
+<span>  end_weight_col <span class="op">=</span> <span class="st">"end_weight"</span>,      <span class="co"># end weight column</span></span>
+<span>  </span>
+<span>  <span class="co"># Bin settings</span></span>
+<span>  bins_feed <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">30</span>,           <span class="co"># feed bin IDs in your barn</span></span>
+<span>  bins_wat <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,             <span class="co"># water bin IDs in your barn</span></span>
+<span>  bin_offset <span class="op">=</span> <span class="fl">100</span>            <span class="co"># add this to water bin IDs to differentiate from feeder IDs</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level5">
+<h5 id="option-2-configure-settings-individually">Option 2: Configure settings individually<a class="anchor" aria-label="anchor" href="#option-2-configure-settings-individually"></a>
+</h5>
+<p>Alternatively, you can set each variable separately:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># ── Time zone ──────────────────────────────────────────────────────────────</span></span>
 <span><span class="fu"><a href="../reference/set_tz2.html">set_tz2</a></span><span class="op">(</span><span class="st">"America/Vancouver"</span><span class="op">)</span>   <span class="co"># governs the handling of timestamp data</span></span>
 <span></span>
 <span><span class="co"># ── Column names in the raw feeder/drinker files ──────────────────────────────</span></span>
@@ -247,9 +274,15 @@ subsequent calls.</p>
 <span><span class="fu"><a href="../reference/set_bins_feed2.html">set_bins_feed2</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">30</span><span class="op">)</span>           <span class="co"># the ID of 30 feed bins present in the barn</span></span>
 <span><span class="fu"><a href="../reference/set_bins_wat2.html">set_bins_wat2</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>             <span class="co"># the ID of 5 water bins present in the barn</span></span>
 <span><span class="fu"><a href="../reference/set_bin_offset2.html">set_bin_offset2</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span>           <span class="co"># add 100 to water bin ID to differentiate from feeder ID</span></span></code></pre></div>
+<blockquote>
+<p><strong>Ollie’s Tip:</strong> 💡 After setting these global
+variables, all helper functions automatically use them. However, you can
+still override any setting for a specific function call by directly
+providing the parameter.</p>
+</blockquote>
 <p>You can verify any setting at any time with the corresponding getter
 functions:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/tz2.html">tz2</a></span><span class="op">(</span><span class="op">)</span>        </span>
 <span><span class="co">#&gt; [1] "America/Vancouver"</span></span>
 <span><span class="fu"><a href="../reference/id_col2.html">id_col2</a></span><span class="op">(</span><span class="op">)</span>    </span>
@@ -259,15 +292,15 @@ functions:</p>
 <span><span class="co">#&gt; [26] 26 27 28 29 30</span></span></code></pre></div>
 <hr>
 </div>
+</div>
 <div class="section level4">
-<h4 id="process-feeder-data-without-repeating-arguments">🔄 Process feeder data <strong>without repeating
-arguments</strong><a class="anchor" aria-label="anchor" href="#process-feeder-data-without-repeating-arguments"></a>
+<h4 id="process-feeder-data">🔄 Process feeder data<a class="anchor" aria-label="anchor" href="#process-feeder-data"></a>
 </h4>
 <p>Because the defaults were set above, you now supply <strong>only what
 truly varies file-to-file</strong>—column <strong>values</strong> or
 clean-up vectors—while the helper pulls the rest from the global
 options.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 🔄 CHANGE THESE VALUES to match your data files! 🔄</span></span>
 <span></span>
 <span><span class="co"># Define your column names (if your files don't have headers)</span></span>
@@ -337,32 +370,19 @@ options.</p>
 filled in automatically from the global settings you defined above. If
 you ever need a one-off override (for example, a different time-zone
 just for this call) you can still pass that argument directly:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/process_all_feed.html">process_all_feed</a></span><span class="op">(</span>files <span class="op">=</span> <span class="va">fileNames.f</span>, tz <span class="op">=</span> <span class="st">"UTC"</span>, adjust_dst <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p>You can now directly inspect the <code>all_fed</code> dataset, as
 it’s lazy-loaded with the package (it won’t consume memory until you
 actually use it).</p>
 <hr>
-<p><strong>Rewriting process_all_water</strong></p>
-<p>I need to rewrite the process_all_water section, following the new
-pattern. It should consist of two parts: one for customization using the
-setter block, and another for the “feeder” process, similar to what we
-did for feed.</p>
-<p>Since we don’t need to reset the global variables, I’ll make sure we
-use them implicitly and only pass varying items. The original snippet
-sets variables like id_col—I’ll remove those and use the global defaults
-instead. I’ll also add the necessary instructions as comments for
-clarity.</p>
-<p>Thought for 11 seconds</p>
 <div class="section level5">
-<h5 id="process-water-data-without-repeating-arguments">🔄 Process water data <strong>without repeating
-arguments</strong><a class="anchor" aria-label="anchor" href="#process-water-data-without-repeating-arguments"></a>
+<h5 id="process-water-data">🔄 Process water data<a class="anchor" aria-label="anchor" href="#process-water-data"></a>
 </h5>
 <p>Because we already set the global defaults (time-zone, column names,
-bin rules) in the <em>reset-global-options</em> chunk, the drinker
-workflow is just as terse as the feeder one—supply only what differs
-from file to file.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+bin rules), the drinker workflow is just as terse as the feeder
+one—supply only what differs from file to file.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 🔄 CHANGE THESE VALUES to match your water files! 🔄</span></span>
 <span></span>
 <span><span class="co"># Column names (only needed because drinker files have no headers)</span></span>
@@ -388,7 +408,7 @@ from file to file.</p>
 <span>  select_cols  <span class="op">=</span> <span class="va">select_cols_wat</span>,</span>
 <span>  sep          <span class="op">=</span> <span class="st">","</span>,</span>
 <span>  header       <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  adjust_dst   <span class="op">=</span> <span class="cn">TRUE</span>          <span class="co"># Disable if you don’t need DST correction</span></span>
+<span>  adjust_dst   <span class="op">=</span> <span class="cn">TRUE</span>          <span class="co"># Disable if you don't need DST correction</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">all_wat</span><span class="op">)</span></span>
@@ -434,25 +454,183 @@ actually use it).</p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="congratulations">🎉 Congratulations!<a class="anchor" aria-label="anchor" href="#congratulations"></a>
+<h3 id="quality-check-your-data">7. Quality Check Your Data 🕵️‍♀️<a class="anchor" aria-label="anchor" href="#quality-check-your-data"></a>
 </h3>
-<p>You’ve now got clean, organized feeding and drinking data ready for
-analysis! Ollie is proud of you!</p>
+<blockquote>
+<p><strong>Ollie says:</strong> Even after our initial processing, our
+cow data still has some fishy bits (and I know fishy when I see it!).
+Let’s run quality checks to catch problems like overlapping visits,
+impossible intake values, and missing records!</p>
+</blockquote>
+<div class="section level4">
+<h4 id="create-custom-quality-check-thresholds">Create custom quality check thresholds<a class="anchor" aria-label="anchor" href="#create-custom-quality-check-thresholds"></a>
+</h4>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 👉 EDIT THESE VALUES to match your study parameters! 👉</span></span>
+<span><span class="va">my_qc_config</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qc_config.html">qc_config</a></span><span class="op">(</span></span>
+<span>  <span class="co"># Feed thresholds</span></span>
+<span>  high_dur_feed <span class="op">=</span> <span class="fl">2000</span>,          <span class="co"># Flag feed visits longer than 2000 seconds</span></span>
+<span>  large_intake_visit_feed <span class="op">=</span> <span class="fl">8</span>,   <span class="co"># Flag feed visits with more than 8kg intake</span></span>
+<span>  large_intake_rate_feed <span class="op">=</span> <span class="fl">0.008</span>, <span class="co"># Flag feed intake rates above 0.008 kg/s</span></span>
+<span>  low_feed_intake <span class="op">=</span> <span class="fl">35</span>,          <span class="co"># Flag cows eating less than 35kg/day</span></span>
+<span>  high_feed_intake <span class="op">=</span> <span class="fl">75</span>,         <span class="co"># Flag cows eating more than 75kg/day</span></span>
+<span>  </span>
+<span>  <span class="co"># Water thresholds</span></span>
+<span>  high_dur_water <span class="op">=</span> <span class="fl">1800</span>,         <span class="co"># Flag water visits longer than 1800 seconds</span></span>
+<span>  large_intake_visit_water <span class="op">=</span> <span class="fl">30</span>, <span class="co"># Flag water visits with more than 30L intake</span></span>
+<span>  large_intake_rate_water <span class="op">=</span> <span class="fl">0.35</span>, <span class="co"># Flag water intake rates above 0.35 L/s</span></span>
+<span>  low_wat_intake <span class="op">=</span> <span class="fl">60</span>,           <span class="co"># Flag cows drinking less than 60L/day</span></span>
+<span>  high_wat_intake <span class="op">=</span> <span class="fl">180</span>,         <span class="co"># Flag cows drinking more than 180L/day</span></span>
+<span>  </span>
+<span>  <span class="co"># General settings</span></span>
+<span>  low_visit_threshold <span class="op">=</span> <span class="fl">10</span>,      <span class="co"># Flag bins with fewer than 10 visits/day</span></span>
+<span>  total_cows_expected <span class="op">=</span> <span class="fl">48</span>,      <span class="co"># Set to your herd size</span></span>
+<span>  replacement_threshold <span class="op">=</span> <span class="fl">26</span>,    <span class="co"># Time gap (s) to classify replacement behavior</span></span>
+<span>  calibration_error <span class="op">=</span> <span class="fl">0.5</span>        <span class="co"># Feeder/drinkercalibration error (kg/L)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<blockquote>
+<p><strong>Ollie’s Tip:</strong> 💡 The <code><a href="../reference/qc_config.html">qc_config()</a></code>
+function creates a configuration list that you can pass to quality check
+functions. This approach keeps your threshold values organized and makes
+your code more readable!</p>
+</blockquote>
+</div>
+<div class="section level4">
+<h4 id="run-the-quality-check">Run the quality check<a class="anchor" aria-label="anchor" href="#run-the-quality-check"></a>
+</h4>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Run the full quality check</span></span>
+<span><span class="va">qc_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qc.html">qc</a></span><span class="op">(</span></span>
+<span>  feed <span class="op">=</span> <span class="va">all_fed</span>,               <span class="co"># Your processed feeder data</span></span>
+<span>  water <span class="op">=</span> <span class="va">all_wat</span>,              <span class="co"># Your processed drinker data</span></span>
+<span>  cfg <span class="op">=</span> <span class="va">my_qc_config</span>,           <span class="co"># Your custom thresholds</span></span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,               <span class="co"># Do not show detailed error messages, set to TRUE to see them</span></span>
+<span>  fix_double_detections <span class="op">=</span> <span class="cn">TRUE</span>  <span class="co"># Automatically fix overlapping visits</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># store the warnings summary</span></span>
+<span><span class="va">warning</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">warnings</span></span></code></pre></div>
+<blockquote>
+<p><strong>Note:</strong> 📝 Like other functions in
+<code>moo4feed</code>, the <code><a href="../reference/qc.html">qc()</a></code> function also uses the
+global variables you configured earlier (column names, bin settings,
+etc.). You can override these for a specific call by providing the
+parameters directly.</p>
+</blockquote>
+<blockquote>
+<p><strong>What just happened?</strong> 🦦</p>
+<p>The <code><a href="../reference/qc.html">qc()</a></code> function performed a comprehensive quality
+check on our data:</p>
+<ol style="list-style-type: decimal">
+<li>Combined feed and water data for analysis</li>
+<li>Checked if we have the expected number of cows each day</li>
+<li>Flagged double detections (when the same cow is detected at
+different bins at the same time) and fixed them</li>
+<li>Flagged negative values in duration, intake, or weight
+measurements</li>
+<li>Removed records with negative durations or intakes</li>
+<li>Identified abnormally large feed/water intakes</li>
+<li>Flags cows that did not feed or drink after noon (potentially lost
+ear tag or due to illness)</li>
+<li>Flagged bins with very low traffic or no visits at all</li>
+</ol>
+</blockquote>
+</div>
+<div class="section level4">
+<h4 id="use-the-cleaned-data">Use the cleaned data<a class="anchor" aria-label="anchor" href="#use-the-cleaned-data"></a>
+</h4>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># The qc_results contains our cleaned data</span></span>
+<span><span class="va">clean_feed</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">feed</span>     <span class="co"># Cleaned feeder data</span></span>
+<span><span class="va">clean_water</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">water</span>   <span class="co"># Cleaned drinker data</span></span>
+<span><span class="va">clean_combined</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">combined</span>   <span class="co"># Merged feed+water data</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level3">
+<h3 id="summarize-daily-intakes">8. Summarize Daily Intakes 📊<a class="anchor" aria-label="anchor" href="#summarize-daily-intakes"></a>
+</h3>
+<blockquote>
+<p><strong>Ollie says:</strong> Now that we’ve cleaned our data, let’s
+create daily summaries of feed and water intake for each cow. This is
+where the juicy insights swim to the surface!</p>
+</blockquote>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create daily summaries of feed and water intake</span></span>
+<span><span class="va">daily_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/feed_water_summary.html">feed_water_summary</a></span><span class="op">(</span></span>
+<span>  feed <span class="op">=</span> <span class="va">clean_feed</span>,           <span class="co"># Your cleaned feed data </span></span>
+<span>  water <span class="op">=</span> <span class="va">clean_water</span>,         <span class="co"># Your cleaned water data</span></span>
+<span>  warn <span class="op">=</span> <span class="va">warning</span>,              <span class="co"># Warning dataframe to update</span></span>
+<span>  cfg <span class="op">=</span> <span class="va">my_qc_config</span>           <span class="co"># Quality check configuration</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Inspect the summary results</span></span>
+<span><span class="va">summary_df</span> <span class="op">&lt;-</span> <span class="va">daily_summary</span><span class="op">$</span><span class="va">summary</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">summary_df</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 8</span></span></span>
+<span><span class="co">#&gt;   date         cow feed_intake feed_duration feed_visits water_intake</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2020-10-31  <span style="text-decoration: underline;">2</span>074        60.9         <span style="text-decoration: underline;">11</span>163          46        105. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2020-10-31  <span style="text-decoration: underline;">3</span>150        59.2         <span style="text-decoration: underline;">17</span>618          52        116. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2020-10-31  <span style="text-decoration: underline;">4</span>001        53.3          <span style="text-decoration: underline;">8</span>099          55         75  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2020-10-31  <span style="text-decoration: underline;">4</span>044        63.4         <span style="text-decoration: underline;">12</span>038          73        125. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2020-10-31  <span style="text-decoration: underline;">4</span>070        63.3         <span style="text-decoration: underline;">12</span>530          59        123. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2020-10-31  <span style="text-decoration: underline;">4</span>072        54.7         <span style="text-decoration: underline;">13</span>679          79         99.5</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: water_duration &lt;dbl&gt;, water_visits &lt;int&gt;</span></span></span>
+<span></span>
+<span><span class="co"># Look at the updated warnings that include intake anomalies</span></span>
+<span><span class="va">warning</span> <span class="op">&lt;-</span> <span class="va">daily_summary</span><span class="op">$</span><span class="va">warn</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">warning</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 17</span></span></span>
+<span><span class="co">#&gt;   date       total_cows missing_cow double_detection_bins negative_visit_bins</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2020-10-31         47 Yes         30                    6; 12; 13          </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2020-11-01         47 Yes         3; 5; 6; 18           6; 12; 13; 30      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2020-11-02         48 <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>                    13; 30             </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 12 more variables: cows_disappeared_after_noon &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   bins_never_visited &lt;chr&gt;, bins_low_traffic &lt;chr&gt;, long_dur_feeder &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   large_intake_feed_visit &lt;chr&gt;, low_daily_feed_intake_cows &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   high_daily_feed_intake_cows &lt;chr&gt;, feed_add_time_no_found &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   long_dur_drinker &lt;chr&gt;, large_intake_water_visit &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   low_daily_water_intake_cows &lt;chr&gt;, high_daily_water_intake_cows &lt;chr&gt;</span></span></span></code></pre></div>
+<blockquote>
+<p><strong>What’s in the summary?</strong> 🦦</p>
+<p>For each cow on each day, we now know:</p>
+<ul>
+<li>Total feed intake (kg)</li>
+<li>Total feeding duration (seconds)</li>
+<li>Number of feed visits</li>
+<li>Total water intake (L)</li>
+<li>Total drinking duration (seconds)</li>
+<li>Number of water visits</li>
+</ul>
+<p>Plus, we’ve updated our warnings to flag cows with abnormally high or
+low daily intakes!</p>
+</blockquote>
+</div>
+<div class="section level3">
+<h3 id="whats-next">9. What’s Next? 🌟<a class="anchor" aria-label="anchor" href="#whats-next"></a>
+</h3>
+<p>Congratulations! You’ve now processed, cleaned, and summarized your
+cow feeding and drinking data. Your data is now sparkling clean and
+ready for analysis!</p>
 <p>Stay tuned for the next vignette where we’ll explore what these dairy
 cows are actually up to!</p>
 <blockquote>
-<p><strong>Ollie’s Final Tips:</strong> 🦦</p>
+<p><strong>Ollie’s Final Tips:</strong></p>
+<p>Remember, you can customize any part of this workflow for your
+specific needs:</p>
 <ul>
-<li>If you get errors, double-check the values you customized (look for
-the 👉 emoji markers)</li>
 <li>Make sure your file naming follows the date format rules</li>
-<li>For more help on any function, use <code>?function_name</code>
-(e.g., <code><a href="../reference/process_all_feed.html">?process_all_feed</a></code>)</li>
-<li>Use <code><a href="https://rdrr.io/r/base/timezones.html" class="external-link">OlsonNames()</a></code> to see all timezone options</li>
-<li>Need detailed examples? Look at the sample data with:
-<code><a href="../reference/moo4feed_example.html">moo4feed_example()</a></code>
+<li>Adjust column names with <code><a href="../reference/set_id_col2.html">set_id_col2()</a></code>,
+<code><a href="../reference/set_start_col2.html">set_start_col2()</a></code>, etc.</li>
+<li>Modify quality check thresholds with <code><a href="../reference/qc_config.html">qc_config()</a></code>
 </li>
+<li>Process just feed or just water data if that’s all you have</li>
+<li>Use <code><a href="https://rdrr.io/r/base/timezones.html" class="external-link">OlsonNames()</a></code> to see all timezone options</li>
 </ul>
+<p>Dive deep into documentation with <code>?function_name</code> for
+more details! Need detailed examples? Look at the sample data with:
+<code><a href="../reference/moo4feed_example.html">moo4feed_example()</a></code></p>
 </blockquote>
 </div>
 </div>
