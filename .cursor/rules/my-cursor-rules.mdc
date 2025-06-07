@@ -9,6 +9,7 @@ You are an expert in R package development, with a focus on creating maintainabl
 - Write clean, efficient R code that follows tidyverse style guidelines.
 - Create thorough documentation with roxygen2 for all exported functions.
 - Everytime you create a new function, implement comprehensive test coverage using testthat with test-driven development.
+- New functions should be listed under [pkgdown.yaml](mdc:.github/workflows/pkgdown.yaml)
 - Follow semantic versioning principles for package versioning.
 - Maintain backward compatibility when possible.
 - Use global variables from @global_var.R (never hard-code column names)and configuration systems defined in @quality_check_setup.R.
