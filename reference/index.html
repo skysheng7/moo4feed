@@ -18,8 +18,8 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/cow_stories.html">Extracting Cow Stories</a></li>
-    <li><a class="dropdown-item" href="../articles/data_cleaning.html">Data cleaning</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/cow_stories.html">2. Extracting Cow Stories</a></li>
+    <li><a class="dropdown-item" href="../articles/data_cleaning.html">1. Data cleaning</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -104,6 +104,30 @@
 
         </dt>
         <dd>Run full quality-control check on feeder and drinker data</dd>
+      </dl><dl><dt>
+
+          <code><a href="knn_outlier_detection.html">knn_outlier_detection()</a></code>
+
+        </dt>
+        <dd>Detect outliers using k-nearest neighbors (KNN) method</dd>
+      </dl><dl><dt>
+
+          <code><a href="knn_clean_feed.html">knn_clean_feed()</a></code>
+
+        </dt>
+        <dd>Process multiple days of feeding data and remove outliers using KNN</dd>
+      </dl><dl><dt>
+
+          <code><a href="knn_clean_water.html">knn_clean_water()</a></code>
+
+        </dt>
+        <dd>Process multiple days of water data and remove outliers using KNN</dd>
+      </dl><dl><dt>
+
+          <code><a href="viz_outliers.html">viz_outliers()</a></code>
+
+        </dt>
+        <dd>Visualize outliers from KNN outlier detection</dd>
       </dl></div><div class="section level2">
 
       <h3 id="data-filtering">Data Filtering<a class="anchor" aria-label="anchor" href="#data-filtering"></a></h3>
@@ -212,7 +236,7 @@
       </dl></div><div class="section level2">
 
       <h3 id="data-integration">Data Integration<a class="anchor" aria-label="anchor" href="#data-integration"></a></h3>
-      <div class="section-desc"><p>Combine feeding and drinking data into unified datasets.</p></div>
+      <div class="section-desc"><p>Merge and unmerge feeding and drinking data</p></div>
 
 
     </div><div class="section level2">
@@ -232,6 +256,12 @@
 
         </dt>
         <dd>Merge a List of Data Frames</dd>
+      </dl><dl><dt>
+
+          <code><a href="unmerge_data.html">unmerge_data()</a></code>
+
+        </dt>
+        <dd>Un-merge a combined data frame into a list of data frames by date</dd>
       </dl></div><div class="section level2">
       <h2 id="data-analysis-and-summaries">Data Analysis and Summaries<a class="anchor" aria-label="anchor" href="#data-analysis-and-summaries"></a></h2>
 
@@ -496,13 +526,19 @@
           <code><a href="clean_feed.html">clean_feed</a></code>
 
         </dt>
-        <dd>Quality-checked cattle feeding behavior data</dd>
+        <dd>Cattle feeding behavior data after quality check and outlier removal</dd>
       </dl><dl><dt>
 
           <code><a href="clean_water.html">clean_water</a></code>
 
         </dt>
-        <dd>Quality-checked cattle water drinking behavior data</dd>
+        <dd>Cattle drinking behavior data after quality check and outlier removal</dd>
+      </dl><dl><dt>
+
+          <code><a href="clean_comb.html">clean_comb</a></code>
+
+        </dt>
+        <dd>Combined feeding and drinking behavior data with outliers removed</dd>
       </dl><dl><dt>
 
           <code><a href="summary_df.html">summary_df</a></code>

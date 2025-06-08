@@ -18,6 +18,7 @@
 <url><loc>https://skysheng7.github.io/moo4feed/reference/bins_feed2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/bins_wat2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/cap_first.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/clean_comb.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/clean_feed.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/clean_water.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/combine_feed_water.html</loc></url>
@@ -37,6 +38,9 @@
 <url><loc>https://skysheng7.github.io/moo4feed/reference/index.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/intake_col2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/keep_bins.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/knn_clean_feed.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/knn_clean_water.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/knn_outlier_detection.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/lower_first.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/merge_list_df.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/moo4feed_example.html</loc></url>
@@ -70,6 +74,8 @@
 <url><loc>https://skysheng7.github.io/moo4feed/reference/trans_col2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/tz2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/unique_bin_visits.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/unmerge_data.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/viz_outliers.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/warning.html</loc></url>
 </urlset>
 

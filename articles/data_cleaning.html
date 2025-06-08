@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Data cleaning • moo4feed</title>
+<title>1. Data cleaning • moo4feed</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Data cleaning">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="1. Data cleaning">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -33,8 +33,8 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/cow_stories.html">Extracting Cow Stories</a></li>
-    <li><a class="dropdown-item" href="../articles/data_cleaning.html">Data cleaning</a></li>
+<li><a class="dropdown-item" href="../articles/cow_stories.html">2. Extracting Cow Stories</a></li>
+    <li><a class="dropdown-item" href="../articles/data_cleaning.html">1. Data cleaning</a></li>
   </ul>
 </li>
       </ul>
@@ -55,7 +55,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Data cleaning</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>1. Data cleaning</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/skysheng7/moo4feed/blob/main/vignettes/data_cleaning.Rmd" class="external-link"><code>vignettes/data_cleaning.Rmd</code></a></small>
@@ -541,24 +541,196 @@ ear tag or due to illness)</li>
 </h4>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># The qc_results contains our cleaned data</span></span>
-<span><span class="va">clean_feed</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">feed</span>     <span class="co"># Cleaned feeder data</span></span>
-<span><span class="va">clean_water</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">water</span>   <span class="co"># Cleaned drinker data</span></span>
-<span><span class="va">clean_combined</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">combined</span>   <span class="co"># Merged feed+water data</span></span></code></pre></div>
+<span><span class="va">qc_feed</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">feed</span>     <span class="co"># Cleaned feeder data</span></span>
+<span><span class="va">qc_water</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">water</span>   <span class="co"># Cleaned drinker data</span></span>
+<span><span class="va">qc_combined</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">combined</span>   <span class="co"># Merged feed+water data</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level3">
-<h3 id="summarize-daily-intakes">8. Summarize Daily Intakes 📊<a class="anchor" aria-label="anchor" href="#summarize-daily-intakes"></a>
+<h3 id="advanced-cleaning-detect-outliers-with-knn">8. Advanced Cleaning: Detect Outliers with KNN 🔍<a class="anchor" aria-label="anchor" href="#advanced-cleaning-detect-outliers-with-knn"></a>
+</h3>
+<blockquote>
+<p><strong>Ollie says:</strong> Even after our regular quality checks,
+there might still be unusual data points in our dataset. Let’s use a
+fancy technique called K-Nearest Neighbors (KNN) to find and handle
+those tricky outliers!</p>
+</blockquote>
+<p>The KNN method looks at each data point and compares it to its
+neighbors. If a point is very different from its neighbors (in terms of
+intake, duration, and rate), it might be an outlier!</p>
+<p>These functions are designed to be able to handle both single-day and
+multi-day data.</p>
+<div class="section level4">
+<h4 id="try-knn-outlier-detection">Try KNN outlier detection<a class="anchor" aria-label="anchor" href="#try-knn-outlier-detection"></a>
+</h4>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># First, let's detect outliers in our feed data</span></span>
+<span><span class="va">feed_with_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knn_clean_feed.html">knn_clean_feed</a></span><span class="op">(</span></span>
+<span>  <span class="va">qc_feed</span>,            <span class="co"># Our cleaned feed data</span></span>
+<span>  k <span class="op">=</span> <span class="fl">50</span>,                <span class="co"># Number of neighbors to consider</span></span>
+<span>  threshold_percentile <span class="op">=</span> <span class="fl">99.3</span>,  <span class="co"># Threshold for outlier detection</span></span>
+<span>  <span class="co"># Custom scaling helps balance the influence of each variable</span></span>
+<span>  custom_scaling <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    rate <span class="op">=</span> <span class="fl">10000</span>,        <span class="co"># Scaling for intake rate</span></span>
+<span>    intake <span class="op">=</span> <span class="fl">7</span>,          <span class="co"># Scaling for intake amount</span></span>
+<span>    duration <span class="op">=</span> <span class="fl">0.03</span>      <span class="co"># Scaling for duration</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  remove_outliers <span class="op">=</span> <span class="cn">FALSE</span> <span class="co"># Set to TRUE if you wish to remove outliers</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># We can also visualize the outliers</span></span>
+<span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_outliers.html">viz_outliers</a></span><span class="op">(</span></span>
+<span>  <span class="va">feed_with_outliers</span>,</span>
+<span>  x_var <span class="op">=</span> <span class="st">"duration"</span>,</span>
+<span>  y_var <span class="op">=</span> <span class="st">"intake"</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Feed Outliers: Duration vs Intake"</span>,</span>
+<span>  jitter_amount <span class="op">=</span> <span class="fl">0.2</span>,</span>
+<span>  regular_color <span class="op">=</span> <span class="st">"lightgreen"</span>,</span>
+<span>  outlier_color <span class="op">=</span> <span class="st">"orange"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p1</span><span class="op">)</span></span></code></pre></div>
+<p><img src="data_cleaning_files/figure-html/knn-outliers-1.png" width="700"></p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co"># Let's also look at rate vs intake</span></span>
+<span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_outliers.html">viz_outliers</a></span><span class="op">(</span></span>
+<span>  <span class="va">feed_with_outliers</span>,</span>
+<span>  x_var <span class="op">=</span> <span class="st">"rate"</span>,</span>
+<span>  y_var <span class="op">=</span> <span class="st">"intake"</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Feed Outliers: Rate vs Intake"</span>,</span>
+<span>  jitter_amount <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  regular_color <span class="op">=</span> <span class="st">"lightgreen"</span>,</span>
+<span>  outlier_color <span class="op">=</span> <span class="st">"orange"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="data_cleaning_files/figure-html/knn-outliers-2.png" width="700"></p>
+<blockquote>
+<p><strong>Ollie’s Tips for KNN Outlier Detection:</strong> 🦦</p>
+<ul>
+<li>
+<strong>Experiment with settings</strong>: Try different values for
+<code>k</code>, <code>threshold_percentile</code>, and
+<code>custom_scaling</code> to see what works best for your data</li>
+<li>
+<strong>Visualize before removing</strong>: Always use
+<code><a href="../reference/viz_outliers.html">viz_outliers()</a></code> to check if the detected outliers make sense
+before removing them</li>
+<li>
+<strong>Custom scaling matters</strong>: Adjusting the scaling
+values helps balance the influence of different variables and adjusting
+for variables at different scales:
+<ul>
+<li>e.g., duration is in tens to hundreds of seconds, but rate is often
+&lt; 1, so rate needs to be scaled up in order to be comparable to
+duration</li>
+<li>Increase scaling for variables that should have more influence</li>
+<li>Decrease scaling for variables that should have less influence</li>
+</ul>
+</li>
+<li>
+<strong>Why these scaling values?</strong>: These values were chosen
+to be conservative and not remove too many data points. From previous
+experience, it’s likely for a cow to have very long durations per visit,
+but very unlikely to have large intake in a short time, so we flagged
+outliers to catch visits with large intake and high rate.</li>
+<li>
+<strong>Be cautious</strong>: Don’t set
+<code>remove_outliers = TRUE</code> until you’re confident the detection
+is working correctly</li>
+</ul>
+</blockquote>
+</div>
+<div class="section level4">
+<h4 id="process-water-data-outliers">Process water data outliers<a class="anchor" aria-label="anchor" href="#process-water-data-outliers"></a>
+</h4>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Now let's detect outliers in our water data</span></span>
+<span><span class="va">water_with_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knn_clean_water.html">knn_clean_water</a></span><span class="op">(</span></span>
+<span>  <span class="va">qc_water</span>,           <span class="co"># Our cleaned water data</span></span>
+<span>  k <span class="op">=</span> <span class="fl">50</span>,                <span class="co"># Number of neighbors to consider</span></span>
+<span>  threshold_percentile <span class="op">=</span> <span class="fl">99.8</span>,  <span class="co"># Threshold for outlier detection</span></span>
+<span>  <span class="co"># Water data often needs different scaling</span></span>
+<span>  custom_scaling <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    rate <span class="op">=</span> <span class="fl">2000</span>,           <span class="co"># Scaling for intake rate</span></span>
+<span>    intake <span class="op">=</span> <span class="fl">1</span>,          <span class="co"># Scaling for intake amount</span></span>
+<span>    duration <span class="op">=</span> <span class="fl">0.01</span>      <span class="co"># Scaling for duration</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  remove_outliers <span class="op">=</span> <span class="cn">FALSE</span> <span class="co"># Set to TRUE if you wish to remove outliers</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Visualize water outliers</span></span>
+<span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_outliers.html">viz_outliers</a></span><span class="op">(</span></span>
+<span>  <span class="va">water_with_outliers</span>,</span>
+<span>  x_var <span class="op">=</span> <span class="st">"duration"</span>,</span>
+<span>  y_var <span class="op">=</span> <span class="st">"intake"</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Water Outliers: Duration vs Intake"</span>,</span>
+<span>  regular_color <span class="op">=</span> <span class="st">"lightblue"</span>,</span>
+<span>  outlier_color <span class="op">=</span> <span class="st">"orange"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p3</span><span class="op">)</span></span></code></pre></div>
+<p><img src="data_cleaning_files/figure-html/knn-water-outliers-1.png" width="700"></p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co"># Let's also look at rate vs intake</span></span>
+<span><span class="va">p4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_outliers.html">viz_outliers</a></span><span class="op">(</span></span>
+<span>  <span class="va">water_with_outliers</span>,</span>
+<span>  x_var <span class="op">=</span> <span class="st">"rate"</span>,</span>
+<span>  y_var <span class="op">=</span> <span class="st">"intake"</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Water Outliers: Rate vs Intake"</span>,</span>
+<span>  jitter_amount <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  regular_color <span class="op">=</span> <span class="st">"lightblue"</span>,</span>
+<span>  outlier_color <span class="op">=</span> <span class="st">"orange"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p4</span><span class="op">)</span></span></code></pre></div>
+<p><img src="data_cleaning_files/figure-html/knn-water-outliers-2.png" width="700"></p>
+</div>
+<div class="section level4">
+<h4 id="remove-outliers-optional">Remove outliers (optional)<a class="anchor" aria-label="anchor" href="#remove-outliers-optional"></a>
+</h4>
+<p>Once you’re satisfied with the outlier detection, you can choose to
+remove them:</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cleaned_feed_no_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knn_clean_feed.html">knn_clean_feed</a></span><span class="op">(</span></span>
+<span>  <span class="va">qc_feed</span>,</span>
+<span>  k <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  threshold_percentile <span class="op">=</span> <span class="fl">99.3</span>,</span>
+<span>  custom_scaling <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>rate <span class="op">=</span> <span class="fl">10000</span>, intake <span class="op">=</span> <span class="fl">7</span>, duration <span class="op">=</span> <span class="fl">0.03</span><span class="op">)</span>,</span>
+<span>  remove_outliers <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Same for water data</span></span>
+<span><span class="va">cleaned_water_no_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knn_clean_water.html">knn_clean_water</a></span><span class="op">(</span></span>
+<span>  <span class="va">qc_water</span>,</span>
+<span>  k <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  threshold_percentile <span class="op">=</span> <span class="fl">99.8</span>,</span>
+<span>  custom_scaling <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>rate <span class="op">=</span> <span class="fl">2000</span>, intake <span class="op">=</span> <span class="fl">1</span>, duration <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span>,</span>
+<span>  remove_outliers <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">clean_feed</span> <span class="op">&lt;-</span> <span class="va">cleaned_feed_no_outliers</span></span>
+<span><span class="va">clean_water</span> <span class="op">&lt;-</span> <span class="va">cleaned_water_no_outliers</span></span>
+<span><span class="va">clean_comb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combine_feed_water.html">combine_feed_water</a></span><span class="op">(</span><span class="va">clean_feed</span>, <span class="va">clean_water</span><span class="op">)</span></span></code></pre></div>
+<blockquote>
+<p><strong>Ollie’s Warning:</strong> Be careful with removing outliers!
+What looks like an outlier might actually be important data. Always try
+to understand why the points are being flagged as outliers before
+removing them.</p>
+</blockquote>
+</div>
+</div>
+<div class="section level3">
+<h3 id="summarize-daily-intakes">9. Summarize Daily Intakes 📊<a class="anchor" aria-label="anchor" href="#summarize-daily-intakes"></a>
 </h3>
 <blockquote>
 <p><strong>Ollie says:</strong> Now that we’ve cleaned our data, let’s
 create daily summaries of feed and water intake for each cow. This is
 where the juicy insights swim to the surface!</p>
 </blockquote>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create daily summaries of feed and water intake</span></span>
 <span><span class="va">daily_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/feed_water_summary.html">feed_water_summary</a></span><span class="op">(</span></span>
-<span>  feed <span class="op">=</span> <span class="va">clean_feed</span>,           <span class="co"># Your cleaned feed data </span></span>
-<span>  water <span class="op">=</span> <span class="va">clean_water</span>,         <span class="co"># Your cleaned water data</span></span>
+<span>  feed <span class="op">=</span> <span class="va">qc_feed</span>,           <span class="co"># Your cleaned feed data </span></span>
+<span>  water <span class="op">=</span> <span class="va">qc_water</span>,         <span class="co"># Your cleaned water data</span></span>
 <span>  warn <span class="op">=</span> <span class="va">warning</span>,              <span class="co"># Warning dataframe to update</span></span>
 <span>  cfg <span class="op">=</span> <span class="va">my_qc_config</span>           <span class="co"># Quality check configuration</span></span>
 <span><span class="op">)</span></span>
@@ -608,13 +780,13 @@ low daily intakes!</p>
 </blockquote>
 </div>
 <div class="section level3">
-<h3 id="whats-next">9. What’s Next? 🌟<a class="anchor" aria-label="anchor" href="#whats-next"></a>
+<h3 id="whats-next">10. What’s Next? 🌟<a class="anchor" aria-label="anchor" href="#whats-next"></a>
 </h3>
 <p>Congratulations! You’ve now processed, cleaned, and summarized your
 cow feeding and drinking data. Your data is now sparkling clean and
 ready for analysis!</p>
-<p>Stay tuned for the next vignette where we’ll explore what these dairy
-cows are actually up to!</p>
+<p>Stay tuned for the next vignette (Part 2) where we’ll explore what
+these dairy cows are actually up to in “Extracting Cow Stories”!</p>
 <blockquote>
 <p><strong>Ollie’s Final Tips:</strong></p>
 <p>Remember, you can customize any part of this workflow for your
@@ -635,11 +807,11 @@ more details! Need detailed examples? Look at the sample data with:
 <hr>
 </div>
 <div class="section level3">
-<h3 id="code-cheatsheet">10. Code Cheatsheet 📋<a class="anchor" aria-label="anchor" href="#code-cheatsheet"></a>
+<h3 id="code-cheatsheet">11. Code Cheatsheet 📋<a class="anchor" aria-label="anchor" href="#code-cheatsheet"></a>
 </h3>
 <p>Here’s a copy-paste friendly version of all the code used in this
 vignette:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># === 1. Load packages ===</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/skysheng7/moo4feed" class="external-link">moo4feed</a></span><span class="op">)</span></span>
 <span></span>
@@ -806,14 +978,109 @@ vignette:</p>
 <span><span class="va">warning</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">warnings</span></span>
 <span></span>
 <span><span class="co"># === 11. Extract cleaned data ===</span></span>
-<span><span class="va">clean_feed</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">feed</span></span>
-<span><span class="va">clean_water</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">water</span></span>
-<span><span class="va">clean_combined</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">combined</span></span>
+<span><span class="va">qc_feed</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">feed</span></span>
+<span><span class="va">qc_water</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">water</span></span>
+<span><span class="va">qc_combined</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">combined</span></span>
 <span></span>
-<span><span class="co"># === 12. Create daily summaries ===</span></span>
+<span><span class="co"># === 12. KNN outlier detection ===</span></span>
+<span><span class="co"># Detect outliers in feed data</span></span>
+<span><span class="va">feed_with_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knn_clean_feed.html">knn_clean_feed</a></span><span class="op">(</span></span>
+<span>  <span class="va">qc_feed</span>,</span>
+<span>  k <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  threshold_percentile <span class="op">=</span> <span class="fl">99.3</span>,</span>
+<span>  custom_scaling <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    rate <span class="op">=</span> <span class="fl">10000</span>,</span>
+<span>    intake <span class="op">=</span> <span class="fl">7</span>,</span>
+<span>    duration <span class="op">=</span> <span class="fl">0.03</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  remove_outliers <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Visualize feed outliers</span></span>
+<span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_outliers.html">viz_outliers</a></span><span class="op">(</span></span>
+<span>  <span class="va">feed_with_outliers</span>,</span>
+<span>  x_var <span class="op">=</span> <span class="st">"duration"</span>,</span>
+<span>  y_var <span class="op">=</span> <span class="st">"intake"</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Feed Outliers: Duration vs Intake"</span>,</span>
+<span>  jitter_amount <span class="op">=</span> <span class="fl">0.2</span>,</span>
+<span>  regular_color <span class="op">=</span> <span class="st">"lightgreen"</span>,</span>
+<span>  outlier_color <span class="op">=</span> <span class="st">"orange"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_outliers.html">viz_outliers</a></span><span class="op">(</span></span>
+<span>  <span class="va">feed_with_outliers</span>,</span>
+<span>  x_var <span class="op">=</span> <span class="st">"rate"</span>,</span>
+<span>  y_var <span class="op">=</span> <span class="st">"intake"</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Feed Outliers: Rate vs Intake"</span>,</span>
+<span>  jitter_amount <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  regular_color <span class="op">=</span> <span class="st">"lightgreen"</span>,</span>
+<span>  outlier_color <span class="op">=</span> <span class="st">"orange"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Detect outliers in water data</span></span>
+<span><span class="va">water_with_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knn_clean_water.html">knn_clean_water</a></span><span class="op">(</span></span>
+<span>  <span class="va">qc_water</span>,</span>
+<span>  k <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  threshold_percentile <span class="op">=</span> <span class="fl">99.8</span>,</span>
+<span>  custom_scaling <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    rate <span class="op">=</span> <span class="fl">2000</span>,</span>
+<span>    intake <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>    duration <span class="op">=</span> <span class="fl">0.01</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  remove_outliers <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Visualize water outliers</span></span>
+<span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_outliers.html">viz_outliers</a></span><span class="op">(</span></span>
+<span>  <span class="va">water_with_outliers</span>,</span>
+<span>  x_var <span class="op">=</span> <span class="st">"duration"</span>,</span>
+<span>  y_var <span class="op">=</span> <span class="st">"intake"</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Water Outliers: Duration vs Intake"</span>,</span>
+<span>  regular_color <span class="op">=</span> <span class="st">"lightblue"</span>,</span>
+<span>  outlier_color <span class="op">=</span> <span class="st">"orange"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p3</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_outliers.html">viz_outliers</a></span><span class="op">(</span></span>
+<span>  <span class="va">water_with_outliers</span>,</span>
+<span>  x_var <span class="op">=</span> <span class="st">"rate"</span>,</span>
+<span>  y_var <span class="op">=</span> <span class="st">"intake"</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Water Outliers: Rate vs Intake"</span>,</span>
+<span>  jitter_amount <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  regular_color <span class="op">=</span> <span class="st">"lightblue"</span>,</span>
+<span>  outlier_color <span class="op">=</span> <span class="st">"orange"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p4</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Remove outliers</span></span>
+<span><span class="va">cleaned_feed_no_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knn_clean_feed.html">knn_clean_feed</a></span><span class="op">(</span></span>
+<span>  <span class="va">qc_feed</span>,</span>
+<span>  k <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  threshold_percentile <span class="op">=</span> <span class="fl">99.3</span>,</span>
+<span>  custom_scaling <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>rate <span class="op">=</span> <span class="fl">10000</span>, intake <span class="op">=</span> <span class="fl">7</span>, duration <span class="op">=</span> <span class="fl">0.03</span><span class="op">)</span>,</span>
+<span>  remove_outliers <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Same for water data</span></span>
+<span><span class="va">cleaned_water_no_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knn_clean_water.html">knn_clean_water</a></span><span class="op">(</span></span>
+<span>  <span class="va">qc_water</span>,</span>
+<span>  k <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  threshold_percentile <span class="op">=</span> <span class="fl">99.8</span>,</span>
+<span>  custom_scaling <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>rate <span class="op">=</span> <span class="fl">2000</span>, intake <span class="op">=</span> <span class="fl">1</span>, duration <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span>,</span>
+<span>  remove_outliers <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Set final cleaned datasets</span></span>
+<span><span class="va">clean_feed</span> <span class="op">&lt;-</span> <span class="va">cleaned_feed_no_outliers</span></span>
+<span><span class="va">clean_water</span> <span class="op">&lt;-</span> <span class="va">cleaned_water_no_outliers</span></span>
+<span><span class="va">clean_comb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combine_feed_water.html">combine_feed_water</a></span><span class="op">(</span><span class="va">clean_feed</span>, <span class="va">clean_water</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># === 13. Create daily summaries ===</span></span>
 <span><span class="va">daily_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/feed_water_summary.html">feed_water_summary</a></span><span class="op">(</span></span>
-<span>  feed <span class="op">=</span> <span class="va">clean_feed</span>,</span>
-<span>  water <span class="op">=</span> <span class="va">clean_water</span>,</span>
+<span>  feed <span class="op">=</span> <span class="va">qc_feed</span>,</span>
+<span>  water <span class="op">=</span> <span class="va">qc_water</span>,</span>
 <span>  warn <span class="op">=</span> <span class="va">warning</span>,</span>
 <span>  cfg <span class="op">=</span> <span class="va">my_qc_config</span></span>
 <span><span class="op">)</span></span>
