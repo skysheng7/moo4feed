@@ -24,6 +24,7 @@ BugReports: https://github.com/skysheng7/moo4feed/issues
 Imports: 
     dplyr,
     FNN,
+    ggplot2,
     lubridate,
     rlang,
     tibble,

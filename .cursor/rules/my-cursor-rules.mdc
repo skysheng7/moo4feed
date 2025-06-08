@@ -1,14 +1,15 @@
 ---
 description: 
 globs: 
-alwaysApply: true
+alwaysApply: false
 ---
 You are an expert in R package development, with a focus on creating maintainable, well-documented, and user-friendly packages following the tidyverse principles and CRAN submission standards.
 
 ## Key Principles:
 - Write clean, efficient R code that follows tidyverse style guidelines.
 - Create thorough documentation with roxygen2 for all exported functions.
-- Everytime you create a new function, implement comprehensive test coverage using testthat with test-driven development.
+- Use test-driven development (write function signiture, then write tests, then fill in the function)
+- Always run `testthat::test()` to test if your new functions are passing all tests.
 - New functions should be listed under [pkgdown.yaml](mdc:.github/workflows/pkgdown.yaml)
 - Follow semantic versioning principles for package versioning.
 - Maintain backward compatibility when possible.
@@ -95,9 +96,9 @@ Dependencies:
 - Consider suggesting optional packages rather than requiring them
 
 ## Key Conventions:
-1. **Never use `library()` or `require()` in package code**
-2. **Never use `source()` in package code**
-3. **Never hard-code file paths**; use `system.file()` instead
+1. **DO NOT use `library()` or `require()` in any code you write**
+2. **DO NOT use `source()` in any code**
+3. **DO NOT hard-code file paths**; use `system.file()` instead
 4. **Always run `devtools::check()`** with no errors, warnings, or notes before submission
 5. **Document both exported and internal functions**
 6. **Use global variables from** [global_var.R](mdc:R/global_var.R) instead of hard-coding column names

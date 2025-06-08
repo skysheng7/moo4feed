@@ -20,6 +20,9 @@ reference:
   contents:
   - qc_config
   - qc
+  - knn_outlier_detection
+  - knn_clean_feed
+  - knn_clean_water
 
 - subtitle: Data Filtering
   desc: >
@@ -50,10 +53,11 @@ reference:
 
 - subtitle: Data Integration
   desc: >
-    Combine feeding and drinking data into unified datasets.
+    Merge and unmerge feeding and drinking data
   contents:
   - combine_feed_water
   - merge_list_df
+  - unmerge_data
 
 - title: Data Analysis and Summaries
 - subtitle: Feed and Water Metrics
