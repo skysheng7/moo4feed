@@ -81,12 +81,11 @@
 #' table(all_wat[["2020-11-01"]]$cow)
 "all_wat"
 
-#' Quality-checked cattle feeding behavior data
+#' Cattle feeding behavior data after quality check and outlier removal
 #'
-#' A quality-checked dataset containing feeding behavior and visit records for cattle 
+#' A dataset containing feeding visit records for cattle 
 #' over a three-day period (2020-10-31 to 2020-11-02). This dataset is the result of 
-#' applying quality control procedures to the raw `all_fed` data, with corrections for 
-#' issues such as overlapping visits, negative durations, and implausible intake values.
+#' applying quality control procedures and KNN-based outlier removal to the raw [all_fed] data.
 #'
 #' @format A list of 3 data frames, one for each date (2020-10-31, 2020-11-01, 2020-11-02),
 #' with each data frame containing the following 10 variables:
@@ -102,6 +101,7 @@
 #'   \item{intake}{numeric, amount of feed consumed (kg) during the event
 #'   (calculated as start_weight - end_weight)}
 #'   \item{date}{Date, calendar date of the feeding event}
+#'   \item{rate}{numeric, how fast the cow was eating (kg/s)}
 #' }
 #'
 #' @details This dataset is the result of applying quality control checks using the 
@@ -119,12 +119,11 @@
 #' table(clean_feed[["2020-11-01"]]$cow)
 "clean_feed"
 
-#' Quality-checked cattle water drinking behavior data
+#' Cattle drinking behavior data after quality check and outlier removal
 #'
-#' A quality-checked dataset containing water drinking behavior and visit records for cattle 
+#' A dataset containing drinking visit records for cattle 
 #' over a three-day period (2020-10-31 to 2020-11-02). This dataset is the result of 
-#' applying quality control procedures to the raw `all_wat` data, with corrections for 
-#' issues such as overlapping visits, negative durations, and implausible intake values.
+#' applying quality control procedures and KNN-based outlier removal to the raw [all_wat] data.
 #'
 #' @format A list of 3 data frames, one for each date (2020-10-31, 2020-11-01, 2020-11-02),
 #' with each data frame containing the following 10 variables:
@@ -140,6 +139,7 @@
 #'   \item{intake}{numeric, amount of water consumed (kg) during the event
 #'   (calculated as start_weight - end_weight)}
 #'   \item{date}{Date, calendar date of the drinking event}
+#'   \item{rate}{numeric, how fast the cow was drinking (L/s)}
 #' }
 #'
 #' @details This dataset is the result of applying quality control checks using the 
@@ -156,6 +156,51 @@
 #' # Count drinking events by cow on November 1 after quality control
 #' table(clean_water[["2020-11-01"]]$cow)
 "clean_water"
+
+#' Combined feeding and drinking behavior data with outliers removed
+#'
+#' A fully cleaned dataset containing both feeding and drinking behavior data for cattle
+#' over a three-day period (2020-10-31 to 2020-11-02). This dataset is the result of
+#' applying quality control procedures and KNN-based outlier removal to both feed and water data,
+#' then combining them into a single dataset for integrated analysis.
+#'
+#' @format A list of 3 data frames, one for each date (2020-10-31, 2020-11-01, 2020-11-02),
+#' with each data frame containing the following 11 variables:
+#' \describe{
+#'   \item{transponder}{integer, unique electronic ID for each bin}
+#'   \item{cow}{integer, animal ID number}
+#'   \item{bin}{numeric, bin location number (feed or water bin)}
+#'   \item{start}{POSIXct, timestamp when the visit started}
+#'   \item{end}{POSIXct, timestamp when the visit ended}
+#'   \item{duration}{integer, duration of the visit in seconds}
+#'   \item{start_weight}{numeric, weight of feed/water at start of visit}
+#'   \item{end_weight}{numeric, weight of feed/water at end of visit}
+#'   \item{intake}{numeric, amount consumed (kg or L) during the visit}
+#'   \item{date}{Date, calendar date of the visit}
+#'   \item{intake}{numeric, how fast the cow was eating/drinking (kg/s or L/s)}
+#' }
+#'
+#' @details This dataset represents the final, fully cleaned dataset after applying multiple
+#' layers of quality control. First, the [qc()] function was used to fix basic issues like
+#' double detections and negative values. Then, advanced outlier detection using K-Nearest 
+#' Neighbors (KNN) was applied through the [knn_clean_feed()] and [knn_clean_water()] functions
+#' to remove improbable data points. Finally, the cleaned feed and water datasets
+#' were combined using [combine_feed_water()]. This dataset provides a comprehensive view of
+#' both feeding and drinking behaviors in a single, analysis-ready format.
+#' 
+#' The KNN outlier detection emphasizes on removing data points with high rate and intake, and do not
+#' punish too much for data points with long duration. Because based on our experience, it's likely for 
+#' a cow to have very long durations per visit, but very unlikely to have large intake in a short time, 
+#' so we flagged outliers to catch visits with large intake and high rate.
+#' 
+#' @source [clean_feed] and [clean_water] after KNN outlier removal
+#'
+#' @examples
+#' # Access combined data for the first day
+#' first_day <- clean_comb[["2020-10-31"]]
+#'
+#' head(first_day)
+"clean_comb"
 
 #' Daily summary of cattle feeding and drinking behavior
 #'

@@ -23,6 +23,8 @@ URL: https://github.com/skysheng7/moo4feed, https://skysheng7.github.io/moo4feed
 BugReports: https://github.com/skysheng7/moo4feed/issues
 Imports: 
     dplyr,
+    FNN,
+    ggplot2,
     lubridate,
     rlang,
     tibble,
