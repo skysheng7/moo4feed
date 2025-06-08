@@ -48,14 +48,12 @@
 #' df_combined <- rbind(df_feed, df_outliers)
 #' 
 #' # Visualize intake vs. duration
-#' p1 <- viz_outliers(df_combined)
-#' 
-#' # Visualize intake vs. rate with custom colors
-#' p2 <- viz_outliers(df_combined, x_var = "duration", y_var = "rate", jitter_amount = 0,
-#'              regular_color = "steelblue", outlier_color = "firebrick")
+#' p1 <- viz_outliers(df_combined, x_var = "duration", y_var = "intake")
 #' 
 #' # Visualize with custom labels and title
 #' p3 <- viz_outliers(df_combined, 
+#'              x_var = "duration",
+#'              y_var = "intake",
 #'              x_lab = "Feeding Duration (seconds)", 
 #'              y_lab = "Feed Intake (kg)",
 #'              title = "Feed Intake Outlier Analysis")
