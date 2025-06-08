@@ -76,7 +76,7 @@ df_combined <- rbind(df_feed, df_outliers)
 p1 <- viz_outliers(df_combined, x_var = "duration", y_var = "intake")
 
 # Visualize with custom labels and title
-p3 <- viz_outliers(df_combined, 
+p2 <- viz_outliers(df_combined, 
              x_var = "duration",
              y_var = "intake",
              x_lab = "Feeding Duration (seconds)", 

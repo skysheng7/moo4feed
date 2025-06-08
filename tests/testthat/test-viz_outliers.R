@@ -250,7 +250,7 @@ test_that("viz_outliers handles NA and infinite values in rate calculation", {
   # Test that the function handles these cases with a warning
   expect_warning(
     p <- viz_outliers(test_data, x_var = "duration", y_var = "rate"),
-    "There are NA or infinite values in the rate column"
+    "There are NA or infinite values in the selected variables"
   )
   
   # Check that it still returns a ggplot object

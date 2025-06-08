@@ -103,16 +103,13 @@ viz_outliers <- function(data,
     stop(paste("Column", y_var, "not found in the data"))
   }
   
-  # Create rate column if it doesn't exist and is needed
-  if ((x_var == "rate" || y_var == "rate") && !("rate" %in% names(df))) {
-    df$rate <- df[[intake_col]] / df[[duration_col]]
-  }
-
-  # handle if rate is NA or inf, provite warning then remove them in visualizations
-  if (any(is.na(df$rate)) || any(is.infinite(df$rate))) {
-    warning("There are NA or infinite values in the rate column. These will be removed from the visualization.")
+  # Check for NA or infinite values in the chosen variables
+  if (any(is.na(df[[x_var]])) || any(is.infinite(df[[x_var]])) || 
+      any(is.na(df[[y_var]])) || any(is.infinite(df[[y_var]]))) {
+    warning("There are NA or infinite values in the selected variables. These will be removed from the visualization.")
     df <- df |>
-      dplyr::filter(!is.na(rate) & !is.infinite(rate))
+      dplyr::filter(!is.na(.data[[x_var]]) & !is.infinite(.data[[x_var]]) &
+                   !is.na(.data[[y_var]]) & !is.infinite(.data[[y_var]]))
   }
 
   if (is.null(x_lab)) {
