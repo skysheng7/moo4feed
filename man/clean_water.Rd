@@ -3,7 +3,7 @@
 \docType{data}
 \name{clean_water}
 \alias{clean_water}
-\title{Quality-checked cattle water drinking behavior data}
+\title{Cattle drinking behavior data after quality check and outlier removal}
 \format{
 A list of 3 data frames, one for each date (2020-10-31, 2020-11-01, 2020-11-02),
 with each data frame containing the following 10 variables:
@@ -19,6 +19,7 @@ with each data frame containing the following 10 variables:
 \item{intake}{numeric, amount of water consumed (kg) during the event
 (calculated as start_weight - end_weight)}
 \item{date}{Date, calendar date of the drinking event}
+\item{rate}{numeric, how fast the cow was drinking (L/s)}
 }
 }
 \source{
@@ -28,10 +29,9 @@ with each data frame containing the following 10 variables:
 clean_water
 }
 \description{
-A quality-checked dataset containing water drinking behavior and visit records for cattle
+A dataset containing drinking visit records for cattle
 over a three-day period (2020-10-31 to 2020-11-02). This dataset is the result of
-applying quality control procedures to the raw \code{all_wat} data, with corrections for
-issues such as overlapping visits, negative durations, and implausible intake values.
+applying quality control procedures and KNN-based outlier removal to the raw \link{all_wat} data.
 }
 \details{
 This dataset is the result of applying quality control checks using the

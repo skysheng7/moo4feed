@@ -24,14 +24,41 @@
 #' @return A ggplot object that can be further customized or printed.
 #'
 #' @examples
-#' # Detect outliers
-#' cleaned_feed <- knn_outlier_detection(all_fed[[1]])
+#' # Create a toy dataset with some normal feeding data and a few outliers
+#' set.seed(123)
+#' # Generate 100 normal feeding events
+#' df_feed <- data.frame(
+#'   cow = rep(1:10, each = 10),
+#'   duration = runif(100, 100, 300),
+#'   intake = runif(100, 5, 15),
+#'   bin = sample(1:5, 100, replace = TRUE),
+#'   outlier = rep("N", 100)
+#' )
+#' 
+#' # Add 5 outlier events
+#' df_outliers <- data.frame(
+#'   cow = sample(1:10, 5),
+#'   duration = c(500, 600, 150, 700, 100),
+#'   intake = c(35, 40, 45, 5, 50),
+#'   bin = sample(1:5, 5, replace = TRUE),
+#'   outlier = rep("Y", 5)
+#' )
+#' 
+#' # Combine the normal and outlier data
+#' df_combined <- rbind(df_feed, df_outliers)
 #' 
 #' # Visualize intake vs. duration
-#' viz_outliers(cleaned_feed, "intake", "duration")
+#' p1 <- viz_outliers(df_combined)
 #' 
-#' # Visualize intake vs. rate
-#' viz_outliers(cleaned_feed, "intake", "rate")
+#' # Visualize intake vs. rate with custom colors
+#' p2 <- viz_outliers(df_combined, x_var = "duration", y_var = "rate", jitter_amount = 0,
+#'              regular_color = "steelblue", outlier_color = "firebrick")
+#' 
+#' # Visualize with custom labels and title
+#' p3 <- viz_outliers(df_combined, 
+#'              x_lab = "Feeding Duration (seconds)", 
+#'              y_lab = "Feed Intake (kg)",
+#'              title = "Feed Intake Outlier Analysis")
 #'
 #' @export
 viz_outliers <- function(data, 
