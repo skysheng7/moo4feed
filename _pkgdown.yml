@@ -23,6 +23,7 @@ reference:
   - knn_outlier_detection
   - knn_clean_feed
   - knn_clean_water
+  - viz_outliers
 
 - subtitle: Data Filtering
   desc: >
@@ -119,6 +120,7 @@ reference:
   - all_wat
   - clean_feed
   - clean_water
+  - clean_comb
   - summary_df
   - warning
   - bin_visits

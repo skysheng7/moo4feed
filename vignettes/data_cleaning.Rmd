@@ -1,8 +1,8 @@
 ---
-title: "Data cleaning"
+title: "1. Data cleaning"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Data cleaning}
+  %\VignetteIndexEntry{1. Data cleaning}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -368,20 +368,153 @@ warning <- qc_results$warnings
 
 ```{r cleaned-data}
 # The qc_results contains our cleaned data
-clean_feed <- qc_results$feed     # Cleaned feeder data
-clean_water <- qc_results$water   # Cleaned drinker data
-clean_combined <- qc_results$combined   # Merged feed+water data
+qc_feed <- qc_results$feed     # Cleaned feeder data
+qc_water <- qc_results$water   # Cleaned drinker data
+qc_combined <- qc_results$combined   # Merged feed+water data
 ```
 
-## 8. Summarize Daily Intakes 📊
+## 8. Advanced Cleaning: Detect Outliers with KNN 🔍
+
+> **Ollie says:** Even after our regular quality checks, there might still be unusual data points in our dataset. Let's use a fancy technique called K-Nearest Neighbors (KNN) to find and handle those tricky outliers!
+
+The KNN method looks at each data point and compares it to its neighbors. 
+If a point is very different from its neighbors (in terms of intake, duration, and rate), 
+it might be an outlier! 
+
+These functions are designed to be able to handle both single-day and multi-day data. 
+
+### Try KNN outlier detection
+
+```{r knn-outliers}
+# First, let's detect outliers in our feed data
+feed_with_outliers <- knn_clean_feed(
+  qc_feed,            # Our cleaned feed data
+  k = 50,                # Number of neighbors to consider
+  threshold_percentile = 99.3,  # Threshold for outlier detection
+  # Custom scaling helps balance the influence of each variable
+  custom_scaling = list(
+    rate = 10000,        # Scaling for intake rate
+    intake = 7,          # Scaling for intake amount
+    duration = 0.03      # Scaling for duration
+  ),
+  remove_outliers = FALSE # Set to TRUE if you wish to remove outliers
+)
+
+# We can also visualize the outliers
+p1 <- viz_outliers(
+  feed_with_outliers,
+  x_var = "duration",
+  y_var = "intake",
+  title = "Feed Outliers: Duration vs Intake",
+  jitter_amount = 0.2,
+  regular_color = "lightgreen",
+  outlier_color = "orange"
+)
+print(p1)
+
+# Let's also look at rate vs intake
+p2 <- viz_outliers(
+  feed_with_outliers,
+  x_var = "rate",
+  y_var = "intake",
+  title = "Feed Outliers: Rate vs Intake",
+  jitter_amount = 0,
+  regular_color = "lightgreen",
+  outlier_color = "orange"
+)
+print(p2)
+```
+
+> **Ollie's Tips for KNN Outlier Detection:** 🦦
+>
+> - **Experiment with settings**: Try different values for `k`, `threshold_percentile`, and `custom_scaling` to see what works best for your data
+> - **Visualize before removing**: Always use `viz_outliers()` to check if the detected outliers make sense before removing them
+> - **Custom scaling matters**: Adjusting the scaling values helps balance the influence of different variables and adjusting for variables at different scales:
+>   - e.g., duration is in tens to hundreds of seconds, but rate is often < 1, so rate needs to be scaled up in order to be comparable to duration
+>   - Increase scaling for variables that should have more influence
+>   - Decrease scaling for variables that should have less influence
+> - **Why these scaling values?**: These values were chosen to be conservative and not remove too many data points. From previous experience, it's likely for a cow to have very long durations per visit, but very unlikely to have large intake in a short time, so we flagged outliers to catch visits with large intake and high rate.
+> - **Be cautious**: Don't set `remove_outliers = TRUE` until you're confident the detection is working correctly
+
+### Process water data outliers
+
+```{r knn-water-outliers}
+# Now let's detect outliers in our water data
+water_with_outliers <- knn_clean_water(
+  qc_water,           # Our cleaned water data
+  k = 50,                # Number of neighbors to consider
+  threshold_percentile = 99.8,  # Threshold for outlier detection
+  # Water data often needs different scaling
+  custom_scaling = list(
+    rate = 2000,           # Scaling for intake rate
+    intake = 1,          # Scaling for intake amount
+    duration = 0.01      # Scaling for duration
+  ),
+  remove_outliers = FALSE # Set to TRUE if you wish to remove outliers
+)
+
+# Visualize water outliers
+p3 <- viz_outliers(
+  water_with_outliers,
+  x_var = "duration",
+  y_var = "intake",
+  title = "Water Outliers: Duration vs Intake",
+  regular_color = "lightblue",
+  outlier_color = "orange"
+)
+print(p3)
+
+# Let's also look at rate vs intake
+p4 <- viz_outliers(
+  water_with_outliers,
+  x_var = "rate",
+  y_var = "intake",
+  title = "Water Outliers: Rate vs Intake",
+  jitter_amount = 0,
+  regular_color = "lightblue",
+  outlier_color = "orange"
+)
+print(p4)
+```
+
+### Remove outliers (optional)
+
+Once you're satisfied with the outlier detection, you can choose to remove them:
+
+```{r remove-outliers, eval=TRUE}
+cleaned_feed_no_outliers <- knn_clean_feed(
+  qc_feed,
+  k = 50,
+  threshold_percentile = 99.3,
+  custom_scaling = list(rate = 10000, intake = 7, duration = 0.03),
+  remove_outliers = TRUE
+)
+
+# Same for water data
+cleaned_water_no_outliers <- knn_clean_water(
+  qc_water,
+  k = 50,
+  threshold_percentile = 99.8,
+  custom_scaling = list(rate = 2000, intake = 1, duration = 0.01),
+  remove_outliers = TRUE
+)
+
+clean_feed <- cleaned_feed_no_outliers
+clean_water <- cleaned_water_no_outliers
+clean_comb <- combine_feed_water(clean_feed, clean_water)
+```
+
+> **Ollie's Warning:** Be careful with removing outliers! What looks like an outlier might actually be important data. Always try to understand why the points are being flagged as outliers before removing them.
+
+## 9. Summarize Daily Intakes 📊
 
 > **Ollie says:** Now that we've cleaned our data, let's create daily summaries of feed and water intake for each cow. This is where the juicy insights swim to the surface!
 
 ```{r daily-summary}
 # Create daily summaries of feed and water intake
 daily_summary <- feed_water_summary(
-  feed = clean_feed,           # Your cleaned feed data 
-  water = clean_water,         # Your cleaned water data
+  feed = qc_feed,           # Your cleaned feed data 
+  water = qc_water,         # Your cleaned water data
   warn = warning,              # Warning dataframe to update
   cfg = my_qc_config           # Quality check configuration
 )
@@ -408,11 +541,11 @@ head(warning)
 >
 > Plus, we've updated our warnings to flag cows with abnormally high or low daily intakes!
 
-## 9. What's Next? 🌟
+## 10. What's Next? 🌟
 
 Congratulations! You've now processed, cleaned, and summarized your cow feeding and drinking data. Your data is now sparkling clean and ready for analysis!
 
-Stay tuned for the next vignette where we'll explore what these dairy cows are actually up to!
+Stay tuned for the next vignette (Part 2) where we'll explore what these dairy cows are actually up to in "Extracting Cow Stories"!
 
 > **Ollie's Final Tips:** 
 >
@@ -429,7 +562,7 @@ Stay tuned for the next vignette where we'll explore what these dairy cows are a
 
 ------------------------------------------------------------------------
 
-## 10. Code Cheatsheet 📋
+## 11. Code Cheatsheet 📋
 
 Here's a copy-paste friendly version of all the code used in this vignette:
 
@@ -600,14 +733,109 @@ qc_results <- qc(
 warning <- qc_results$warnings
 
 # === 11. Extract cleaned data ===
-clean_feed <- qc_results$feed
-clean_water <- qc_results$water
-clean_combined <- qc_results$combined
+qc_feed <- qc_results$feed
+qc_water <- qc_results$water
+qc_combined <- qc_results$combined
 
-# === 12. Create daily summaries ===
+# === 12. KNN outlier detection ===
+# Detect outliers in feed data
+feed_with_outliers <- knn_clean_feed(
+  qc_feed,
+  k = 50,
+  threshold_percentile = 99.3,
+  custom_scaling = list(
+    rate = 10000,
+    intake = 7,
+    duration = 0.03
+  ),
+  remove_outliers = FALSE
+)
+
+# Visualize feed outliers
+p1 <- viz_outliers(
+  feed_with_outliers,
+  x_var = "duration",
+  y_var = "intake",
+  title = "Feed Outliers: Duration vs Intake",
+  jitter_amount = 0.2,
+  regular_color = "lightgreen",
+  outlier_color = "orange"
+)
+print(p1)
+
+p2 <- viz_outliers(
+  feed_with_outliers,
+  x_var = "rate",
+  y_var = "intake",
+  title = "Feed Outliers: Rate vs Intake",
+  jitter_amount = 0,
+  regular_color = "lightgreen",
+  outlier_color = "orange"
+)
+print(p2)
+
+# Detect outliers in water data
+water_with_outliers <- knn_clean_water(
+  qc_water,
+  k = 50,
+  threshold_percentile = 99.8,
+  custom_scaling = list(
+    rate = 2000,
+    intake = 1,
+    duration = 0.01
+  ),
+  remove_outliers = FALSE
+)
+
+# Visualize water outliers
+p3 <- viz_outliers(
+  water_with_outliers,
+  x_var = "duration",
+  y_var = "intake",
+  title = "Water Outliers: Duration vs Intake",
+  regular_color = "lightblue",
+  outlier_color = "orange"
+)
+print(p3)
+
+p4 <- viz_outliers(
+  water_with_outliers,
+  x_var = "rate",
+  y_var = "intake",
+  title = "Water Outliers: Rate vs Intake",
+  jitter_amount = 0,
+  regular_color = "lightblue",
+  outlier_color = "orange"
+)
+print(p4)
+
+# Remove outliers
+cleaned_feed_no_outliers <- knn_clean_feed(
+  qc_feed,
+  k = 50,
+  threshold_percentile = 99.3,
+  custom_scaling = list(rate = 10000, intake = 7, duration = 0.03),
+  remove_outliers = TRUE
+)
+
+# Same for water data
+cleaned_water_no_outliers <- knn_clean_water(
+  qc_water,
+  k = 50,
+  threshold_percentile = 99.8,
+  custom_scaling = list(rate = 2000, intake = 1, duration = 0.01),
+  remove_outliers = TRUE
+)
+
+# Set final cleaned datasets
+clean_feed <- cleaned_feed_no_outliers
+clean_water <- cleaned_water_no_outliers
+clean_comb <- combine_feed_water(clean_feed, clean_water)
+
+# === 13. Create daily summaries ===
 daily_summary <- feed_water_summary(
-  feed = clean_feed,
-  water = clean_water,
+  feed = qc_feed,
+  water = qc_water,
   warn = warning,
   cfg = my_qc_config
 )
@@ -617,5 +845,6 @@ summary_df <- daily_summary$summary
 
 # Get updated warnings
 warning <- daily_summary$warn
+
 ```
 

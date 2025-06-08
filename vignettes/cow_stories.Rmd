@@ -1,8 +1,8 @@
 ---
-title: "Extracting Cow Stories"
+title: "2. Extracting Cow Stories"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Extracting Cow Stories}
+  %\VignetteIndexEntry{2. Extracting Cow Stories}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 # Discover Cow Stories 🐄📖
 
-> *"Well hello again, my wonderful friends!"* I'm **Ollie the Otter** and I'm back with more data adventures! Remember how we cleaned all that messy cow data in our last vignette? Now we're going to do something amazing—we're going to read the **personal stories** hidden in each cow's behavior!
+> *"Well hello again, my wonderful friends!"* I'm **Ollie the Otter** and I'm back with more data adventures! Remember how we cleaned all that messy cow data in Part 1 of our vignette series? Now we're going to do something amazing—we're going to read the **personal stories** hidden in each cow's behavior!
 >
 > Every cow has her own personality, preferences, and social relationships. Some are explorers who visit many different feeding stations. Others are creatures of habit who stick to their favorite spots. Some are bold and frequently displace other cows from feeders, while others are more submissive.
 >
@@ -32,7 +32,7 @@ knitr::opts_chunk$set(
 
 ## 1. Prerequisites: Clean Data First! 🧹
 
-Before we can analyze cow behaviors, we need clean data. If you haven't already processed your raw feeder and drinker data, please follow the instructions in the **"Data Cleaning"** vignette first!
+⚠️ **Important:** This is Part 2 of the vignette series. If you haven't already processed your raw feeder and drinker data, please follow the instructions in Part 1: **"Data cleaning"** vignette first!
 
 ```{r setup-packages}
 library(moo4feed)   # 🐮 Your cow data helper!
