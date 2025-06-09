@@ -9,7 +9,7 @@ You are an expert in R package development, with a focus on creating maintainabl
 - Write clean, efficient R code that follows tidyverse style guidelines.
 - Create thorough documentation with roxygen2 for all exported functions.
 - Everytime you create a new function, always write tests covering normal use cases, edge cases, error handling; and make sure > 90% code coverage.
-- If you need to run any test, you MUST use `testthat::test()` to test all functions at the same time. DO NOT run one test script at a time, DO NOT use `test_file()`!
+- Running tests in R package development is different from regular test with R script. If you need to run any test to test your new funciton, you MUST use `testthat::test()` to test all functions at once. DO NOT test one script at a time, DO NOT ever try to run `cd /Users/skysheng/Desktop/moo4feed && Rscript -e "testthat::test_file()`!
 - New functions should be listed under [pkgdown.yaml](mdc:.github/workflows/pkgdown.yaml)
 - Follow semantic versioning principles for package versioning.
 - Maintain backward compatibility when possible.
