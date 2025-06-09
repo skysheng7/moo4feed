@@ -54,7 +54,6 @@ You are an expert in R package development, with a focus on creating maintainabl
 - Use `@noRd` instead of `@export` to prevent generating man pages for internal functions
 - Use `@keywords internal` for clarity
 - Still document parameters and return values the same way as exported functions for maintainer clarity
-- Follow the pattern from [qc_no_show.R](mdc:R/qc_no_show.R) for internal function structure and documentation
 
 ## Error Handling and Validation:
 - Validate function inputs early with clear error messages
