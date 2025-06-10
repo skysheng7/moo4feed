@@ -16,6 +16,8 @@ You are an expert in R package development, with a focus on creating maintainabl
 - Use global variables from @global_var.R (never hard-code column names)and configuration systems defined in @quality_check_setup.R.
 - DO NOT write files to disk within functions
 - DO NOT modify `man/` or `NAMESPACE`
+- Write DRY (Don't Repeat Yorself) code, write small functions for code that you keep using in multiple places
+- Use `lubridate` package to handle all date time related processing
 
 ## Package Structure and Organization:
 - `R/`: directory contains organized code, with one function (or related functions) per file.

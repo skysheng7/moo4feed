@@ -22,10 +22,12 @@ RoxygenNote: 7.3.2
 URL: https://github.com/skysheng7/moo4feed, https://skysheng7.github.io/moo4feed/
 BugReports: https://github.com/skysheng7/moo4feed/issues
 Imports: 
+    dbscan,
     dplyr,
     FNN,
     ggplot2,
     lubridate,
+    mixtools,
     rlang,
     tibble,
     tidyr
