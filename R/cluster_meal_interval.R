@@ -1,52 +1,53 @@
-
-#' Determine optimal interval (i.e., eps) parameter for DBSCAN clustering
+#' Determine optimal interval from gaps directly
 #'
-#' @param start_times Numeric vector of visit start times (minutes from midnight)
-#' @param end_times Numeric vector of visit end times (minutes from midnight)
+#' Wrapper function that calculates optimal eps from pre-calculated gaps.
+#' This is used internally when gaps have already been calculated properly by animal.
+#'
+#' @param gaps Numeric vector of inter-visit gaps in minutes
+#' @param method Character string specifying the method to use
+#' @param percentile Numeric value between 0 and 1 for percentile method
+#' @param lower_bound Numeric value for lower bound of the optimal interval
+#' @param upper_bound Numeric value for upper bound of the optimal interval
 #'
 #' @return Optimal eps value in minutes
 #' @keywords internal
 #' @noRd
-optimal_interval <- function(start_times, end_times) {
-  
-  if (length(start_times) <= 1) {
-    return(30) # Default fallback
-  }
-  
-  # Calculate inter-visit gaps (from end of previous visit to start of current visit)
-  if (length(start_times) != length(end_times)) {
-    stop("start_times and end_times must have the same length")
-  }
-  
-  # Sort by start times and get corresponding end times
-  sorted_indices <- order(start_times)
-  sorted_start_times <- start_times[sorted_indices]
-  sorted_end_times <- end_times[sorted_indices]
-  
-  # Calculate gaps between end of previous visit and start of current visit
-  gaps <- numeric(length(sorted_start_times) - 1)
-  for (i in 2:length(sorted_start_times)) {
-    gaps[i - 1] <- sorted_start_times[i] - sorted_end_times[i - 1]
-  }
-  
-  # Remove negative gaps (overlapping visits)
-  gaps <- gaps[gaps >= 0]
+optimal_interval_from_gaps <- function(gaps, method = "both", percentile = 0.75, lower_bound = 5, upper_bound = 60) {
   
   if (length(gaps) == 0) {
-    return(30) # Default fallback
+    warning("There is only 1 row of data in the provided dataframe, no gaps between visits available for analysis, returning default interval of 30 minutes")
+    return(30)
   }
   
-  # Method 1: 75th percentile of gaps
-  percentile_eps <- determine_eps_percentile(gaps)
+  # Validate method parameter
+  valid_methods <- c("both", "percentile", "gmm")
+  if (!method %in% valid_methods) {
+    stop("method must be one of: ", paste(valid_methods, collapse = ", "))
+  }
   
-  # Method 2: Gaussian mixture modeling
-  gmm_eps <- determine_eps_gmm(gaps)
+  # Validate percentile parameter
+  if (!is.numeric(percentile) || length(percentile) != 1 || percentile <= 0 || percentile >= 1) {
+    stop("percentile must be a single numeric value between 0 and 1")
+  }
   
-  # Take the minimum of the two methods to be conservative
-  optimal_eps <- min(percentile_eps, gmm_eps, na.rm = TRUE)
+  # Choose method(s) to use
+  if (method == "percentile") {
+    optimal_eps <- determine_eps_percentile(gaps, percentile)
+  } else if (method == "gmm") {
+    optimal_eps <- fit_gmm_to_gaps(gaps, percentile)
+  } else { # method == "both"
+    percentile_eps <- determine_eps_percentile(gaps, percentile)
+    gmm_eps <- fit_gmm_to_gaps(gaps, percentile)
+    # Take the minimum of the two methods to be conservative
+    optimal_eps <- min(percentile_eps, gmm_eps, na.rm = TRUE)
+  }
   
   # Apply reasonable bounds
-  optimal_eps <- max(5, min(optimal_eps, 60)) # Between 5 and 60 minutes
+  if (!is.null(lower_bound) && !is.null(upper_bound)) {
+    optimal_eps <- max(lower_bound, min(optimal_eps, upper_bound)) # Between lower_bound and upper_bound
+  } else {
+    optimal_eps <- optimal_eps
+  }
   
   return(as.numeric(optimal_eps))
 }
@@ -54,39 +55,42 @@ optimal_interval <- function(start_times, end_times) {
 #' Determine eps using percentile-based method
 #'
 #' @param gaps Numeric vector of inter-visit gaps
+#' @param percentile Numeric value between 0 and 1 specifying which percentile to use
 #'
-#' @return Eps value based on 75th percentile of gaps
+#' @return Eps value based on specified percentile of gaps
 #' @keywords internal
 #' @noRd
-determine_eps_percentile <- function(gaps) {
-  if (length(gaps) == 0) {
-    return(30)
-  }
+determine_eps_percentile <- function(gaps, percentile = 0.75) {
   
-  # Use 75th percentile of gaps
-  percentile_eps <- stats::quantile(gaps, 0.75, na.rm = TRUE)
+  # Use specified percentile of gaps
+  percentile_eps <- stats::quantile(gaps, percentile, na.rm = TRUE)
   return(as.numeric(percentile_eps))
 }
 
-#' Determine eps using Gaussian mixture modeling
+#' Fit Gaussian mixture model to gaps
+#'
+#' Fits a 2-component Gaussian mixture model to inter-visit gaps to determine
+#' optimal eps for clustering. Falls back to percentile method if GMM fails.
 #'
 #' @param gaps Numeric vector of inter-visit gaps
+#' @param percentile_fallback Numeric value between 0 and 1 for percentile fallback
 #'
-#' @return Eps value based on intersection of within-meal and between-meal distributions
+#' @return Optimal eps value based on GMM intersection or percentile fallback
 #' @keywords internal
 #' @noRd
-determine_eps_gmm <- function(gaps) {
-  
+fit_gmm_to_gaps <- function(gaps, percentile_fallback = 0.75) {
   if (length(gaps) < 10) {
     # Not enough data for GMM, fall back to percentile
-    return(determine_eps_percentile(gaps))
+    return(stats::quantile(gaps, percentile_fallback, na.rm = TRUE))
   }
   
   # Try to fit 2-component Gaussian mixture model
   tryCatch({
-    # Fit 2-component normal mixture
-    mix_fit <- mixtools::normalmixEM(gaps, k = 2, verb = FALSE, 
-                                    maxit = 1000, epsilon = 1e-08)
+    # Fit 2-component normal mixture (suppress all output)
+    captured_output <- utils::capture.output({
+      mix_fit <- mixtools::normalmixEM(gaps, k = 2, verb = FALSE, 
+                                      maxit = 1000, epsilon = 1e-08)
+    }, type = "output")
     
     # Extract parameters for the two components
     mu1 <- mix_fit$mu[1]
@@ -98,20 +102,20 @@ determine_eps_gmm <- function(gaps) {
     
     # Ensure component 1 is the within-meal (smaller mean) distribution
     if (mu1 > mu2) {
-    # Swap components
-    temp_mu <- mu1; mu1 <- mu2; mu2 <- temp_mu
-    temp_sigma <- sigma1; sigma1 <- sigma2; sigma2 <- temp_sigma
-    temp_lambda <- lambda1; lambda1 <- lambda2; lambda2 <- temp_lambda
+      # Swap components
+      temp_mu <- mu1; mu1 <- mu2; mu2 <- temp_mu
+      temp_sigma <- sigma1; sigma1 <- sigma2; sigma2 <- temp_sigma
+      temp_lambda <- lambda1; lambda1 <- lambda2; lambda2 <- temp_lambda
     }
     
     # Find intersection point between the two distributions
     intersection_eps <- find_distribution_intersection(mu1, sigma1, lambda1, 
-                                                    mu2, sigma2, lambda2)
+                                                      mu2, sigma2, lambda2)
     
     return(intersection_eps)
   }, error = function(e) {
     # If GMM fails, fall back to percentile method
-    return(determine_eps_percentile(gaps))
+    return(stats::quantile(gaps, percentile_fallback, na.rm = TRUE))
   })
 }
 
@@ -150,4 +154,4 @@ find_distribution_intersection <- function(mu1, sigma1, lambda1, mu2, sigma2, la
     # Use the point closer to the within-meal distribution
     return(mu1 + 0.5 * (mu2 - mu1))
   })
-} 
+}

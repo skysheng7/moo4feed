@@ -1,34 +1,37 @@
 
-#' Core clustering logic for one cow-day combination
+#' Core clustering logic for one animal-day combination
 #'
-#' @param cow_day_df Dataframe with visits for one cow on one day
+#' @param animal_day_df Dataframe with visits for one animal on one day
 #' @inheritParams cluster_meals
+#' @inheritParams set_global_cols
 #'
-#' @return Dataframe with meal summaries for this cow-day
+#' @return Dataframe with meal summaries for this animal-day
 #' @keywords internal
 #' @noRd
-cluster_meals_cow_day <- function(cow_day_df, eps, min_pts, id_col, start_col, 
-                                 end_col, bin_col, intake_col, dur_col) {
+cluster_meals_cow_day <- function(animal_day_df, eps, min_pts, 
+                                 id_col, start_col, end_col, bin_col, intake_col, dur_col, tz = tz2()) {
   
-  # If only one visit, return empty (treated as noise)
-  if (nrow(cow_day_df) < min_pts) {
-    return(create_empty_meal_df(id_col))
+  # Parameter validation
+  required_cols <- c(id_col, start_col, end_col, bin_col, intake_col, dur_col, "date")
+  missing_cols <- setdiff(required_cols, names(animal_day_df))
+  if (length(missing_cols) > 0) {
+    stop("Missing required columns: ", paste(missing_cols, collapse = ", "))
+  }
+  
+  # If the total number of visits is less than min_pts, return empty (treated as noise)
+  if (nrow(animal_day_df) < min_pts) {
+    return(create_empty_meal_df(id_col, tz))
   }
   
   # Sort by start time
-  cow_day_df <- cow_day_df[order(cow_day_df[[start_col]]), ]
+  animal_day_df <- animal_day_df[order(animal_day_df[[start_col]]), ]
   
-  # Convert start times to minutes from midnight using lubridate
-  start_times <- lubridate::as_datetime(cow_day_df[[start_col]])
-  midnight <- lubridate::floor_date(start_times[1], "day")
-  minutes_from_midnight <- as.numeric(lubridate::interval(midnight, start_times) / lubridate::minutes(1))
+  # Convert start times to minutes from midnight using helper function
+  minutes_from_midnight <- convert_times_to_minutes(animal_day_df[[start_col]], tz = tz)
   
-  # Auto-determine eps if not provided
+  # Eps should already be determined at a higher level based on scope
   if (is.null(eps)) {
-    # Convert end times to minutes from midnight for gap calculation
-    end_times <- lubridate::as_datetime(cow_day_df[[end_col]])
-    end_minutes_from_midnight <- as.numeric(lubridate::interval(midnight, end_times) / lubridate::minutes(1))
-    eps <- optimal_interval(minutes_from_midnight, end_minutes_from_midnight)
+    stop("eps should be determined before calling cluster_meals_cow_day")
   }
   
   # DBSCAN expects a matrix
@@ -39,21 +42,21 @@ cluster_meals_cow_day <- function(cow_day_df, eps, min_pts, id_col, start_col,
   valid_clusters <- clusters$cluster[clusters$cluster > 0]
   if (length(valid_clusters) == 0) {
     # All points are noise
-    return(create_empty_meal_df(id_col))
+    return(create_empty_meal_df(id_col, tz))
   }
   
   # Add cluster assignments to dataframe
-  cow_day_df$cluster <- clusters$cluster
+  animal_day_df$cluster <- clusters$cluster
   
   # Filter to only non-noise clusters and calculate meal statistics
-  meal_data <- cow_day_df[cow_day_df$cluster > 0, ]
+  meal_data <- animal_day_df[animal_day_df$cluster > 0, ]
   
   meal_summaries <- meal_data |>
     dplyr::group_by(cluster) |>
     dplyr::summarise(
-      !!id_col := first(.data[[id_col]]),
-      date = first(date),
-      meal_id = first(cluster),
+      !!id_col := dplyr::first(.data[[id_col]]),
+      date = dplyr::first(date),
+      meal_id = dplyr::first(cluster),
       meal_start = min(.data[[start_col]]),
       meal_end = max(.data[[end_col]]),
       meal_duration = as.numeric(lubridate::interval(min(.data[[start_col]]), 
@@ -69,7 +72,7 @@ cluster_meals_cow_day <- function(cow_day_df, eps, min_pts, id_col, start_col,
     ) |>
     dplyr::select(-total_feeding_duration)
   
-  # Reorder meal_id to be sequential within cow-day
+  # Reorder meal_id to be sequential within animal-day
   meal_summaries <- meal_summaries[order(meal_summaries$meal_start), ]
   meal_summaries$meal_id <- seq_len(nrow(meal_summaries))
   
