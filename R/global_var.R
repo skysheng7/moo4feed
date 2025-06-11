@@ -3,7 +3,8 @@ utils::globalVariables(c(
   "date", "feed_intake", "feed_duration", "feed_visits",
   "water_intake", "water_duration", "water_visits", "warning_str", "unique_feed_bins_visited",
   "unique_water_bins_visited", "visit_freq", "next_cow", "time_dif", "actor_at_another_bin", 
-  "date_str", ".data", "outlier", "intake_col", "duration_col"
+  "date_str", ".data", "outlier", "intake_col", "duration_col", "gaps", "cluster", "meal_duration",
+  "total_feeding_duration"
 ))
 
 # internal environment that stores the run-time global variable options

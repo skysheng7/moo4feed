@@ -54,18 +54,11 @@
 #'
 #' @examples
 #' 
-#' # Cluster meals with automatic parameter determination (all_fed is a list of dataframes included in the package)
+#' # Cluster meals with automatic parameter determination (all_fed is a list of 
+#' # dataframes included in the package)
 #' meals <- cluster_meals(all_fed[[1]], eps = 90, min_pts = 3, id_col="cow", 
 #'                        start_col="start", end_col="end", bin_col="bin", 
 #'                        intake_col="intake", dur_col="duration")
-#' 
-#' # Use automatic eps determination with different methods and scopes
-#' meals_auto <- cluster_meals(all_fed[[1]], method = "both", percentile = 0.8, eps_scope = "one_animal_all_days")
-#' meals_percentile <- cluster_meals(all_fed[[1]], method = "percentile", percentile = 0.75)
-#' meals_gmm <- cluster_meals(all_fed[[1]], method = "gmm", eps_scope = "all_animals")
-#' 
-#' # Use custom bounds for eps determination
-#' meals_custom <- cluster_meals(all_fed[[1]], lower_bound = 10, upper_bound = 45)
 #' 
 #' @export
 cluster_meals <- function(data,
