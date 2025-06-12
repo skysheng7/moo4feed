@@ -16,7 +16,7 @@
 #'
 #' @param data A single dataframe or list of dataframes containing feeding visit data
 #' @param method Character string specifying the method for eps determination.
-#'   Options are "both" (default), "percentile", or "gmm".
+#'   Options are "gmm" (default), "percentile", or "both".
 #'   \itemize{
 #'     \item "percentile": Uses the specified percentile of inter-visit gaps to determine 
 #'     the optimal interval between feeding visits for meal clustering
@@ -25,7 +25,7 @@
 #'     \item "both": Uses both methods and returns the minimum (more conservative)
 #'   }
 #' @param percentile Numeric value between 0 and 1 specifying which percentile to use 
-#'   for eps determination when method="percentile" or "both". Default is 0.9.
+#'   for eps determination when method="percentile" or "both". Default is 0.93.
 #' @param lower_bound Numeric value for lower bound of the optimal interval, if NULL, no lower bound is applied.
 #' @param upper_bound Numeric value for upper bound of the optimal interval, if NULL, no upper bound is applied.
 #' @param use_log_transform Logical indicating whether to use log transformation for GMM fitting. Default is TRUE. 
@@ -51,7 +51,7 @@
 #' approaches and returns the minimum value to be more conservative in meal definitions.
 #'
 #' @examples
-#' # Calculate optimal eps using default method (both percentile and GMM)
+#' # Calculate optimal eps using default method (GMM)
 #' meal_interval(all_fed[[1]])
 #' 
 #' # Use only percentile method with 80th percentile
@@ -61,13 +61,13 @@
 #' meal_interval(all_fed[[1]], method = "gmm")
 #' 
 #' # Work with list of dataframes
-#' meal_interval(all_fed, method = "both", percentile = 0.9)
+#' meal_interval(all_fed, method = "both", percentile = 0.93)
 #'
 #' @seealso [cluster_meals()] for using the eps parameter in meal clustering
 #' @export
 meal_interval <- function(data,
-                                  method = "both",
-                                  percentile = 0.9,
+                                  method = "gmm",
+                                  percentile = 0.93,
                                   lower_bound = 5,
                                   upper_bound = 60,
                                   use_log_transform = TRUE,

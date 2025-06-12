@@ -540,7 +540,7 @@ test_that("cluster_meals meal timing is logical", {
     # meal_duration should be non-negative
     expect_true(all(result$meal_duration >= 0))
     
-    # visit_count should be >= min_pts
+    # visit_count should be >= min_pts (using default min_pts = 3)
     expect_true(all(result$visit_count >= 3))
     
     # feeding_percentage should be between 0 and 100

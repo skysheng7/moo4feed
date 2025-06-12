@@ -18,7 +18,7 @@
 #' @param lower_bound Numeric value for lower bound of the optimal interval, if NULL, no lower bound is applied.
 #' @param upper_bound Numeric value for upper bound of the optimal interval, if NULL, no upper bound is applied.
 #' @param bins Number of bins for the histogram.
-#' @param colors Character vector of colors to use. Default uses `hcl.colors(4, "Set 3")`.
+#' @param colors Character vector of colors to use. Default uses `grDevices::hcl.colors(4, "Set 3")`.
 #' @param title_prefix Character string for plot title prefix. Default is "Distribution of time gap between visits & 
 #'  GMM-based meal interval (eps)".
 #' @param show_components Logical indicating whether to show individual GMM components. Default is TRUE.
@@ -57,7 +57,7 @@ viz_eps_gmm <- function(data,
                         lower_bound = NULL,
                         upper_bound = NULL,
                         bins = 100,
-                        colors = hcl.colors(4, "Set 3"),
+                        colors = grDevices::hcl.colors(4, "Set 3"),
                         title_prefix = "Distribution of time gap between visits \n& GMM-based meal interval (eps)",
                         show_components = TRUE,
                         xlim = 10,

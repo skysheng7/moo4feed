@@ -6,8 +6,8 @@
 \usage{
 meal_interval(
   data,
-  method = "both",
-  percentile = 0.9,
+  method = "gmm",
+  percentile = 0.93,
   lower_bound = 5,
   upper_bound = 60,
   use_log_transform = TRUE,
@@ -23,7 +23,7 @@ meal_interval(
 \item{data}{A single dataframe or list of dataframes containing feeding visit data}
 
 \item{method}{Character string specifying the method for eps determination.
-Options are "both" (default), "percentile", or "gmm".
+Options are "gmm" (default), "percentile", or "both".
 \itemize{
 \item "percentile": Uses the specified percentile of inter-visit gaps to determine
 the optimal interval between feeding visits for meal clustering
@@ -33,7 +33,7 @@ the optimal interval between feeding visits for meal clustering
 }}
 
 \item{percentile}{Numeric value between 0 and 1 specifying which percentile to use
-for eps determination when method="percentile" or "both". Default is 0.9.}
+for eps determination when method="percentile" or "both". Default is 0.93.}
 
 \item{lower_bound}{Numeric value for lower bound of the optimal interval, if NULL, no lower bound is applied.}
 
@@ -88,7 +88,7 @@ When method="both", the function uses both percentile and Gaussian mixture model
 approaches and returns the minimum value to be more conservative in meal definitions.
 }
 \examples{
-# Calculate optimal eps using default method (both percentile and GMM)
+# Calculate optimal eps using default method (GMM)
 meal_interval(all_fed[[1]])
 
 # Use only percentile method with 80th percentile
@@ -98,7 +98,7 @@ meal_interval(all_fed[[1]], method = "percentile", percentile = 0.8)
 meal_interval(all_fed[[1]], method = "gmm")
 
 # Work with list of dataframes
-meal_interval(all_fed, method = "both", percentile = 0.9)
+meal_interval(all_fed, method = "both", percentile = 0.93)
 
 }
 \seealso{

@@ -6,11 +6,11 @@
 \usage{
 viz_eps_percentile(
   data,
-  percentile = 0.9,
+  percentile = 0.93,
   lower_bound = NULL,
   upper_bound = NULL,
   bins = 100,
-  colors = hcl.colors(2, "Set 3"),
+  colors = grDevices::hcl.colors(2, "Set 3"),
   title_prefix =
     "Distribution of time gap between visits & \\noptimal meal interval (eps)",
   xlim = 20,
@@ -24,7 +24,7 @@ viz_eps_percentile(
 \item{data}{A single dataframe or list of dataframes containing feeding visit data}
 
 \item{percentile}{Numeric value between 0 and 1 specifying which percentile to use
-for eps determination. Default is 0.9.}
+for eps determination. Default is 0.93.}
 
 \item{lower_bound}{Numeric value for lower bound of the optimal interval, if NULL, no lower bound is applied.}
 
@@ -32,7 +32,7 @@ for eps determination. Default is 0.9.}
 
 \item{bins}{Number of bins for the histogram. Default is 100.}
 
-\item{colors}{Character vector of 2 colors to use. Default uses \code{hcl.colors(2, "Set 3")}.}
+\item{colors}{Character vector of 2 colors to use. Default uses \code{grDevices::hcl.colors(2, "Set 3")}.}
 
 \item{title_prefix}{Character string for plot title prefix. Default is "Distribution of time gap between visits & optimal meal interval (eps)".}
 
@@ -70,10 +70,10 @@ optimal eps marked as a vertical dashed line.
 \examples{
 # Create toy dataset
 toy_data <- all_fed[[1]][which(all_fed[[1]]$cow == 5114),]
-# Visualize with 90th percentile
+# Visualize with 93rd percentile
 plot <- viz_eps_percentile(toy_data, id_col = "cow", 
                            start_col = "start", end_col = "end", 
                            tz = "America/Vancouver", 
-                           percentile = 0.9)
+                           percentile = 0.93)
 
 }

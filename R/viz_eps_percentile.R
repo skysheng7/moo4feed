@@ -15,15 +15,15 @@
 #'
 #' @param data A single dataframe or list of dataframes containing feeding visit data
 #' @param percentile Numeric value between 0 and 1 specifying which percentile to use 
-#'   for eps determination. Default is 0.9.
+#'   for eps determination. Default is 0.93.
 #' @param lower_bound Numeric value for lower bound of the optimal interval, if NULL, no lower bound is applied.
 #' @param upper_bound Numeric value for upper bound of the optimal interval, if NULL, no upper bound is applied.
 #' @param bins Number of bins for the histogram. Default is 100.
-#' @param colors Character vector of 2 colors to use. Default uses `hcl.colors(2, "Set 3")`.
+#' @param colors Character vector of 2 colors to use. Default uses `grDevices::hcl.colors(2, "Set 3")`.
 #' @param title_prefix Character string for plot title prefix. Default is "Distribution of time gap between visits & optimal meal interval (eps)".
 #' @param xlim Numeric value for x-axis limit. Default is 20.
 #' @inheritParams set_global_cols
-#'
+#'  
 #' @return A ggplot2 object showing the gap distribution histogram with optimal eps line
 #'
 #' @details
@@ -34,19 +34,19 @@
 #' @examples
 #' # Create toy dataset
 #' toy_data <- all_fed[[1]][which(all_fed[[1]]$cow == 5114),]
-#' # Visualize with 90th percentile
+#' # Visualize with 93rd percentile
 #' plot <- viz_eps_percentile(toy_data, id_col = "cow", 
 #'                            start_col = "start", end_col = "end", 
 #'                            tz = "America/Vancouver", 
-#'                            percentile = 0.9)
+#'                            percentile = 0.93)
 #'
 #' @export
 viz_eps_percentile <- function(data, 
-                               percentile = 0.9,
+                               percentile = 0.93,
                                lower_bound = NULL,
                                upper_bound = NULL,
                                bins = 100,
-                               colors = hcl.colors(2, "Set 3"),
+                               colors = grDevices::hcl.colors(2, "Set 3"),
                                title_prefix = "Distribution of time gap between visits & \noptimal meal interval (eps)",
                                xlim = 20,
                                id_col = id_col2(),

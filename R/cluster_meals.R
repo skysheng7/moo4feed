@@ -8,19 +8,21 @@
 #' @param data A single dataframe or list of dataframes containing feeding visit data
 #' @param eps DBSCAN epsilon parameter (maximum time gap in minutes between visits in same meal).
 #'   If NULL (default), the parameter is automatically determined using statistical methods.
-#' @param min_pts DBSCAN minimum points parameter (minimum visits to form a dense cluster). Default is 3.
+#' @param min_pts DBSCAN minimum points parameter (minimum visits to form a dense cluster). Default is 2.
+#'   This follows the DBSCAN recommendation of setting min_pts to D + 1 where D is the number of dimensions 
+#'   (we have only 1 dimension: time, so min_pts = 1 + 1 = 2).
 #' @param method Character string specifying the automatic eps determination method when eps=NULL.
-#'   Options are "both" (default), "percentile", or "gmm". 
+#'   Options are "gmm" (default), "percentile", or "both". 
 #' @param percentile Numeric value between 0 and 1 specifying which percentile to use 
-#'   for automatic eps determination when method="percentile" or "both". Default is 0.9.
+#'   for automatic eps determination when method="percentile" or "both". Default is 0.93.
 #' @param eps_scope Character string specifying the scope for automatic eps determination when eps=NULL.
 #'   Options are:
 #'   \itemize{
-#'     \item "one_animal_all_days" (default): calculate optimal interval (eps) 
+#'     \item "all_animals" (default): calculate an universal optimal interval (eps) for all animals across all days
+#'     \item "one_animal_all_days": calculate optimal interval (eps) 
 #'            differently for different animals, but within each animal, we use the same eps across all days
 #'     \item "one_animal_single_day": calculate optimal interval (eps) 
 #'            differently for different animals, and calculate different eps for each day within the same animal
-#'     \item "all_animals": calculate an universal optimal interval (eps) for all animals across all days
 #'   }
 #' @param lower_bound Numeric value for lower bound of the optimal interval, if NULL, no lower bound is applied. Default is 5.
 #' @param upper_bound Numeric value for upper bound of the optimal interval, if NULL, no upper bound is applied. Default is 60.
@@ -51,7 +53,7 @@
 #' are treated as noise points and excluded from meal summaries.
 #'
 #' When eps=NULL, the function automatically determines the optimal parameter using:
-#' - 75th percentile of inter-visit gaps
+#' - 93rd percentile of inter-visit gaps
 #' - Gaussian mixture modeling
 #' - We will pick the minimum eps of the two methods, 
 #' with a minimum of 5 minutes and a maximum of 60 minutes, to be conservative
@@ -60,17 +62,17 @@
 #' 
 #' # Cluster meals with automatic parameter determination (all_fed is a list of 
 #' # dataframes included in the package)
-#' meals <- cluster_meals(all_fed[[1]], eps = 90, min_pts = 3, id_col="cow", 
+#' meals <- cluster_meals(all_fed[[1]], eps = 90, min_pts = 2, id_col="cow", 
 #'                        start_col="start", end_col="end", bin_col="bin", 
 #'                        intake_col="intake", dur_col="duration")
 #' 
 #' @export
 cluster_meals <- function(data,
                          eps = NULL,
-                         min_pts = 3,
-                         method = "both",
-                         percentile = 0.9,
-                         eps_scope = "one_animal_all_days",
+                         min_pts = 2,
+                         method = "gmm",
+                         percentile = 0.93,
+                         eps_scope = "all_animals",
                          lower_bound = 5,
                          upper_bound = 60,
                          use_log_transform = TRUE,

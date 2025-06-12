@@ -15,7 +15,10 @@
 #' @return Optimal eps value in minutes
 #' @keywords internal
 #' @noRd
-optimal_interval_from_gaps <- function(gaps, method = "both", percentile = 0.9, lower_bound = 5, upper_bound = 60, use_log_transform = TRUE, log_multiplier = 20, log_offset = 1) {
+optimal_interval_from_gaps <- function(gaps, method = "gmm", percentile = 0.93, 
+                                       lower_bound = 5, upper_bound = 60, 
+                                       use_log_transform = TRUE, log_multiplier = 20, 
+                                       log_offset = 1) {
   
   if (length(gaps) == 0) {
     warning("There is only 1 row of data in the provided dataframe, no gaps between visits available for analysis, returning default interval of 30 minutes")
@@ -63,7 +66,7 @@ optimal_interval_from_gaps <- function(gaps, method = "both", percentile = 0.9, 
 #' @return Eps value based on specified percentile of gaps
 #' @keywords internal
 #' @noRd
-determine_eps_percentile <- function(gaps, percentile = 0.9) {
+determine_eps_percentile <- function(gaps, percentile = 0.93) {
   
   # Use specified percentile of gaps
   percentile_eps <- stats::quantile(gaps, percentile, na.rm = TRUE)
@@ -93,7 +96,7 @@ determine_eps_percentile <- function(gaps, percentile = 0.9) {
 #'   }
 #' @keywords internal
 #' @noRd
-fit_gmm_model <- function(gaps, use_log_transform = TRUE, log_multiplier = 20, log_offset = 1, percentile_fallback = 0.9) {
+fit_gmm_model <- function(gaps, use_log_transform = TRUE, log_multiplier = 20, log_offset = 1, percentile_fallback = 0.93) {
   
   # Initialize return structure
   result <- list(
@@ -213,7 +216,7 @@ fit_gmm_model <- function(gaps, use_log_transform = TRUE, log_multiplier = 20, l
 #' @return Optimal eps value based on GMM intersection or percentile fallback
 #' @keywords internal
 #' @noRd
-fit_gmm_to_gaps <- function(gaps, percentile_fallback = 0.9, use_log_transform = TRUE, log_multiplier = 20, log_offset = 1) {
+fit_gmm_to_gaps <- function(gaps, percentile_fallback = 0.93, use_log_transform = TRUE, log_multiplier = 20, log_offset = 1) {
   
   # Use helper function to fit GMM
   gmm_result <- fit_gmm_model(gaps, use_log_transform, log_multiplier, log_offset, percentile_fallback)

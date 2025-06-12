@@ -28,6 +28,7 @@ Imports:
     ggplot2,
     lubridate,
     mixtools,
+    patchwork,
     rlang,
     tibble,
     tidyr

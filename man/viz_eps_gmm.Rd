@@ -9,7 +9,7 @@ viz_eps_gmm(
   lower_bound = NULL,
   upper_bound = NULL,
   bins = 100,
-  colors = hcl.colors(4, "Set 3"),
+  colors = grDevices::hcl.colors(4, "Set 3"),
   title_prefix =
     "Distribution of time gap between visits \\n& GMM-based meal interval (eps)",
   show_components = TRUE,
@@ -32,7 +32,7 @@ viz_eps_gmm(
 
 \item{bins}{Number of bins for the histogram.}
 
-\item{colors}{Character vector of colors to use. Default uses \code{hcl.colors(4, "Set 3")}.}
+\item{colors}{Character vector of colors to use. Default uses \code{grDevices::hcl.colors(4, "Set 3")}.}
 
 \item{title_prefix}{Character string for plot title prefix. Default is "Distribution of time gap between visits &
 GMM-based meal interval (eps)".}
