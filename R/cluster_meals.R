@@ -12,7 +12,7 @@
 #' @param method Character string specifying the automatic eps determination method when eps=NULL.
 #'   Options are "both" (default), "percentile", or "gmm". 
 #' @param percentile Numeric value between 0 and 1 specifying which percentile to use 
-#'   for automatic eps determination when method="percentile" or "both". Default is 0.75.
+#'   for automatic eps determination when method="percentile" or "both". Default is 0.9.
 #' @param eps_scope Character string specifying the scope for automatic eps determination when eps=NULL.
 #'   Options are:
 #'   \itemize{
@@ -24,6 +24,10 @@
 #'   }
 #' @param lower_bound Numeric value for lower bound of the optimal interval, if NULL, no lower bound is applied. Default is 5.
 #' @param upper_bound Numeric value for upper bound of the optimal interval, if NULL, no upper bound is applied. Default is 60.
+#' @param use_log_transform Logical indicating whether to use log transformation for GMM fitting. Default is TRUE. 
+#'  Log transformation often provides better separation of within-meal and between-meal gaps.
+#' @param log_multiplier Numeric value for multiplier of log transformation. Default is 20.
+#' @param log_offset Numeric value for offset of log transformation. Default is 1.
 #' @inheritParams set_global_cols
 #'
 #' @return A dataframe with meal-level summaries containing:
@@ -65,10 +69,13 @@ cluster_meals <- function(data,
                          eps = NULL,
                          min_pts = 3,
                          method = "both",
-                         percentile = 0.75,
+                         percentile = 0.9,
                          eps_scope = "one_animal_all_days",
                          lower_bound = 5,
                          upper_bound = 60,
+                         use_log_transform = TRUE,
+                         log_multiplier = 20,
+                         log_offset = 1,
                          id_col = id_col2(),
                          start_col = start_col2(),
                          end_col = end_col2(),
@@ -160,17 +167,17 @@ cluster_meals <- function(data,
   if (eps_scope == "one_animal_single_day") {
     # Each animal-day gets its own eps
     result <- cluster_meals_by_animal_day(combined_data, eps, min_pts, method, percentile, eps_scope,
-                                         lower_bound, upper_bound,
+                                         lower_bound, upper_bound, use_log_transform, log_multiplier, log_offset,
                                          id_col, start_col, end_col, bin_col, intake_col, dur_col, tz)
   } else if (eps_scope == "one_animal_all_days") {
     # Each animal gets its own eps, applied to all their days
     result <- cluster_meals_by_animal(combined_data, eps, min_pts, method, percentile, eps_scope,
-                                     lower_bound, upper_bound,
+                                     lower_bound, upper_bound, use_log_transform, log_multiplier, log_offset,
                                      id_col, start_col, end_col, bin_col, intake_col, dur_col, tz)
   } else { # eps_scope == "all_animals"
     # Single universal eps for all animals
     result <- cluster_meals_universal_eps(combined_data, eps, min_pts, method, percentile, eps_scope,
-                                         lower_bound, upper_bound,
+                                         lower_bound, upper_bound, use_log_transform, log_multiplier, log_offset,
                                          id_col, start_col, end_col, bin_col, intake_col, dur_col, tz)
   }
   
@@ -211,12 +218,13 @@ create_empty_meal_df <- function(id_col, tz = tz2()) {
 #' @param combined_data Single combined dataframe
 #' @param lower_bound Lower bound for eps determination
 #' @param upper_bound Upper bound for eps determination
+#' @param use_log_transform Logical indicating whether to use log transformation for GMM fitting
 #'
 #' @return Dataframe with meal summaries
 #' @keywords internal
 #' @noRd
 cluster_meals_by_animal_day <- function(combined_data, eps, min_pts, method, percentile, eps_scope,
-                                       lower_bound, upper_bound,
+                                       lower_bound, upper_bound, use_log_transform, log_multiplier, log_offset,
                                        id_col, start_col, end_col, bin_col, intake_col, dur_col, tz) {
   
   # Group by animal and date, process each combination
@@ -230,7 +238,7 @@ cluster_meals_by_animal_day <- function(combined_data, eps, min_pts, method, per
       if (is.null(current_eps)) {
         # Calculate gaps for just this animal-day
         gaps <- calculate_gaps_by_animal(animal_day_df, id_col, start_col, end_col, tz)
-        current_eps <- optimal_interval_from_gaps(gaps, method, percentile, lower_bound, upper_bound)
+        current_eps <- optimal_interval_from_gaps(gaps, method, percentile, lower_bound, upper_bound, use_log_transform, log_multiplier, log_offset)
       }
       
       # Cluster meals for this animal-day
@@ -254,12 +262,13 @@ cluster_meals_by_animal_day <- function(combined_data, eps, min_pts, method, per
 #' @param combined_data Single combined dataframe
 #' @param lower_bound Lower bound for eps determination
 #' @param upper_bound Upper bound for eps determination
+#' @param use_log_transform Logical indicating whether to use log transformation for GMM fitting
 #'
 #' @return Dataframe with meal summaries
 #' @keywords internal
 #' @noRd
 cluster_meals_by_animal <- function(combined_data, eps, min_pts, method, percentile, eps_scope,
-                                   lower_bound, upper_bound,
+                                   lower_bound, upper_bound, use_log_transform, log_multiplier, log_offset,
                                    id_col, start_col, end_col, bin_col, intake_col, dur_col, tz) {
   
   # Get unique animals
@@ -276,7 +285,7 @@ cluster_meals_by_animal <- function(combined_data, eps, min_pts, method, percent
     if (is.null(current_eps)) {
       # Calculate gaps for all days of this animal
       gaps <- calculate_gaps_by_animal(animal_data, id_col, start_col, end_col, tz)
-      current_eps <- optimal_interval_from_gaps(gaps, method, percentile, lower_bound, upper_bound)
+      current_eps <- optimal_interval_from_gaps(gaps, method, percentile, lower_bound, upper_bound, use_log_transform, log_multiplier, log_offset)
     }
     
     # Cluster meals for each day of this animal using the same eps
@@ -312,12 +321,13 @@ cluster_meals_by_animal <- function(combined_data, eps, min_pts, method, percent
 #' @param combined_data Single combined dataframe
 #' @param lower_bound Lower bound for eps determination
 #' @param upper_bound Upper bound for eps determination
+#' @param use_log_transform Logical indicating whether to use log transformation for GMM fitting
 #'
 #' @return Dataframe with meal summaries
 #' @keywords internal
 #' @noRd
 cluster_meals_universal_eps <- function(combined_data, eps, min_pts, method, percentile, eps_scope,
-                                       lower_bound, upper_bound,
+                                       lower_bound, upper_bound, use_log_transform, log_multiplier, log_offset,
                                        id_col, start_col, end_col, bin_col, intake_col, dur_col, tz) {
   
   # Determine universal eps if not provided
@@ -325,7 +335,7 @@ cluster_meals_universal_eps <- function(combined_data, eps, min_pts, method, per
   if (is.null(current_eps)) {
     # Calculate gaps from all animals (but properly grouped by animal)
     gaps <- calculate_gaps_by_animal(combined_data, id_col, start_col, end_col, tz)
-    current_eps <- optimal_interval_from_gaps(gaps, method, percentile, lower_bound, upper_bound)
+    current_eps <- optimal_interval_from_gaps(gaps, method, percentile, lower_bound, upper_bound, use_log_transform, log_multiplier, log_offset)
   }
   
   # Cluster meals for each animal-day using the same universal eps

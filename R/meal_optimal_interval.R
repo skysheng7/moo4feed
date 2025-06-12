@@ -25,9 +25,13 @@
 #'     \item "both": Uses both methods and returns the minimum (more conservative)
 #'   }
 #' @param percentile Numeric value between 0 and 1 specifying which percentile to use 
-#'   for eps determination when method="percentile" or "both". Default is 0.75.
+#'   for eps determination when method="percentile" or "both". Default is 0.9.
 #' @param lower_bound Numeric value for lower bound of the optimal interval, if NULL, no lower bound is applied.
 #' @param upper_bound Numeric value for upper bound of the optimal interval, if NULL, no upper bound is applied.
+#' @param use_log_transform Logical indicating whether to use log transformation for GMM fitting. Default is TRUE. 
+#'  Log transformation often provides better separation of within-meal and between-meal gaps.
+#' @param log_multiplier Numeric value for multiplier of log transformation. Default is 20.
+#' @param log_offset Numeric value for offset of log transformation. Default is 1.
 #' @inheritParams set_global_cols
 #'
 #' @return A numeric value representing the optimal eps parameter in minutes.
@@ -57,15 +61,18 @@
 #' meal_interval(all_fed[[1]], method = "gmm")
 #' 
 #' # Work with list of dataframes
-#' meal_interval(all_fed, method = "both", percentile = 0.75)
+#' meal_interval(all_fed, method = "both", percentile = 0.9)
 #'
 #' @seealso [cluster_meals()] for using the eps parameter in meal clustering
 #' @export
 meal_interval <- function(data,
                                   method = "both",
-                                  percentile = 0.75,
+                                  percentile = 0.9,
                                   lower_bound = 5,
                                   upper_bound = 60,
+                                  use_log_transform = TRUE,
+                                  log_multiplier = 20,
+                                  log_offset = 1,
                                   id_col = id_col2(),
                                   start_col = start_col2(),
                                   end_col = end_col2(),
@@ -108,7 +115,7 @@ meal_interval <- function(data,
   gaps <- calculate_gaps_by_animal(combined_data, id_col, start_col, end_col, tz)
   
   # Determine optimal eps from gaps
-  optimal_eps <- optimal_interval_from_gaps(gaps, method, percentile, lower_bound, upper_bound)
+  optimal_eps <- optimal_interval_from_gaps(gaps, method, percentile, lower_bound, upper_bound, use_log_transform, log_multiplier, log_offset)
   
   return(optimal_eps)
 } 

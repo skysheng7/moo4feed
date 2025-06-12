@@ -50,7 +50,7 @@ create_multiday_test_data <- function() {
 test_that("cluster_meals works with single dataframe and fixed eps", {
   test_data <- create_test_data()
   
-  result <- cluster_meals(test_data, eps = 30, min_pts = 3)
+  result <- cluster_meals(test_data, eps = 30, min_pts = 3, use_log_transform = FALSE)
   
   expect_s3_class(result, "data.frame")
   expect_true(nrow(result) > 0)
@@ -73,7 +73,7 @@ test_that("cluster_meals works with list of dataframes", {
   test_data2 <- create_test_data()[11:20, ] # Animal B only
   data_list <- list(test_data1, test_data2)
   
-  result <- cluster_meals(data_list, eps = 30, min_pts = 3)
+  result <- cluster_meals(data_list, eps = 30, min_pts = 3, use_log_transform = FALSE)
   
   expect_s3_class(result, "data.frame")
   expect_true(nrow(result) > 0)
@@ -83,7 +83,7 @@ test_that("cluster_meals works with list of dataframes", {
 test_that("cluster_meals works with automatic eps determination - both method", {
   test_data <- create_test_data()
   
-  result <- cluster_meals(test_data, eps = NULL, method = "both", min_pts = 3)
+  result <- cluster_meals(test_data, eps = NULL, method = "both", min_pts = 3, use_log_transform = FALSE)
   
   expect_s3_class(result, "data.frame")
   expect_true(nrow(result) > 0)
@@ -92,7 +92,7 @@ test_that("cluster_meals works with automatic eps determination - both method", 
 test_that("cluster_meals works with automatic eps determination - percentile method", {
   test_data <- create_test_data()
   
-  result <- cluster_meals(test_data, eps = NULL, method = "percentile", min_pts = 3)
+  result <- cluster_meals(test_data, eps = NULL, method = "percentile", min_pts = 3, use_log_transform = FALSE)
   
   expect_s3_class(result, "data.frame")
   expect_true(nrow(result) > 0)
@@ -101,7 +101,7 @@ test_that("cluster_meals works with automatic eps determination - percentile met
 test_that("cluster_meals works with automatic eps determination - gmm method", {
   test_data <- create_test_data()
   
-  result <- cluster_meals(test_data, eps = NULL, method = "gmm", min_pts = 3)
+  result <- cluster_meals(test_data, eps = NULL, method = "gmm", min_pts = 3, use_log_transform = FALSE)
   
   expect_s3_class(result, "data.frame")
   expect_true(nrow(result) > 0)
@@ -111,9 +111,9 @@ test_that("cluster_meals works with different eps_scope values", {
   test_data <- create_multiday_test_data()
   
   # Test all three eps_scope options
-  result_animal_day <- cluster_meals(test_data, eps = NULL, eps_scope = "one_animal_single_day")
-  result_animal_all <- cluster_meals(test_data, eps = NULL, eps_scope = "one_animal_all_days")
-  result_universal <- cluster_meals(test_data, eps = NULL, eps_scope = "all_animals")
+  result_animal_day <- cluster_meals(test_data, eps = NULL, eps_scope = "one_animal_single_day", use_log_transform = FALSE)
+  result_animal_all <- cluster_meals(test_data, eps = NULL, eps_scope = "one_animal_all_days", use_log_transform = FALSE)
+  result_universal <- cluster_meals(test_data, eps = NULL, eps_scope = "all_animals", use_log_transform = FALSE)
   
   expect_s3_class(result_animal_day, "data.frame")
   expect_s3_class(result_animal_all, "data.frame")
@@ -140,9 +140,9 @@ test_that("cluster_meals works with custom column names", {
 test_that("cluster_meals works with different percentile values", {
   test_data <- create_test_data()
   
-  result_50 <- cluster_meals(test_data, eps = NULL, method = "percentile", percentile = 0.5)
-  result_75 <- cluster_meals(test_data, eps = NULL, method = "percentile", percentile = 0.75)
-  result_90 <- cluster_meals(test_data, eps = NULL, method = "percentile", percentile = 0.9)
+  result_50 <- cluster_meals(test_data, eps = NULL, method = "percentile", percentile = 0.5, use_log_transform = FALSE)
+  result_75 <- cluster_meals(test_data, eps = NULL, method = "percentile", percentile = 0.75, use_log_transform = FALSE)
+  result_90 <- cluster_meals(test_data, eps = NULL, method = "percentile", percentile = 0.9, use_log_transform = FALSE)
   
   expect_s3_class(result_50, "data.frame")
   expect_s3_class(result_75, "data.frame")
@@ -152,10 +152,10 @@ test_that("cluster_meals works with different percentile values", {
 test_that("cluster_meals works with custom bounds", {
   test_data <- create_test_data()
   
-  result_custom <- cluster_meals(test_data, eps = NULL, lower_bound = 10, upper_bound = 45)
-  result_no_lower <- cluster_meals(test_data, eps = NULL, lower_bound = NULL, upper_bound = 60)
-  result_no_upper <- cluster_meals(test_data, eps = NULL, lower_bound = 5, upper_bound = NULL)
-  result_no_bounds <- cluster_meals(test_data, eps = NULL, lower_bound = NULL, upper_bound = NULL)
+  result_custom <- cluster_meals(test_data, eps = NULL, lower_bound = 10, upper_bound = 45, use_log_transform = FALSE)
+  result_no_lower <- cluster_meals(test_data, eps = NULL, lower_bound = NULL, upper_bound = 60, use_log_transform = FALSE)
+  result_no_upper <- cluster_meals(test_data, eps = NULL, lower_bound = 5, upper_bound = NULL, use_log_transform = FALSE)
+  result_no_bounds <- cluster_meals(test_data, eps = NULL, lower_bound = NULL, upper_bound = NULL, use_log_transform = FALSE)
   
   expect_s3_class(result_custom, "data.frame")
   expect_s3_class(result_no_lower, "data.frame")
@@ -166,9 +166,9 @@ test_that("cluster_meals works with custom bounds", {
 test_that("cluster_meals works with different min_pts values", {
   test_data <- create_test_data()
   
-  result_2 <- cluster_meals(test_data, eps = 30, min_pts = 2)
-  result_3 <- cluster_meals(test_data, eps = 30, min_pts = 3)
-  result_4 <- cluster_meals(test_data, eps = 30, min_pts = 4)
+  result_2 <- cluster_meals(test_data, eps = 30, min_pts = 2, use_log_transform = FALSE)
+  result_3 <- cluster_meals(test_data, eps = 30, min_pts = 3, use_log_transform = FALSE)
+  result_4 <- cluster_meals(test_data, eps = 30, min_pts = 4, use_log_transform = FALSE)
   
   expect_s3_class(result_2, "data.frame")
   expect_s3_class(result_3, "data.frame")
@@ -194,7 +194,7 @@ test_that("cluster_meals handles empty dataframe", {
   )
   
   expect_warning(
-    result <- cluster_meals(empty_data, eps = 30),
+    result <- cluster_meals(empty_data, eps = 30, use_log_transform = FALSE),
     "No data provided, returning empty meal dataframe"
   )
   
@@ -213,7 +213,7 @@ test_that("cluster_meals handles single animal with single visit", {
     duration = 10
   )
   
-  result <- cluster_meals(single_visit, eps = 30, min_pts = 3)
+  result <- cluster_meals(single_visit, eps = 30, min_pts = 3, use_log_transform = FALSE)
   
   expect_s3_class(result, "data.frame")
   expect_equal(nrow(result), 0)  # Should be empty as it doesn't meet min_pts
@@ -229,7 +229,7 @@ test_that("cluster_meals handles single animal with exactly min_pts visits", {
     duration = c(10, 15, 10)
   )
   
-  result <- cluster_meals(min_visits, eps = 30, min_pts = 3)
+  result <- cluster_meals(min_visits, eps = 30, min_pts = 3, use_log_transform = FALSE)
   
   expect_s3_class(result, "data.frame")
   expect_true(nrow(result) >= 0)  # Should form a meal or be noise
@@ -247,7 +247,7 @@ test_that("cluster_meals handles data with all visits as noise (large gaps)", {
     duration = c(10, 15, 10, 10, 15, 10)
   )
   
-  result <- cluster_meals(sparse_data, eps = 15, min_pts = 3)  # Small eps
+  result <- cluster_meals(sparse_data, eps = 15, min_pts = 3, use_log_transform = FALSE)  # Small eps
   
   expect_s3_class(result, "data.frame")
   # Might be empty if all visits are classified as noise
@@ -257,7 +257,7 @@ test_that("cluster_meals handles data with missing date column", {
   test_data <- create_test_data()
   test_data$date <- NULL  # Remove date column
   
-  result <- cluster_meals(test_data, eps = 30, min_pts = 3)
+  result <- cluster_meals(test_data, eps = 30, min_pts = 3, use_log_transform = FALSE)
   
   expect_s3_class(result, "data.frame")
   expect_true(nrow(result) > 0)
@@ -267,7 +267,7 @@ test_that("cluster_meals handles data with existing date column", {
   test_data <- create_test_data()
   test_data$date <- lubridate::date(test_data$start)
   
-  result <- cluster_meals(test_data, eps = 30, min_pts = 3)
+  result <- cluster_meals(test_data, eps = 30, min_pts = 3, use_log_transform = FALSE)
   
   expect_s3_class(result, "data.frame")
   expect_true(nrow(result) > 0)
@@ -278,7 +278,7 @@ test_that("cluster_meals handles data with NA values in non-critical columns", {
   test_data$intake[1] <- NA
   test_data$duration[2] <- NA
   
-  result <- cluster_meals(test_data, eps = 30, min_pts = 3)
+  result <- cluster_meals(test_data, eps = 30, min_pts = 3, use_log_transform = FALSE)
   
   expect_s3_class(result, "data.frame")
   # Should still work, NA values should be handled in meal summaries
@@ -289,7 +289,7 @@ test_that("cluster_meals handles unsorted data", {
   # Shuffle the data
   test_data <- test_data[sample(nrow(test_data)), ]
   
-  result <- cluster_meals(test_data, eps = 30, min_pts = 3)
+  result <- cluster_meals(test_data, eps = 30, min_pts = 3, use_log_transform = FALSE)
   
   expect_s3_class(result, "data.frame")
   expect_true(nrow(result) > 0)
@@ -298,7 +298,7 @@ test_that("cluster_meals handles unsorted data", {
 test_that("cluster_meals handles very large eps values", {
   test_data <- create_test_data()
   
-  result <- cluster_meals(test_data, eps = 1000, min_pts = 3)  # Very large eps
+  result <- cluster_meals(test_data, eps = 1000, min_pts = 3, use_log_transform = FALSE)  # Very large eps
   
   expect_s3_class(result, "data.frame")
   # With very large eps, most visits should cluster into few meals
@@ -307,7 +307,7 @@ test_that("cluster_meals handles very large eps values", {
 test_that("cluster_meals handles very small eps values", {
   test_data <- create_test_data()
   
-  result <- cluster_meals(test_data, eps = 1, min_pts = 3)  # Very small eps
+  result <- cluster_meals(test_data, eps = 1, min_pts = 3, use_log_transform = FALSE)  # Very small eps
   
   expect_s3_class(result, "data.frame")
   # With very small eps, most visits might be classified as noise
@@ -315,7 +315,7 @@ test_that("cluster_meals handles very small eps values", {
 
 test_that("cluster_meals handles empty list", {
   expect_error(
-    cluster_meals(list(), eps = 30),
+    cluster_meals(list(), eps = 30, use_log_transform = FALSE),
     "data list is empty"
   )
 })
@@ -331,7 +331,7 @@ test_that("cluster_meals handles list with empty dataframes", {
   )
   
   expect_warning(
-    result <- cluster_meals(list(empty_df, empty_df), eps = 30),
+    result <- cluster_meals(list(empty_df, empty_df), eps = 30, use_log_transform = FALSE),
     "No data provided, returning empty meal dataframe"
   )
   
@@ -345,21 +345,21 @@ test_that("cluster_meals handles list with empty dataframes", {
 
 test_that("cluster_meals stops when data is NULL", {
   expect_error(
-    cluster_meals(NULL, eps = 30),
+    cluster_meals(NULL, eps = 30, use_log_transform = FALSE),
     "data cannot be NULL"
   )
 })
 
 test_that("cluster_meals stops when data is not dataframe or list", {
   expect_error(
-    cluster_meals("not_a_dataframe", eps = 30),
+    cluster_meals("not_a_dataframe", eps = 30, use_log_transform = FALSE),
     "data must be a dataframe or list of dataframes"
   )
 })
 
 test_that("cluster_meals stops when list contains non-dataframes", {
   expect_error(
-    cluster_meals(list(create_test_data(), "not_a_dataframe"), eps = 30),
+    cluster_meals(list(create_test_data(), "not_a_dataframe"), eps = 30, use_log_transform = FALSE),
     "All items in the list must be dataframes"
   )
 })
@@ -368,22 +368,22 @@ test_that("cluster_meals stops for invalid min_pts", {
   test_data <- create_test_data()
   
   expect_error(
-    cluster_meals(test_data, eps = 30, min_pts = 0),
+    cluster_meals(test_data, eps = 30, min_pts = 0, use_log_transform = FALSE),
     "min_pts must be a single positive integer"
   )
   
   expect_error(
-    cluster_meals(test_data, eps = 30, min_pts = -1),
+    cluster_meals(test_data, eps = 30, min_pts = -1, use_log_transform = FALSE),
     "min_pts must be a single positive integer"
   )
   
   expect_error(
-    cluster_meals(test_data, eps = 30, min_pts = 1.5),
+    cluster_meals(test_data, eps = 30, min_pts = 1.5, use_log_transform = FALSE),
     "min_pts must be a single positive integer"
   )
   
   expect_error(
-    cluster_meals(test_data, eps = 30, min_pts = c(1, 2)),
+    cluster_meals(test_data, eps = 30, min_pts = c(1, 2), use_log_transform = FALSE),
     "min_pts must be a single positive integer"
   )
 })
@@ -392,7 +392,7 @@ test_that("cluster_meals stops for invalid method", {
   test_data <- create_test_data()
   
   expect_error(
-    cluster_meals(test_data, method = "invalid"),
+    cluster_meals(test_data, method = "invalid", use_log_transform = FALSE),
     "method must be one of: both, percentile, gmm"
   )
 })
@@ -401,22 +401,22 @@ test_that("cluster_meals stops for invalid percentile", {
   test_data <- create_test_data()
   
   expect_error(
-    cluster_meals(test_data, percentile = 0),
+    cluster_meals(test_data, percentile = 0, use_log_transform = FALSE),
     "percentile must be a single numeric value between 0 and 1"
   )
   
   expect_error(
-    cluster_meals(test_data, percentile = 1),
+    cluster_meals(test_data, percentile = 1, use_log_transform = FALSE),
     "percentile must be a single numeric value between 0 and 1"
   )
   
   expect_error(
-    cluster_meals(test_data, percentile = 1.5),
+    cluster_meals(test_data, percentile = 1.5, use_log_transform = FALSE),
     "percentile must be a single numeric value between 0 and 1"
   )
   
   expect_error(
-    cluster_meals(test_data, percentile = c(0.5, 0.7)),
+    cluster_meals(test_data, percentile = c(0.5, 0.7), use_log_transform = FALSE),
     "percentile must be a single numeric value between 0 and 1"
   )
 })
@@ -425,27 +425,27 @@ test_that("cluster_meals stops for invalid bounds", {
   test_data <- create_test_data()
   
   expect_error(
-    cluster_meals(test_data, lower_bound = -1),
+    cluster_meals(test_data, lower_bound = -1, use_log_transform = FALSE),
     "lower_bound must be a single non-negative numeric value or NULL"
   )
   
   expect_error(
-    cluster_meals(test_data, upper_bound = -1),
+    cluster_meals(test_data, upper_bound = -1, use_log_transform = FALSE),
     "upper_bound must be a single non-negative numeric value or NULL"
   )
   
   expect_error(
-    cluster_meals(test_data, lower_bound = c(1, 2)),
+    cluster_meals(test_data, lower_bound = c(1, 2), use_log_transform = FALSE),
     "lower_bound must be a single non-negative numeric value or NULL"
   )
   
   expect_error(
-    cluster_meals(test_data, upper_bound = c(1, 2)),
+    cluster_meals(test_data, upper_bound = c(1, 2), use_log_transform = FALSE),
     "upper_bound must be a single non-negative numeric value or NULL"
   )
   
   expect_error(
-    cluster_meals(test_data, lower_bound = 50, upper_bound = 20),
+    cluster_meals(test_data, lower_bound = 50, upper_bound = 20, use_log_transform = FALSE),
     "lower_bound must be less than or equal to upper_bound"
   )
 })
@@ -454,7 +454,7 @@ test_that("cluster_meals stops for invalid eps_scope", {
   test_data <- create_test_data()
   
   expect_error(
-    cluster_meals(test_data, eps_scope = "invalid"),
+    cluster_meals(test_data, eps_scope = "invalid", use_log_transform = FALSE),
     "eps_scope must be one of: one_animal_single_day, one_animal_all_days, all_animals"
   )
 })
@@ -464,7 +464,7 @@ test_that("cluster_meals stops when required columns are missing", {
   test_data$cow <- NULL
   
   expect_error(
-    cluster_meals(test_data, eps = 30),
+    cluster_meals(test_data, eps = 30, use_log_transform = FALSE),
     "Missing required columns: cow"
   )
 })
@@ -475,7 +475,7 @@ test_that("cluster_meals stops when multiple columns are missing", {
   test_data$bin <- NULL
   
   expect_error(
-    cluster_meals(test_data, eps = 30),
+    cluster_meals(test_data, eps = 30, use_log_transform = FALSE),
     "Missing required columns: cow, bin"
   )
 })
@@ -487,7 +487,7 @@ test_that("cluster_meals stops when multiple columns are missing", {
 test_that("cluster_meals returns correct column structure", {
   test_data <- create_test_data()
   
-  result <- cluster_meals(test_data, eps = 30, min_pts = 3)
+  result <- cluster_meals(test_data, eps = 30, min_pts = 3, use_log_transform = FALSE)
   
   # Check required columns exist
   required_cols <- c("cow", "date", "meal_id", "meal_start", "meal_end", 
@@ -512,7 +512,7 @@ test_that("cluster_meals returns correct column structure", {
 test_that("cluster_meals meal_id is sequential within animal-day", {
   test_data <- create_multiday_test_data()
   
-  result <- cluster_meals(test_data, eps = 30, min_pts = 3)
+  result <- cluster_meals(test_data, eps = 30, min_pts = 3, use_log_transform = FALSE)
   
   if (nrow(result) > 0) {
     # Check meal_id starts at 1 for each animal-day
@@ -531,7 +531,7 @@ test_that("cluster_meals meal_id is sequential within animal-day", {
 test_that("cluster_meals meal timing is logical", {
   test_data <- create_test_data()
   
-  result <- cluster_meals(test_data, eps = 30, min_pts = 3)
+  result <- cluster_meals(test_data, eps = 30, min_pts = 3, use_log_transform = FALSE)
   
   if (nrow(result) > 0) {
     # meal_start should be <= meal_end
@@ -560,9 +560,9 @@ test_that("cluster_meals consistency across different eps_scope with same eps", 
   fixed_eps <- 30
   
   # All should give same results when eps is fixed
-  result_animal_day <- cluster_meals(test_data, eps = fixed_eps, eps_scope = "one_animal_single_day")
-  result_animal_all <- cluster_meals(test_data, eps = fixed_eps, eps_scope = "one_animal_all_days")
-  result_universal <- cluster_meals(test_data, eps = fixed_eps, eps_scope = "all_animals")
+  result_animal_day <- cluster_meals(test_data, eps = fixed_eps, eps_scope = "one_animal_single_day", use_log_transform = FALSE)
+  result_animal_all <- cluster_meals(test_data, eps = fixed_eps, eps_scope = "one_animal_all_days", use_log_transform = FALSE)
+  result_universal <- cluster_meals(test_data, eps = fixed_eps, eps_scope = "all_animals", use_log_transform = FALSE)
   
   expect_equal(nrow(result_animal_day), nrow(result_animal_all))
   expect_equal(nrow(result_animal_all), nrow(result_universal))
@@ -607,7 +607,7 @@ test_that("cluster_meals handles real-world-like data patterns", {
     duration = rep(c(10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10), 2)
   )
   
-  result <- cluster_meals(realistic_data, eps = NULL, method = "both", min_pts = 2)
+  result <- cluster_meals(realistic_data, eps = NULL, method = "both", min_pts = 2, use_log_transform = FALSE)
   
   expect_s3_class(result, "data.frame")
   # Should be able to identify multiple meals per animal
@@ -632,7 +632,7 @@ test_that("cluster_meals handles moderately large dataset", {
   }
   
   # Should handle this without errors
-  result <- cluster_meals(large_data, eps = 30, min_pts = 3)
+  result <- cluster_meals(large_data, eps = 30, min_pts = 3, use_log_transform = FALSE)
   
   expect_s3_class(result, "data.frame")
   expect_equal(length(unique(result$cow)), 10)

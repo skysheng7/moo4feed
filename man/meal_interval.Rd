@@ -7,9 +7,12 @@
 meal_interval(
   data,
   method = "both",
-  percentile = 0.75,
+  percentile = 0.9,
   lower_bound = 5,
   upper_bound = 60,
+  use_log_transform = TRUE,
+  log_multiplier = 20,
+  log_offset = 1,
   id_col = id_col2(),
   start_col = start_col2(),
   end_col = end_col2(),
@@ -30,11 +33,18 @@ the optimal interval between feeding visits for meal clustering
 }}
 
 \item{percentile}{Numeric value between 0 and 1 specifying which percentile to use
-for eps determination when method="percentile" or "both". Default is 0.75.}
+for eps determination when method="percentile" or "both". Default is 0.9.}
 
 \item{lower_bound}{Numeric value for lower bound of the optimal interval, if NULL, no lower bound is applied.}
 
 \item{upper_bound}{Numeric value for upper bound of the optimal interval, if NULL, no upper bound is applied.}
+
+\item{use_log_transform}{Logical indicating whether to use log transformation for GMM fitting. Default is TRUE.
+Log transformation often provides better separation of within-meal and between-meal gaps.}
+
+\item{log_multiplier}{Numeric value for multiplier of log transformation. Default is 20.}
+
+\item{log_offset}{Numeric value for offset of log transformation. Default is 1.}
 
 \item{id_col}{Animal ID column name (default current global value from \code{\link[=id_col2]{id_col2()}})}
 
@@ -88,7 +98,7 @@ meal_interval(all_fed[[1]], method = "percentile", percentile = 0.8)
 meal_interval(all_fed[[1]], method = "gmm")
 
 # Work with list of dataframes
-meal_interval(all_fed, method = "both", percentile = 0.75)
+meal_interval(all_fed, method = "both", percentile = 0.9)
 
 }
 \seealso{
