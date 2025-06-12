@@ -142,6 +142,7 @@ viz_eps_gmm <- function(data,
   
   if (length(gaps) == 0) {
     warning("No gaps between visits found, cannot create meaningful visualization")
+    
     return(ggplot2::ggplot() + ggplot2::theme_void() + 
            ggplot2::labs(title = "No gaps found between visits"))
   }

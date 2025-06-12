@@ -76,7 +76,7 @@ combine_animal_plots <- function(plot_list,
 #'
 #' @param plot_list Nested list of plots from [viz_meal_clusters()]
 #' @param date Character or Date. Date to combine plots for (format: "YYYY-MM-DD")
-#' @param method Character. Method for combining plots: "vertical" or "grid" (default: "grid")
+#' @param method Character. Method for combining plots: "vertical" or "grid" (default: "vertical")
 #' @param title Character. Optional custom title for the combined plot
 #'
 #' @return Combined ggplot object or patchwork object
@@ -91,7 +91,7 @@ combine_animal_plots <- function(plot_list,
 #' @export
 combine_date_plots <- function(plot_list, 
                               date, 
-                              method = c("grid", "vertical"),
+                              method = c("vertical", "grid"),
                               title = NULL) {
   
   method <- match.arg(method)

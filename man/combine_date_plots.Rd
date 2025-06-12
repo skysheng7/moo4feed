@@ -7,7 +7,7 @@
 combine_date_plots(
   plot_list,
   date,
-  method = c("grid", "vertical"),
+  method = c("vertical", "grid"),
   title = NULL
 )
 }
@@ -16,7 +16,7 @@ combine_date_plots(
 
 \item{date}{Character or Date. Date to combine plots for (format: "YYYY-MM-DD")}
 
-\item{method}{Character. Method for combining plots: "vertical" or "grid" (default: "grid")}
+\item{method}{Character. Method for combining plots: "vertical" or "grid" (default: "vertical")}
 
 \item{title}{Character. Optional custom title for the combined plot}
 }

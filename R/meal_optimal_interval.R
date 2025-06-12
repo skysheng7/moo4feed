@@ -87,6 +87,9 @@ meal_interval <- function(data,
   if (is.data.frame(data)) {
     combined_data <- data
   } else if (is.list(data)) {
+    if (length(data) == 0) {
+      stop("data list cannot be empty")
+    }
     # Check if all items in the list are dataframes
     if (!all(sapply(data, is.data.frame))) {
       stop("All items in the list must be dataframes")

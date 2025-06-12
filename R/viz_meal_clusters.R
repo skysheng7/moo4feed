@@ -14,7 +14,7 @@
 #'   Can be a single dataframe or list of dataframes.
 #' @param point_size Numeric. Size of the points representing visits (default: 2).
 #' @param point_alpha Numeric. Transparency of points, between 0 and 1 (default: 0.7).
-#' @param ncol_facet Numeric. Number of columns for faceting when creating overview plots (default: 3).
+#' @param ncol_facet Numeric. Number of columns for faceting when creating overview plots (default: 1).
 #' @param date_format Character. Format for date labels (default: "%Y-%m-%d").
 #' @param time_breaks Character. Time axis breaks, passed to [ggplot2::scale_x_datetime()] (default: "4 hours").
 #' @param time_labels Character. Time axis label format (default: "%H").
@@ -30,8 +30,8 @@
 #' @inheritParams set_global_cols
 #'
 #' @return 
-#' If ≤10 animal-day combinations: Single ggplot object with faceted plots.
-#' If >10 combinations: Nested list structure:
+#' If ≤5 animal-day combinations: Single ggplot object with faceted plots.
+#' If >5 combinations: Nested list structure:
 #' \describe{
 #'   \item{plots}{List of plots organized by animal then date}
 #' }
@@ -62,7 +62,7 @@
 viz_meal_clusters <- function(data,
                              point_size = 2,
                              point_alpha = 0.7,
-                             ncol_facet = 3,
+                             ncol_facet = 1,
                              date_format = "%Y-%m-%d",
                              time_breaks = "4 hours",
                              time_labels = "%H",
@@ -121,7 +121,7 @@ viz_meal_clusters <- function(data,
   
   # Ensure proper data types
   combined_data[[start_col]] <- lubridate::as_datetime(combined_data[[start_col]], tz = tz)
-  combined_data$date <- lubridate::date(combined_data$date)
+  combined_data$date <- lubridate::date(combined_data[[start_col]])
   combined_data$meal_id <- as.integer(combined_data$meal_id)
   
   # Count unique animal-day combinations
@@ -133,18 +133,18 @@ viz_meal_clusters <- function(data,
   combined_data$time_of_day <- combined_data[[start_col]]
   
   # Decide return structure based on number of combinations
-  if (animal_day_combinations <= 10) {
+  if (animal_day_combinations <= 5) {
     # Create single faceted plot
     return(create_faceted_plot(combined_data, point_size, point_alpha, 
                               ncol_facet, date_format, time_breaks, 
                               time_labels, color_palette, outlier_color, 
-                              title_prefix, text_size, id_col))
+                              title_prefix, text_size, id_col, tz))
   } else {
     # Create nested list structure
     plot_list <- create_nested_plot_list(combined_data, point_size, point_alpha,
                                          date_format, time_breaks, time_labels,
                                          color_palette, outlier_color, title_prefix, 
-                                         text_size, title_size, id_col)
+                                         text_size, title_size, id_col, tz)
     
     return(plot_list)
   }
@@ -169,6 +169,7 @@ viz_meal_clusters <- function(data,
 #' @param title_size Size of plot title
 #' @param id_col Name of animal ID column
 #' @param single_plot Logical, if TRUE creates plot suitable for single display
+#' @param tz Timezone for x-axis limits
 #'
 #' @return ggplot object
 #' @noRd
@@ -185,7 +186,8 @@ create_single_animal_day_plot <- function(animal_day_data,
                                          text_size = 12,
                                          title_size = 14,
                                          id_col = id_col2(),
-                                         single_plot = FALSE) {
+                                         single_plot = FALSE,
+                                         tz = tz2()) {
   
   if (nrow(animal_day_data) == 0) {
     return(ggplot2::ggplot() + 
@@ -223,6 +225,11 @@ create_single_animal_day_plot <- function(animal_day_data,
     paste(title_prefix, animal_id)
   }
   
+  # Set up 24-hour x-axis limits
+  date_for_limits <- animal_day_data$date[1]
+  midnight_start <- lubridate::as_datetime(paste(date_for_limits, "00:00:00"), tz = tz)
+  midnight_end <- lubridate::as_datetime(paste(date_for_limits, "23:59:59"), tz = tz)
+  
   # Create base plot
   p <- ggplot2::ggplot(animal_day_data, 
                        ggplot2::aes(x = time_of_day, y = date,
@@ -232,7 +239,8 @@ create_single_animal_day_plot <- function(animal_day_data,
                                name = "Meal ID",
                                labels = function(x) ifelse(x == "0", "Outlier", paste("Meal", x))) +
     ggplot2::scale_x_datetime(date_breaks = time_breaks,
-                             date_labels = time_labels) +
+                             date_labels = time_labels,
+                             limits = c(midnight_start, midnight_end)) +
     ggplot2::labs(title = plot_title,
                   x = "Time of Day",
                   y = ifelse(single_plot, "Date", "")) +
@@ -240,7 +248,7 @@ create_single_animal_day_plot <- function(animal_day_data,
     ggplot2::theme(
       plot.title = ggplot2::element_text(size = title_size, hjust = 0.5),
       axis.text.x = ggplot2::element_text(angle = 0),
-      axis.text.y = if (single_plot) ggplot2::element_text() else ggplot2::element_text(angle = 0)
+      axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5)
     )
   
   # Adjust y-axis for single plot vs stacked plots
@@ -249,7 +257,7 @@ create_single_animal_day_plot <- function(animal_day_data,
   } else {
     p <- p + 
       ggplot2::scale_y_date(date_labels = date_format) +
-      ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 0, hjust = 1))
+      ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5))
   }
   
   return(p)
@@ -269,6 +277,7 @@ create_single_animal_day_plot <- function(animal_day_data,
 #' @param title_prefix Prefix for plot titles
 #' @param text_size Base text size
 #' @param id_col Name of animal ID column
+#' @param tz Timezone for x-axis limits
 #'
 #' @return ggplot object with facets
 #' @noRd
@@ -276,7 +285,7 @@ create_single_animal_day_plot <- function(animal_day_data,
 create_faceted_plot <- function(combined_data,
                                point_size = 2,
                                point_alpha = 0.7,
-                               ncol_facet = 3,
+                               ncol_facet = 1,
                                date_format = "%Y-%m-%d",
                                time_breaks = "4 hours",
                                time_labels = "%H",
@@ -284,15 +293,14 @@ create_faceted_plot <- function(combined_data,
                                outlier_color = "grey50",
                                title_prefix = "Animal",
                                text_size = 12,
-                               id_col = id_col2()) {
+                               id_col = id_col2(),
+                               tz = tz2()) {
   
-  # Create facet label combining animal and date
+  # Create facet label with only animal ID (no date)
   if (is.null(title_prefix) || title_prefix == "") {
-    combined_data$facet_label <- paste(combined_data[[id_col]], 
-                                      format(combined_data$date, date_format))
+    combined_data$facet_label <- as.character(combined_data[[id_col]])
   } else {
-    combined_data$facet_label <- paste(title_prefix, combined_data[[id_col]], 
-                                      format(combined_data$date, date_format))
+    combined_data$facet_label <- paste(title_prefix, combined_data[[id_col]])
   }
   
   # Create meal_id factor for consistent coloring
@@ -322,6 +330,11 @@ create_faceted_plot <- function(combined_data,
     "Meal Clustering Results"
   }
   
+  # Set up 24-hour x-axis limits using the first date in the data
+  first_date <- combined_data$date[1]
+  midnight_start <- lubridate::as_datetime(paste(first_date, "00:00:00"), tz = tz)
+  midnight_end <- lubridate::as_datetime(paste(first_date, "23:59:59"), tz = tz)
+  
   # Create faceted plot
   p <- ggplot2::ggplot(combined_data, 
                        ggplot2::aes(x = time_of_day, y = date,
@@ -331,9 +344,10 @@ create_faceted_plot <- function(combined_data,
                                name = "Meal ID",
                                labels = function(x) ifelse(x == "0", "Outlier", paste("Meal", x))) +
     ggplot2::scale_x_datetime(date_breaks = time_breaks,
-                             date_labels = time_labels) +
+                             date_labels = time_labels,
+                             limits = c(midnight_start, midnight_end)) +
     ggplot2::scale_y_date(date_labels = date_format) +
-    ggplot2::facet_wrap(~ facet_label, ncol = ncol_facet, scales = "free") +
+    ggplot2::facet_wrap(~ facet_label, ncol = ncol_facet, scales = "free_y") +
     ggplot2::labs(title = plot_title,
                   x = "Time of Day",
                   y = "Date") +
@@ -342,7 +356,7 @@ create_faceted_plot <- function(combined_data,
       plot.title = ggplot2::element_text(size = text_size + 2, hjust = 0.5),
       strip.text = ggplot2::element_text(size = text_size - 1),
       axis.text.x = ggplot2::element_text(angle = 0),
-      axis.text.y = ggplot2::element_text(angle = 0)
+      axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5)
     )
   
   return(p)
@@ -362,6 +376,7 @@ create_faceted_plot <- function(combined_data,
 #' @param text_size Base text size
 #' @param title_size Size of plot titles
 #' @param id_col Name of animal ID column
+#' @param tz Timezone for x-axis limits
 #'
 #' @return Nested list of plots
 #' @noRd
@@ -377,7 +392,8 @@ create_nested_plot_list <- function(combined_data,
                                    title_prefix = "Animal",
                                    text_size = 12,
                                    title_size = 14,
-                                   id_col = id_col2()) {
+                                   id_col = id_col2(),
+                                   tz = tz2()) {
   
   # Get unique animals
   unique_animals <- unique(combined_data[[id_col]])
@@ -391,18 +407,20 @@ create_nested_plot_list <- function(combined_data,
     
     animal_plots <- list()
     
-    for (date_val in unique_dates) {
-      animal_day_data <- animal_data[animal_data$date == date_val, ]
+    for (date_index in seq_along(unique_dates)) {
+      animal_day_data <- animal_data[animal_data$date == unique_dates[date_index], ]
       
       # Create plot for this animal-day combination
       plot <- create_single_animal_day_plot(
         animal_day_data, point_size, point_alpha, date_format,
         time_breaks, time_labels, color_palette, outlier_color, 
         title_prefix, text_size, title_size, id_col,
-        single_plot = TRUE
+        single_plot = TRUE, tz = tz
       )
       
-      animal_plots[[as.character(date_val)]] <- plot
+      # Use formatted date string as key instead of date object
+      date_key <- as.character(unique_dates[date_index])
+      animal_plots[[date_key]] <- plot
     }
     
     plot_list[[as.character(animal)]] <- animal_plots
