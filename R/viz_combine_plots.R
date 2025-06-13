@@ -17,7 +17,7 @@
 #' @return Named list of combined ggplot/patchwork objects, with names "1", "2", "3", etc.
 #'
 #' @examples
-#' toy_data <- all_fed[[1]][which(all_fed[[1]]$cow == 5114),]
+#' toy_data <- all_fed[[1]][which(all_fed[[1]]$cow %in% c(5114, 4070, 7010, 5028, 6020, 6030)),]
 #' labeled <- meal_label_visits(toy_data, id_col = 'cow', start_col = 'start', 
 #' end_col = 'end', bin_col = 'bin', intake_col = 'intake', dur_col = 'duration',
 #' tz = 'America/Vancouver')
@@ -81,7 +81,7 @@ combine_animal_plots <- function(plot_list,
 #' @return Named list of combined ggplot/patchwork objects, with names "1", "2", "3", etc.
 #'
 #' @examples
-#' toy_data <- all_fed[[1]][which(all_fed[[1]]$cow %in% c(5114, 4070, 7010)),]
+#' toy_data <- all_fed[[1]][which(all_fed[[1]]$cow %in% c(5114, 4070, 7010, 5028, 6020, 6030)),]
 #' labeled <- meal_label_visits(toy_data, id_col = 'cow', start_col = 'start', 
 #' end_col = 'end', bin_col = 'bin', intake_col = 'intake', dur_col = 'duration',
 #' tz = 'America/Vancouver')
@@ -148,21 +148,16 @@ combine_date_plots <- function(plot_list,
 #' @return Nested list with same structure as input but containing only specified subsets
 #'
 #' @examples
-#' \dontrun{
-#' # Assuming you have results from viz_meal_clusters with >10 combinations
-#' result <- viz_meal_clusters(large_dataset)
+#' toy_data <- all_fed[[1]][which(all_fed[[1]]$cow %in% c(5114, 4070, 7010, 5028, 6020, 6030)),]
+#' labeled <- meal_label_visits(toy_data, id_col = 'cow', start_col = 'start', 
+#' end_col = 'end', bin_col = 'bin', intake_col = 'intake', dur_col = 'duration',
+#' tz = 'America/Vancouver')
 #' 
-#' # Extract plots for specific animals
-#' subset1 <- extract_plots(result$plots, animals = c("101", "102"))
-#' 
-#' # Extract plots for specific dates
-#' subset2 <- extract_plots(result$plots, dates = c("2023-01-01", "2023-01-02"))
+#' # Customize colors and text
+#' p <- viz_meal_clusters(labeled, id_col = 'cow', start_col = 'start')
 #' 
 #' # Extract plots for specific animals and dates
-#' subset3 <- extract_plots(result$plots, 
-#'                         animals = c("101", "102"), 
-#'                         dates = "2023-01-01")
-#' }
+#' subset_plots <- extract_plots(p, animals = c("5114"))
 #'
 #' @export
 extract_plots <- function(plot_list, 

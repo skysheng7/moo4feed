@@ -2,13 +2,14 @@
 % Please edit documentation in R/viz_combine_plots.R
 \name{combine_animal_plots}
 \alias{combine_animal_plots}
-\title{Combine multiple days for one animal}
+\title{Combine multiple days for one animal with pagination}
 \usage{
 combine_animal_plots(
   plot_list,
   animal_id,
+  plots_per_page = 4,
   method = c("vertical", "grid"),
-  title = NULL
+  title_prefix = NULL
 )
 }
 \arguments{
@@ -16,22 +17,28 @@ combine_animal_plots(
 
 \item{animal_id}{Character or numeric. Animal ID to combine plots for}
 
+\item{plots_per_page}{Integer. Number of plots to include per page (default: 4)}
+
 \item{method}{Character. Method for combining plots: "vertical" or "grid" (default: "vertical")}
 
-\item{title}{Character. Optional custom title for the combined plot}
+\item{title_prefix}{Character. Prefix for page titles (default: NULL)}
 }
 \value{
-Combined ggplot object or patchwork object
+Named list of combined ggplot/patchwork objects, with names "1", "2", "3", etc.
 }
 \description{
-Takes plots for multiple days of one animal and combines them into a single
-plot using either vertical stacking or grid arrangement.
+Takes plots for multiple days of one animal and creates paginated plots
+with a user-defined number of plots per page to avoid overcrowding.
 }
 \examples{
-\dontrun{
-# Assuming you have results from viz_meal_clusters with >10 combinations
-result <- viz_meal_clusters(large_dataset)
-combined_plot <- combine_animal_plots(result$plots, animal_id = "101")
-}
+toy_data <- all_fed[[1]][which(all_fed[[1]]$cow \%in\% c(5114, 4070, 7010, 5028, 6020, 6030)),]
+labeled <- meal_label_visits(toy_data, id_col = 'cow', start_col = 'start', 
+end_col = 'end', bin_col = 'bin', intake_col = 'intake', dur_col = 'duration',
+tz = 'America/Vancouver')
+
+# Customize colors and text
+p <- viz_meal_clusters(labeled, id_col = 'cow', start_col = 'start')
+
+combined_plot <- combine_animal_plots(p, animal_id = "5114")
 
 }

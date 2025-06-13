@@ -14,7 +14,10 @@ test_that("optimal_interval_from_gaps works with normal input", {
 })
 
 test_that("optimal_interval_from_gaps handles empty gaps", {
-  result <- optimal_interval_from_gaps(numeric(0), use_log_transform = FALSE)
+  expect_warning(
+    result <- optimal_interval_from_gaps(numeric(0), use_log_transform = FALSE),
+    "no gaps between visits"
+  )
   expect_equal(result, 30)
 })
 
