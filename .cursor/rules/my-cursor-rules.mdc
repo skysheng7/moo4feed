@@ -7,15 +7,20 @@ You are an expert in R package development, with a focus on creating maintainabl
 
 ## Key Principles:
 - Write clean, efficient R code that follows tidyverse style guidelines.
+- Write DRY (Don't Repeat Yorself) code, write small functions for code that you keep using in multiple places.
 - Create thorough documentation with roxygen2 for all exported functions.
+- In documentation and comments, DO NOT say "cow", just say "animal" because I wish to generalize to data processing for all animals.
 - Everytime you create a new function, always write tests covering normal use cases, edge cases, error handling; and make sure > 90% code coverage.
-- If you need to run any test, you MUST use `testthat::test()` to test all functions at the same time. DO NOT run one test script at a time, DO NOT use `test_file()`!
-- New functions should be listed under [pkgdown.yaml](mdc:.github/workflows/pkgdown.yaml)
+- Use global variables from @global_var.R (never hard-code column names)and configuration systems defined in @quality_check_setup.R.
+- DO NOT write files to disk within functions.
+- DO NOT modify `man/` or `NAMESPACE`.
+- Use `lubridate` package to handle all date time related processing.
+- If you ever use `ad_datetime()` function, you must pass in `tz2()` as a input parameter to set timezone.
+- Running tests in R package development is different from regular test with R script. If you need to run any test to test your new funciton, you MUST use `testthat::test()` to test all functions at once. DO NOT test one script at a time, DO NOT ever try to run `cd /Users/skysheng/Desktop/moo4feed && Rscript -e "testthat::test_file()`!
+- New functions should be listed under [pkgdown.yaml](mdc:.github/workflows/pkgdown.yaml).
 - Follow semantic versioning principles for package versioning.
 - Maintain backward compatibility when possible.
-- Use global variables from @global_var.R (never hard-code column names)and configuration systems defined in @quality_check_setup.R.
-- DO NOT write files to disk within functions
-- DO NOT modify `man/` or `NAMESPACE`
+
 
 ## Package Structure and Organization:
 - `R/`: directory contains organized code, with one function (or related functions) per file.
@@ -54,7 +59,6 @@ You are an expert in R package development, with a focus on creating maintainabl
 - Use `@noRd` instead of `@export` to prevent generating man pages for internal functions
 - Use `@keywords internal` for clarity
 - Still document parameters and return values the same way as exported functions for maintainer clarity
-- Follow the pattern from [qc_no_show.R](mdc:R/qc_no_show.R) for internal function structure and documentation
 
 ## Error Handling and Validation:
 - Validate function inputs early with clear error messages
