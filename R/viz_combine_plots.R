@@ -10,26 +10,27 @@
 #'
 #' @param plot_list Nested list of plots from [viz_meal_clusters()] 
 #' @param animal_id Character or numeric. Animal ID to combine plots for
-#' @param plots_per_page Integer. Number of plots to include per page (default: 5)
+#' @param plots_per_page Integer. Number of plots to include per page (default: 4)
 #' @param method Character. Method for combining plots: "vertical" or "grid" (default: "vertical")
 #' @param title_prefix Character. Prefix for page titles (default: NULL)
 #'
 #' @return Named list of combined ggplot/patchwork objects, with names "1", "2", "3", etc.
 #'
 #' @examples
-#' \dontrun{
-#' # Assuming you have results from viz_meal_clusters with >10 combinations
-#' result <- viz_meal_clusters(large_dataset)
-#' paginated_plots <- combine_animal_plots(result$plots, animal_id = "101", plots_per_page = 6)
-#' # Access individual pages
-#' paginated_plots[["1"]]  # First page
-#' paginated_plots[["2"]]  # Second page
-#' }
+#' toy_data <- all_fed[[1]][which(all_fed[[1]]$cow == 5114),]
+#' labeled <- meal_label_visits(toy_data, id_col = 'cow', start_col = 'start', 
+#' end_col = 'end', bin_col = 'bin', intake_col = 'intake', dur_col = 'duration',
+#' tz = 'America/Vancouver')
+#' 
+#' # Customize colors and text
+#' p <- viz_meal_clusters(labeled, id_col = 'cow', start_col = 'start')
+#' 
+#' combined_plot <- combine_animal_plots(p, animal_id = "5114")
 #'
 #' @export
 combine_animal_plots <- function(plot_list, 
                                 animal_id, 
-                                plots_per_page = 5,
+                                plots_per_page = 4,
                                 method = c("vertical", "grid"),
                                 title_prefix = NULL) {
   
@@ -73,26 +74,27 @@ combine_animal_plots <- function(plot_list,
 #'
 #' @param plot_list Nested list of plots from [viz_meal_clusters()]
 #' @param date Character or Date. Date to combine plots for (format: "YYYY-MM-DD")
-#' @param plots_per_page Integer. Number of plots to include per page (default: 5)
+#' @param plots_per_page Integer. Number of plots to include per page (default: 4)
 #' @param method Character. Method for combining plots: "vertical" or "grid" (default: "vertical")
 #' @param title_prefix Character. Prefix for page titles (default: NULL)
 #'
 #' @return Named list of combined ggplot/patchwork objects, with names "1", "2", "3", etc.
 #'
 #' @examples
-#' \dontrun{
-#' # Assuming you have results from viz_meal_clusters with >10 combinations
-#' result <- viz_meal_clusters(large_dataset)
-#' paginated_plots <- combine_date_plots(result$plots, date = "2023-01-01", plots_per_page = 6)
-#' # Access individual pages
-#' paginated_plots[["1"]]  # First page
-#' paginated_plots[["2"]]  # Second page
-#' }
+#' toy_data <- all_fed[[1]][which(all_fed[[1]]$cow %in% c(5114, 4070, 7010)),]
+#' labeled <- meal_label_visits(toy_data, id_col = 'cow', start_col = 'start', 
+#' end_col = 'end', bin_col = 'bin', intake_col = 'intake', dur_col = 'duration',
+#' tz = 'America/Vancouver')
+#' 
+#' # Customize colors and text
+#' p <- viz_meal_clusters(labeled, id_col = 'cow', start_col = 'start')
+#' 
+#' combined_plot <- combine_date_plots(p, date = "2020-10-31")
 #'
 #' @export
 combine_date_plots <- function(plot_list, 
                               date, 
-                              plots_per_page = 5,
+                              plots_per_page = 4,
                               method = c("vertical", "grid"),
                               title_prefix = NULL) {
   
