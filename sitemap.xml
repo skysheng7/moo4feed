@@ -21,6 +21,9 @@
 <url><loc>https://skysheng7.github.io/moo4feed/reference/clean_comb.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/clean_feed.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/clean_water.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/cluster_meals.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/combine_animal_plots.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/combine_date_plots.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/combine_feed_water.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/compare_files.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/daylight_saving_adjust.html</loc></url>
@@ -30,6 +33,7 @@
 <url><loc>https://skysheng7.github.io/moo4feed/reference/duration_col2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/end_col2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/end_weight_col2.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/extract_plots.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/feed_water_summary.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/file_name_processing.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/get_date_range.html</loc></url>
@@ -42,6 +46,9 @@
 <url><loc>https://skysheng7.github.io/moo4feed/reference/knn_clean_water.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/knn_outlier_detection.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/lower_first.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/meal_interval.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/meal_label_visits.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/merge_cluster_results.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/merge_list_df.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/moo4feed_example.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/process_all_feed.html</loc></url>
@@ -75,6 +82,9 @@
 <url><loc>https://skysheng7.github.io/moo4feed/reference/tz2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/unique_bin_visits.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/unmerge_data.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/viz_eps_gmm.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/viz_eps_percentile.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/viz_meal_clusters.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/viz_outliers.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/warning.html</loc></url>
 </urlset>

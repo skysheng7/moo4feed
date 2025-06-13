@@ -263,14 +263,14 @@
         </dt>
         <dd>Un-merge a combined data frame into a list of data frames by date</dd>
       </dl></div><div class="section level2">
-      <h2 id="data-analysis-and-summaries">Data Analysis and Summaries<a class="anchor" aria-label="anchor" href="#data-analysis-and-summaries"></a></h2>
+      <h2 id="story-of-every-cow">Story of Every Cow<a class="anchor" aria-label="anchor" href="#story-of-every-cow"></a></h2>
 
 
 
 
     </div><div class="section level2">
 
-      <h3 id="feed-and-water-metrics">Feed and Water Metrics<a class="anchor" aria-label="anchor" href="#feed-and-water-metrics"></a></h3>
+      <h3 id="feed-and-water-summary">Feed and Water Summary<a class="anchor" aria-label="anchor" href="#feed-and-water-summary"></a></h3>
       <div class="section-desc"><p>Summarize daily feed/water intake, duration, and visit counts.</p></div>
 
 
@@ -287,7 +287,7 @@
         <dd>Summarize and check for abnormal feed &amp; water intake</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="bin-usage-analysis">Bin Usage Analysis<a class="anchor" aria-label="anchor" href="#bin-usage-analysis"></a></h3>
+      <h3 id="bin-visit-summary">Bin visit summary<a class="anchor" aria-label="anchor" href="#bin-visit-summary"></a></h3>
       <div class="section-desc"><p>Analyze bin visit patterns.</p></div>
 
 
@@ -319,6 +319,77 @@
 
         </dt>
         <dd>Identify and validate replacement events across multiple days</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="meal-clustering">Meal clustering<a class="anchor" aria-label="anchor" href="#meal-clustering"></a></h3>
+      <div class="section-desc"><p>Cluster feeding visits into meals.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="meal_interval.html">meal_interval()</a></code>
+
+        </dt>
+        <dd>Calculate optimal interval between feeding visits for meal clustering</dd>
+      </dl><dl><dt>
+
+          <code><a href="viz_eps_percentile.html">viz_eps_percentile()</a></code>
+
+        </dt>
+        <dd>Visualize gap distribution and percentile-based optimal interval (eps) selection</dd>
+      </dl><dl><dt>
+
+          <code><a href="viz_eps_gmm.html">viz_eps_gmm()</a></code>
+
+        </dt>
+        <dd>Visualize gap distribution with GMM fit and optimal interval (eps)</dd>
+      </dl><dl><dt>
+
+          <code><a href="cluster_meals.html">cluster_meals()</a></code>
+
+        </dt>
+        <dd>Cluster feeding visits into meals using DBSCAN</dd>
+      </dl><dl><dt>
+
+          <code><a href="meal_label_visits.html">meal_label_visits()</a></code>
+
+        </dt>
+        <dd>Cluster feeding visits into meals and label each visit</dd>
+      </dl><dl><dt>
+
+          <code><a href="merge_cluster_results.html">merge_cluster_results()</a></code>
+
+        </dt>
+        <dd>Merge meal clustering results with original visit data</dd>
+      </dl><dl><dt>
+
+          <code><a href="viz_meal_clusters.html">viz_meal_clusters()</a></code>
+
+        </dt>
+        <dd>Visualize meal clustering results as timeline plots</dd>
+      </dl><dl><dt>
+
+          <code><a href="combine_animal_plots.html">combine_animal_plots()</a></code>
+
+        </dt>
+        <dd>Combine multiple days for one animal with pagination</dd>
+      </dl><dl><dt>
+
+          <code><a href="combine_date_plots.html">combine_date_plots()</a></code>
+
+        </dt>
+        <dd>Combine multiple animals for one date with pagination</dd>
+      </dl><dl><dt>
+
+          <code><a href="extract_plots.html">extract_plots()</a></code>
+
+        </dt>
+        <dd>Extract subset of plots by animal and/or date</dd>
       </dl></div><div class="section level2">
       <h2 id="configuration-and-customization">Configuration and Customization<a class="anchor" aria-label="anchor" href="#configuration-and-customization"></a></h2>
 
