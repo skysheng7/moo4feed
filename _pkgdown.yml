@@ -60,14 +60,14 @@ reference:
   - merge_list_df
   - unmerge_data
 
-- title: Data Analysis and Summaries
-- subtitle: Feed and Water Metrics
+- title: Story of Every Cow
+- subtitle: Feed and Water Summary
   desc: >
     Summarize daily feed/water intake, duration, and visit counts.
   contents:
   - feed_water_summary
 
-- subtitle: Bin Usage Analysis
+- subtitle: Bin visit summary
   desc: >
     Analyze bin visit patterns.
   contents:
@@ -78,6 +78,21 @@ reference:
     Functions to identify replacement behavior across multiple days, and validate those events by checking whether the actor cow was already present at another bin.
   contents:
   - record_replacement_days
+
+- subtitle: Meal clustering
+  desc: >
+    Cluster feeding visits into meals.
+  contents:
+  - meal_interval
+  - viz_eps_percentile
+  - viz_eps_gmm
+  - cluster_meals
+  - meal_label_visits
+  - merge_cluster_results
+  - viz_meal_clusters
+  - combine_animal_plots
+  - combine_date_plots
+  - extract_plots
 
 - title: Configuration and Customization
 - subtitle: Global Variables
