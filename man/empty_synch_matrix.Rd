@@ -31,4 +31,8 @@ A list containing:
 }
 \description{
 Functions for processing and initializing synchronization matrices for feed and water data analysis.
+Generate empty Synchronization Matrices for Feed/water Data
+
+This function creates empty synchronization matrices for time-cow, time-bin, and time-feed relationships
+based on the input data. The matrices are used to track feeding/drinking behavior over time.
 }

@@ -1,7 +1,5 @@
 #' @title Matrix Creation Functions
 #' @description Functions for creating and preparing various matrices used in the synchronicity analysis.
-#' @importFrom lubridate seconds
-#' @importFrom stats seq
 
 #' Create a time sequence from start to end, by seconds
 #'

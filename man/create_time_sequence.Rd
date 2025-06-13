@@ -14,4 +14,5 @@ A vector of time sequence.
 }
 \description{
 Functions for creating and preparing various matrices used in the synchronicity analysis.
+Create a time sequence from start to end, by seconds
 }
