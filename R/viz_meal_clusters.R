@@ -227,8 +227,8 @@ create_single_animal_day_plot <- function(animal_day_data,
   
   # Set up 24-hour x-axis limits
   date_for_limits <- animal_day_data$date[1]
-  midnight_start <- lubridate::as_datetime(paste(date_for_limits, "00:00:00"), tz = tz)
-  midnight_end <- lubridate::as_datetime(paste(date_for_limits, "23:59:59"), tz = tz)
+  midnight_start <- lubridate::as_datetime(paste(date_for_limits, "00:00:01"), tz = tz)
+  midnight_end <- lubridate::as_datetime(paste(date_for_limits, "23:59:00"), tz = tz)
   
   # Create base plot
   p <- ggplot2::ggplot(animal_day_data, 
@@ -332,8 +332,8 @@ create_faceted_plot <- function(combined_data,
   
   # Set up 24-hour x-axis limits using the first date in the data
   first_date <- combined_data$date[1]
-  midnight_start <- lubridate::as_datetime(paste(first_date, "00:00:00"), tz = tz)
-  midnight_end <- lubridate::as_datetime(paste(first_date, "23:59:59"), tz = tz)
+  midnight_start <- lubridate::as_datetime(paste(first_date, "00:00:01"), tz = tz)
+  midnight_end <- lubridate::as_datetime(paste(first_date, "23:59:00"), tz = tz)
   
   # Create faceted plot
   p <- ggplot2::ggplot(combined_data, 

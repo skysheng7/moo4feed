@@ -2,38 +2,43 @@
 # -------------------- External user-facing functions -------------------------#
 # -----------------------------------------------------------------------------#
 
-#' Combine multiple days for one animal
+#' Combine multiple days for one animal with pagination
 #'
 #' @description
-#' Takes plots for multiple days of one animal and combines them into a single 
-#' plot using either vertical stacking or grid arrangement.
+#' Takes plots for multiple days of one animal and creates paginated plots 
+#' with a user-defined number of plots per page to avoid overcrowding.
 #'
 #' @param plot_list Nested list of plots from [viz_meal_clusters()] 
 #' @param animal_id Character or numeric. Animal ID to combine plots for
+#' @param plots_per_page Integer. Number of plots to include per page (default: 5)
 #' @param method Character. Method for combining plots: "vertical" or "grid" (default: "vertical")
-#' @param title Character. Optional custom title for the combined plot
+#' @param title_prefix Character. Prefix for page titles (default: NULL)
 #'
-#' @return Combined ggplot object or patchwork object
+#' @return Named list of combined ggplot/patchwork objects, with names "1", "2", "3", etc.
 #'
 #' @examples
 #' \dontrun{
 #' # Assuming you have results from viz_meal_clusters with >10 combinations
 #' result <- viz_meal_clusters(large_dataset)
-#' combined_plot <- combine_animal_plots(result$plots, animal_id = "101")
+#' paginated_plots <- combine_animal_plots(result$plots, animal_id = "101", plots_per_page = 6)
+#' # Access individual pages
+#' paginated_plots[["1"]]  # First page
+#' paginated_plots[["2"]]  # Second page
 #' }
 #'
 #' @export
 combine_animal_plots <- function(plot_list, 
                                 animal_id, 
+                                plots_per_page = 5,
                                 method = c("vertical", "grid"),
-                                title = NULL) {
+                                title_prefix = NULL) {
   
   method <- match.arg(method)
   
   # Validate inputs
   if (!is.list(plot_list)) {
     stop("plot_list must be a list")
-  }
+  } 
   
   animal_id <- as.character(animal_id)
   
@@ -48,58 +53,55 @@ combine_animal_plots <- function(plot_list,
     stop("No plots found for animal ", animal_id)
   }
   
-  if (length(animal_plots) == 1) {
-    # Only one plot, return as is
-    return(animal_plots[[1]])
+  if (!is.numeric(plots_per_page) || plots_per_page < 1) {
+    stop("plots_per_page must be a positive integer")
   }
   
-  # Default title
-  if (is.null(title)) {
-    title <- paste("Animal", animal_id, "- All Days")
-  }
+  plots_per_page <- as.integer(plots_per_page)
   
-  # Combine plots based on method
-  if (method == "vertical") {
-    combined_plot <- combine_plots_vertical(animal_plots, title)
-  } else {
-    combined_plot <- combine_plots_grid(animal_plots, title)
-  }
+  # Create paginated plots
+  paginated_plots <- create_paginated_plots(animal_plots, plots_per_page, method, title_prefix)
   
-  return(combined_plot)
+  return(paginated_plots)
 }
 
-#' Combine multiple animals for one date
+#' Combine multiple animals for one date with pagination
 #'
 #' @description
-#' Takes plots for multiple animals on one date and combines them into a single 
-#' plot using either vertical stacking or grid arrangement.
+#' Takes plots for multiple animals on one date and creates paginated plots 
+#' with a user-defined number of plots per page to avoid overcrowding.
 #'
 #' @param plot_list Nested list of plots from [viz_meal_clusters()]
 #' @param date Character or Date. Date to combine plots for (format: "YYYY-MM-DD")
+#' @param plots_per_page Integer. Number of plots to include per page (default: 5)
 #' @param method Character. Method for combining plots: "vertical" or "grid" (default: "vertical")
-#' @param title Character. Optional custom title for the combined plot
+#' @param title_prefix Character. Prefix for page titles (default: NULL)
 #'
-#' @return Combined ggplot object or patchwork object
+#' @return Named list of combined ggplot/patchwork objects, with names "1", "2", "3", etc.
 #'
 #' @examples
 #' \dontrun{
 #' # Assuming you have results from viz_meal_clusters with >10 combinations
 #' result <- viz_meal_clusters(large_dataset)
-#' combined_plot <- combine_date_plots(result$plots, date = "2023-01-01")
+#' paginated_plots <- combine_date_plots(result$plots, date = "2023-01-01", plots_per_page = 6)
+#' # Access individual pages
+#' paginated_plots[["1"]]  # First page
+#' paginated_plots[["2"]]  # Second page
 #' }
 #'
 #' @export
 combine_date_plots <- function(plot_list, 
                               date, 
+                              plots_per_page = 5,
                               method = c("vertical", "grid"),
-                              title = NULL) {
+                              title_prefix = NULL) {
   
   method <- match.arg(method)
   
   # Validate inputs
   if (!is.list(plot_list)) {
     stop("plot_list must be a list")
-  }
+  } 
   
   date <- as.character(as.Date(date))
   
@@ -118,89 +120,16 @@ combine_date_plots <- function(plot_list,
     stop("No plots found for date ", date)
   }
   
-  if (length(date_plots) == 1) {
-    # Only one plot, return as is
-    return(date_plots[[1]])
+  if (!is.numeric(plots_per_page) || plots_per_page < 1) {
+    stop("plots_per_page must be a positive integer")
   }
   
-  # Default title
-  if (is.null(title)) {
-    title <- paste("All Animals -", date)
-  }
+  plots_per_page <- as.integer(plots_per_page)
   
-  # Combine plots based on method
-  if (method == "vertical") {
-    combined_plot <- combine_plots_vertical(date_plots, title)
-  } else {
-    combined_plot <- combine_plots_grid(date_plots, title)
-  }
+  # Create paginated plots
+  paginated_plots <- create_paginated_plots(date_plots, plots_per_page, method, title_prefix)
   
-  return(combined_plot)
-}
-
-#' Create small multiples overview plot
-#'
-#' @description
-#' Creates an overview plot showing all animal-day combinations as small multiples
-#' in a grid layout.
-#'
-#' @param plot_list Nested list of plots from [viz_meal_clusters()]
-#' @param ncol Numeric. Number of columns for the grid layout (default: 3)
-#' @param title_size Numeric. Size of individual plot titles (default: 8)
-#' @param main_title Character. Main title for the overview plot
-#'
-#' @return Combined ggplot object using patchwork
-#'
-#' @examples
-#' \dontrun{
-#' # Assuming you have results from viz_meal_clusters with >10 combinations
-#' result <- viz_meal_clusters(large_dataset)
-#' overview_plot <- create_overview_plot(result$plots, ncol = 4)
-#' }
-#'
-#' @export
-create_overview_plot <- function(plot_list, 
-                                ncol = 3, 
-                                title_size = 8,
-                                main_title = "Meal Clustering Overview") {
-  
-  # Validate inputs
-  if (!is.list(plot_list)) {
-    stop("plot_list must be a list")
-  }
-  
-  # Flatten the nested list to get all individual plots
-  all_plots <- list()
-  
-  for (animal_id in names(plot_list)) {
-    animal_plots <- plot_list[[animal_id]]
-    
-    for (date in names(animal_plots)) {
-      plot_name <- paste(animal_id, date, sep = "_")
-      
-      # Modify plot to have smaller title and remove legend for overview
-      plot <- animal_plots[[date]] +
-        ggplot2::theme(
-          plot.title = ggplot2::element_text(size = title_size),
-          legend.position = "none",
-          axis.text = ggplot2::element_text(size = 6),
-          axis.title = ggplot2::element_text(size = 7)
-        )
-      
-      all_plots[[plot_name]] <- plot
-    }
-  }
-  
-  if (length(all_plots) == 0) {
-    stop("No plots found in plot_list")
-  }
-  
-  # Use patchwork to combine all plots
-  combined_plot <- patchwork::wrap_plots(all_plots, ncol = ncol) +
-    patchwork::plot_annotation(title = main_title,
-                              theme = ggplot2::theme(plot.title = ggplot2::element_text(size = 14, hjust = 0.5)))
-  
-  return(combined_plot)
+  return(paginated_plots)
 }
 
 #' Extract subset of plots by animal and/or date
@@ -287,6 +216,61 @@ extract_plots <- function(plot_list,
 # -----------------------------------------------------------------------------#
 # ------------------------- Internal helper functions ------------------------#
 # -----------------------------------------------------------------------------#
+
+#' Create paginated plots from a list of plots
+#'
+#' @param plots List of ggplot objects
+#' @param plots_per_page Integer. Number of plots per page
+#' @param method Character. Combination method ("vertical" or "grid")
+#' @param title_prefix Character. Prefix for page titles
+#'
+#' @return Named list of combined plots with names "1", "2", "3", etc.
+#' @noRd
+#' @keywords internal
+create_paginated_plots <- function(plots, plots_per_page, method, title_prefix) {
+  
+  n_plots <- length(plots)
+  
+  # If only one plot or plots fit in one page, return single page
+  if (n_plots <= plots_per_page) {
+    if (n_plots == 1) {
+      # Single plot, return as is but in a list
+      return(list("1" = plots[[1]]))
+    } else {
+      # Multiple plots but fit in one page
+      if (method == "vertical") {
+        combined_plot <- combine_plots_vertical(plots, title_prefix)
+      } else {
+        combined_plot <- combine_plots_grid(plots, title_prefix)
+      }
+      return(list("1" = combined_plot))
+    }
+  }
+  
+  # Calculate number of pages needed
+  n_pages <- ceiling(n_plots / plots_per_page)
+  
+  # Create paginated plots
+  paginated_plots <- list()
+  
+  for (page in 1:n_pages) {
+    start_idx <- (page - 1) * plots_per_page + 1
+    end_idx <- min(page * plots_per_page, n_plots)
+    
+    page_plots <- plots[start_idx:end_idx]
+    page_title <- title_prefix
+    
+    if (method == "vertical") {
+      combined_plot <- combine_plots_vertical(page_plots, page_title)
+    } else {
+      combined_plot <- combine_plots_grid(page_plots, page_title)
+    }
+    
+    paginated_plots[[as.character(page)]] <- combined_plot
+  }
+  
+  return(paginated_plots)
+}
 
 #' Combine plots vertically using patchwork
 #'
