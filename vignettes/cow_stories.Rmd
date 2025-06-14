@@ -39,6 +39,37 @@ library(moo4feed)   # 🐮 Your cow data helper!
 library(dplyr)      # For data manipulation
 ```
 
+## 🚨 Important: Set Your Global Variables First!
+
+⚠️ **Before we start analyzing animal stories,** make sure you've configured your global variables to match your data structure from **Tutorial 1: Data Cleaning**:
+
+```{r global-setup}
+# 🎯 IMPORTANT: Set these to match YOUR data structure!
+# Copy and modify these lines to match your column names and settings:
+
+set_global_cols(
+  id_col = "cow",           # Animal ID column name
+  start_col = "start",      # Visit start time column  
+  end_col = "end",          # Visit end time column
+  bin_col = "bin",          # Bin/feeder ID column
+  intake_col = "intake",    # Feed intake amount column
+  dur_col = "duration",     # Visit duration column
+  tz = "America/Vancouver"  # Your timezone
+)
+
+# Check that everything is set correctly:
+cat("✅ Global variables set:\n")
+cat("ID column:", id_col2(), "\n")
+cat("Start time column:", start_col2(), "\n") 
+cat("End time column:", end_col2(), "\n")
+cat("Bin column:", bin_col2(), "\n")
+cat("Intake column:", intake_col2(), "\n")
+cat("Duration column:", duration_col2(), "\n")
+cat("Timezone:", tz2(), "\n")
+```
+
+*"Perfect! Now all our functions will automatically use the right column names for your data!"* 🦦
+
 For this vignette, we'll use the cleaned data from the previous vignette:
 
 ```{r}
@@ -60,12 +91,11 @@ Cows differ in how widely they explore their environment. Some visit many differ
 The `unique_bin_visits()` function helps us quantify this exploratory behavior:
 
 ```{r unique-bin-analysis}
-# Calculate unique bin visits for each cow across all days
+# Calculate unique bin visits for each animal across all days
 bin_visits <- unique_bin_visits(
   feed = clean_feed,            # Our cleaned feed data
   water = clean_water,          # Our cleaned water data
-  return_list = FALSE           # Return a single dataframe instead of a list by day
-)
+  return_list = FALSE)          # 🎯 Try changing to TRUE for day-by-day!
 
 # Look at the results
 head(bin_visits)
@@ -178,30 +208,70 @@ This is just the beginning of what you can learn from your feeding and drinking 
 Here's a copy-paste friendly version of all the code used in this vignette:
 
 ```{r cheatsheet, eval=FALSE}
-# === 1. Load packages and data ===
+#' ============================================================================
+#' 🦦 OLLIE'S ANIMAL STORIES CHEAT SHEET
+#' ============================================================================
+#' Copy and modify these code blocks for your own analysis!
+
+# ---- SETUP: Global Variables (REQUIRED FIRST!) ----
 library(moo4feed)
 library(dplyr)
 
-# Load example cleaned data from the package
-data(clean_feed)
-data(clean_water)
-# Or use your own cleaned data from the previous vignette:
-# clean_feed <- qc_results$feed
-# clean_water <- qc_results$water
+# Set up your column names and timezone (modify these!)
+set_global_cols(
+  id_col = "cow",           # Your animal ID column
+  start_col = "start",      # Visit start time column  
+  end_col = "end",          # Visit end time column
+  bin_col = "bin",          # Bin/feeder ID column
+  intake_col = "intake",    # Feed intake amount column
+  dur_col = "duration",     # Visit duration column
+  tz = "America/Vancouver"  # Your timezone
+)
 
-# === 2. Analyze exploratory behavior ===
-# Calculate unique bin visits for each cow across all days
+# ---- STEP 1: Load Your Data ----
+# use your own cleaned data from previous tutorials:
+# clean_feed <- your_cleaned_feed_data
+# clean_water <- your_cleaned_water_data
+
+# ---- STEP 2: Analyze Exploratory Behavior ----
+# Calculate unique bin visits for each animal across all days
 bin_visits <- unique_bin_visits(
   feed = clean_feed,
   water = clean_water,
-  return_list = FALSE
+  return_list = FALSE,      # Try: TRUE for day-by-day breakdown
+  id_col = id_col2(),
+  bin_col = bin_col2()
 )
 
-# === 3. Analyze social dynamics (replacement events) ===
+# Calculate average exploration per animal
+avg_bin_visits <- bin_visits |>
+  dplyr::group_by(!!sym(id_col2())) |>
+  dplyr::summarize(
+    avg_feed_bins = mean(unique_feed_bins_visited),
+    avg_water_bins = mean(unique_water_bins_visited),
+    avg_total_bins = mean(total_bins_visited),
+    days_observed = dplyr::n(),
+    .groups = "drop"
+  ) |>
+  dplyr::arrange(dplyr::desc(avg_total_bins))
+
+# ---- STEP 3: Analyze Social Dynamics (Replacement Events) ----
 # Process feed replacement events for all days
 replacements <- record_replacement_days(
   comb = clean_feed,
   cfg = qc_config(replacement_threshold = 26)
 )
 
+# ---- STEP 4: Quick Analysis ----
+# Check exploration results
+head(avg_bin_visits, 10)               # Top 10 explorers
+tail(avg_bin_visits, 10)               # Top 10 creatures of habit
+
+# Check replacement results
+cat("Replacement events per day:\n")
+sapply(replacements, nrow)
+
+#' ============================================================================
+#' 🦦 That's it! You've uncovered the hidden stories in your data!
+#' ============================================================================
 ```
