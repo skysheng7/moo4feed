@@ -17,3 +17,4 @@ Data frame: first column 'Time', others are cow IDs, initialized to 0.
 \description{
 Create an empty time-cow matrix for synchronicity analysis
 }
+\keyword{internal}

@@ -121,7 +121,7 @@ matrix_initialize <- function(data_list, min_feed_bin = NULL, max_feed_bin = NUL
 #' @param cur_synch Data frame representing the current synchronization data.
 #' @param total_feed_bin Integer, total number of bins.
 #' @return Data frame with NA values replaced and a new column 'totalFeed'.
-#' @export
+#' @keywords internal
 process_cur_synch <- function(cur_synch, total_feed_bin) {
   if (is.null(cur_synch) || nrow(cur_synch) == 0) stop("Input matrix cannot be NULL or empty")
   if (!"Time" %in% colnames(cur_synch)) stop("Input matrix must contain a 'Time' column")

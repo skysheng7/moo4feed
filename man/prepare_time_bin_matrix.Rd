@@ -15,3 +15,4 @@ Data frame with same structure as cow_time_matrix.
 \description{
 Create an empty time-bin matrix for tracking bin occupancy
 }
+\keyword{internal}

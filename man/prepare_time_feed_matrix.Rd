@@ -19,3 +19,4 @@ Data frame: first column 'Time', others are bin numbers, initialized to NA.
 \description{
 Create an empty time-feed matrix for feed bin tracking
 }
+\keyword{internal}

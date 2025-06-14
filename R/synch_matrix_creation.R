@@ -15,7 +15,7 @@ NULL
 #'
 #' @param cur_data A data frame containing feeding or drinking data. Must have 'Start' and 'End' columns (POSIXct).
 #' @return A POSIXct vector of time sequence.
-#' @export
+#' @keywords internal
 create_time_sequence <- function(cur_data) {
   if (!is.data.frame(cur_data)) stop("cur_data must be a data frame")
   if (!all(c("Start", "End") %in% names(cur_data))) stop("cur_data must have 'Start' and 'End' columns")
@@ -33,7 +33,7 @@ create_time_sequence <- function(cur_data) {
 #' @param cur_data Data frame with 'Cow' column and time columns.
 #' @param dateTime_seq POSIXct vector of time sequence.
 #' @return Data frame: first column 'Time', others are cow IDs, initialized to 0.
-#' @export
+#' @keywords internal
 prepare_time_cow_matrix <- function(cur_data, dateTime_seq) {
   if (!is.data.frame(cur_data)) stop("cur_data must be a data frame")
   if (!("Cow" %in% names(cur_data))) stop("cur_data must have a 'Cow' column")
@@ -52,7 +52,7 @@ prepare_time_cow_matrix <- function(cur_data, dateTime_seq) {
 #'
 #' @param cow_time_matrix Data frame as from prepare_time_cow_matrix.
 #' @return Data frame with same structure as cow_time_matrix.
-#' @export
+#' @keywords internal
 prepare_time_bin_matrix <- function(cow_time_matrix) {
   if (!is.data.frame(cow_time_matrix)) stop("Input must be a data frame")
   if (!"Time" %in% names(cow_time_matrix)) stop("Input must have a 'Time' column")
@@ -66,7 +66,7 @@ prepare_time_bin_matrix <- function(cow_time_matrix) {
 #' @param min_feed_bin Integer, minimum bin number.
 #' @param max_feed_bin Integer, maximum bin number.
 #' @return Data frame: first column 'Time', others are bin numbers, initialized to NA.
-#' @export
+#' @keywords internal
 prepare_time_feed_matrix <- function(dateTime_seq, min_feed_bin, max_feed_bin) {
   if (!lubridate::is.POSIXct(dateTime_seq)) stop("dateTime_seq must be POSIXct")
   if (length(dateTime_seq) == 0) stop("dateTime_seq cannot be empty")

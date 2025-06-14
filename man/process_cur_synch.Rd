@@ -17,3 +17,4 @@ Data frame with NA values replaced and a new column 'totalFeed'.
 \description{
 Process the current synchronization data to replace NA values and compute total feed
 }
+\keyword{internal}

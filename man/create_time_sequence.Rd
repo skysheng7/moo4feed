@@ -15,3 +15,4 @@ A POSIXct vector of time sequence.
 \description{
 Create a time sequence from start to end, by seconds
 }
+\keyword{internal}
