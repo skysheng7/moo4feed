@@ -96,8 +96,11 @@ matrix_initialize <- function(data_list, min_feed_bin = NULL, max_feed_bin = NUL
       cur_bin <- cur_data$Bin[o]
       start_weight <- cur_data$Startweight[o]
       end_weight <- cur_data$Endweight[o]
-      start_row_number <- which(synch_master_cow[[y]]$Time == cur_start)
-      end_row_number <- which(synch_master_cow[[y]]$Time == cur_end)
+      # Robust time matching with tolerance (1 second)
+      start_row_number <- which.min(abs(as.numeric(synch_master_cow[[y]]$Time) - as.numeric(cur_start)))
+      if (abs(as.numeric(synch_master_cow[[y]]$Time[start_row_number]) - as.numeric(cur_start)) > 1) stop("No matching start time found")
+      end_row_number <- which.min(abs(as.numeric(synch_master_cow[[y]]$Time) - as.numeric(cur_end)))
+      if (abs(as.numeric(synch_master_cow[[y]]$Time[end_row_number]) - as.numeric(cur_end)) > 1) stop("No matching end time found")
       if (type == "feed") {
         weight_list <- round(seq(start_weight, end_weight, length.out = (end_row_number - start_row_number + 1)), digits = 1)
         index_bin <- match(cur_bin, bin_list) + 1
@@ -128,7 +131,7 @@ process_cur_synch <- function(cur_synch, total_feed_bin) {
   if (!"Time" %in% colnames(cur_synch)) stop("Input matrix must contain a 'Time' column")
   if (ncol(cur_synch) <= 2) stop("Input matrix must have at least one bin column")
   if (!is.numeric(total_feed_bin) || total_feed_bin <= 0) stop("total_feed_bin must be a positive number")
-  bin_cols <- 2:(ncol(cur_synch) - 1)
+  bin_cols <- 2:(1 + total_feed_bin)
   if (length(bin_cols) == 0) stop("No bin columns found in input matrix")
   # Replace initial NA values with first non-NA value
   bin_data <- cur_synch[, bin_cols, drop = FALSE]
@@ -145,7 +148,7 @@ process_cur_synch <- function(cur_synch, total_feed_bin) {
     cur_synch[, bin_cols] <- apply(cur_synch[, bin_cols, drop = FALSE], 2, zoo::na.locf)
   }
   # Add totalFeed column
-  cur_synch$totalFeed <- rowSums(cur_synch[, 2:(total_feed_bin + 1), drop = FALSE], na.rm = TRUE)
+  cur_synch$totalFeed <- rowSums(cur_synch[, bin_cols, drop = FALSE], na.rm = TRUE)
   cur_synch
 }
 
@@ -171,31 +174,50 @@ matrix_process <- function(data_list, min_feed_bin = NULL, max_feed_bin = NULL, 
   results <- matrix_initialize(data_list, min_feed_bin, max_feed_bin, type)
   synch_master_cow <- results$synch_master_cow
   synch_master_bin <- results$synch_master_bin
-  synch_master_feed <- results$synch_master_feed
+  if (type == "feed") {
+    synch_master_feed <- results$synch_master_feed
+  }
   synch_master_cow2 <- synch_master_cow
   synch_master_bin2 <- synch_master_bin
-  synch_master_feed2 <- synch_master_feed
+  if (type == "feed") {
+    synch_master_feed2 <- synch_master_feed
+  }
   for (i in seq_along(synch_master_cow)) {
     # Only compute rowSums if there are at least two columns (Time + at least one cow)
     if (ncol(synch_master_cow[[i]]) > 1) {
       synch_master_cow[[i]]$total_cow_num <- rowSums(synch_master_cow[[i]][, 2:ncol(synch_master_cow[[i]]), drop = FALSE], na.rm = TRUE)
       synch_master_cow[[i]]$total_bin_occupied <- synch_master_cow[[i]]$total_cow_num
-      synch_master_cow[[i]]$empty_bin_num <- total_feed_bin - synch_master_cow[[i]]$total_bin_occupied
+      if (type == "feed") {
+        synch_master_cow[[i]]$empty_bin_num <- total_feed_bin - synch_master_cow[[i]]$total_bin_occupied
+      } else {
+        synch_master_cow[[i]]$empty_bin_num <- NA
+      }
     } else {
       synch_master_cow[[i]]$total_cow_num <- 0
       synch_master_cow[[i]]$total_bin_occupied <- 0
-      synch_master_cow[[i]]$empty_bin_num <- total_feed_bin
+      if (type == "feed") {
+        synch_master_cow[[i]]$empty_bin_num <- total_feed_bin
+      } else {
+        synch_master_cow[[i]]$empty_bin_num <- NA
+      }
     }
     records_to_keep <- which(synch_master_cow[[i]]$total_cow_num > 0)
     synch_master_cow2[[i]] <- synch_master_cow[[i]][records_to_keep, , drop = FALSE]
     synch_master_bin2[[i]] <- synch_master_bin[[i]][records_to_keep, , drop = FALSE]
-    synch_master_feed2[[i]] <- synch_master_feed[[i]][records_to_keep, , drop = FALSE]
+    if (type == "feed") {
+      synch_master_feed2[[i]] <- synch_master_feed[[i]][records_to_keep, , drop = FALSE]
+      synch_master_feed2[[i]]$date <- lubridate::date(synch_master_feed2[[i]]$Time)
+      synch_master_feed2[[i]] <- process_cur_synch(synch_master_feed2[[i]], total_feed_bin)
+    }
     synch_master_cow2[[i]]$date <- lubridate::date(synch_master_cow2[[i]]$Time)
     synch_master_bin2[[i]]$date <- lubridate::date(synch_master_bin2[[i]]$Time)
-    synch_master_feed2[[i]]$date <- lubridate::date(synch_master_feed2[[i]]$Time)
-    synch_master_feed2[[i]] <- process_cur_synch(synch_master_feed2[[i]], total_feed_bin)
   }
-  return(list(synch_master_cow2 = synch_master_cow2,
-              synch_master_bin2 = synch_master_bin2,
-              synch_master_feed2 = synch_master_feed2))
+  if (type == "feed") {
+    return(list(synch_master_cow2 = synch_master_cow2,
+                synch_master_bin2 = synch_master_bin2,
+                synch_master_feed2 = synch_master_feed2))
+  } else {
+    return(list(synch_master_cow2 = synch_master_cow2,
+                synch_master_bin2 = synch_master_bin2))
+  }
 } 
