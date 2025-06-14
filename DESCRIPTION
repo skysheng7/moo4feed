@@ -31,7 +31,8 @@ Imports:
     patchwork,
     rlang,
     tibble,
-    tidyr
+    tidyr,
+    zoo
 Suggests: 
     covr,
     hexSticker,
