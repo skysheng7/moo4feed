@@ -9,6 +9,7 @@
 #' - matrix_process
 #'
 #' @name synch_matrix_processing
+#' @keywords internal
 NULL
 
 #' Generate empty synchronization matrices for feed/water data

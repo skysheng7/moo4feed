@@ -16,3 +16,4 @@ Functions for initializing and processing synchronicity matrices for cow feeding
 }
 }
 
+\keyword{internal}

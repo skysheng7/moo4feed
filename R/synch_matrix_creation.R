@@ -9,6 +9,7 @@
 #' - prepare_time_feed_matrix
 #'
 #' @name synch_matrix_creation
+#' @keywords internal
 NULL
 
 #' Create a time sequence from start to end, by seconds
