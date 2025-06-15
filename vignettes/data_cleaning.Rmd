@@ -1,5 +1,5 @@
 ---
-title: "1. Data cleaning"
+title: "1. Data Cleaning"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{1. Data cleaning}
@@ -10,7 +10,11 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.width = 6,
+  fig.height = 4,
+  warning = FALSE,
+  message = FALSE
 )
 ```
 
@@ -29,112 +33,98 @@ knitr::include_graphics("comics/data_cleaning.jpg")
 
 ## 1. Why Clean Your Data? 🧹
 
-Raw data from automatic feeders is like my muddy riverbank - full of treasures but also plenty of muck! You'll find weird timestamps, strange visit records, and inconsistent file names. Cleaning transforms this mess into a crystal-clear stream perfect for analysis!
+Raw data from automatic feeders contains numerous quality issues including negative values,inconsistent timestamps due to daylight saving changes, and erroneous visit records. Data cleaning transforms these raw records into analysis-ready datasets suitable for behavioral research.
 
-## 2. Gather Your Tools 🧰
+## 2. Load Required Packages 🧰
 
 ```{r setup-packages}
-library(moo4feed)   # 🐮 Your cow data helper!
+library(moo4feed)   # Main package for animal data processing
+library(ggplot2)    # For visualization
+library(dplyr)      # For data manipulation
 ```
 
-Good news! `moo4feed` comes with sample files from friendly farmers, so you can follow along without your own data. Or edit the code to read in your own data when you're ready!
+The `moo4feed` package includes sample datasets from UBC Dairy Education and Research Center, allowing you to follow this tutorial without your own data.
 
 ------------------------------------------------------------------------
 
 ## 3. Where Are Your Files? 📂
 
 ```{r paths}
-# 📝 USING YOUR OWN DATA? Edit this line: ---------------------------------
-# extdata_path <- "/path/to/my/raw/files"  # ← your folder goes here
+# For your own data, edit this line:
+# extdata_path <- "/path/to/my/raw/files"  # ← your folder path
 
-# JUST TRYING THE DEMO? No changes needed below: --------------------------
+# For demonstration with sample data:
 extdata_path <- system.file("extdata", package = "moo4feed")
 ```
 
-### Feeders and drinkers in different folders?
+### Separate Storage for Feeders and Drinkers
 
-No problem! Create two separate paths instead:
+If your feeder and drinker files are stored separately:
 
 ```{r echo=TRUE, eval=FALSE}
 extdata_path_f <- "/path/to/feeder/files"    # 🐄 For feed data
 extdata_path_w <- "/path/to/drinker/files"   # 🚰 For water data
 ```
 
-Then use the appropriate path in the steps below!
-
 ------------------------------------------------------------------------
 
-## 4. Round Up Your Files 🤠
+## 4. Load in Data files 🔍
 
-We use filename patterns to separate feeder data from drinker data:
+We use filename patterns to distinguish feeder data from drinker data:
 
 ```{r list-files}
-# Find all feeder files (VR*.DAT)
+# Find all feeder files (VR*.DAT pattern)
 fileNames.f <- list.files(
   path       = extdata_path,     # 🐄 Where to look
-  pattern    = "^VR.*\\.DAT$",   # 🐄 Pattern to match
+  pattern    = "^VR.*\\.DAT$",   # 🐄 Pattern to match for feeder files
   recursive  = TRUE,             # Look in subfolders too
   full.names = TRUE              # Include full path
 ) |> sort()                      # Keep them in order
 
-# Find all drinker files (VW*.DAT)
+# Find all drinker files (VW*.DAT pattern)
 fileNames.w <- list.files(
   path       = extdata_path,     # 🚰 Where to look
-  pattern    = "^VW.*\\.DAT$",   # 🚰 Pattern to match
+  pattern    = "^VW.*\\.DAT$",   # 🚰 Pattern to match for drinker files
   recursive  = TRUE,
   full.names = TRUE
 ) |> sort()
 ```
 
-> **Ollie's Tip:** 💡 Using different filenames? Just change the `pattern`! For example, if your files are named `FEED_20250715.csv`, you could use `pattern = "^FEED_.*\\.csv$"`.
+> **File Naming Requirements:** All filenames must contain a six-digit date (YYMMDD) sequence. The system extracts the first six-digit sequence as the date.
+>
+> **Different Filename Patterns:** Change the `pattern` to match your file names. For example, if your files are named `FEED_20250715.csv`, you could use `pattern = "^FEED_.*\\.csv$"`.
 
-> ⚠️ **Important File Naming Rules:**
+> ✅ Valid formats: `VR200306.DAT`, `Feeder_data_200306.DAT`, `wat_200306_01.DAT`
 >
-> All your filenames must include the date as six digits (YYMMDD) somewhere in the name. My code finds the first six-digit sequence and treats it as the date!
->
-> ✅ These work great:
->
-> \- `VR200306.DAT`
->
-> \- `Feeder_data_200306.DAT`
->
-> \- `wat_200306_01.DAT`
->
-> ❌ This won't work:
->
-> \- `wat_01_200306.DAT` (because "01" appears before the date)
->
-> For easiest results, name your files like mine: - Feeder data: `VRYYMMDD.DAT` - Water data: `VWYYMMDD.DAT`
+> ❌ Invalid: `wat_01_200306.DAT` (leading digits "01" interfere with date extraction)
 
 ------------------------------------------------------------------------
 
 ## 5. Handle Daylight Saving Time ⏰
 
-Daylight saving time changes can mess up our timestamps! Let's identify when those pesky clock changes happened:
+Daylight saving time (DST) transitions can create timestamp inconsistencies. Identify DST change dates for your study period:
 
 ```{r}
-# Find the DST change dates for your data years
-# 👉 IMPORTANT: Change these values to match your study period!
+# Identify DST transitions for your data years
 dst_df <- get_dst_switch_info(
-  years = c(2020, 2021),     # 📅 EDIT THIS to match your data years!
+  years = c(2020, 2021),     # 📅 EDIT THIS to match your data years
   tz = "America/Chicago"     # EDIT THIS to your timezone if needed
                              # `Sys.timezone()` uses the timezone your computer is located at. 
 )
 print(dst_df)
 ```
 
-> **Ollie's Note:** 🌎 This currently works for North American time zones. Using data from elsewhere? Reach out to the package maintainer - we'd love to help add support for your region!
 
 ------------------------------------------------------------------------
 
-## 6. Process Your Data 🔄
+## 6. Process Data Files 🔄
 
-### Keep only matching days
+### Match Files by Date
 
-If you want to analyze only days with both feeder AND drinker data:
+To analyze only days with both feeder AND drinker data:
 
 ```{r}
-# Match up feeder and drinker files by date
+# Match feeder and drinker files by date
 date_compare <- compare_files(fileNames.f, fileNames.w)
 fileNames.f <- date_compare$feed    # Updated feeder file list
 fileNames.w <- date_compare$water   # Updated drinker file list
@@ -144,8 +134,7 @@ cat("Filenames for your drinker data: \n\n", fileNames.w)
 
 # Get the overall date range of your dataset
 date_result <- get_date_range(fileNames.f)
-cat("\n\n")
-cat("Date range of your dataset: ", date_result)
+cat("Dataset date range: ", date_result, "\n")
 ```
 
 ### 📌 Configure global settings for your data
@@ -158,6 +147,7 @@ This is the simplest approach - set everything in one function call:
 
 ```{r global-setup-all-at-once}
 # Configure all global variables in one call
+# 👉 EDIT THIS to match your data file structure
 set_global_cols(
   # Time zone
   tz = "America/Vancouver",
@@ -195,47 +185,41 @@ set_start_col2("start")        # visit start time
 set_end_col2("end")            # visit end time
 set_bin_col2("bin")            # feed-bin identifier
 
-# ── Binning rules ──────────────────────────────────────────────────────────
+# ── Feed and water bin settings ──────────────────────────────────────────────
 set_bins_feed2(1:30)           # the ID of 30 feed bins present in the barn
 set_bins_wat2(1:5)             # the ID of 5 water bins present in the barn
 set_bin_offset2(100)           # add 100 to water bin ID to differentiate from feeder ID
 ```
 
-> **Ollie's Tip:** 💡 After setting these global variables, all helper functions automatically use them. However, you can still override any setting for a specific function call by directly providing the parameter.
-
 You can verify any setting at any time with the corresponding getter functions:
 
 ```{r}
-tz2()        
-id_col2()    
-bins_feed2() 
+cat("Timezone:", tz2(), "\n")
+cat("ID column:", id_col2(), "\n")
+cat("Feed bins:", paste(bins_feed2(), collapse = ", "), "\n")
 ```
 
 ------------------------------------------------------------------------
 
-### 🔄 Process feeder data
-
-Because the defaults were set above, you now supply **only what truly varies file-to-file**—column **values** or clean-up vectors—while the helper pulls the rest from the global options.
+### Process Feeder Data
 
 ```{r process-feeder}
-# 🔄 CHANGE THESE VALUES to match your data files! 🔄
-
 # Define your column names (if your files don't have headers)
 # 👉 EDIT THIS to match your data file structure
 col_names <- c("transponder", "cow", "bin", "start", "end", "duration", 
               "start_weight", "end_weight", "comment", "intake", "intake2", 
               "X1", "X2", "X3", "X4", "x5")
 
-# IDs to remove (test tags, etc.)
+# Invalid IDs to remove (test tags, etc.)
 # 👉 EDIT THIS to remove any test tags or invalid IDs in your data
 drop_ids <- c(0, 1556, 5015, 1111, 1112, 1113, 1114)
 
-# Which columns do you want to keep?
+# Columns to retain for analysis
 # 👉 EDIT THIS to keep only the columns you need for analysis
 select_cols <- c("transponder", "cow", "bin", "start", "end", 
                 "duration", "start_weight", "end_weight", "intake")
 
-# Process all feeder files!
+# Process all feeder files
 all_fed <- process_all_feed(
     files = fileNames.f,
     col_names   = col_names,     # Column names for your data
@@ -249,39 +233,31 @@ all_fed <- process_all_feed(
 str(all_fed)
 ```
 
-Notice we **didn't** specify `id_col`, `trans_col`, `start_col`, `end_col`, `bin_col`, `bins`, or `tz`—they're all filled in automatically from the global settings you defined above. If you ever need a one-off override (for example, a different time-zone just for this call) you can still pass that argument directly:
+> **Geographic Limitation 🌎:** Currently this function only adjust DST automatically for North American time zones because we don't have data from other parts of the world. If you are from a different timezone and are having trouble handling DST changes yourself, please contact the maintainer and I'm happy to add support for your timezone!
+
+Notice when we call the function `process_all_feed()`, we **didn't** specify `id_col`, `start_col`, `tz` etc—they're all filled in automatically from the global settings you defined above. If you ever need a one-off override (for example, a different time-zone just for this call) you can still pass that argument directly:
 
 ``` r
-process_all_feed(files = fileNames.f, tz = "UTC", adjust_dst = FALSE)
+process_all_feed(files = fileNames.f, tz = "UTC")
 ```
-
-You can now directly inspect the `all_fed` dataset, as it's lazy-loaded with the package (it won't consume memory until you actually use it).
 
 ------------------------------------------------------------------------
 
-#### 🔄 Process water data
-
-Because we already set the global defaults (time-zone, column names, bin rules), the drinker workflow is just as terse as the feeder one—supply only what differs from file to file.
+### Process Water Data
 
 ```{r process-water}
-# 🔄 CHANGE THESE VALUES to match your water files! 🔄
-
 # Column names (only needed because drinker files have no headers)
 col_names_wat <- c(
   "transponder", "cow", "bin", "start", "end",
   "duration", "start_weight", "end_weight", "intake"
 )
 
-# Same ID clean-up list we used for feeder data
-drop_ids <- c(0, 1556, 5015, 1111:1114)
-
-# Columns you want to keep
 select_cols_wat <- c(
   "transponder", "cow", "bin", "start", "end",
   "duration", "start_weight", "end_weight", "intake"
 )
 
-# Process all drinker logs
+# Process all water files
 all_wat <- process_all_water(
   files        = fileNames.w,
   col_names    = col_names_wat,
@@ -295,18 +271,17 @@ all_wat <- process_all_water(
 str(all_wat)
 ```
 
-You can now directly inspect the `all_wat` dataset, as it's lazy-loaded with the package (it won't consume memory until you actually use it).
-
 ------------------------------------------------------------------------
 
 ## 7. Quality Check Your Data 🕵️‍♀️
 
-> **Ollie says:** Even after our initial processing, our cow data still has some fishy bits (and I know fishy when I see it!). Let's run quality checks to catch problems like overlapping visits, impossible intake values, and missing records!
+Quality control identifies and corrects common data issues including overlapping visits, impossible values, and missing records.
 
-### Create custom quality check thresholds
+### Configure Quality Check Parameters
 
 ```{r qc-config}
-# 👉 EDIT THESE VALUES to match your study parameters! 👉
+# Define quality control thresholds
+# 👉 EDIT the thresholds to match your data and preferences
 my_qc_config <- qc_config(
   # Feed thresholds
   high_dur_feed = 2000,          # Flag feed visits longer than 2000 seconds
@@ -330,30 +305,24 @@ my_qc_config <- qc_config(
 )
 ```
 
-> **Ollie's Tip:** 💡 The `qc_config()` function creates a configuration list that you can pass to quality check functions. This approach keeps your threshold values organized and makes your code more readable!
-
 ### Run the quality check
 
 ```{r run-qc}
-# Run the full quality check
+# Run comprehensive quality check
 qc_results <- qc(
   feed = all_fed,               # Your processed feeder data
   water = all_wat,              # Your processed drinker data
   cfg = my_qc_config,           # Your custom thresholds
-  verbose = FALSE,               # Do not show detailed error messages, set to TRUE to see them
+  verbose = FALSE,               # Do not show detailed warning messages about errorous visits, set to TRUE to see them
   fix_double_detections = TRUE  # Automatically fix overlapping visits
 )
 
-# store the warnings summary
+# Store warnings for review
 warning <- qc_results$warnings
 ```
 
-> **Note:** 📝 Like other functions in `moo4feed`, the `qc()` function also uses the global variables you configured earlier (column names, bin settings, etc.). You can override these for a specific call by providing the parameters directly.
+The `qc()` function performs multiple validation steps:
 
-> **What just happened?** 🦦
->
-> The `qc()` function performed a comprehensive quality check on our data:
->
 > 1. Combined feed and water data for analysis
 > 2. Checked if we have the expected number of cows each day
 > 3. Flagged double detections (when the same cow is detected at different bins at the same time) and fixed them
@@ -361,10 +330,9 @@ warning <- qc_results$warnings
 > 5. Removed records with negative durations or intakes
 > 6. Identified abnormally large feed/water intakes
 > 7. Flags cows that did not feed or drink after noon (potentially lost ear tag or due to illness)
-> 8. Flagged bins with very low traffic or no visits at all
-> 
+> 8. Flagged bins with very low traffic or no visits at all (potentially bin malfunction)
 
-### Use the cleaned data
+### Extract Cleaned Data
 
 ```{r cleaned-data}
 # The qc_results contains our cleaned data
@@ -373,20 +341,76 @@ qc_water <- qc_results$water   # Cleaned drinker data
 qc_combined <- qc_results$combined   # Merged feed+water data
 ```
 
-## 8. Advanced Cleaning: Detect Outliers with KNN 🔍
+## 8. Traditional vs. Advanced Outlier Detection 📊
 
-> **Ollie says:** Even after our regular quality checks, there might still be unusual data points in our dataset. Let's use a fancy technique called K-Nearest Neighbors (KNN) to find and handle those tricky outliers!
+### Traditional 3-Standard Deviation Method
 
+Historically, dairy research has used rigid statistical cutoffs to remove outliers. The traditional approach removes all data points beyond 3 standard deviations from the mean:
+
+```{r traditional-outlier-method, fig.width=8, fig.height=5}
+# Demonstrate traditional outlier removal on feed data
+demo_feed <- do.call(rbind, qc_feed)  # Combine all days into one dataframe
+
+# Calculate traditional 3-SD cutoffs for intake
+intake_mean <- mean(demo_feed$intake, na.rm = TRUE)
+intake_sd <- sd(demo_feed$intake, na.rm = TRUE)
+intake_lower <- max(0, (intake_mean - 3 * intake_sd)) # set lower bound to 0
+intake_upper <- intake_mean + 3 * intake_sd
+
+# Calculate traditional 3-SD cutoffs for duration
+dur_mean <- mean(demo_feed$duration, na.rm = TRUE)
+dur_sd <- sd(demo_feed$duration, na.rm = TRUE)
+dur_lower <- max(0, (dur_mean - 3 * dur_sd)) # set lower bound to 0
+dur_upper <- dur_mean + 3 * dur_sd
+
+# Flag outliers using traditional method
+demo_feed$outlier <- "N"
+demo_feed$outlier[demo_feed$intake < intake_lower | 
+                                 demo_feed$intake > intake_upper |
+                                 demo_feed$duration < dur_lower | 
+                                 demo_feed$duration > dur_upper] <- "Y"
+
+# Visualize traditional outlier detection
+p_traditional <- viz_outliers(
+  demo_feed,
+  x_var = "intake",
+  y_var = "duration",
+  title = "Traditional Outlier Detection (3 SD from mean)",
+  jitter_amount = 0,
+  regular_color = "lightgreen",
+  outlier_color = "orange"
+)
+
+print(p_traditional)
+
+```
+
+### Limitations of the Traditional 3-SD Method
+
+The standard approach using a 3-standard-deviation (3-SD) cutoff presents several challenges:
+
+1. **Overly strict thresholds**: While effective at removing extreme outliers, this method imposes rigid, rectangular cutoff zones that may not align with biological rationales.
+2. **Excessive conservatism**: The approach may discard biologically reasonable extremes. Previous validation study showed that long feeding visit accompanied by high feed intake is possible, but they dare considered data errors using 3-SD method. In the meanwhile, it's not likely for a cow to consume 3kg in 5 seconds, but those will not be labeled as outliers using 3-SD method.
+3. **Misclassification of valid data**: Many feeding events that appear normal in the context of cow behavior are incorrectly flagged as outliers simply because they fall outside the 3-SD range. Excluding these points can significantly distort estimates of individual animal's daily intake and feeding duration.
+4. **Misses multivariate relationships**: The method evaluates each variable independently, failing to consider the relationship between intake, duration, and feeding rate.
+5. **Ignores differences among farms and animals**: Everyone's data is different. The method does not account for variations in feeding behavior across different farms or individual cows.
+
+## 9. Advanced KNN Outlier Detection 🔬
+
+K-Nearest Neighbors (KNN) outlier detection evaluates data points in multidimensional space, 
+considering relationships between intake, duration, and rate simultaneously.
 The KNN method looks at each data point and compares it to its neighbors. 
-If a point is very different from its neighbors (in terms of intake, duration, and rate), 
-it might be an outlier! 
+If a point is very different from its neighbors (in the 3-demensional space of intake, duration, and rate), 
+it might be an outlier.
 
-These functions are designed to be able to handle both single-day and multi-day data. 
+### KNN Method Advantages
 
-### Try KNN outlier detection
+- **Multidimensional analysis**: Considers the intake, duration, and rate in one go
+- **Flexible boundaries**: You can change the boundaries to fit YOUR data
+- **Relationship-aware**: Preserves correlations between variables
 
-```{r knn-outliers}
-# First, let's detect outliers in our feed data
+```{r knn-outliers, fig.width=5, fig.height=3}
+# Apply KNN outlier detection
 feed_with_outliers <- knn_clean_feed(
   qc_feed,            # Our cleaned feed data
   k = 50,                # Number of neighbors to consider
@@ -400,20 +424,8 @@ feed_with_outliers <- knn_clean_feed(
   remove_outliers = FALSE # Set to TRUE if you wish to remove outliers
 )
 
-# We can also visualize the outliers
-p1 <- viz_outliers(
-  feed_with_outliers,
-  x_var = "duration",
-  y_var = "intake",
-  title = "Feed Outliers: Duration vs Intake",
-  jitter_amount = 0.2,
-  regular_color = "lightgreen",
-  outlier_color = "orange"
-)
-print(p1)
-
-# Let's also look at rate vs intake
-p2 <- viz_outliers(
+# Visualize KNN outlier detection
+p_knn <- viz_outliers(
   feed_with_outliers,
   x_var = "rate",
   y_var = "intake",
@@ -422,7 +434,7 @@ p2 <- viz_outliers(
   regular_color = "lightgreen",
   outlier_color = "orange"
 )
-print(p2)
+print(p_knn)
 ```
 
 > **Ollie's Tips for KNN Outlier Detection:** 🦦
@@ -436,36 +448,27 @@ print(p2)
 > - **Why these scaling values?**: These values were chosen to be conservative and not remove too many data points. From previous experience, it's likely for a cow to have very long durations per visit, but very unlikely to have large intake in a short time, so we flagged outliers to catch visits with large intake and high rate.
 > - **Be cautious**: Don't set `remove_outliers = TRUE` until you're confident the detection is working correctly
 
-### Process water data outliers
+**Important Note**: The 2D visualization above only shows two dimensions (duration vs. intake), but KNN analysis operates in 3D space using: **Intake** (kg), **Duration** (seconds), and **Rate** (kg/s). Some points that appear normal in 2D may be outliers when considering all three dimensions.
 
-```{r knn-water-outliers}
-# Now let's detect outliers in our water data
+### Apply KNN to Water Data
+
+```{r knn-water-outliers, fig.width=5, fig.height=3}
+# KNN outlier detection for water data
 water_with_outliers <- knn_clean_water(
   qc_water,           # Our cleaned water data
   k = 50,                # Number of neighbors to consider
-  threshold_percentile = 99.8,  # Threshold for outlier detection
+  threshold_percentile = 99,  # Threshold for outlier detection
   # Water data often needs different scaling
   custom_scaling = list(
     rate = 2000,           # Scaling for intake rate
-    intake = 1,          # Scaling for intake amount
+    intake = 7,          # Scaling for intake amount
     duration = 0.01      # Scaling for duration
   ),
   remove_outliers = FALSE # Set to TRUE if you wish to remove outliers
 )
 
-# Visualize water outliers
-p3 <- viz_outliers(
-  water_with_outliers,
-  x_var = "duration",
-  y_var = "intake",
-  title = "Water Outliers: Duration vs Intake",
-  regular_color = "lightblue",
-  outlier_color = "orange"
-)
-print(p3)
-
 # Let's also look at rate vs intake
-p4 <- viz_outliers(
+p2 <- viz_outliers(
   water_with_outliers,
   x_var = "rate",
   y_var = "intake",
@@ -474,14 +477,15 @@ p4 <- viz_outliers(
   regular_color = "lightblue",
   outlier_color = "orange"
 )
-print(p4)
+print(p2)
 ```
 
-### Remove outliers (optional)
+### Remove Outliers
 
 Once you're satisfied with the outlier detection, you can choose to remove them:
 
 ```{r remove-outliers, eval=TRUE}
+# Remove outliers from feed data
 cleaned_feed_no_outliers <- knn_clean_feed(
   qc_feed,
   k = 50,
@@ -490,7 +494,7 @@ cleaned_feed_no_outliers <- knn_clean_feed(
   remove_outliers = TRUE
 )
 
-# Same for water data
+# Remove outliers from water data
 cleaned_water_no_outliers <- knn_clean_water(
   qc_water,
   k = 50,
@@ -499,19 +503,16 @@ cleaned_water_no_outliers <- knn_clean_water(
   remove_outliers = TRUE
 )
 
+# Create final cleaned datasets
 clean_feed <- cleaned_feed_no_outliers
 clean_water <- cleaned_water_no_outliers
 clean_comb <- combine_feed_water(clean_feed, clean_water)
 ```
 
-> **Ollie's Warning:** Be careful with removing outliers! What looks like an outlier might actually be important data. Always try to understand why the points are being flagged as outliers before removing them.
-
-## 9. Summarize Daily Intakes 📊
-
-> **Ollie says:** Now that we've cleaned our data, let's create daily summaries of feed and water intake for each cow. This is where the juicy insights swim to the surface!
+## 10. Daily Intake Summaries 📈
 
 ```{r daily-summary}
-# Create daily summaries of feed and water intake
+# Generate daily intake summaries
 daily_summary <- feed_water_summary(
   feed = qc_feed,           # Your cleaned feed data 
   water = qc_water,         # Your cleaned water data
@@ -528,43 +529,18 @@ warning <- daily_summary$warn
 head(warning)
 ```
 
-> **What's in the summary?** 🦦
->
-> For each cow on each day, we now know:
->
-> - Total feed intake (kg)
-> - Total feeding duration (seconds)
-> - Number of feed visits
-> - Total water intake (L)
-> - Total drinking duration (seconds)
-> - Number of water visits
->
-> Plus, we've updated our warnings to flag cows with abnormally high or low daily intakes!
+## 11. Summary
 
-## 10. What's Next? 🌟
+This tutorial demonstrated comprehensive data cleaning for automatic feeder data:
 
-Congratulations! You've now processed, cleaned, and summarized your cow feeding and drinking data. Your data is now sparkling clean and ready for analysis!
+✅ **File processing**: Handled multiple data files with date matching
+✅ **Quality control**: Identified and corrected common data issues  
+✅ **Advanced outlier detection**: Compared traditional vs. KNN methods
+✅ **Daily summaries**: Created analysis-ready intake metrics
 
-Stay tuned for the next vignette (Part 2) where we'll explore what these dairy cows are actually up to in "Extracting Cow Stories"!
+The cleaned datasets are now ready for behavioral analysis as demonstrated in subsequent tutorials.
 
-> **Ollie's Final Tips:** 
->
-> Remember, you can customize any part of this workflow for your specific needs:
->
-> - Make sure your file naming follows the date format rules
-> - Adjust column names with `set_id_col2()`, `set_start_col2()`, etc.
-> - Modify quality check thresholds with `qc_config()`
-> - Process just feed or just water data if that's all you have
-> - Use `OlsonNames()` to see all timezone options
->
-> Dive deep into documentation with `?function_name` for more details!
-> Need detailed examples? Look at the sample data with: `moo4feed_example()`
-
-------------------------------------------------------------------------
-
-## 11. Code Cheatsheet 📋
-
-Here's a copy-paste friendly version of all the code used in this vignette:
+## 12. Code cheatsheet 📋
 
 ```{r cheatsheet, eval=FALSE}
 # === 1. Load packages ===
@@ -599,10 +575,7 @@ fileNames.w <- list.files(
 ) |> sort()
 
 # === 4. Handle daylight saving time ===
-dst_df <- get_dst_switch_info(
-  years = c(2020, 2021),
-  tz = "America/Chicago"
-)
+dst_df <- get_dst_switch_info(years = c(2020, 2021), tz = "America/Chicago")
 
 # === 5. Match files by date ===
 date_compare <- compare_files(fileNames.f, fileNames.w)
@@ -725,6 +698,18 @@ qc_results <- qc(
   feed = all_fed,
   water = all_wat,
   cfg = my_qc_config,
+  id_col = id_col2(),               # Animal ID column (default from global vars)
+  start_col = start_col2(),         # Visit start time column (default from global vars)
+  end_col = end_col2(),             # Visit end time column (default from global vars)
+  bin_col = bin_col2(),             # Bin/feeder ID column (default from global vars)
+  dur_col = duration_col2(),        # Visit duration column (default from global vars)
+  intake_col = intake_col2(),       # Intake amount column (default from global vars)
+  start_weight_col = start_weight_col2(),  # Start weight column (default from global vars)
+  end_weight_col = end_weight_col2(),      # End weight column (default from global vars)
+  tz = tz2(),                       # Timezone (default from global vars)
+  bins_feed = bins_feed2(),         # Valid feed bin numbers (default from global vars)
+  bins_wat = bins_wat2(),           # Valid water bin numbers (default from global vars)
+  bin_offset = bin_offset2(),       # Bin offset for water bins (default from global vars)
   verbose = FALSE,
   fix_double_detections = TRUE
 )
@@ -748,6 +733,9 @@ feed_with_outliers <- knn_clean_feed(
     intake = 7,
     duration = 0.03
   ),
+  intake_col = intake_col2(),       # Intake amount column (default from global vars)
+  duration_col = duration_col2(),   # Visit duration column (default from global vars)
+  date_col = "date",                # Date column name
   remove_outliers = FALSE
 )
 
@@ -778,12 +766,15 @@ print(p2)
 water_with_outliers <- knn_clean_water(
   qc_water,
   k = 50,
-  threshold_percentile = 99.8,
+  threshold_percentile = 99,
   custom_scaling = list(
     rate = 2000,
-    intake = 1,
+    intake = 7,
     duration = 0.01
   ),
+  intake_col = intake_col2(),       # Intake amount column (default from global vars)
+  duration_col = duration_col2(),   # Visit duration column (default from global vars)
+  date_col = "date",                # Date column name
   remove_outliers = FALSE
 )
 
@@ -815,6 +806,9 @@ cleaned_feed_no_outliers <- knn_clean_feed(
   k = 50,
   threshold_percentile = 99.3,
   custom_scaling = list(rate = 10000, intake = 7, duration = 0.03),
+  intake_col = intake_col2(),       # Intake amount column (default from global vars)
+  duration_col = duration_col2(),   # Visit duration column (default from global vars)
+  date_col = "date",                # Date column name
   remove_outliers = TRUE
 )
 
@@ -822,8 +816,11 @@ cleaned_feed_no_outliers <- knn_clean_feed(
 cleaned_water_no_outliers <- knn_clean_water(
   qc_water,
   k = 50,
-  threshold_percentile = 99.8,
-  custom_scaling = list(rate = 2000, intake = 1, duration = 0.01),
+  threshold_percentile = 99,
+  custom_scaling = list(rate = 2000, intake = 7, duration = 0.01),
+  intake_col = intake_col2(),       # Intake amount column (default from global vars)
+  duration_col = duration_col2(),   # Visit duration column (default from global vars)
+  date_col = "date",                # Date column name
   remove_outliers = TRUE
 )
 
@@ -837,7 +834,10 @@ daily_summary <- feed_water_summary(
   feed = qc_feed,
   water = qc_water,
   warn = warning,
-  cfg = my_qc_config
+  cfg = my_qc_config,
+  id_col = id_col2(),               # Animal ID column (default from global vars)
+  intake_col = intake_col2(),       # Intake amount column (default from global vars)
+  dur_col = duration_col2()         # Visit duration column (default from global vars)
 )
 
 # Get summary dataframe
