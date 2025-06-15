@@ -5,7 +5,7 @@
 \alias{all_wat}
 \title{Cattle water drinking behavior and visit record data}
 \format{
-A list of 3 data frames, one for each date (2020-10-31, 2020-11-01, 2020-11-02),
+A list of 2 data frames, one for each date (2020-10-31, 2020-11-01),
 with each data frame containing the following 10 variables:
 \describe{
 \item{transponder}{integer, unique electronic ID for each bin}
@@ -23,20 +23,20 @@ with each data frame containing the following 10 variables:
 }
 \source{
 Collected using an Insentec automatic waterer at University of British Columbia
-Dairy Education and Research Centre from October 31 to November 2, 2020.
+Dairy Education and Research Centre from October 31 to November 1, 2020.
 }
 \usage{
 all_wat
 }
 \description{
 An example dataset containing water drinking behavior and visit records for cattle
-over a three-day period (2020-10-31 to 2020-11-02). Each day's data is stored
+over a two-day period (2020-10-31 to 2020-11-01). Each day's data is stored
 as a separate data frame within a list. This is the cleaned data output from
 the vignettes (i.e., "Articles" listed on the package website) "Data cleaning" code.
 }
 \details{
 The dataset contains detailed water drinking behavior for multiple cattle
-over three consecutive days. Each entry represents a distinct drinking event
+over two consecutive days. Each entry represents a distinct drinking event
 where an animal visited a water bin.
 }
 \examples{

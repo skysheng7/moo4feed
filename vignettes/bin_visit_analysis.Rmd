@@ -53,13 +53,11 @@ cat("Timezone:", tz2(), "\n")
 
 ## 2. Introduction to Bin Visit Analysis
 
-Ollie the Otter, our behavioral analysis specialist, explains: "Animals exhibit distinct exploration patterns when accessing feeding and drinking stations. Some individuals visit many different bins while others consistently use only a few preferred locations. This behavior reveals individual personalities and resource utilization strategies."
+🦦 Ollie the Otter, our in-house data scientist, explains: "Animals exhibit distinct exploration behaviours when accessing feeding and drinking stations. Some individuals visit many different bins while others consistently use only a few preferred locations. This behavior reveals individual personalities and resource utilization strategies."
 
 ## 3. Prerequisites
 
-This tutorial assumes completion of previous data processing steps:
-- **Tutorial 1: Data Cleaning** 
-- **Tutorial 2: Meal Clustering**
+This tutorial assumes completion of previous data processing steps in **Tutorial 1: Data Cleaning** 
 
 ## 4. Data Preparation
 
@@ -124,29 +122,18 @@ avg_bin_visits <- bin_visits |>
   dplyr::arrange(dplyr::desc(avg_total_bins))
 
 # Display most exploratory animals
-cat("🏆 TOP 10 MOST EXPLORATORY ANIMALS:\n")
-head(avg_bin_visits, 10)
+cat("🏆 TOP 5 MOST EXPLORATORY ANIMALS:\n")
+head(avg_bin_visits, 5)
 
-cat("\n🏠 TOP 10 CREATURES OF HABIT (fewest bins visited):\n")
-tail(avg_bin_visits, 10)
+cat("\n🏠 TOP 5 CREATURES OF HABIT (fewest bins visited):\n")
+tail(avg_bin_visits, 5)
 ```
 
 This analysis reveals clear individual differences in exploration behavior. Most exploratory animals visit many different stations, while creatures of habit consistently use fewer preferred locations.
 
+## 7. Code Cheatsheet
 
-## 7. Summary
-
-This tutorial demonstrated bin visit analysis for understanding animal exploration behavior:
-
-✅ **Quantified exploration**: Measured individual differences in station usage
-✅ **Identified patterns**: Distinguished exploratory vs. habitual behaviors  
-✅ **Research applications**: Connected patterns to welfare and management implications
-
-The analysis provides valuable insights for optimizing facility design, monitoring animal welfare, and understanding individual behavioral differences.
-
-## 8. Code Reference
-
-```r
+```{r cheatsheet, eval=FALSE}
 #' Copy and modify these code blocks for your own analysis!
 
 # ---- SETUP: Global Variables (REQUIRED FIRST!) ----
@@ -174,6 +161,11 @@ set_global_cols(
 bin_visits <- unique_bin_visits(
   feed = your_clean_feed,           # Your cleaned feed data
   water = your_clean_water,         # Your cleaned water data  
+  id_col = id_col2(),               # Animal ID column (default from global vars)
+  bin_col = bin_col2(),             # Bin/feeder ID column (default from global vars)
+  bin_offset = bin_offset2(),       # Bin offset for water bins (default from global vars)
+  bins_feed = bins_feed2(),         # Valid feed bin numbers (default from global vars)
+  bins_wat = bins_wat2(),           # Valid water bin numbers (default from global vars)
   return_list = FALSE               # FALSE = combined summary, TRUE = day-by-day
 )
 
@@ -193,10 +185,5 @@ avg_bin_visits <- bin_visits |>
 # Get top and bottom explorers
 top_explorers <- head(avg_bin_visits, 10)       # Most exploratory
 creatures_of_habit <- tail(avg_bin_visits, 10)  # Least exploratory
-
-# ---- STEP 4: Quick Analysis ----
-# Check exploration results
-head(avg_bin_visits, 10)               # Top 10 explorers
-tail(avg_bin_visits, 10)               # Top 10 creatures of habit
 
 ``` 

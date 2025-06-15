@@ -53,28 +53,21 @@ cat("Timezone:", tz2(), "\n")
 
 ## 2. Introduction to Replacement Detection
 
-Ollie the Otter explains: "Replacement events occur when one animal displaces another from a feeding station within a short time window. These social interactions reveal important information about herd dynamics, dominance hierarchies, and animal welfare."
+🦦 Ollie the Otter explains: "Replacement events occur when one animal pushes and displaces another animal that is actively feedingfrom a feeding station within a short time window. These social interactions reveal important information about herd dynamics and dominance hierarchies."
 
 Understanding replacement behavior helps researchers and farm managers:
 - **Monitor social stress**: High replacement rates may indicate social tension
-- **Identify dominant animals**: Animals that frequently displace others
-- **Assess welfare**: Animals frequently displaced may experience stress
-- **Optimize management**: Adjust feeding station availability based on social dynamics
+- **Identify dominant animals**: Animals that frequently replace others
+- **Affective state**: Animals frequently get replaced may experience longitudinal stress
 
 ### What We'll Learn
 
-This tutorial demonstrates how to:
-
-1. **Detect replacement events** using validated time thresholds
-2. **Analyze social dynamics** through replacement patterns
-3. **Interpret results** for management and welfare applications
+This tutorial demonstrates how to: **Detect replacement events** using validated time thresholds
 
 ## 3. Prerequisites
 
-This tutorial assumes completion of previous data processing steps:
-- **Tutorial 1: Data Cleaning** 
-- **Tutorial 2: Meal Clustering**
-- **Tutorial 3: Bin Visit Analysis**
+This tutorial assumes completion of previous data processing steps in **Tutorial 1: Data Cleaning** 
+
 
 ## 4. Data Preparation
 
@@ -100,10 +93,10 @@ A replacement event is defined as when one animal (actor) takes over a feeding s
 
 ### Key Components
 
-- **Reactor cow**: The animal that was displaced (had to leave the bin)
-- **Actor cow**: The animal that initiated the replacement (took over the bin)  
-- **Time threshold**: Maximum gap between when one animal leaves and another arrives (default: 26 seconds)
-- **Validation**: Events are verified by checking if the actor animal has an "alibi" (was not feeding elsewhere when the reactor left)
+- **Reactor cow**: The cow that was replaced (had to leave the bin)
+- **Actor cow**: The cow that initiated the replacement (took over the bin)  
+- **Time threshold**: Maximum gap between when one cow leaves and another arrives (default: 26 seconds)
+- **Validation**: Events are verified by checking if the actor cow has an "alibi" (was feeding elsewhere when the reactor left)
 
 ### Detecting Replacement Events
 
@@ -123,35 +116,35 @@ sapply(replacements, nrow)
 ```
 
 Each replacement event contains:
-- **`reactor_cow`**: ID of the animal that was replaced
-- **`actor_cow`**: ID of the animal that initiated the replacement
-- **`bin`**: Feeding station where the replacement occurred
+- **`reactor_cow`**: ID of the cow that was replaced
+- **`actor_cow`**: ID of the cow that initiated the replacement
+- **`bin`**: Feeding/drinking station where the replacement occurred
 - **`time`**: Timestamp when the replacement happened
 - **`date`**: Date of the event
-- **`bout_interval`**: Time gap between when the reactor left and actor arrived
+- **`bout_interval`**: Time gap between when the reactor left and actor entered the bin
 
 ## 6. Analyzing Replacement Patterns
 
-### Most Active Animals
+### Most Active cows
 
 ```{r replacement-patterns}
 # Combine all days for analysis
 all_replacements <- do.call(rbind, replacements)
 
-# Animals that most frequently replace others (actors)
+# cows that most frequently replace others (actors)
 top_actors <- all_replacements |>
-  dplyr::count(actor_cow, sort = TRUE, name = "times_displaced_others") |>
-  head(10)
+  dplyr::count(actor_cow, sort = TRUE, name = "times_replaced_others") |>
+  head(5)
 
-cat("Top 10 animals that most frequently displace others:\n")
+cat("Top 10 cows that most frequently displace others:\n")
 print(top_actors)
 
-# Animals that are most frequently replaced (reactors)
+# cows that are most frequently replaced (reactors)
 top_reactors <- all_replacements |>
-  dplyr::count(reactor_cow, sort = TRUE, name = "times_displaced") |>
-  head(10)
+  dplyr::count(reactor_cow, sort = TRUE, name = "times_replaced") |>
+  head(5)
 
-cat("\nTop 10 animals that are most frequently displaced:\n")
+cat("\nTop 10 cows that are most frequently displaced:\n")
 print(top_reactors)
 ```
 
@@ -173,15 +166,12 @@ print(hourly_replacements)
 This tutorial demonstrated replacement detection for understanding social dynamics:
 
 ✅ **Event detection**: Identified and validated replacement events using time thresholds
-✅ **Pattern analysis**: Analyzed which animals are most active in displacement behavior
-✅ **Timing insights**: Examined when replacement events occur throughout the day
-✅ **Research applications**: Connected findings to welfare and management implications
+✅ **Pattern analysis**: Analyzed which cows are most active in displacement behavior
+✅ **Timing insights**: Examined when most replacement events occur throughout the day
 
-Understanding replacement behavior helps optimize animal management and monitor welfare through objective behavioral measurements.
+## 8. Code Cheatsheet
 
-## 8. Code Reference
-
-```r
+```{r cheatsheet, eval=FALSE}
 #' Copy and modify these code blocks for your own analysis!
 
 # ---- SETUP: Global Variables (REQUIRED FIRST!) ----
@@ -207,7 +197,11 @@ set_global_cols(
 # Process replacement events for all days
 replacements <- record_replacement_days(
   comb = your_clean_feed,         # Your cleaned feed data
-  cfg = qc_config(replacement_threshold = 26)      # Time gap (seconds) to classify replacement behavior
+  cfg = qc_config(replacement_threshold = 26),     # Time gap (seconds) to classify replacement behavior
+  id_col = id_col2(),             # Animal ID column (default from global vars)
+  bin_col = bin_col2(),           # Bin/feeder ID column (default from global vars)
+  start_col = start_col2(),       # Visit start time column (default from global vars)
+  end_col = end_col2()            # Visit end time column (default from global vars)
 )
 
 # Check results
