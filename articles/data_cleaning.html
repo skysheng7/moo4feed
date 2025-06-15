@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>1. Data cleaning • moo4feed</title>
+<title>1. Data Cleaning • moo4feed</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="1. Data cleaning">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="1. Data Cleaning">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -30,13 +30,7 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="active nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/cow_stories.html">2. Extracting Cow Stories</a></li>
-    <li><a class="dropdown-item" href="../articles/data_cleaning.html">1. Data cleaning</a></li>
-  </ul>
-</li>
+<li class="active nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -55,7 +49,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>1. Data cleaning</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>1. Data Cleaning</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/skysheng7/moo4feed/blob/main/vignettes/data_cleaning.Rmd" class="external-link"><code>vignettes/data_cleaning.Rmd</code></a></small>
@@ -87,95 +81,90 @@ splash in? Let’s go!</p>
 <div class="section level3">
 <h3 id="why-clean-your-data">1. Why Clean Your Data? 🧹<a class="anchor" aria-label="anchor" href="#why-clean-your-data"></a>
 </h3>
-<p>Raw data from automatic feeders is like my muddy riverbank - full of
-treasures but also plenty of muck! You’ll find weird timestamps, strange
-visit records, and inconsistent file names. Cleaning transforms this
-mess into a crystal-clear stream perfect for analysis!</p>
+<p>Raw data from automatic feeders contains numerous quality issues
+including negative values,inconsistent timestamps due to daylight saving
+changes, and erroneous visit records. Data cleaning transforms these raw
+records into analysis-ready datasets suitable for behavioral
+research.</p>
 </div>
 <div class="section level3">
-<h3 id="gather-your-tools">2. Gather Your Tools 🧰<a class="anchor" aria-label="anchor" href="#gather-your-tools"></a>
+<h3 id="load-required-packages">2. Load Required Packages 🧰<a class="anchor" aria-label="anchor" href="#load-required-packages"></a>
 </h3>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/skysheng7/moo4feed" class="external-link">moo4feed</a></span><span class="op">)</span>   <span class="co"># 🐮 Your cow data helper!</span></span></code></pre></div>
-<p>Good news! <code>moo4feed</code> comes with sample files from
-friendly farmers, so you can follow along without your own data. Or edit
-the code to read in your own data when you’re ready!</p>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/skysheng7/moo4feed" class="external-link">moo4feed</a></span><span class="op">)</span>   <span class="co"># Main package for animal data processing</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span>    <span class="co"># For visualization</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>      <span class="co"># For data manipulation</span></span></code></pre></div>
+<p>The <code>moo4feed</code> package includes sample datasets from UBC
+Dairy Education and Research Center, allowing you to follow this
+tutorial without your own data.</p>
 <hr>
 </div>
 <div class="section level3">
 <h3 id="where-are-your-files">3. Where Are Your Files? 📂<a class="anchor" aria-label="anchor" href="#where-are-your-files"></a>
 </h3>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># 📝 USING YOUR OWN DATA? Edit this line: ---------------------------------</span></span>
-<span><span class="co"># extdata_path &lt;- "/path/to/my/raw/files"  # ← your folder goes here</span></span>
+<code class="sourceCode R"><span><span class="co"># For your own data, edit this line:</span></span>
+<span><span class="co"># extdata_path &lt;- "/path/to/my/raw/files"  # ← your folder path</span></span>
 <span></span>
-<span><span class="co"># JUST TRYING THE DEMO? No changes needed below: --------------------------</span></span>
+<span><span class="co"># For demonstration with sample data:</span></span>
 <span><span class="va">extdata_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, package <span class="op">=</span> <span class="st">"moo4feed"</span><span class="op">)</span></span></code></pre></div>
 <div class="section level4">
-<h4 id="feeders-and-drinkers-in-different-folders">Feeders and drinkers in different folders?<a class="anchor" aria-label="anchor" href="#feeders-and-drinkers-in-different-folders"></a>
+<h4 id="separate-storage-for-feeders-and-drinkers">Separate Storage for Feeders and Drinkers<a class="anchor" aria-label="anchor" href="#separate-storage-for-feeders-and-drinkers"></a>
 </h4>
-<p>No problem! Create two separate paths instead:</p>
+<p>If your feeder and drinker files are stored separately:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">extdata_path_f</span> <span class="op">&lt;-</span> <span class="st">"/path/to/feeder/files"</span>    <span class="co"># 🐄 For feed data</span></span>
 <span><span class="va">extdata_path_w</span> <span class="op">&lt;-</span> <span class="st">"/path/to/drinker/files"</span>   <span class="co"># 🚰 For water data</span></span></code></pre></div>
-<p>Then use the appropriate path in the steps below!</p>
 <hr>
 </div>
 </div>
 <div class="section level3">
-<h3 id="round-up-your-files">4. Round Up Your Files 🤠<a class="anchor" aria-label="anchor" href="#round-up-your-files"></a>
+<h3 id="load-in-data-files">4. Load in Data files 🔍<a class="anchor" aria-label="anchor" href="#load-in-data-files"></a>
 </h3>
-<p>We use filename patterns to separate feeder data from drinker
+<p>We use filename patterns to distinguish feeder data from drinker
 data:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Find all feeder files (VR*.DAT)</span></span>
+<code class="sourceCode R"><span><span class="co"># Find all feeder files (VR*.DAT pattern)</span></span>
 <span><span class="va">fileNames.f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span></span>
 <span>  path       <span class="op">=</span> <span class="va">extdata_path</span>,     <span class="co"># 🐄 Where to look</span></span>
-<span>  pattern    <span class="op">=</span> <span class="st">"^VR.*\\.DAT$"</span>,   <span class="co"># 🐄 Pattern to match</span></span>
+<span>  pattern    <span class="op">=</span> <span class="st">"^VR.*\\.DAT$"</span>,   <span class="co"># 🐄 Pattern to match for feeder files</span></span>
 <span>  recursive  <span class="op">=</span> <span class="cn">TRUE</span>,             <span class="co"># Look in subfolders too</span></span>
 <span>  full.names <span class="op">=</span> <span class="cn">TRUE</span>              <span class="co"># Include full path</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="op">)</span>                      <span class="co"># Keep them in order</span></span>
 <span></span>
-<span><span class="co"># Find all drinker files (VW*.DAT)</span></span>
+<span><span class="co"># Find all drinker files (VW*.DAT pattern)</span></span>
 <span><span class="va">fileNames.w</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span></span>
 <span>  path       <span class="op">=</span> <span class="va">extdata_path</span>,     <span class="co"># 🚰 Where to look</span></span>
-<span>  pattern    <span class="op">=</span> <span class="st">"^VW.*\\.DAT$"</span>,   <span class="co"># 🚰 Pattern to match</span></span>
+<span>  pattern    <span class="op">=</span> <span class="st">"^VW.*\\.DAT$"</span>,   <span class="co"># 🚰 Pattern to match for drinker files</span></span>
 <span>  recursive  <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  full.names <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <blockquote>
-<p><strong>Ollie’s Tip:</strong> 💡 Using different filenames? Just
-change the <code>pattern</code>! For example, if your files are named
-<code>FEED_20250715.csv</code>, you could use
+<p><strong>File Naming Requirements:</strong> All filenames must contain
+a six-digit date (YYMMDD) sequence. The system extracts the first
+six-digit sequence as the date.</p>
+<p><strong>Different Filename Patterns:</strong> Change the
+<code>pattern</code> to match your file names. For example, if your
+files are named <code>FEED_20250715.csv</code>, you could use
 <code>pattern = "^FEED_.*\\.csv$"</code>.</p>
 </blockquote>
 <blockquote>
-<p>⚠️ <strong>Important File Naming Rules:</strong></p>
-<p>All your filenames must include the date as six digits (YYMMDD)
-somewhere in the name. My code finds the first six-digit sequence and
-treats it as the date!</p>
-<p>✅ These work great:</p>
-<p>- <code>VR200306.DAT</code></p>
-<p>- <code>Feeder_data_200306.DAT</code></p>
-<p>- <code>wat_200306_01.DAT</code></p>
-<p>❌ This won’t work:</p>
-<p>- <code>wat_01_200306.DAT</code> (because “01” appears before the
-date)</p>
-<p>For easiest results, name your files like mine: - Feeder data:
-<code>VRYYMMDD.DAT</code> - Water data: <code>VWYYMMDD.DAT</code></p>
+<p>✅ Valid formats: <code>VR200306.DAT</code>,
+<code>Feeder_data_200306.DAT</code>, <code>wat_200306_01.DAT</code></p>
+<p>❌ Invalid: <code>wat_01_200306.DAT</code> (leading digits “01”
+interfere with date extraction)</p>
 </blockquote>
 <hr>
 </div>
 <div class="section level3">
 <h3 id="handle-daylight-saving-time">5. Handle Daylight Saving Time ⏰<a class="anchor" aria-label="anchor" href="#handle-daylight-saving-time"></a>
 </h3>
-<p>Daylight saving time changes can mess up our timestamps! Let’s
-identify when those pesky clock changes happened:</p>
+<p>Daylight saving time (DST) transitions can create timestamp
+inconsistencies. Identify DST change dates for your study period:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Find the DST change dates for your data years</span></span>
-<span><span class="co"># 👉 IMPORTANT: Change these values to match your study period!</span></span>
+<code class="sourceCode R"><span><span class="co"># Identify DST transitions for your data years</span></span>
 <span><span class="va">dst_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_dst_switch_info.html">get_dst_switch_info</a></span><span class="op">(</span></span>
-<span>  years <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2020</span>, <span class="fl">2021</span><span class="op">)</span>,     <span class="co"># 📅 EDIT THIS to match your data years!</span></span>
+<span>  years <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2020</span>, <span class="fl">2021</span><span class="op">)</span>,     <span class="co"># 📅 EDIT THIS to match your data years</span></span>
 <span>  tz <span class="op">=</span> <span class="st">"America/Chicago"</span>     <span class="co"># EDIT THIS to your timezone if needed</span></span>
 <span>                             <span class="co"># `Sys.timezone()` uses the timezone your computer is located at. </span></span>
 <span><span class="op">)</span></span>
@@ -186,41 +175,34 @@ identify when those pesky clock changes happened:</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>  <span style="text-decoration: underline;">2</span>020 2020-03-08 2020-11-01 2020-03-09      2020-11-02    2020-03-08 <span style="color: #949494;">01:59:00</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>  <span style="text-decoration: underline;">2</span>021 2021-03-14 2021-11-07 2021-03-15      2021-11-08    2021-03-14 <span style="color: #949494;">01:59:00</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: fall_time &lt;dttm&gt;</span></span></span></code></pre></div>
-<blockquote>
-<p><strong>Ollie’s Note:</strong> 🌎 This currently works for North
-American time zones. Using data from elsewhere? Reach out to the package
-maintainer - we’d love to help add support for your region!</p>
-</blockquote>
 <hr>
 </div>
 <div class="section level3">
-<h3 id="process-your-data">6. Process Your Data 🔄<a class="anchor" aria-label="anchor" href="#process-your-data"></a>
+<h3 id="process-data-files">6. Process Data Files 🔄<a class="anchor" aria-label="anchor" href="#process-data-files"></a>
 </h3>
 <div class="section level4">
-<h4 id="keep-only-matching-days">Keep only matching days<a class="anchor" aria-label="anchor" href="#keep-only-matching-days"></a>
+<h4 id="match-files-by-date">Match Files by Date<a class="anchor" aria-label="anchor" href="#match-files-by-date"></a>
 </h4>
-<p>If you want to analyze only days with both feeder AND drinker
-data:</p>
+<p>To analyze only days with both feeder AND drinker data:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Match up feeder and drinker files by date</span></span>
+<code class="sourceCode R"><span><span class="co"># Match feeder and drinker files by date</span></span>
 <span><span class="va">date_compare</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compare_files.html">compare_files</a></span><span class="op">(</span><span class="va">fileNames.f</span>, <span class="va">fileNames.w</span><span class="op">)</span></span>
 <span><span class="va">fileNames.f</span> <span class="op">&lt;-</span> <span class="va">date_compare</span><span class="op">$</span><span class="va">feed</span>    <span class="co"># Updated feeder file list</span></span>
 <span><span class="va">fileNames.w</span> <span class="op">&lt;-</span> <span class="va">date_compare</span><span class="op">$</span><span class="va">water</span>   <span class="co"># Updated drinker file list</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Filenames for your feeder data: \n\n"</span>, <span class="va">fileNames.f</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Filenames for your feeder data: </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;  /home/runner/work/_temp/Library/moo4feed/extdata/VR201031.DAT /home/runner/work/_temp/Library/moo4feed/extdata/VR201101.DAT /home/runner/work/_temp/Library/moo4feed/extdata/VR201102.DAT</span></span>
+<span><span class="co">#&gt;  /home/runner/work/_temp/Library/moo4feed/extdata/VR201031.DAT /home/runner/work/_temp/Library/moo4feed/extdata/VR201101.DAT</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\n\n"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Filenames for your drinker data: \n\n"</span>, <span class="va">fileNames.w</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Filenames for your drinker data: </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;  /home/runner/work/_temp/Library/moo4feed/extdata/VW201031.DAT /home/runner/work/_temp/Library/moo4feed/extdata/VW201101.DAT /home/runner/work/_temp/Library/moo4feed/extdata/VW201102.DAT</span></span>
+<span><span class="co">#&gt;  /home/runner/work/_temp/Library/moo4feed/extdata/VW201031.DAT /home/runner/work/_temp/Library/moo4feed/extdata/VW201101.DAT</span></span>
 <span></span>
 <span><span class="co"># Get the overall date range of your dataset</span></span>
 <span><span class="va">date_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_date_range.html">get_date_range</a></span><span class="op">(</span><span class="va">fileNames.f</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\n\n"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Date range of your dataset: "</span>, <span class="va">date_result</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Date range of your dataset:  201031_201102</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Dataset date range: "</span>, <span class="va">date_result</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Dataset date range:  201031_201101</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="configure-global-settings-for-your-data">📌 Configure global settings for your data<a class="anchor" aria-label="anchor" href="#configure-global-settings-for-your-data"></a>
@@ -234,6 +216,7 @@ data:</p>
 call:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Configure all global variables in one call</span></span>
+<span><span class="co"># 👉 EDIT THIS to match your data file structure</span></span>
 <span><span class="fu"><a href="../reference/set_global_cols.html">set_global_cols</a></span><span class="op">(</span></span>
 <span>  <span class="co"># Time zone</span></span>
 <span>  tz <span class="op">=</span> <span class="st">"America/Vancouver"</span>,</span>
@@ -270,55 +253,42 @@ call:</p>
 <span><span class="fu"><a href="../reference/set_end_col2.html">set_end_col2</a></span><span class="op">(</span><span class="st">"end"</span><span class="op">)</span>            <span class="co"># visit end time</span></span>
 <span><span class="fu"><a href="../reference/set_bin_col2.html">set_bin_col2</a></span><span class="op">(</span><span class="st">"bin"</span><span class="op">)</span>            <span class="co"># feed-bin identifier</span></span>
 <span></span>
-<span><span class="co"># ── Binning rules ──────────────────────────────────────────────────────────</span></span>
+<span><span class="co"># ── Feed and water bin settings ──────────────────────────────────────────────</span></span>
 <span><span class="fu"><a href="../reference/set_bins_feed2.html">set_bins_feed2</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">30</span><span class="op">)</span>           <span class="co"># the ID of 30 feed bins present in the barn</span></span>
 <span><span class="fu"><a href="../reference/set_bins_wat2.html">set_bins_wat2</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>             <span class="co"># the ID of 5 water bins present in the barn</span></span>
 <span><span class="fu"><a href="../reference/set_bin_offset2.html">set_bin_offset2</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span>           <span class="co"># add 100 to water bin ID to differentiate from feeder ID</span></span></code></pre></div>
-<blockquote>
-<p><strong>Ollie’s Tip:</strong> 💡 After setting these global
-variables, all helper functions automatically use them. However, you can
-still override any setting for a specific function call by directly
-providing the parameter.</p>
-</blockquote>
 <p>You can verify any setting at any time with the corresponding getter
 functions:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/tz2.html">tz2</a></span><span class="op">(</span><span class="op">)</span>        </span>
-<span><span class="co">#&gt; [1] "America/Vancouver"</span></span>
-<span><span class="fu"><a href="../reference/id_col2.html">id_col2</a></span><span class="op">(</span><span class="op">)</span>    </span>
-<span><span class="co">#&gt; [1] "cow"</span></span>
-<span><span class="fu"><a href="../reference/bins_feed2.html">bins_feed2</a></span><span class="op">(</span><span class="op">)</span> </span>
-<span><span class="co">#&gt;  [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25</span></span>
-<span><span class="co">#&gt; [26] 26 27 28 29 30</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Timezone:"</span>, <span class="fu"><a href="../reference/tz2.html">tz2</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Timezone: America/Vancouver</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"ID column:"</span>, <span class="fu"><a href="../reference/id_col2.html">id_col2</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ID column: cow</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Feed bins:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="../reference/bins_feed2.html">bins_feed2</a></span><span class="op">(</span><span class="op">)</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Feed bins: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30</span></span></code></pre></div>
 <hr>
 </div>
 </div>
 <div class="section level4">
-<h4 id="process-feeder-data">🔄 Process feeder data<a class="anchor" aria-label="anchor" href="#process-feeder-data"></a>
+<h4 id="process-feeder-data">Process Feeder Data<a class="anchor" aria-label="anchor" href="#process-feeder-data"></a>
 </h4>
-<p>Because the defaults were set above, you now supply <strong>only what
-truly varies file-to-file</strong>—column <strong>values</strong> or
-clean-up vectors—while the helper pulls the rest from the global
-options.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># 🔄 CHANGE THESE VALUES to match your data files! 🔄</span></span>
-<span></span>
-<span><span class="co"># Define your column names (if your files don't have headers)</span></span>
+<code class="sourceCode R"><span><span class="co"># Define your column names (if your files don't have headers)</span></span>
 <span><span class="co"># 👉 EDIT THIS to match your data file structure</span></span>
 <span><span class="va">col_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"transponder"</span>, <span class="st">"cow"</span>, <span class="st">"bin"</span>, <span class="st">"start"</span>, <span class="st">"end"</span>, <span class="st">"duration"</span>, </span>
 <span>              <span class="st">"start_weight"</span>, <span class="st">"end_weight"</span>, <span class="st">"comment"</span>, <span class="st">"intake"</span>, <span class="st">"intake2"</span>, </span>
 <span>              <span class="st">"X1"</span>, <span class="st">"X2"</span>, <span class="st">"X3"</span>, <span class="st">"X4"</span>, <span class="st">"x5"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># IDs to remove (test tags, etc.)</span></span>
+<span><span class="co"># Invalid IDs to remove (test tags, etc.)</span></span>
 <span><span class="co"># 👉 EDIT THIS to remove any test tags or invalid IDs in your data</span></span>
 <span><span class="va">drop_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1556</span>, <span class="fl">5015</span>, <span class="fl">1111</span>, <span class="fl">1112</span>, <span class="fl">1113</span>, <span class="fl">1114</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Which columns do you want to keep?</span></span>
+<span><span class="co"># Columns to retain for analysis</span></span>
 <span><span class="co"># 👉 EDIT THIS to keep only the columns you need for analysis</span></span>
 <span><span class="va">select_cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"transponder"</span>, <span class="st">"cow"</span>, <span class="st">"bin"</span>, <span class="st">"start"</span>, <span class="st">"end"</span>, </span>
 <span>                <span class="st">"duration"</span>, <span class="st">"start_weight"</span>, <span class="st">"end_weight"</span>, <span class="st">"intake"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Process all feeder files!</span></span>
+<span><span class="co"># Process all feeder files</span></span>
 <span><span class="va">all_fed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_all_feed.html">process_all_feed</a></span><span class="op">(</span></span>
 <span>    files <span class="op">=</span> <span class="va">fileNames.f</span>,</span>
 <span>    col_names   <span class="op">=</span> <span class="va">col_names</span>,     <span class="co"># Column names for your data</span></span>
@@ -330,7 +300,7 @@ options.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">all_fed</span><span class="op">)</span></span>
-<span><span class="co">#&gt; List of 3</span></span>
+<span><span class="co">#&gt; List of 2</span></span>
 <span><span class="co">#&gt;  $ 2020-10-31:'data.frame':  3483 obs. of  10 variables:</span></span>
 <span><span class="co">#&gt;   ..$ transponder : int [1:3483] 12200060 11954040 12706601 11954040 12200060 12200060 12199974 12706601 12448407 12706601 ...</span></span>
 <span><span class="co">#&gt;   ..$ cow         : int [1:3483] 5114 4070 7010 4070 5114 5114 5028 7010 6020 7010 ...</span></span>
@@ -352,55 +322,41 @@ options.</p>
 <span><span class="co">#&gt;   ..$ start_weight: num [1:3646] 12 9.3 23.8 5 8.2 15.9 20.2 23.5 7.8 8.4 ...</span></span>
 <span><span class="co">#&gt;   ..$ end_weight  : num [1:3646] 12.1 8.2 23.5 3.8 7.8 15.3 19.1 23.5 7.6 7.5 ...</span></span>
 <span><span class="co">#&gt;   ..$ intake      : num [1:3646] -0.1 1.1 0.3 1.2 0.4 0.6 1.1 0 0.2 0.9 ...</span></span>
-<span><span class="co">#&gt;   ..$ date        : Date[1:3646], format: "2020-11-01" "2020-11-01" ...</span></span>
-<span><span class="co">#&gt;  $ 2020-11-02:'data.frame':  3641 obs. of  10 variables:</span></span>
-<span><span class="co">#&gt;   ..$ transponder : int [1:3641] 12706609 12448477 12448442 12200091 12200091 12200091 12706609 12448437 12448429 12448477 ...</span></span>
-<span><span class="co">#&gt;   ..$ cow         : int [1:3641] 7018 6090 6055 5145 5145 5145 7018 6050 6042 6090 ...</span></span>
-<span><span class="co">#&gt;   ..$ bin         : int [1:3641] 15 11 13 27 28 27 16 19 30 15 ...</span></span>
-<span><span class="co">#&gt;   ..$ start       : POSIXct[1:3641], format: "2020-11-02 01:14:05" "2020-11-02 01:14:59" ...</span></span>
-<span><span class="co">#&gt;   ..$ end         : POSIXct[1:3641], format: "2020-11-02 01:16:51" "2020-11-02 01:17:20" ...</span></span>
-<span><span class="co">#&gt;   ..$ duration    : int [1:3641] 166 141 215 244 34 38 196 313 251 329 ...</span></span>
-<span><span class="co">#&gt;   ..$ start_weight: num [1:3641] 22.1 0.3 20.6 9.6 6.1 8.4 18.9 33.8 15.3 21.6 ...</span></span>
-<span><span class="co">#&gt;   ..$ end_weight  : num [1:3641] 21.6 0.3 20.7 8.4 5.9 8.2 18.3 32.6 14.4 20.3 ...</span></span>
-<span><span class="co">#&gt;   ..$ intake      : num [1:3641] 0.5 0 -0.1 1.2 0.2 0.2 0.6 1.2 0.9 1.3 ...</span></span>
-<span><span class="co">#&gt;   ..$ date        : Date[1:3641], format: "2020-11-02" "2020-11-02" ...</span></span></code></pre></div>
-<p>Notice we <strong>didn’t</strong> specify <code>id_col</code>,
-<code>trans_col</code>, <code>start_col</code>, <code>end_col</code>,
-<code>bin_col</code>, <code>bins</code>, or <code>tz</code>—they’re all
-filled in automatically from the global settings you defined above. If
-you ever need a one-off override (for example, a different time-zone
-just for this call) you can still pass that argument directly:</p>
+<span><span class="co">#&gt;   ..$ date        : Date[1:3646], format: "2020-11-01" "2020-11-01" ...</span></span></code></pre></div>
+<blockquote>
+<p><strong>Geographic Limitation 🌎:</strong> Currently this function
+only adjust DST automatically for North American time zones because we
+don’t have data from other parts of the world. If you are from a
+different timezone and are having trouble handling DST changes yourself,
+please contact the maintainer and I’m happy to add support for your
+timezone!</p>
+</blockquote>
+<p>Notice when we call the function <code><a href="../reference/process_all_feed.html">process_all_feed()</a></code>, we
+<strong>didn’t</strong> specify <code>id_col</code>,
+<code>start_col</code>, <code>tz</code> etc—they’re all filled in
+automatically from the global settings you defined above. If you ever
+need a one-off override (for example, a different time-zone just for
+this call) you can still pass that argument directly:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/process_all_feed.html">process_all_feed</a></span><span class="op">(</span>files <span class="op">=</span> <span class="va">fileNames.f</span>, tz <span class="op">=</span> <span class="st">"UTC"</span>, adjust_dst <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p>You can now directly inspect the <code>all_fed</code> dataset, as
-it’s lazy-loaded with the package (it won’t consume memory until you
-actually use it).</p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/process_all_feed.html">process_all_feed</a></span><span class="op">(</span>files <span class="op">=</span> <span class="va">fileNames.f</span>, tz <span class="op">=</span> <span class="st">"UTC"</span><span class="op">)</span></span></code></pre></div>
 <hr>
-<div class="section level5">
-<h5 id="process-water-data">🔄 Process water data<a class="anchor" aria-label="anchor" href="#process-water-data"></a>
-</h5>
-<p>Because we already set the global defaults (time-zone, column names,
-bin rules), the drinker workflow is just as terse as the feeder
-one—supply only what differs from file to file.</p>
+</div>
+<div class="section level4">
+<h4 id="process-water-data">Process Water Data<a class="anchor" aria-label="anchor" href="#process-water-data"></a>
+</h4>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># 🔄 CHANGE THESE VALUES to match your water files! 🔄</span></span>
-<span></span>
-<span><span class="co"># Column names (only needed because drinker files have no headers)</span></span>
+<code class="sourceCode R"><span><span class="co"># Column names (only needed because drinker files have no headers)</span></span>
 <span><span class="va">col_names_wat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="st">"transponder"</span>, <span class="st">"cow"</span>, <span class="st">"bin"</span>, <span class="st">"start"</span>, <span class="st">"end"</span>,</span>
 <span>  <span class="st">"duration"</span>, <span class="st">"start_weight"</span>, <span class="st">"end_weight"</span>, <span class="st">"intake"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Same ID clean-up list we used for feeder data</span></span>
-<span><span class="va">drop_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1556</span>, <span class="fl">5015</span>, <span class="fl">1111</span><span class="op">:</span><span class="fl">1114</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Columns you want to keep</span></span>
 <span><span class="va">select_cols_wat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="st">"transponder"</span>, <span class="st">"cow"</span>, <span class="st">"bin"</span>, <span class="st">"start"</span>, <span class="st">"end"</span>,</span>
 <span>  <span class="st">"duration"</span>, <span class="st">"start_weight"</span>, <span class="st">"end_weight"</span>, <span class="st">"intake"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Process all drinker logs</span></span>
+<span><span class="co"># Process all water files</span></span>
 <span><span class="va">all_wat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_all_water.html">process_all_water</a></span><span class="op">(</span></span>
 <span>  files        <span class="op">=</span> <span class="va">fileNames.w</span>,</span>
 <span>  col_names    <span class="op">=</span> <span class="va">col_names_wat</span>,</span>
@@ -412,7 +368,7 @@ one—supply only what differs from file to file.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">all_wat</span><span class="op">)</span></span>
-<span><span class="co">#&gt; List of 3</span></span>
+<span><span class="co">#&gt; List of 2</span></span>
 <span><span class="co">#&gt;  $ 2020-10-31:'data.frame':  572 obs. of  10 variables:</span></span>
 <span><span class="co">#&gt;   ..$ transponder : int [1:572] 11954040 12448407 12448407 12200060 12706609 12706618 11953971 11953971 11953971 12448417 ...</span></span>
 <span><span class="co">#&gt;   ..$ cow         : int [1:572] 4070 6020 6020 5114 7018 7027 4001 4001 4001 6030 ...</span></span>
@@ -434,39 +390,21 @@ one—supply only what differs from file to file.</p>
 <span><span class="co">#&gt;   ..$ start_weight: num [1:566] 43.5 40.9 43.2 43.9 43.3 41 43.6 43.9 42.4 44 ...</span></span>
 <span><span class="co">#&gt;   ..$ end_weight  : num [1:566] 40.2 22.4 28.5 38.2 22.6 26.8 42.4 33.5 35.6 39.8 ...</span></span>
 <span><span class="co">#&gt;   ..$ intake      : num [1:566] 3.3 18.5 14.7 5.7 20.7 14.2 1.2 10.4 6.8 4.2 ...</span></span>
-<span><span class="co">#&gt;   ..$ date        : Date[1:566], format: "2020-11-01" "2020-11-01" ...</span></span>
-<span><span class="co">#&gt;  $ 2020-11-02:'data.frame':  597 obs. of  10 variables:</span></span>
-<span><span class="co">#&gt;   ..$ transponder : int [1:597] 12448437 12448437 12448429 12706609 12200091 12448477 12448477 12706624 12448516 12448516 ...</span></span>
-<span><span class="co">#&gt;   ..$ cow         : int [1:597] 6050 6050 6042 7018 5145 6090 6090 7033 6129 6129 ...</span></span>
-<span><span class="co">#&gt;   ..$ bin         : num [1:597] 104 104 105 103 104 103 104 101 103 104 ...</span></span>
-<span><span class="co">#&gt;   ..$ start       : POSIXct[1:597], format: "2020-11-02 01:13:54" "2020-11-02 01:15:05" ...</span></span>
-<span><span class="co">#&gt;   ..$ end         : POSIXct[1:597], format: "2020-11-02 01:14:50" "2020-11-02 01:16:41" ...</span></span>
-<span><span class="co">#&gt;   ..$ duration    : int [1:597] 56 96 196 56 91 6 118 183 5 48 ...</span></span>
-<span><span class="co">#&gt;   ..$ start_weight: num [1:597] 43.6 42.3 41 46.2 43.8 46 43.2 41.2 46.1 43.7 ...</span></span>
-<span><span class="co">#&gt;   ..$ end_weight  : num [1:597] 42.3 27.7 18.2 35.3 28.4 46 30.3 32.6 46 33.1 ...</span></span>
-<span><span class="co">#&gt;   ..$ intake      : num [1:597] 1.3 14.6 22.8 10.9 15.4 0 12.9 8.6 0.1 10.6 ...</span></span>
-<span><span class="co">#&gt;   ..$ date        : Date[1:597], format: "2020-11-02" "2020-11-02" ...</span></span></code></pre></div>
-<p>You can now directly inspect the <code>all_wat</code> dataset, as
-it’s lazy-loaded with the package (it won’t consume memory until you
-actually use it).</p>
+<span><span class="co">#&gt;   ..$ date        : Date[1:566], format: "2020-11-01" "2020-11-01" ...</span></span></code></pre></div>
 <hr>
-</div>
 </div>
 </div>
 <div class="section level3">
 <h3 id="quality-check-your-data">7. Quality Check Your Data 🕵️‍♀️<a class="anchor" aria-label="anchor" href="#quality-check-your-data"></a>
 </h3>
-<blockquote>
-<p><strong>Ollie says:</strong> Even after our initial processing, our
-cow data still has some fishy bits (and I know fishy when I see it!).
-Let’s run quality checks to catch problems like overlapping visits,
-impossible intake values, and missing records!</p>
-</blockquote>
+<p>Quality control identifies and corrects common data issues including
+overlapping visits, impossible values, and missing records.</p>
 <div class="section level4">
-<h4 id="create-custom-quality-check-thresholds">Create custom quality check thresholds<a class="anchor" aria-label="anchor" href="#create-custom-quality-check-thresholds"></a>
+<h4 id="configure-quality-check-parameters">Configure Quality Check Parameters<a class="anchor" aria-label="anchor" href="#configure-quality-check-parameters"></a>
 </h4>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># 👉 EDIT THESE VALUES to match your study parameters! 👉</span></span>
+<code class="sourceCode R"><span><span class="co"># Define quality control thresholds</span></span>
+<span><span class="co"># 👉 EDIT the thresholds to match your data and preferences</span></span>
 <span><span class="va">my_qc_config</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qc_config.html">qc_config</a></span><span class="op">(</span></span>
 <span>  <span class="co"># Feed thresholds</span></span>
 <span>  high_dur_feed <span class="op">=</span> <span class="fl">2000</span>,          <span class="co"># Flag feed visits longer than 2000 seconds</span></span>
@@ -488,39 +426,25 @@ impossible intake values, and missing records!</p>
 <span>  replacement_threshold <span class="op">=</span> <span class="fl">26</span>,    <span class="co"># Time gap (s) to classify replacement behavior</span></span>
 <span>  calibration_error <span class="op">=</span> <span class="fl">0.5</span>        <span class="co"># Feeder/drinkercalibration error (kg/L)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<blockquote>
-<p><strong>Ollie’s Tip:</strong> 💡 The <code><a href="../reference/qc_config.html">qc_config()</a></code>
-function creates a configuration list that you can pass to quality check
-functions. This approach keeps your threshold values organized and makes
-your code more readable!</p>
-</blockquote>
 </div>
 <div class="section level4">
 <h4 id="run-the-quality-check">Run the quality check<a class="anchor" aria-label="anchor" href="#run-the-quality-check"></a>
 </h4>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Run the full quality check</span></span>
+<code class="sourceCode R"><span><span class="co"># Run comprehensive quality check</span></span>
 <span><span class="va">qc_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qc.html">qc</a></span><span class="op">(</span></span>
 <span>  feed <span class="op">=</span> <span class="va">all_fed</span>,               <span class="co"># Your processed feeder data</span></span>
 <span>  water <span class="op">=</span> <span class="va">all_wat</span>,              <span class="co"># Your processed drinker data</span></span>
 <span>  cfg <span class="op">=</span> <span class="va">my_qc_config</span>,           <span class="co"># Your custom thresholds</span></span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,               <span class="co"># Do not show detailed error messages, set to TRUE to see them</span></span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,               <span class="co"># Do not show detailed warning messages about errorous visits, set to TRUE to see them</span></span>
 <span>  fix_double_detections <span class="op">=</span> <span class="cn">TRUE</span>  <span class="co"># Automatically fix overlapping visits</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># store the warnings summary</span></span>
+<span><span class="co"># Store warnings for review</span></span>
 <span><span class="va">warning</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">warnings</span></span></code></pre></div>
+<p>The <code><a href="../reference/qc.html">qc()</a></code> function performs multiple validation
+steps:</p>
 <blockquote>
-<p><strong>Note:</strong> 📝 Like other functions in
-<code>moo4feed</code>, the <code><a href="../reference/qc.html">qc()</a></code> function also uses the
-global variables you configured earlier (column names, bin settings,
-etc.). You can override these for a specific call by providing the
-parameters directly.</p>
-</blockquote>
-<blockquote>
-<p><strong>What just happened?</strong> 🦦</p>
-<p>The <code><a href="../reference/qc.html">qc()</a></code> function performed a comprehensive quality
-check on our data:</p>
 <ol style="list-style-type: decimal">
 <li>Combined feed and water data for analysis</li>
 <li>Checked if we have the expected number of cows each day</li>
@@ -532,12 +456,13 @@ measurements</li>
 <li>Identified abnormally large feed/water intakes</li>
 <li>Flags cows that did not feed or drink after noon (potentially lost
 ear tag or due to illness)</li>
-<li>Flagged bins with very low traffic or no visits at all</li>
+<li>Flagged bins with very low traffic or no visits at all (potentially
+bin malfunction)</li>
 </ol>
 </blockquote>
 </div>
 <div class="section level4">
-<h4 id="use-the-cleaned-data">Use the cleaned data<a class="anchor" aria-label="anchor" href="#use-the-cleaned-data"></a>
+<h4 id="extract-cleaned-data">Extract Cleaned Data<a class="anchor" aria-label="anchor" href="#extract-cleaned-data"></a>
 </h4>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># The qc_results contains our cleaned data</span></span>
@@ -547,24 +472,110 @@ ear tag or due to illness)</li>
 </div>
 </div>
 <div class="section level3">
-<h3 id="advanced-cleaning-detect-outliers-with-knn">8. Advanced Cleaning: Detect Outliers with KNN 🔍<a class="anchor" aria-label="anchor" href="#advanced-cleaning-detect-outliers-with-knn"></a>
+<h3 id="traditional-vs--advanced-outlier-detection">8. Traditional vs. Advanced Outlier Detection 📊<a class="anchor" aria-label="anchor" href="#traditional-vs--advanced-outlier-detection"></a>
 </h3>
-<blockquote>
-<p><strong>Ollie says:</strong> Even after our regular quality checks,
-there might still be unusual data points in our dataset. Let’s use a
-fancy technique called K-Nearest Neighbors (KNN) to find and handle
-those tricky outliers!</p>
-</blockquote>
-<p>The KNN method looks at each data point and compares it to its
-neighbors. If a point is very different from its neighbors (in terms of
-intake, duration, and rate), it might be an outlier!</p>
-<p>These functions are designed to be able to handle both single-day and
-multi-day data.</p>
 <div class="section level4">
-<h4 id="try-knn-outlier-detection">Try KNN outlier detection<a class="anchor" aria-label="anchor" href="#try-knn-outlier-detection"></a>
+<h4 id="traditional-3-standard-deviation-method">Traditional 3-Standard Deviation Method<a class="anchor" aria-label="anchor" href="#traditional-3-standard-deviation-method"></a>
 </h4>
+<p>Historically, dairy research has used rigid statistical cutoffs to
+remove outliers. The traditional approach removes all data points beyond
+3 standard deviations from the mean:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># First, let's detect outliers in our feed data</span></span>
+<code class="sourceCode R"><span><span class="co"># Demonstrate traditional outlier removal on feed data</span></span>
+<span><span class="va">demo_feed</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">qc_feed</span><span class="op">)</span>  <span class="co"># Combine all days into one dataframe</span></span>
+<span></span>
+<span><span class="co"># Calculate traditional 3-SD cutoffs for intake</span></span>
+<span><span class="va">intake_mean</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">demo_feed</span><span class="op">$</span><span class="va">intake</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">intake_sd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">demo_feed</span><span class="op">$</span><span class="va">intake</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">intake_lower</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fl">0</span>, <span class="op">(</span><span class="va">intake_mean</span> <span class="op">-</span> <span class="fl">3</span> <span class="op">*</span> <span class="va">intake_sd</span><span class="op">)</span><span class="op">)</span> <span class="co"># set lower bound to 0</span></span>
+<span><span class="va">intake_upper</span> <span class="op">&lt;-</span> <span class="va">intake_mean</span> <span class="op">+</span> <span class="fl">3</span> <span class="op">*</span> <span class="va">intake_sd</span></span>
+<span></span>
+<span><span class="co"># Calculate traditional 3-SD cutoffs for duration</span></span>
+<span><span class="va">dur_mean</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">demo_feed</span><span class="op">$</span><span class="va">duration</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">dur_sd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">demo_feed</span><span class="op">$</span><span class="va">duration</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">dur_lower</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fl">0</span>, <span class="op">(</span><span class="va">dur_mean</span> <span class="op">-</span> <span class="fl">3</span> <span class="op">*</span> <span class="va">dur_sd</span><span class="op">)</span><span class="op">)</span> <span class="co"># set lower bound to 0</span></span>
+<span><span class="va">dur_upper</span> <span class="op">&lt;-</span> <span class="va">dur_mean</span> <span class="op">+</span> <span class="fl">3</span> <span class="op">*</span> <span class="va">dur_sd</span></span>
+<span></span>
+<span><span class="co"># Flag outliers using traditional method</span></span>
+<span><span class="va">demo_feed</span><span class="op">$</span><span class="va">outlier</span> <span class="op">&lt;-</span> <span class="st">"N"</span></span>
+<span><span class="va">demo_feed</span><span class="op">$</span><span class="va">outlier</span><span class="op">[</span><span class="va">demo_feed</span><span class="op">$</span><span class="va">intake</span> <span class="op">&lt;</span> <span class="va">intake_lower</span> <span class="op">|</span> </span>
+<span>                                 <span class="va">demo_feed</span><span class="op">$</span><span class="va">intake</span> <span class="op">&gt;</span> <span class="va">intake_upper</span> <span class="op">|</span></span>
+<span>                                 <span class="va">demo_feed</span><span class="op">$</span><span class="va">duration</span> <span class="op">&lt;</span> <span class="va">dur_lower</span> <span class="op">|</span> </span>
+<span>                                 <span class="va">demo_feed</span><span class="op">$</span><span class="va">duration</span> <span class="op">&gt;</span> <span class="va">dur_upper</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"Y"</span></span>
+<span></span>
+<span><span class="co"># Visualize traditional outlier detection</span></span>
+<span><span class="va">p_traditional</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_outliers.html">viz_outliers</a></span><span class="op">(</span></span>
+<span>  <span class="va">demo_feed</span>,</span>
+<span>  x_var <span class="op">=</span> <span class="st">"intake"</span>,</span>
+<span>  y_var <span class="op">=</span> <span class="st">"duration"</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Traditional Outlier Detection (3 SD from mean)"</span>,</span>
+<span>  jitter_amount <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  regular_color <span class="op">=</span> <span class="st">"lightgreen"</span>,</span>
+<span>  outlier_color <span class="op">=</span> <span class="st">"orange"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_traditional</span><span class="op">)</span></span></code></pre></div>
+<p><img src="data_cleaning_files/figure-html/traditional-outlier-method-1.png" width="768"></p>
+</div>
+<div class="section level4">
+<h4 id="limitations-of-the-traditional-3-sd-method">Limitations of the Traditional 3-SD Method<a class="anchor" aria-label="anchor" href="#limitations-of-the-traditional-3-sd-method"></a>
+</h4>
+<p>The standard approach using a 3-standard-deviation (3-SD) cutoff
+presents several challenges:</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>Overly strict thresholds</strong>: While effective at
+removing extreme outliers, this method imposes rigid, rectangular cutoff
+zones that may not align with biological rationales.</li>
+<li>
+<strong>Excessive conservatism</strong>: The approach may discard
+biologically reasonable extremes. Previous validation study showed that
+long feeding visit accompanied by high feed intake is possible, but they
+dare considered data errors using 3-SD method. In the meanwhile, it’s
+not likely for a cow to consume 3kg in 5 seconds, but those will not be
+labeled as outliers using 3-SD method.</li>
+<li>
+<strong>Misclassification of valid data</strong>: Many feeding
+events that appear normal in the context of cow behavior are incorrectly
+flagged as outliers simply because they fall outside the 3-SD range.
+Excluding these points can significantly distort estimates of individual
+animal’s daily intake and feeding duration.</li>
+<li>
+<strong>Misses multivariate relationships</strong>: The method
+evaluates each variable independently, failing to consider the
+relationship between intake, duration, and feeding rate.</li>
+<li>
+<strong>Ignores differences among farms and animals</strong>:
+Everyone’s data is different. The method does not account for variations
+in feeding behavior across different farms or individual cows.</li>
+</ol>
+</div>
+</div>
+<div class="section level3">
+<h3 id="advanced-knn-outlier-detection">9. Advanced KNN Outlier Detection 🔬<a class="anchor" aria-label="anchor" href="#advanced-knn-outlier-detection"></a>
+</h3>
+<p>K-Nearest Neighbors (KNN) outlier detection evaluates data points in
+multidimensional space, considering relationships between intake,
+duration, and rate simultaneously. The KNN method looks at each data
+point and compares it to its neighbors. If a point is very different
+from its neighbors (in the 3-demensional space of intake, duration, and
+rate), it might be an outlier.</p>
+<div class="section level4">
+<h4 id="knn-method-advantages">KNN Method Advantages<a class="anchor" aria-label="anchor" href="#knn-method-advantages"></a>
+</h4>
+<ul>
+<li>
+<strong>Multidimensional analysis</strong>: Considers the intake,
+duration, and rate in one go</li>
+<li>
+<strong>Flexible boundaries</strong>: You can change the boundaries
+to fit YOUR data</li>
+<li>
+<strong>Relationship-aware</strong>: Preserves correlations between
+variables</li>
+</ul>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Apply KNN outlier detection</span></span>
 <span><span class="va">feed_with_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knn_clean_feed.html">knn_clean_feed</a></span><span class="op">(</span></span>
 <span>  <span class="va">qc_feed</span>,            <span class="co"># Our cleaned feed data</span></span>
 <span>  k <span class="op">=</span> <span class="fl">50</span>,                <span class="co"># Number of neighbors to consider</span></span>
@@ -578,22 +589,8 @@ multi-day data.</p>
 <span>  remove_outliers <span class="op">=</span> <span class="cn">FALSE</span> <span class="co"># Set to TRUE if you wish to remove outliers</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># We can also visualize the outliers</span></span>
-<span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_outliers.html">viz_outliers</a></span><span class="op">(</span></span>
-<span>  <span class="va">feed_with_outliers</span>,</span>
-<span>  x_var <span class="op">=</span> <span class="st">"duration"</span>,</span>
-<span>  y_var <span class="op">=</span> <span class="st">"intake"</span>,</span>
-<span>  title <span class="op">=</span> <span class="st">"Feed Outliers: Duration vs Intake"</span>,</span>
-<span>  jitter_amount <span class="op">=</span> <span class="fl">0.2</span>,</span>
-<span>  regular_color <span class="op">=</span> <span class="st">"lightgreen"</span>,</span>
-<span>  outlier_color <span class="op">=</span> <span class="st">"orange"</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="data_cleaning_files/figure-html/knn-outliers-1.png" width="700"></p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="co"># Let's also look at rate vs intake</span></span>
-<span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_outliers.html">viz_outliers</a></span><span class="op">(</span></span>
+<span><span class="co"># Visualize KNN outlier detection</span></span>
+<span><span class="va">p_knn</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_outliers.html">viz_outliers</a></span><span class="op">(</span></span>
 <span>  <span class="va">feed_with_outliers</span>,</span>
 <span>  x_var <span class="op">=</span> <span class="st">"rate"</span>,</span>
 <span>  y_var <span class="op">=</span> <span class="st">"intake"</span>,</span>
@@ -602,8 +599,8 @@ multi-day data.</p>
 <span>  regular_color <span class="op">=</span> <span class="st">"lightgreen"</span>,</span>
 <span>  outlier_color <span class="op">=</span> <span class="st">"orange"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="data_cleaning_files/figure-html/knn-outliers-2.png" width="700"></p>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_knn</span><span class="op">)</span></span></code></pre></div>
+<p><img src="data_cleaning_files/figure-html/knn-outliers-1.png" width="480"></p>
 <blockquote>
 <p><strong>Ollie’s Tips for KNN Outlier Detection:</strong> 🦦</p>
 <ul>
@@ -639,40 +636,32 @@ outliers to catch visits with large intake and high rate.</li>
 is working correctly</li>
 </ul>
 </blockquote>
+<p><strong>Important Note</strong>: The 2D visualization above only
+shows two dimensions (duration vs. intake), but KNN analysis operates in
+3D space using: <strong>Intake</strong> (kg), <strong>Duration</strong>
+(seconds), and <strong>Rate</strong> (kg/s). Some points that appear
+normal in 2D may be outliers when considering all three dimensions.</p>
 </div>
 <div class="section level4">
-<h4 id="process-water-data-outliers">Process water data outliers<a class="anchor" aria-label="anchor" href="#process-water-data-outliers"></a>
+<h4 id="apply-knn-to-water-data">Apply KNN to Water Data<a class="anchor" aria-label="anchor" href="#apply-knn-to-water-data"></a>
 </h4>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Now let's detect outliers in our water data</span></span>
+<code class="sourceCode R"><span><span class="co"># KNN outlier detection for water data</span></span>
 <span><span class="va">water_with_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knn_clean_water.html">knn_clean_water</a></span><span class="op">(</span></span>
 <span>  <span class="va">qc_water</span>,           <span class="co"># Our cleaned water data</span></span>
 <span>  k <span class="op">=</span> <span class="fl">50</span>,                <span class="co"># Number of neighbors to consider</span></span>
-<span>  threshold_percentile <span class="op">=</span> <span class="fl">99.8</span>,  <span class="co"># Threshold for outlier detection</span></span>
+<span>  threshold_percentile <span class="op">=</span> <span class="fl">99</span>,  <span class="co"># Threshold for outlier detection</span></span>
 <span>  <span class="co"># Water data often needs different scaling</span></span>
 <span>  custom_scaling <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    rate <span class="op">=</span> <span class="fl">2000</span>,           <span class="co"># Scaling for intake rate</span></span>
-<span>    intake <span class="op">=</span> <span class="fl">1</span>,          <span class="co"># Scaling for intake amount</span></span>
+<span>    intake <span class="op">=</span> <span class="fl">7</span>,          <span class="co"># Scaling for intake amount</span></span>
 <span>    duration <span class="op">=</span> <span class="fl">0.01</span>      <span class="co"># Scaling for duration</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  remove_outliers <span class="op">=</span> <span class="cn">FALSE</span> <span class="co"># Set to TRUE if you wish to remove outliers</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Visualize water outliers</span></span>
-<span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_outliers.html">viz_outliers</a></span><span class="op">(</span></span>
-<span>  <span class="va">water_with_outliers</span>,</span>
-<span>  x_var <span class="op">=</span> <span class="st">"duration"</span>,</span>
-<span>  y_var <span class="op">=</span> <span class="st">"intake"</span>,</span>
-<span>  title <span class="op">=</span> <span class="st">"Water Outliers: Duration vs Intake"</span>,</span>
-<span>  regular_color <span class="op">=</span> <span class="st">"lightblue"</span>,</span>
-<span>  outlier_color <span class="op">=</span> <span class="st">"orange"</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p3</span><span class="op">)</span></span></code></pre></div>
-<p><img src="data_cleaning_files/figure-html/knn-water-outliers-1.png" width="700"></p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
 <span><span class="co"># Let's also look at rate vs intake</span></span>
-<span><span class="va">p4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_outliers.html">viz_outliers</a></span><span class="op">(</span></span>
+<span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_outliers.html">viz_outliers</a></span><span class="op">(</span></span>
 <span>  <span class="va">water_with_outliers</span>,</span>
 <span>  x_var <span class="op">=</span> <span class="st">"rate"</span>,</span>
 <span>  y_var <span class="op">=</span> <span class="st">"intake"</span>,</span>
@@ -681,16 +670,17 @@ is working correctly</li>
 <span>  regular_color <span class="op">=</span> <span class="st">"lightblue"</span>,</span>
 <span>  outlier_color <span class="op">=</span> <span class="st">"orange"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p4</span><span class="op">)</span></span></code></pre></div>
-<p><img src="data_cleaning_files/figure-html/knn-water-outliers-2.png" width="700"></p>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="data_cleaning_files/figure-html/knn-water-outliers-1.png" width="480"></p>
 </div>
 <div class="section level4">
-<h4 id="remove-outliers-optional">Remove outliers (optional)<a class="anchor" aria-label="anchor" href="#remove-outliers-optional"></a>
+<h4 id="remove-outliers">Remove Outliers<a class="anchor" aria-label="anchor" href="#remove-outliers"></a>
 </h4>
 <p>Once you’re satisfied with the outlier detection, you can choose to
 remove them:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cleaned_feed_no_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knn_clean_feed.html">knn_clean_feed</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Remove outliers from feed data</span></span>
+<span><span class="va">cleaned_feed_no_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knn_clean_feed.html">knn_clean_feed</a></span><span class="op">(</span></span>
 <span>  <span class="va">qc_feed</span>,</span>
 <span>  k <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  threshold_percentile <span class="op">=</span> <span class="fl">99.3</span>,</span>
@@ -698,7 +688,7 @@ remove them:</p>
 <span>  remove_outliers <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Same for water data</span></span>
+<span><span class="co"># Remove outliers from water data</span></span>
 <span><span class="va">cleaned_water_no_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knn_clean_water.html">knn_clean_water</a></span><span class="op">(</span></span>
 <span>  <span class="va">qc_water</span>,</span>
 <span>  k <span class="op">=</span> <span class="fl">50</span>,</span>
@@ -707,27 +697,17 @@ remove them:</p>
 <span>  remove_outliers <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># Create final cleaned datasets</span></span>
 <span><span class="va">clean_feed</span> <span class="op">&lt;-</span> <span class="va">cleaned_feed_no_outliers</span></span>
 <span><span class="va">clean_water</span> <span class="op">&lt;-</span> <span class="va">cleaned_water_no_outliers</span></span>
 <span><span class="va">clean_comb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combine_feed_water.html">combine_feed_water</a></span><span class="op">(</span><span class="va">clean_feed</span>, <span class="va">clean_water</span><span class="op">)</span></span></code></pre></div>
-<blockquote>
-<p><strong>Ollie’s Warning:</strong> Be careful with removing outliers!
-What looks like an outlier might actually be important data. Always try
-to understand why the points are being flagged as outliers before
-removing them.</p>
-</blockquote>
 </div>
 </div>
 <div class="section level3">
-<h3 id="summarize-daily-intakes">9. Summarize Daily Intakes 📊<a class="anchor" aria-label="anchor" href="#summarize-daily-intakes"></a>
+<h3 id="daily-intake-summaries">10. Daily Intake Summaries 📈<a class="anchor" aria-label="anchor" href="#daily-intake-summaries"></a>
 </h3>
-<blockquote>
-<p><strong>Ollie says:</strong> Now that we’ve cleaned our data, let’s
-create daily summaries of feed and water intake for each cow. This is
-where the juicy insights swim to the surface!</p>
-</blockquote>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Create daily summaries of feed and water intake</span></span>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Generate daily intake summaries</span></span>
 <span><span class="va">daily_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/feed_water_summary.html">feed_water_summary</a></span><span class="op">(</span></span>
 <span>  feed <span class="op">=</span> <span class="va">qc_feed</span>,           <span class="co"># Your cleaned feed data </span></span>
 <span>  water <span class="op">=</span> <span class="va">qc_water</span>,         <span class="co"># Your cleaned water data</span></span>
@@ -752,66 +732,36 @@ where the juicy insights swim to the surface!</p>
 <span><span class="co"># Look at the updated warnings that include intake anomalies</span></span>
 <span><span class="va">warning</span> <span class="op">&lt;-</span> <span class="va">daily_summary</span><span class="op">$</span><span class="va">warn</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">warning</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 17</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 17</span></span></span>
 <span><span class="co">#&gt;   date       total_cows missing_cow double_detection_bins negative_visit_bins</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2020-10-31         47 Yes         30                    6; 12; 13          </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2020-11-01         47 Yes         3; 5; 6; 18           6; 12; 13; 30      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2020-11-02         48 <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>                    13; 30             </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 12 more variables: cows_disappeared_after_noon &lt;chr&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   bins_never_visited &lt;chr&gt;, bins_low_traffic &lt;chr&gt;, long_dur_feeder &lt;chr&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   large_intake_feed_visit &lt;chr&gt;, low_daily_feed_intake_cows &lt;chr&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   high_daily_feed_intake_cows &lt;chr&gt;, feed_add_time_no_found &lt;chr&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   long_dur_drinker &lt;chr&gt;, large_intake_water_visit &lt;chr&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   low_daily_water_intake_cows &lt;chr&gt;, high_daily_water_intake_cows &lt;chr&gt;</span></span></span></code></pre></div>
-<blockquote>
-<p><strong>What’s in the summary?</strong> 🦦</p>
-<p>For each cow on each day, we now know:</p>
-<ul>
-<li>Total feed intake (kg)</li>
-<li>Total feeding duration (seconds)</li>
-<li>Number of feed visits</li>
-<li>Total water intake (L)</li>
-<li>Total drinking duration (seconds)</li>
-<li>Number of water visits</li>
-</ul>
-<p>Plus, we’ve updated our warnings to flag cows with abnormally high or
-low daily intakes!</p>
-</blockquote>
 </div>
 <div class="section level3">
-<h3 id="whats-next">10. What’s Next? 🌟<a class="anchor" aria-label="anchor" href="#whats-next"></a>
+<h3 id="summary">11. Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
 </h3>
-<p>Congratulations! You’ve now processed, cleaned, and summarized your
-cow feeding and drinking data. Your data is now sparkling clean and
-ready for analysis!</p>
-<p>Stay tuned for the next vignette (Part 2) where we’ll explore what
-these dairy cows are actually up to in “Extracting Cow Stories”!</p>
-<blockquote>
-<p><strong>Ollie’s Final Tips:</strong></p>
-<p>Remember, you can customize any part of this workflow for your
-specific needs:</p>
-<ul>
-<li>Make sure your file naming follows the date format rules</li>
-<li>Adjust column names with <code><a href="../reference/set_id_col2.html">set_id_col2()</a></code>,
-<code><a href="../reference/set_start_col2.html">set_start_col2()</a></code>, etc.</li>
-<li>Modify quality check thresholds with <code><a href="../reference/qc_config.html">qc_config()</a></code>
-</li>
-<li>Process just feed or just water data if that’s all you have</li>
-<li>Use <code><a href="https://rdrr.io/r/base/timezones.html" class="external-link">OlsonNames()</a></code> to see all timezone options</li>
-</ul>
-<p>Dive deep into documentation with <code>?function_name</code> for
-more details! Need detailed examples? Look at the sample data with:
-<code><a href="../reference/moo4feed_example.html">moo4feed_example()</a></code></p>
-</blockquote>
-<hr>
+<p>This tutorial demonstrated comprehensive data cleaning for automatic
+feeder data:</p>
+<p>✅ <strong>File processing</strong>: Handled multiple data files with
+date matching ✅ <strong>Quality control</strong>: Identified and
+corrected common data issues<br>
+✅ <strong>Advanced outlier detection</strong>: Compared traditional
+vs. KNN methods ✅ <strong>Daily summaries</strong>: Created
+analysis-ready intake metrics</p>
+<p>The cleaned datasets are now ready for behavioral analysis as
+demonstrated in subsequent tutorials.</p>
 </div>
 <div class="section level3">
-<h3 id="code-cheatsheet">11. Code Cheatsheet 📋<a class="anchor" aria-label="anchor" href="#code-cheatsheet"></a>
+<h3 id="code-cheatsheet">12. Code cheatsheet 📋<a class="anchor" aria-label="anchor" href="#code-cheatsheet"></a>
 </h3>
-<p>Here’s a copy-paste friendly version of all the code used in this
-vignette:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># === 1. Load packages ===</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/skysheng7/moo4feed" class="external-link">moo4feed</a></span><span class="op">)</span></span>
 <span></span>
@@ -844,10 +794,7 @@ vignette:</p>
 <span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># === 4. Handle daylight saving time ===</span></span>
-<span><span class="va">dst_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_dst_switch_info.html">get_dst_switch_info</a></span><span class="op">(</span></span>
-<span>  years <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2020</span>, <span class="fl">2021</span><span class="op">)</span>,</span>
-<span>  tz <span class="op">=</span> <span class="st">"America/Chicago"</span></span>
-<span><span class="op">)</span></span>
+<span><span class="va">dst_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_dst_switch_info.html">get_dst_switch_info</a></span><span class="op">(</span>years <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2020</span>, <span class="fl">2021</span><span class="op">)</span>, tz <span class="op">=</span> <span class="st">"America/Chicago"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># === 5. Match files by date ===</span></span>
 <span><span class="va">date_compare</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compare_files.html">compare_files</a></span><span class="op">(</span><span class="va">fileNames.f</span>, <span class="va">fileNames.w</span><span class="op">)</span></span>
@@ -970,6 +917,18 @@ vignette:</p>
 <span>  feed <span class="op">=</span> <span class="va">all_fed</span>,</span>
 <span>  water <span class="op">=</span> <span class="va">all_wat</span>,</span>
 <span>  cfg <span class="op">=</span> <span class="va">my_qc_config</span>,</span>
+<span>  id_col <span class="op">=</span> <span class="fu"><a href="../reference/id_col2.html">id_col2</a></span><span class="op">(</span><span class="op">)</span>,               <span class="co"># Animal ID column (default from global vars)</span></span>
+<span>  start_col <span class="op">=</span> <span class="fu"><a href="../reference/start_col2.html">start_col2</a></span><span class="op">(</span><span class="op">)</span>,         <span class="co"># Visit start time column (default from global vars)</span></span>
+<span>  end_col <span class="op">=</span> <span class="fu"><a href="../reference/end_col2.html">end_col2</a></span><span class="op">(</span><span class="op">)</span>,             <span class="co"># Visit end time column (default from global vars)</span></span>
+<span>  bin_col <span class="op">=</span> <span class="fu"><a href="../reference/bin_col2.html">bin_col2</a></span><span class="op">(</span><span class="op">)</span>,             <span class="co"># Bin/feeder ID column (default from global vars)</span></span>
+<span>  dur_col <span class="op">=</span> <span class="fu"><a href="../reference/duration_col2.html">duration_col2</a></span><span class="op">(</span><span class="op">)</span>,        <span class="co"># Visit duration column (default from global vars)</span></span>
+<span>  intake_col <span class="op">=</span> <span class="fu"><a href="../reference/intake_col2.html">intake_col2</a></span><span class="op">(</span><span class="op">)</span>,       <span class="co"># Intake amount column (default from global vars)</span></span>
+<span>  start_weight_col <span class="op">=</span> <span class="fu"><a href="../reference/start_weight_col2.html">start_weight_col2</a></span><span class="op">(</span><span class="op">)</span>,  <span class="co"># Start weight column (default from global vars)</span></span>
+<span>  end_weight_col <span class="op">=</span> <span class="fu"><a href="../reference/end_weight_col2.html">end_weight_col2</a></span><span class="op">(</span><span class="op">)</span>,      <span class="co"># End weight column (default from global vars)</span></span>
+<span>  tz <span class="op">=</span> <span class="fu"><a href="../reference/tz2.html">tz2</a></span><span class="op">(</span><span class="op">)</span>,                       <span class="co"># Timezone (default from global vars)</span></span>
+<span>  bins_feed <span class="op">=</span> <span class="fu"><a href="../reference/bins_feed2.html">bins_feed2</a></span><span class="op">(</span><span class="op">)</span>,         <span class="co"># Valid feed bin numbers (default from global vars)</span></span>
+<span>  bins_wat <span class="op">=</span> <span class="fu"><a href="../reference/bins_wat2.html">bins_wat2</a></span><span class="op">(</span><span class="op">)</span>,           <span class="co"># Valid water bin numbers (default from global vars)</span></span>
+<span>  bin_offset <span class="op">=</span> <span class="fu"><a href="../reference/bin_offset2.html">bin_offset2</a></span><span class="op">(</span><span class="op">)</span>,       <span class="co"># Bin offset for water bins (default from global vars)</span></span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  fix_double_detections <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
@@ -993,6 +952,9 @@ vignette:</p>
 <span>    intake <span class="op">=</span> <span class="fl">7</span>,</span>
 <span>    duration <span class="op">=</span> <span class="fl">0.03</span></span>
 <span>  <span class="op">)</span>,</span>
+<span>  intake_col <span class="op">=</span> <span class="fu"><a href="../reference/intake_col2.html">intake_col2</a></span><span class="op">(</span><span class="op">)</span>,       <span class="co"># Intake amount column (default from global vars)</span></span>
+<span>  duration_col <span class="op">=</span> <span class="fu"><a href="../reference/duration_col2.html">duration_col2</a></span><span class="op">(</span><span class="op">)</span>,   <span class="co"># Visit duration column (default from global vars)</span></span>
+<span>  date_col <span class="op">=</span> <span class="st">"date"</span>,                <span class="co"># Date column name</span></span>
 <span>  remove_outliers <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -1023,12 +985,15 @@ vignette:</p>
 <span><span class="va">water_with_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knn_clean_water.html">knn_clean_water</a></span><span class="op">(</span></span>
 <span>  <span class="va">qc_water</span>,</span>
 <span>  k <span class="op">=</span> <span class="fl">50</span>,</span>
-<span>  threshold_percentile <span class="op">=</span> <span class="fl">99.8</span>,</span>
+<span>  threshold_percentile <span class="op">=</span> <span class="fl">99</span>,</span>
 <span>  custom_scaling <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    rate <span class="op">=</span> <span class="fl">2000</span>,</span>
-<span>    intake <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>    intake <span class="op">=</span> <span class="fl">7</span>,</span>
 <span>    duration <span class="op">=</span> <span class="fl">0.01</span></span>
 <span>  <span class="op">)</span>,</span>
+<span>  intake_col <span class="op">=</span> <span class="fu"><a href="../reference/intake_col2.html">intake_col2</a></span><span class="op">(</span><span class="op">)</span>,       <span class="co"># Intake amount column (default from global vars)</span></span>
+<span>  duration_col <span class="op">=</span> <span class="fu"><a href="../reference/duration_col2.html">duration_col2</a></span><span class="op">(</span><span class="op">)</span>,   <span class="co"># Visit duration column (default from global vars)</span></span>
+<span>  date_col <span class="op">=</span> <span class="st">"date"</span>,                <span class="co"># Date column name</span></span>
 <span>  remove_outliers <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -1060,6 +1025,9 @@ vignette:</p>
 <span>  k <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  threshold_percentile <span class="op">=</span> <span class="fl">99.3</span>,</span>
 <span>  custom_scaling <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>rate <span class="op">=</span> <span class="fl">10000</span>, intake <span class="op">=</span> <span class="fl">7</span>, duration <span class="op">=</span> <span class="fl">0.03</span><span class="op">)</span>,</span>
+<span>  intake_col <span class="op">=</span> <span class="fu"><a href="../reference/intake_col2.html">intake_col2</a></span><span class="op">(</span><span class="op">)</span>,       <span class="co"># Intake amount column (default from global vars)</span></span>
+<span>  duration_col <span class="op">=</span> <span class="fu"><a href="../reference/duration_col2.html">duration_col2</a></span><span class="op">(</span><span class="op">)</span>,   <span class="co"># Visit duration column (default from global vars)</span></span>
+<span>  date_col <span class="op">=</span> <span class="st">"date"</span>,                <span class="co"># Date column name</span></span>
 <span>  remove_outliers <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -1067,8 +1035,11 @@ vignette:</p>
 <span><span class="va">cleaned_water_no_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knn_clean_water.html">knn_clean_water</a></span><span class="op">(</span></span>
 <span>  <span class="va">qc_water</span>,</span>
 <span>  k <span class="op">=</span> <span class="fl">50</span>,</span>
-<span>  threshold_percentile <span class="op">=</span> <span class="fl">99.8</span>,</span>
-<span>  custom_scaling <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>rate <span class="op">=</span> <span class="fl">2000</span>, intake <span class="op">=</span> <span class="fl">1</span>, duration <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span>,</span>
+<span>  threshold_percentile <span class="op">=</span> <span class="fl">99</span>,</span>
+<span>  custom_scaling <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>rate <span class="op">=</span> <span class="fl">2000</span>, intake <span class="op">=</span> <span class="fl">7</span>, duration <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span>,</span>
+<span>  intake_col <span class="op">=</span> <span class="fu"><a href="../reference/intake_col2.html">intake_col2</a></span><span class="op">(</span><span class="op">)</span>,       <span class="co"># Intake amount column (default from global vars)</span></span>
+<span>  duration_col <span class="op">=</span> <span class="fu"><a href="../reference/duration_col2.html">duration_col2</a></span><span class="op">(</span><span class="op">)</span>,   <span class="co"># Visit duration column (default from global vars)</span></span>
+<span>  date_col <span class="op">=</span> <span class="st">"date"</span>,                <span class="co"># Date column name</span></span>
 <span>  remove_outliers <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -1082,7 +1053,10 @@ vignette:</p>
 <span>  feed <span class="op">=</span> <span class="va">qc_feed</span>,</span>
 <span>  water <span class="op">=</span> <span class="va">qc_water</span>,</span>
 <span>  warn <span class="op">=</span> <span class="va">warning</span>,</span>
-<span>  cfg <span class="op">=</span> <span class="va">my_qc_config</span></span>
+<span>  cfg <span class="op">=</span> <span class="va">my_qc_config</span>,</span>
+<span>  id_col <span class="op">=</span> <span class="fu"><a href="../reference/id_col2.html">id_col2</a></span><span class="op">(</span><span class="op">)</span>,               <span class="co"># Animal ID column (default from global vars)</span></span>
+<span>  intake_col <span class="op">=</span> <span class="fu"><a href="../reference/intake_col2.html">intake_col2</a></span><span class="op">(</span><span class="op">)</span>,       <span class="co"># Intake amount column (default from global vars)</span></span>
+<span>  dur_col <span class="op">=</span> <span class="fu"><a href="../reference/duration_col2.html">duration_col2</a></span><span class="op">(</span><span class="op">)</span>         <span class="co"># Visit duration column (default from global vars)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Get summary dataframe</span></span>

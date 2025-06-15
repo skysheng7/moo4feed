@@ -5,16 +5,17 @@
 <url><loc>https://skysheng7.github.io/moo4feed/LICENSE-text.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/LICENSE.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/PULL_REQUEST_TEMPLATE.html</loc></url>
-<url><loc>https://skysheng7.github.io/moo4feed/articles/cow_stories.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/articles/bin_visit_analysis.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/articles/data_cleaning.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/articles/index.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/articles/meal_clustering.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/articles/replacement_detection.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/authors.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/index.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/all_fed.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/all_wat.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/bin_col2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/bin_offset2.html</loc></url>
-<url><loc>https://skysheng7.github.io/moo4feed/reference/bin_visits.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/bins_feed2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/bins_wat2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/cap_first.html</loc></url>
@@ -60,7 +61,6 @@
 <url><loc>https://skysheng7.github.io/moo4feed/reference/read_data_safely.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/record_replacement_days.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/rename_bins.html</loc></url>
-<url><loc>https://skysheng7.github.io/moo4feed/reference/replacements.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/set_bin_col2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/set_bin_offset2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/set_bins_feed2.html</loc></url>
@@ -77,7 +77,6 @@
 <url><loc>https://skysheng7.github.io/moo4feed/reference/set_tz2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/start_col2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/start_weight_col2.html</loc></url>
-<url><loc>https://skysheng7.github.io/moo4feed/reference/summary_df.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/trans_col2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/tz2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/unique_bin_visits.html</loc></url>
@@ -86,6 +85,5 @@
 <url><loc>https://skysheng7.github.io/moo4feed/reference/viz_eps_percentile.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/viz_meal_clusters.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/viz_outliers.html</loc></url>
-<url><loc>https://skysheng7.github.io/moo4feed/reference/warning.html</loc></url>
 </urlset>
 
