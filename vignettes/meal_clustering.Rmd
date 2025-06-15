@@ -88,7 +88,7 @@ Let's help Ollie examine some example data:
 demo_data <- clean_feed
 
 # Quick look at our data
-cat("Cows on the third day:", unique(demo_data[[3]]$cow), "\n")
+cat("Cows on the second day:", unique(demo_data[[2]]$cow), "\n")
 cat("Dates with data:", names(demo_data), "\n")
 ```
 
@@ -317,7 +317,7 @@ meals_basic <- cluster_meals(data = demo_data,
 
 # Look at the results
 head(meals_basic)
-cat("Total meals identified:", nrow(meals_basic), " in 3 days\n")
+cat("Total meals identified:", nrow(meals_basic), " in 2 days\n")
 cat("Meals per animal:\n")
 head(table(meals_basic$cow, meals_basic$date))
 ```
@@ -417,8 +417,8 @@ meal_plots[[1]][[1]]
 # first cow on second day
 meal_plots[[2]][[2]]
 
-# 10th cow on third day
-meal_plots[[10]][[3]]
+# 10th cow on second day
+meal_plots[[10]][[2]]
 
 ```
 

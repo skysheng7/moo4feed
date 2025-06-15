@@ -400,20 +400,8 @@ feed_with_outliers <- knn_clean_feed(
   remove_outliers = FALSE # Set to TRUE if you wish to remove outliers
 )
 
-# We can also visualize the outliers
-p1 <- viz_outliers(
-  feed_with_outliers,
-  x_var = "duration",
-  y_var = "intake",
-  title = "Feed Outliers: Duration vs Intake",
-  jitter_amount = 0.2,
-  regular_color = "lightgreen",
-  outlier_color = "orange"
-)
-print(p1)
-
 # Let's also look at rate vs intake
-p2 <- viz_outliers(
+p1 <- viz_outliers(
   feed_with_outliers,
   x_var = "rate",
   y_var = "intake",
@@ -422,7 +410,7 @@ p2 <- viz_outliers(
   regular_color = "lightgreen",
   outlier_color = "orange"
 )
-print(p2)
+print(p1)
 ```
 
 > **Ollie's Tips for KNN Outlier Detection:** 🦦
@@ -453,19 +441,8 @@ water_with_outliers <- knn_clean_water(
   remove_outliers = FALSE # Set to TRUE if you wish to remove outliers
 )
 
-# Visualize water outliers
-p3 <- viz_outliers(
-  water_with_outliers,
-  x_var = "duration",
-  y_var = "intake",
-  title = "Water Outliers: Duration vs Intake",
-  regular_color = "lightblue",
-  outlier_color = "orange"
-)
-print(p3)
-
 # Let's also look at rate vs intake
-p4 <- viz_outliers(
+p2 <- viz_outliers(
   water_with_outliers,
   x_var = "rate",
   y_var = "intake",
@@ -474,7 +451,7 @@ p4 <- viz_outliers(
   regular_color = "lightblue",
   outlier_color = "orange"
 )
-print(p4)
+print(p2)
 ```
 
 ### Remove outliers (optional)
