@@ -145,9 +145,5 @@ reference:
   - clean_feed
   - clean_water
   - clean_comb
-  - summary_df
-  - warning
-  - bin_visits
-  - replacements
   - moo4feed_example
 
