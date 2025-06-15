@@ -24,7 +24,7 @@ library(ggplot2)
 library(dplyr)
 ```
 
-## 🚨 Important: Set Your Global Variables First!
+## 1. 🚨 Important: Set Your Global Variables First!
 
 Before analyzing bin visit patterns, configure global variables to match your data structure:
 
@@ -51,17 +51,17 @@ cat("Duration column:", duration_col2(), "\n")
 cat("Timezone:", tz2(), "\n")
 ```
 
-## Introduction to Bin Visit Analysis
+## 2. Introduction to Bin Visit Analysis
 
 Ollie the Otter, our behavioral analysis specialist, explains: "Animals exhibit distinct exploration patterns when accessing feeding and drinking stations. Some individuals visit many different bins while others consistently use only a few preferred locations. This behavior reveals individual personalities and resource utilization strategies."
 
-## Prerequisites
+## 3. Prerequisites
 
 This tutorial assumes completion of previous data processing steps:
 - **Tutorial 1: Data Cleaning** 
 - **Tutorial 2: Meal Clustering**
 
-## Data Preparation
+## 4. Data Preparation
 
 ```{r data-prep}
 # Load cleaned example data
@@ -84,7 +84,7 @@ cat("Feed days:", length(clean_feed), "\n")
 cat("Water days:", length(clean_water), "\n")
 ```
 
-## Exploratory Behavior Analysis
+## 5. Exploratory Behavior Analysis
 
 Individual animals differ in their willingness to explore different feeding and drinking stations. This analysis quantifies exploration patterns by counting unique bin visits per animal per day.
 
@@ -106,7 +106,7 @@ This analysis provides three key metrics for each animal on each day:
 - *How many different **water bins** they visited*  
 - *The **total number of unique bins** visited (feed + water)*
 
-## Identifying Exploration Patterns
+## 6. Identifying Exploration Patterns
 
 ### Most Exploratory Animals
 
@@ -134,7 +134,17 @@ tail(avg_bin_visits, 10)
 This analysis reveals clear individual differences in exploration behavior. Most exploratory animals visit many different stations, while creatures of habit consistently use fewer preferred locations.
 
 
-## Cheat sheet
+## 7. Summary
+
+This tutorial demonstrated bin visit analysis for understanding animal exploration behavior:
+
+✅ **Quantified exploration**: Measured individual differences in station usage
+✅ **Identified patterns**: Distinguished exploratory vs. habitual behaviors  
+✅ **Research applications**: Connected patterns to welfare and management implications
+
+The analysis provides valuable insights for optimizing facility design, monitoring animal welfare, and understanding individual behavioral differences.
+
+## 8. Code Reference
 
 ```r
 #' Copy and modify these code blocks for your own analysis!

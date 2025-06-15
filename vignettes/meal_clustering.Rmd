@@ -24,7 +24,7 @@ library(ggplot2)
 library(dplyr)
 ```
 
-## 🚨 Important: Set Your Global Variables First!
+## 1. 🚨 Important: Set Your Global Variables First!
 
 Before proceeding with meal clustering analysis, configure global variables to match your data structure:
 
@@ -51,7 +51,7 @@ cat("Duration column:", duration_col2(), "\n")
 cat("Timezone:", tz2(), "\n")
 ```
 
-## Introduction to Meal Clustering
+## 2. Introduction to Meal Clustering
 
 Ollie the Otter, our data processing specialist, explains: "Individual feeding visits represent only part of the behavioral story. Animals often take brief breaks during sustained feeding periods. Meal clustering groups related visits into meaningful feeding events."
 
@@ -65,7 +65,7 @@ This tutorial demonstrates how to:
 3. **Apply clustering algorithms** - Group visits into meals using DBSCAN
 4. **Visualize feeding patterns** - Create timeline plots to visualize meal behavior
 
-## Data Preparation
+## 3. Data Preparation
 
 ```{r data-prep}
 # Load example cleaned data
@@ -76,7 +76,7 @@ cat("Available dates:", names(clean_feed), "\n")
 cat("Animals in day 1:", length(unique(clean_feed[[1]]$cow)), "\n")
 ```
 
-## Problems with Fixed Meal Intervals
+## 4. Problems with Fixed Meal Intervals
 
 Traditional studies often use arbitrary fixed meal intervals (60 or 90 minutes) without customization to different datasets collected in different environments. This approach fails to account for differences among farms, individual animals and studies.
 
@@ -109,7 +109,7 @@ cat("Fixed interval (90 min) resulted in", max(fixed_labeled$meal_id), "meals\n"
 
 As you can see there is **over-grouping**: Visits separated by natural resting periods are forced together
 
-## Data-Driven Meal Interval Selection
+## 5. Data-Driven Meal Interval Selection
 
 ### Method 1: Percentile-Based Selection
 
@@ -287,7 +287,7 @@ The data-driven approaches allows you to visualize and set the threshold customi
 
 Now let's cluster the data using the GMM method and visualize the results.
 
-## DBSCAN Clustering Algorithm
+## 6. DBSCAN Clustering Algorithm
 
 ### How DBSCAN Works
 
@@ -369,7 +369,7 @@ for (scope in names(scope_results)) {
 }
 ```
 
-## Labeling Individual Visits
+## 7. Labeling Individual Visits
 
 - The `meal_label_visits()` function respect your input data structure. If your input data is a list of dataframes, it will return a labeled list of dataframes; if your input data is a dataframe, it will return a labeled dataframe.
 
@@ -400,7 +400,7 @@ cat("Total visits assigned to meals:", sum(day1$meal_id > 0), "\n")
 cat("Feeding visits that are not assigned to meals (outliers,meal_id = 0) on day 1:", sum(day1$meal_id == 0), "\n")
 ```
 
-## Meal Pattern Visualization
+## 8. Meal Pattern Visualization
 
 ### Timeline Plots
 
@@ -464,14 +464,14 @@ date_plots <- combine_date_plots(meal_plots,
 date_plots[["1"]]
 ```
 
-## Summary
+## 9. Summary
 
 This tutorial demonstrated advanced meal clustering techniques. Key advantages of data-driven meal clustering:
 - **Biological relevance**: We find natural cutoffs between within-meal and between-meal gaps
 - **Individual accommodation**: Methods can adapt to individual animal differences
 - **Validation capability**: Visual tools allow verification of clustering results
 
-## Code Reference
+## 10. Code Reference
 
 ```r
 #' Copy and modify these code blocks for your own analysis!

@@ -11,8 +11,8 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.width = 8,
-  fig.height = 6,
+  fig.width = 6,
+  fig.height = 4,
   warning = FALSE,
   message = FALSE
 )
@@ -24,16 +24,12 @@ library(ggplot2)
 library(dplyr)
 ```
 
-## 🚨 Important: Set Your Global Variables First!
+## 1. 🚨 Important: Set Your Global Variables First!
 
-*"Before we investigate social dynamics," Ollie says while putting on his detective hat, "make sure you've configured your global variables to match your data structure. This makes all the functions work smoothly!"*
-
-If you haven't done this yet, run the setup from **Tutorial 1: Data Cleaning**:
+Before analyzing replacement behavior, configure global variables to match your data structure:
 
 ```{r global-setup}
-# 🎯 IMPORTANT: Set these to match YOUR data structure!
-# Copy and modify these lines to match your column names and settings:
-
+# Configure global variables for your data structure
 set_global_cols(
   id_col = "cow",           # Animal ID column name
   start_col = "start",      # Visit start time column  
@@ -44,8 +40,8 @@ set_global_cols(
   tz = "America/Vancouver"  # Your timezone
 )
 
-# Check that everything is set correctly:
-cat("✅ Global variables set:\n")
+# Verify configuration
+cat("✅ Global variables configured:\n")
 cat("ID column:", id_col2(), "\n")
 cat("Start time column:", start_col2(), "\n") 
 cat("End time column:", end_col2(), "\n")
@@ -55,31 +51,35 @@ cat("Duration column:", duration_col2(), "\n")
 cat("Timezone:", tz2(), "\n")
 ```
 
-*"Perfect! Now all our functions will automatically use the right column names for your data!"* 🦦
+## 2. Introduction to Replacement Detection
 
-## Ollie's Social Detective Mission 🕵️‍♂️
+Ollie the Otter explains: "Replacement events occur when one animal displaces another from a feeding station within a short time window. These social interactions reveal important information about herd dynamics, dominance hierarchies, and animal welfare."
 
-*"Welcome back, my fabulous data detectives!"* Ollie adjusts his magnifying glass and detective hat. *"After exploring meal clustering and bin visit patterns, I discovered something fascinating about animal social behavior! You know how sometimes you're enjoying your favorite spot at a café, and someone comes and takes the table right next to you, making you feel like you need to move? Animals do this too!"*
+Understanding replacement behavior helps researchers and farm managers:
+- **Monitor social stress**: High replacement rates may indicate social tension
+- **Identify dominant animals**: Animals that frequently displace others
+- **Assess welfare**: Animals frequently displaced may experience stress
+- **Optimize management**: Adjust feeding station availability based on social dynamics
 
-*"We call these 'replacement events' - when one animal displaces another from a feeding or drinking station. This behavior reveals so much about social hierarchies, stress levels, and individual personalities!"*
+### What We'll Learn
 
-### What We'll Discover Today
+This tutorial demonstrates how to:
 
-- **Social hierarchies**: Who are the bold displacing animals vs. the ones that get displaced?
-- **Social interactions**: How do replacement events reveal herd dynamics?
-- **Behavioral insights**: What can replacement patterns tell us about animal welfare?
+1. **Detect replacement events** using validated time thresholds
+2. **Analyze social dynamics** through replacement patterns
+3. **Interpret results** for management and welfare applications
 
-Let's solve this social mystery! 🔍
+## 3. Prerequisites
 
-## Prerequisites: Clean Data First! 🧹
-
-⚠️ **Important:** This tutorial assumes you have already completed:
+This tutorial assumes completion of previous data processing steps:
 - **Tutorial 1: Data Cleaning** 
 - **Tutorial 2: Meal Clustering**
 - **Tutorial 3: Bin Visit Analysis**
 
+## 4. Data Preparation
+
 ```{r data-prep}
-# Load the example cleaned data from the package
+# Load cleaned example data
 data(clean_feed)
 data(clean_water)
 
@@ -94,84 +94,94 @@ head(clean_feed[[1]], 3)  # First day, first 3 rows
 cat("\nTotal days of feed data:", length(clean_feed), "\n")
 ```
 
-## Understanding Replacement Events 🏆
+## 5. Understanding Replacement Events
 
-*"Here's where the detective work gets exciting!"* Ollie grins while polishing his magnifying glass. *"A replacement event happens when one animal takes over a feeding station from another animal within a short time window. We need to be smart about this - we don't want to count coincidental visits as social events!"*
+A replacement event is defined as when one animal (actor) takes over a feeding station from another animal (reactor) within a short time threshold. The default threshold of 26 seconds is based on validated research.
 
-Dairy animals establish complex social hierarchies. One key social behavior is when one animal replaces another at feeding or drinking stations.
+### Key Components
+
+- **Reactor cow**: The animal that was displaced (had to leave the bin)
+- **Actor cow**: The animal that initiated the replacement (took over the bin)  
+- **Time threshold**: Maximum gap between when one animal leaves and another arrives (default: 26 seconds)
+- **Validation**: Events are verified by checking if the actor animal has an "alibi" (was not feeding elsewhere when the reactor left)
 
 ### Detecting Replacement Events
 
-Now, let's use the `record_replacement_days()` function to detect replacement events across all days in our dataset:
-
-- The `replacement_threshold` parameter is critical - if an animal is feeding at a bin, and the next animal that enters the same bin within 26 seconds, it is considered a replacement event. This threshold is validated by previous studies.
-
 ```{r replacement-analysis}
-# Process feed replacement events for all days
+# Process replacement events for all days
 replacements <- record_replacement_days(
   comb = clean_feed,           # Our cleaned feed data
   cfg = qc_config(replacement_threshold = 26)      # Time gap (seconds) to classify replacement behavior
 )
 
-# Look at the first few replacement events for the first day
+# Examine the first few replacement events
 head(replacements[[1]])
+
+# Summary of replacement events
+cat("Replacement events per day:\n")
+sapply(replacements, nrow)
 ```
 
-*"Isn't this fascinating?"* Ollie claps excitedly. *"Each row represents a social interaction where:*
+Each replacement event contains:
+- **`reactor_cow`**: ID of the animal that was replaced
+- **`actor_cow`**: ID of the animal that initiated the replacement
+- **`bin`**: Feeding station where the replacement occurred
+- **`time`**: Timestamp when the replacement happened
+- **`date`**: Date of the event
+- **`bout_interval`**: Time gap between when the reactor left and actor arrived
 
-- **`reactor_cow`**: The animal that was replaced (had to leave the bin)
-- **`actor_cow`**: The animal that initiated the replacement (took over the bin)  
-- **`bin`**: Which feeding station this drama happened at
-- **`time`**: When this social event occurred
-- **`date`**: Which day this happened
-- **`bout_interval`**: The exact time gap between when one animal left and the next arrived
+## 6. Analyzing Replacement Patterns
 
-*The function even validates each event by checking if the displacing animal has an 'alibi' - making sure they weren't already feeding elsewhere when the previous animal left!"*
+### Most Active Animals
 
-## What Replacement Events Tell Us 📊
+```{r replacement-patterns}
+# Combine all days for analysis
+all_replacements <- do.call(rbind, replacements)
 
-*"These social interactions reveal so much about our animals!"* Ollie explains while examining the data.
+# Animals that most frequently replace others (actors)
+top_actors <- all_replacements |>
+  dplyr::count(actor_cow, sort = TRUE, name = "times_displaced_others") |>
+  head(10)
 
-Patterns in replacement events can reveal:
+cat("Top 10 animals that most frequently displace others:\n")
+print(top_actors)
 
-- Days with high social tension in the herd
-- Changes in social dynamics over time
-- Effects of management changes on social behavior
-- Potential welfare issues when replacement events spike
+# Animals that are most frequently replaced (reactors)
+top_reactors <- all_replacements |>
+  dplyr::count(reactor_cow, sort = TRUE, name = "times_displaced") |>
+  head(10)
 
-Importantly, the function validates each replacement event by checking if the actor animal has an "alibi" - if the animal was recorded at another bin when the previous animal left, the event is excluded. This ensures we're capturing true social replacement events rather than coincidental timings.
+cat("\nTop 10 animals that are most frequently displaced:\n")
+print(top_reactors)
+```
 
-## 🎉 Ollie's Social Detective Summary!
+### Replacement Timing Patterns
 
-*"What an incredible investigation!"* Ollie tips his detective hat. *"We've uncovered so many secrets about animal social dynamics! Now we can clearly see:*
+```{r timing-patterns}
+# Analyze replacement timing throughout the day
+all_replacements$hour <- lubridate::hour(all_replacements$time)
 
-- *How to detect and validate replacement events*
-- *What these social interactions tell us about herd dynamics*
-- *How to identify patterns in social behavior*
+hourly_replacements <- all_replacements |>
+  dplyr::count(hour, name = "replacement_count")
 
-*"This information is incredibly valuable for:*
-- *Understanding animal welfare and stress*
-- *Identifying management strategies to reduce social pressure*
-- *Recognizing individual animal personalities and needs*
-- *Monitoring changes in herd dynamics over time*
+cat("Replacement events by hour of day:\n")
+print(hourly_replacements)
+```
 
-*Remember, replacement events aren't necessarily 'bad' - they're natural social behaviors! But understanding these patterns helps us manage our animals better."*
+## 7. Summary
 
-**What we've accomplished together:**
-- ✅ Learned to detect and validate replacement events
-- ✅ Understood what social interactions reveal about herd dynamics
-- ✅ Discovered how to analyze social behavior patterns
+This tutorial demonstrated replacement detection for understanding social dynamics:
 
-*"The best part is you can now use these techniques to understand social dynamics in your own herds!"* 🦦
+✅ **Event detection**: Identified and validated replacement events using time thresholds
+✅ **Pattern analysis**: Analyzed which animals are most active in displacement behavior
+✅ **Timing insights**: Examined when replacement events occur throughout the day
+✅ **Research applications**: Connected findings to welfare and management implications
 
-## 🦦 Replacement Detection Cheat Sheet
+Understanding replacement behavior helps optimize animal management and monitor welfare through objective behavioral measurements.
 
-*"Here's my complete reference guide for replacement detection and social analysis! Copy and paste these code blocks to work with your own data."*
+## 8. Code Reference
 
 ```r
-#' ============================================================================
-#' 🦦 OLLIE'S REPLACEMENT DETECTION CHEAT SHEET
-#' ============================================================================
 #' Copy and modify these code blocks for your own analysis!
 
 # ---- SETUP: Global Variables (REQUIRED FIRST!) ----
@@ -207,12 +217,33 @@ sapply(replacements, nrow)
 # Look at first few events from first day
 head(replacements[[1]])
 
-# ---- STEP 3: Quick Analysis ----
+# ---- STEP 3: Analyze Replacement Patterns ----
+# Combine all days for analysis
+all_replacements <- do.call(rbind, replacements)
+
+# Find most active displacing animals
+top_actors <- all_replacements |>
+  dplyr::count(actor_cow, sort = TRUE, name = "times_displaced_others") |>
+  head(10)
+
+# Find most frequently displaced animals  
+top_reactors <- all_replacements |>
+  dplyr::count(reactor_cow, sort = TRUE, name = "times_displaced") |>
+  head(10)
+
+# Analyze timing patterns
+all_replacements$hour <- lubridate::hour(all_replacements$time)
+hourly_replacements <- all_replacements |>
+  dplyr::count(hour, name = "replacement_count")
+
+# ---- STEP 4: Quick Analysis ----
 # Check replacement results
 cat("Replacement events per day:\n")
 sapply(replacements, nrow)
 
-#' ============================================================================
-#' 🦦 That's it! You now understand social dynamics in your herd!
-#' ============================================================================
+cat("Most active displacing animals:\n")
+print(top_actors)
+
+cat("Most frequently displaced animals:\n")
+print(top_reactors)
 ``` 

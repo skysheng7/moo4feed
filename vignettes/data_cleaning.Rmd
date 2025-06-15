@@ -1,5 +1,5 @@
 ---
-title: "1. Data cleaning"
+title: "1. Data Cleaning"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{1. Data cleaning}
