@@ -11,8 +11,8 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.width = 8,
-  fig.height = 6,
+  fig.width = 6,
+  fig.height = 4,
   warning = FALSE,
   message = FALSE
 )
@@ -26,14 +26,10 @@ library(dplyr)
 
 ## 🚨 Important: Set Your Global Variables First!
 
-*"Before we dive into the meal clustering," Ollie says while adjusting his analyst glasses, "make sure you've configured your global variables to match your data structure. This makes all the functions work smoothly!"*
-
-If you haven't done this yet, run the setup from **Tutorial 1: Data Cleaning**:
+Before proceeding with meal clustering analysis, configure global variables to match your data structure:
 
 ```{r global-setup}
-# 🎯 IMPORTANT: Set these to match YOUR data structure!
-# Copy and modify these lines to match your column names and settings:
-
+# Configure global variables for your data structure
 set_global_cols(
   id_col = "cow",           # Animal ID column name
   start_col = "start",      # Visit start time column  
@@ -44,8 +40,8 @@ set_global_cols(
   tz = "America/Vancouver"  # Your timezone
 )
 
-# Check that everything is set correctly:
-cat("✅ Global variables set:\n")
+# Verify configuration
+cat("✅ Global variables configured:\n")
 cat("ID column:", id_col2(), "\n")
 cat("Start time column:", start_col2(), "\n") 
 cat("End time column:", end_col2(), "\n")
@@ -55,53 +51,69 @@ cat("Duration column:", duration_col2(), "\n")
 cat("Timezone:", tz2(), "\n")
 ```
 
-*"Perfect! Now all our functions will automatically use the right column names for your data!"* 🦦
+## Introduction to Meal Clustering
 
-## Ollie's Meal Clustering Journey 🦦
+Ollie the Otter, our data processing specialist, explains: "Individual feeding visits represent only part of the behavioral story. Animals often take brief breaks during sustained feeding periods. Meal clustering groups related visits into meaningful feeding events."
 
-*Our favorite data otter Ollie is back! This time, he's puzzled by something he noticed while watching the cows at the research farm...*
+Understanding feeding behavior requires grouping individual visits into meals - periods of sustained feeding activity separated by longer intervals. This analysis reveals natural feeding patterns and biological rhythms.
 
-"I've been tracking when each cow visits the feeders," Ollie says, adjusting his tiny data analyst glasses, "but I realized something important - just because a cow makes two separate visits doesn't mean they're having two separate meals! Sometimes they just take a quick break and come back."
+### Objectives
 
-"So I thought, what if we could group visits into meals and visualize each cow's breakfast, lunch and dinner?"
+This tutorial demonstrates how to:
+1. **Analyze inter-visit intervals** - Examine time gaps between consecutive visits
+2. **Determine optimal clustering parameters** - Find biologically meaningful thresholds using Gaussian Mixture Model
+3. **Apply clustering algorithms** - Group visits into meals using DBSCAN
+4. **Visualize feeding patterns** - Create timeline plots to visualize meal behavior
 
-### The Meal Clustering Challenge
-
-Individual feeding visits tell only part of the story. To understand animal feeding behavior, we need to group these visits into meaningful **meals** - periods of sustained feeding activity separated by longer breaks.
-
-Ollie's goal is to help you:
-1. **Analyze temporal patterns** - Look at time gaps between consecutive visits
-2. **Find natural breakpoints** - Identify optimal time thresholds that separate within-meal from between-meal visit gaps  
-3. **Group visits intelligently** - Use clustering algorithms to group nearby visits into meals
-4. **Summarize behavior** - Create meal-level summaries for analysis
-
-*"Let's solve this puzzle together!"* 🦦
-
-## Understanding Inter-Visit Gaps
-
-*"First," says Ollie, "we need to understand the pattern of time gaps between feeding visits. Are there short gaps (within meals) and long gaps (between meals)?"*
-
-Let's help Ollie examine some example data:
+## Data Preparation
 
 ```{r data-prep}
-# Use a subset of animals for demonstration
-demo_data <- clean_feed
+# Load example cleaned data
+data(clean_feed)
 
-# Quick look at our data
-cat("Cows on the second day:", unique(demo_data[[2]]$cow), "\n")
-cat("Dates with data:", names(demo_data), "\n")
+# Verify data structure
+cat("Available dates:", names(clean_feed), "\n")
+cat("Animals in day 1:", length(unique(clean_feed[[1]]$cow)), "\n")
 ```
 
-## Method 1: Percentile-Based Interval Selection
+## Problems with Fixed Meal Intervals
 
-The simplest approach uses percentiles of inter-visit gaps to determine the optimal meal interval (eps).
+Traditional studies often use arbitrary fixed meal intervals (60 or 90 minutes) without customization to different datasets collected in different environments. This approach fails to account for differences among farms, individual animals and studies.
 
-### How It Works
+### Demonstration: Fixed 90-Minute Interval
 
-The percentile method:
-1. Calculates gaps between consecutive visits for each animal within each day
-2. Takes a high percentile (default 93rd) as the threshold
-3. Visits separated by less than this threshold belong to the same meal
+```{r fixed-interval-demo, fig.width=8, fig.height=5}
+# Apply fixed 90-minute interval clustering
+set.seed(123)  # For reproducible random selection
+selected_animal <- sample(unique(clean_feed[[1]]$cow), 1)
+selected_date <- names(clean_feed)[1]
+
+cat("Demonstrating fixed interval issues with animal:", selected_animal, "on", selected_date, "\n")
+
+# Cluster meals using fixed 90-minute interval and label visits for visualization
+fixed_labeled <- meal_label_visits(
+  data = clean_feed[[1]](which(clean_feed[[1]]$cow == selected_animal),),
+  eps = 90,
+  min_pts = 2,
+  lower_bound = NULL,
+  upper_bound = NULL,
+  eps_scope = "all_animals"
+)
+
+p_fixed <- viz_meal_clusters(data = fixed_labeled)
+
+print(p_fixed)
+
+cat("Fixed interval (90 min) resulted in", max(fixed_labeled$meal_id), "meals\n")
+```
+
+As you can see there is **over-grouping**: Visits separated by natural resting periods are forced together
+
+## Data-Driven Meal Interval Selection
+
+### Method 1: Percentile-Based Selection
+
+The percentile method calculates gaps between consecutive visits for each animal within each day. By default we take a high percentile (default 93rd) as the threshold. Visits separated by less than this threshold belong to the same meal.
 
 ```{r percentile-method}
 # Calculate optimal interval using percentile method without restricting the 
@@ -109,8 +121,8 @@ The percentile method:
 eps_percentile <- meal_interval(data = demo_data, 
                                method = "percentile", 
                                percentile = 0.93,
-                               lower_bound = NULL, # default is 5 minutes
-                               upper_bound = NULL, # default is 60 minutes
+                               lower_bound = NULL, # default wass 5 minutes
+                               upper_bound = NULL, # default wass 60 minutes
                                use_log_transform = TRUE,
                                log_multiplier = 20,
                                log_offset = 1,
@@ -122,13 +134,12 @@ eps_percentile <- meal_interval(data = demo_data,
 cat("Optimal interval (93rd percentile):", round(eps_percentile, 2), "minutes\n")
 ```
 
-### Visualizing the Percentile Method
+### Visualizing Percentile Method
 
 - Now let's restrict the interval to be between 5 and 60 minutes and visualize the distribution of the gaps.
 
 ```{r viz-percentile, fig.width=10, fig.height=6}
 # Visualize gap distribution with percentile-based eps
-# 🎯 TRY THIS: Change these percentile values!
 # Try changing the percentile to 0.75, 0.85, 0.95, 0.99 and see how it affects the threshold!
 p1 <- viz_eps_percentile(data = demo_data, 
                         percentile = 0.93,  # 🎯 Change this value!
@@ -139,22 +150,17 @@ p1 <- viz_eps_percentile(data = demo_data,
                         title_prefix = "Distribution of time gap between visits & \noptimal meal interval (eps)",
                         xlim = 200)
 
-p1
+print(p1)
 ```
 
-## Method 2: Gaussian Mixture Model (GMM) Approach
-
-*"Wait!" Ollie's eyes light up. "I just learned about a fancier statistical method! What if we fit mathematical curves to our gap data to find where short gaps and long gaps naturally separate?"*
-
-### How Ollie's GMM Method Works
+### Method 2: Gaussian Mixture Model (GMM)
 
 The GMM method is like fitting two bell curves to our data:
+
 1. Fits a 2-component Gaussian mixture model to inter-visit gaps
 2. Identifies two populations: **within-meal gaps** (short) and **between-meal gaps** (long)
 3. Finds the intersection point between these distributions as the optimal threshold
 4. Can use log-transformation to better handle skewed gap distributions
-
-*"It's like finding where two waves cross!"* 🌊
 
 ```{r gmm-method}
 # Calculate optimal interval using GMM method
@@ -170,9 +176,9 @@ eps_gmm <- meal_interval(data = demo_data,
 cat("Optimal interval (GMM):", round(eps_gmm, 2), "minutes\n")
 ```
 
-### Visualizing the GMM Method
+### Visualizing GMM Method
 
-```{r viz-gmm, fig.width=10, fig.height=6}
+```{r viz-gmm, fig.width=8, fig.height=5}
 # Visualize gap distribution with GMM fit
 p2 <- viz_eps_gmm(data = demo_data, 
                   lower_bound = NULL,
@@ -268,15 +274,24 @@ p_gmm_log_20
 
 ```
 
-**💡 Ollie's Tip**: *"Different parameters can give different results. The key is finding what works best for your specific data!"*
+### Comparing Data-Driven vs. Fixed Intervals
 
-## DBSCAN: Ollie's Clustering Algorithm
+```{r compare-methods}
+cat("Method comparison:\n")
+cat("Fixed interval (traditional): 60 or 90 minutes\n")
+cat("Percentile method:", round(eps_percentile, 2), "minutes\n")
+cat("GMM method:", round(eps_gmm, 2), "minutes\n")
+```
 
-*"Now comes the exciting part!" Ollie grins. "Once we know our optimal interval, we need to actually group the visits into meals. I'll use something called DBSCAN - it's like finding dense neighborhoods of visits!"*
+The data-driven approaches allows you to visualize and set the threshold customized to YOUR data.
 
-### How Ollie's DBSCAN Works
+Now let's cluster the data using the GMM method and visualize the results.
 
-DBSCAN is like Ollie looking for "busy neighborhoods of visits":
+## DBSCAN Clustering Algorithm
+
+### How DBSCAN Works
+
+DBSCAN is like looking for "busy neighborhoods of visits":
 
 1. **Core points**: Visits with enough nearby friends (at least `min_pts` neighbors within `eps` time)
 2. **Border points**: Visits near a busy neighborhood but not busy themselves
@@ -284,18 +299,14 @@ DBSCAN is like Ollie looking for "busy neighborhoods of visits":
 4. **Clusters**: Groups of connected busy neighborhoods = **MEALS!**
 
 For meal clustering:
+
 - **Points** = feeding visit start times 🕐
 - **Distance** = time difference between the end time of the previous visit and the start time of the current visit ⏱️
 - **eps** = maximum time gap within a meal ⏰
 - **min_pts** = minimum visits to form a dense meal cluster 🍽️
 
-*"It's like connecting the dots, but only if the dots are close enough together!"* 🦦
 
-## Clustering Visits into Meals
-
-Now let's cluster our feeding visits into meals using different parameters:
-
-### Basic Clustering
+### Apply DBSCAN Clustering
 
 ```{r basic-clustering}
 # Cluster meals with default parameters
@@ -322,6 +333,7 @@ cat("Meals per animal:\n")
 head(table(meals_basic$cow, meals_basic$date))
 ```
 
+### Different eps Calculation Scopes
 
 ### Different eps Scopes
 
@@ -351,7 +363,7 @@ for (scope in scopes) {
   scope_results[[scope]] <- nrow(meals_temp)
 }
 
-cat("Meals by eps scope:\n")
+cat("Meals identified by eps scope:\n")
 for (scope in names(scope_results)) {
   cat(scope, ":", scope_results[[scope]], "meals\n")
 }
@@ -361,7 +373,7 @@ for (scope in names(scope_results)) {
 
 - The `meal_label_visits()` function respect your input data structure. If your input data is a list of dataframes, it will return a labeled list of dataframes; if your input data is a dataframe, it will return a labeled dataframe.
 
-- To analyze individual visit patterns within meals, use `meal_label_visits()`.
+Label individual visits with meal assignments for detailed analysis:
 
 ```{r visit-labeling}
 # Label each visit with its meal information
@@ -388,11 +400,11 @@ cat("Total visits assigned to meals:", sum(day1$meal_id > 0), "\n")
 cat("Feeding visits that are not assigned to meals (outliers,meal_id = 0) on day 1:", sum(day1$meal_id == 0), "\n")
 ```
 
-## Visualizing Meal Clustering Results
+## Meal Pattern Visualization
 
 ### Timeline Plots
 
-Visualize meals as timeline plots showing when animals fed throughout the day:
+Create timeline visualizations showing meal patterns throughout the day:
 
 - A plot list is returned for each animal on each day. The plot list is organized by animal then date
 
@@ -410,21 +422,21 @@ meal_plots <- viz_meal_clusters(data = labeled_visits,
                                title_prefix = "Cow",  # 🎯 Try "Animal" or ""!
                                text_size = 10,
                                title_size = NULL)
-# first digit means sequence of the animal, second digit means sequence of the day
-# first cow on first day
-meal_plots[[1]][[1]]
-
-# first cow on second day
-meal_plots[[2]][[2]]
-
-# 10th cow on second day
-meal_plots[[10]][[2]]
 
 ```
 
-### Individual Animal Plots
+### Compare Data-Driven vs. Fixed Interval Results
 
-For detailed analysis, extract plots for specific animals:
+```{r compare-clustering, fig.width=10, fig.height=8}
+# Compare optimized vs. fixed interval for the same animal
+# first digit means sequence of the animal, second digit means sequence of the day
+# Display sample plots
+meal_plots[[1]][[1]]  # First animal, first day
+```
+
+### Individual Animal Analysis
+
+Extract plots for a specific animal on a specific date:
 
 ```{r individual-plots, fig.width=10, fig.height=12}
 # Get plots for a specific animal on specific day
@@ -440,8 +452,6 @@ combined_plots <- combine_animal_plots(meal_plots,
 combined_plots[[1]]
 ```
 
-### Date-Based Plots
-
 Compare multiple animals on the same date:
 
 ```{r date-plots, fig.width=10, fig.height=10}
@@ -454,42 +464,16 @@ date_plots <- combine_date_plots(meal_plots,
 date_plots[["1"]]
 ```
 
-### Custom Visualization Parameters
+## Summary
 
-Experiment with different visualization parameters:
+This tutorial demonstrated advanced meal clustering techniques. Key advantages of data-driven meal clustering:
+- **Biological relevance**: We find natural cutoffs between within-meal and between-meal gaps
+- **Individual accommodation**: Methods can adapt to individual animal differences
+- **Validation capability**: Visual tools allow verification of clustering results
 
-```{r custom-viz, fig.width=12, fig.height=6}
-# Custom visualization with different parameters
-custom_plots <- viz_meal_clusters(data = labeled_visits,
-                                 point_size = 2,        # 🎯 Try different sizes: 1, 2, 4!
-                                 point_alpha = 0.8,     # 🎯 Try: 0.5, 0.9, 1.0!
-                                 ncol_facet = 1,
-                                 date_format = "%Y-%m-%d",
-                                 time_breaks = "2 hours",  # 🎯 Try "1 hour", "6 hours"!
-                                 time_labels = "%H",
-                                 color_palette = "Dark 2",  # 🎯 Try different palettes!
-                                 outlier_color = "red",     # 🎯 Try different colors!
-                                 title_prefix = "Cow",      # 🎯 Try "Animal" or ""!
-                                 text_size = 12,           # 🎯 Try different sizes!
-                                 title_size = NULL)
-
-custom_plots[[2]][[1]]
-```
-
-## 🎉 Ollie's Success Story!
-
-*"Wow!" Ollie exclaims, looking at all the beautiful meal visualizations. "We've successfully solved the meal mystery! Now we can see clear patterns in how animals actually feed - not just individual visits, but when they have breakfast, afternoon snacks, and more!"*
-
-*"The best part is that you can now use these same techniques with your own animal data!"* 🦦
-
-## 🦦 Meal Clustering Cheat Sheet
-
-*"Here's my handy reference guide for all the meal clustering functions! Copy and paste these code blocks to work with your own data."*
+## Code Reference
 
 ```r
-#' ============================================================================
-#' 🦦 OLLIE'S MEAL CLUSTERING CHEAT SHEET
-#' ============================================================================
 #' Copy and modify these code blocks for your own analysis!
 
 # ---- SETUP: Global Variables (REQUIRED FIRST!) ----
@@ -670,9 +654,6 @@ table(meals$cow, meals$date)           # Meals per animal, per day
 # Check labeling success on the first day
 table(labeled_visits[[1]]$meal_id == 0)    # TRUE = outliers, FALSE = assigned to meals
 
-#' ============================================================================
-#' 🦦 That's it! You're now ready to analyze meal patterns in your data!
-#' ============================================================================
 ```
 
 ---

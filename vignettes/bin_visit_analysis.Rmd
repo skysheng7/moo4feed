@@ -11,8 +11,8 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.width = 8,
-  fig.height = 6,
+  fig.width = 6,
+  fig.height = 4,
   warning = FALSE,
   message = FALSE
 )
@@ -26,14 +26,10 @@ library(dplyr)
 
 ## 🚨 Important: Set Your Global Variables First!
 
-*"Before we dive into exploring animal behavior," Ollie says while adjusting his tiny explorer hat, "make sure you've configured your global variables to match your data structure. This makes all the functions work smoothly!"*
-
-If you haven't done this yet, run the setup from **Tutorial 1: Data Cleaning**:
+Before analyzing bin visit patterns, configure global variables to match your data structure:
 
 ```{r global-setup}
-# 🎯 IMPORTANT: Set these to match YOUR data structure!
-# Copy and modify these lines to match your column names and settings:
-
+# Configure global variables for your data structure
 set_global_cols(
   id_col = "cow",           # Animal ID column name
   start_col = "start",      # Visit start time column  
@@ -44,8 +40,8 @@ set_global_cols(
   tz = "America/Vancouver"  # Your timezone
 )
 
-# Check that everything is set correctly:
-cat("✅ Global variables set:\n")
+# Verify configuration
+cat("✅ Global variables configured:\n")
 cat("ID column:", id_col2(), "\n")
 cat("Start time column:", start_col2(), "\n") 
 cat("End time column:", end_col2(), "\n")
@@ -55,30 +51,20 @@ cat("Duration column:", duration_col2(), "\n")
 cat("Timezone:", tz2(), "\n")
 ```
 
-*"Perfect! Now all our functions will automatically use the right column names for your data!"* 🦦
+## Introduction to Bin Visit Analysis
 
-## Ollie's Exploration Adventure 🦦
+Ollie the Otter, our behavioral analysis specialist, explains: "Animals exhibit distinct exploration patterns when accessing feeding and drinking stations. Some individuals visit many different bins while others consistently use only a few preferred locations. This behavior reveals individual personalities and resource utilization strategies."
 
-*"Hello again, my wonderful data explorers!"* Ollie exclaims, putting on his tiny safari hat. *"After solving the meal clustering mystery, I noticed something fascinating - some animals are adventurous explorers who love trying different feeding and drinking stations, while others are creatures of habit who stick to their favorite spots!"*
+## Prerequisites
 
-*"Think of it like this: imagine you're at a huge buffet. Some people (like me!) would visit every single station to try everything, while others might just stick to their favorite few dishes. Animals do the same thing with their feeding and drinking stations!"*
-
-### What We'll Discover Today
-
-- **Exploratory patterns**: Who are the adventurous animals vs. the creatures of habit?
-- **Individual strategies**: How do different animals approach their environment?
-- **Behavioral insights**: What can bin visit patterns tell us about animal preferences?
-
-Let's dive into this exploration adventure! 🏊‍♂️
-
-## Prerequisites: Clean Data First! 🧹
-
-⚠️ **Important:** This tutorial assumes you have already completed:
+This tutorial assumes completion of previous data processing steps:
 - **Tutorial 1: Data Cleaning** 
 - **Tutorial 2: Meal Clustering**
 
+## Data Preparation
+
 ```{r data-prep}
-# Load the example cleaned data from the package
+# Load cleaned example data
 data(clean_feed)
 data(clean_water)
 
@@ -98,13 +84,11 @@ cat("Feed days:", length(clean_feed), "\n")
 cat("Water days:", length(clean_water), "\n")
 ```
 
-## Understanding Exploratory Behavior 🔍
+## Exploratory Behavior Analysis
 
-*"Here's where the magic happens!"* Ollie grins while polishing his magnifying glass. *"We're going to count how many different bins each animal visits. This tells us who the explorers are versus who the creatures of habit are!"*
+Individual animals differ in their willingness to explore different feeding and drinking stations. This analysis quantifies exploration patterns by counting unique bin visits per animal per day.
 
-Animals differ in how widely they explore their environment. Some visit many different feeding and drinking stations, while others prefer to stick to just a few favorite spots.
-
-The `unique_bin_visits()` function helps us quantify this exploratory behavior:
+### Calculate Unique Bin Visits
 
 ```{r unique-bin-analysis}
 # Calculate unique bin visits for each animal across all days
@@ -117,32 +101,29 @@ bin_visits <- unique_bin_visits(
 head(bin_visits)
 ```
 
-*"Isn't this exciting?"* Ollie claps his paws. *"Now we can see for each animal on each day:*
+This analysis provides three key metrics for each animal on each day:
 - *How many different **feed bins** they visited*
 - *How many different **water bins** they visited*  
 - *The **total number of unique bins** visited (feed + water)*
 
-*This tells us which animals are 'explorers' versus 'creatures of habit'!"*
+## Identifying Exploration Patterns
 
-## Identifying the Most Exploratory Animals 🏃‍♀️
-
-*"Now for the fun part - let's find our champion explorers!"* Ollie rubs his paws together excitedly.
-
-Let's find the animals that consistently explore the most bins:
+### Most Exploratory Animals
 
 ```{r exploratory-animals}
-# Calculate the average number of unique bins visited per animal
+# Calculate average unique bin visits per animal
 avg_bin_visits <- bin_visits |>
   dplyr::group_by(cow) |>
   dplyr::summarize(
     avg_feed_bins = mean(unique_feed_bins_visited),
     avg_water_bins = mean(unique_water_bins_visited),
     avg_total_bins = mean(total_bins_visited),
-    days_observed = dplyr::n()
+    days_observed = dplyr::n(),
+    .groups = "drop"
   ) |>
   dplyr::arrange(dplyr::desc(avg_total_bins))
 
-# Display the top 10 most exploratory animals
+# Display most exploratory animals
 cat("🏆 TOP 10 MOST EXPLORATORY ANIMALS:\n")
 head(avg_bin_visits, 10)
 
@@ -150,33 +131,12 @@ cat("\n🏠 TOP 10 CREATURES OF HABIT (fewest bins visited):\n")
 tail(avg_bin_visits, 10)
 ```
 
-*"Look at that!"* Ollie points excitedly at the results. *"We can clearly see the difference between our adventurous explorers and our creatures of habit. Each animal has their own unique strategy for navigating their environment!"*
+This analysis reveals clear individual differences in exploration behavior. Most exploratory animals visit many different stations, while creatures of habit consistently use fewer preferred locations.
 
-## 🎉 Ollie's Exploration Insights!
 
-*"Wow! What an adventure!"* Ollie exclaims, looking at all the exploration data. *"We've discovered so much about animal behavior patterns! Now we can clearly see:*
-
-- *Who the champion explorers are (they visit lots of different bins!)*
-- *Who the creatures of habit are (they stick to their favorites)*  
-- *Individual animal personalities and strategies*
-
-*"This information is super valuable for understanding animal welfare, management decisions, and individual needs!"*
-
-**What we've accomplished together:**
-- ✅ Learned to quantify exploratory behavior
-- ✅ Identified individual animal exploration strategies  
-- ✅ Discovered patterns in animal preferences
-
-*"The best part is you can now use these techniques to understand your own animals better!"* 🦦
-
-## 🦦 Bin Visit Analysis Cheat Sheet
-
-*"Here's my handy reference guide for bin visit analysis! Copy and paste these code blocks to work with your own data."*
+## Cheat sheet
 
 ```r
-#' ============================================================================
-#' 🦦 OLLIE'S BIN VISIT ANALYSIS CHEAT SHEET
-#' ============================================================================
 #' Copy and modify these code blocks for your own analysis!
 
 # ---- SETUP: Global Variables (REQUIRED FIRST!) ----
@@ -229,7 +189,4 @@ creatures_of_habit <- tail(avg_bin_visits, 10)  # Least exploratory
 head(avg_bin_visits, 10)               # Top 10 explorers
 tail(avg_bin_visits, 10)               # Top 10 creatures of habit
 
-#' ============================================================================
-#' 🦦 That's it! You now understand animal exploration patterns!
-#' ============================================================================
 ``` 

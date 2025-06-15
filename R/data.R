@@ -1,11 +1,11 @@
 #' Cattle feeding behavior and visit record data
 #'
 #' An example dataset containing feeding behavior and visit records for cattle
-#' over a three-day period (2020-10-31 to 2020-11-02). Each day's data is stored
+#' over a two-day period (2020-10-31 to 2020-11-01). Each day's data is stored
 #' as a separate data frame within a list. This is the cleaned data output from
 #' the vignettes (i.e., "Articles" listed on the package website) "Data cleaning" code.
 #'
-#' @format A list of 3 data frames, one for each date (2020-10-31, 2020-11-01, 2020-11-02),
+#' @format A list of 2 data frames, one for each date (2020-10-31, 2020-11-01),
 #' with each data frame containing the following 10 variables:
 #' \describe{
 #'   \item{transponder}{integer, unique electronic ID for each bin}
@@ -22,11 +22,11 @@
 #' }
 #'
 #' @details The dataset contains detailed feeding behavior for multiple cattle
-#' over three consecutive days.Each entry represents a distinct feeding event
+#' over two consecutive days. Each entry represents a distinct feeding event
 #' where an animal visited a feed bin.
 #'
 #' @source Collected using an Insentec automatic feeder at University of British Columbia
-#' Dairy Education and Research Centre from October 31 to November 2, 2020.
+#' Dairy Education and Research Centre from October 31 to November 1, 2020.
 #'
 #' @examples
 #' # Access data for the first day
@@ -43,11 +43,11 @@
 #' Cattle water drinking behavior and visit record data
 #'
 #' An example dataset containing water drinking behavior and visit records for cattle
-#' over a three-day period (2020-10-31 to 2020-11-02). Each day's data is stored
+#' over a two-day period (2020-10-31 to 2020-11-01). Each day's data is stored
 #' as a separate data frame within a list. This is the cleaned data output from
 #' the vignettes (i.e., "Articles" listed on the package website) "Data cleaning" code.
 #'
-#' @format A list of 3 data frames, one for each date (2020-10-31, 2020-11-01, 2020-11-02),
+#' @format A list of 2 data frames, one for each date (2020-10-31, 2020-11-01),
 #' with each data frame containing the following 10 variables:
 #' \describe{
 #'   \item{transponder}{integer, unique electronic ID for each bin}
@@ -64,11 +64,11 @@
 #' }
 #'
 #' @details The dataset contains detailed water drinking behavior for multiple cattle
-#' over three consecutive days. Each entry represents a distinct drinking event
+#' over two consecutive days. Each entry represents a distinct drinking event
 #' where an animal visited a water bin.
 #'
 #' @source Collected using an Insentec automatic waterer at University of British Columbia
-#' Dairy Education and Research Centre from October 31 to November 2, 2020.
+#' Dairy Education and Research Centre from October 31 to November 1, 2020.
 #'
 #' @examples
 #' # Access data for the first day
@@ -84,10 +84,10 @@
 #' Cattle feeding behavior data after quality check and outlier removal
 #'
 #' A dataset containing feeding visit records for cattle 
-#' over a three-day period (2020-10-31 to 2020-11-02). This dataset is the result of 
+#' over a two-day period (2020-10-31 to 2020-11-01). This dataset is the result of 
 #' applying quality control procedures and KNN-based outlier removal to the raw [all_fed] data.
 #'
-#' @format A list of 3 data frames, one for each date (2020-10-31, 2020-11-01, 2020-11-02),
+#' @format A list of 2 data frames, one for each date (2020-10-31, 2020-11-01),
 #' with each data frame containing the following 10 variables:
 #' \describe{
 #'   \item{transponder}{integer, unique electronic ID for each bin}
@@ -122,10 +122,10 @@
 #' Cattle drinking behavior data after quality check and outlier removal
 #'
 #' A dataset containing drinking visit records for cattle 
-#' over a three-day period (2020-10-31 to 2020-11-02). This dataset is the result of 
+#' over a two-day period (2020-10-31 to 2020-11-01). This dataset is the result of 
 #' applying quality control procedures and KNN-based outlier removal to the raw [all_wat] data.
 #'
-#' @format A list of 3 data frames, one for each date (2020-10-31, 2020-11-01, 2020-11-02),
+#' @format A list of 2 data frames, one for each date (2020-10-31, 2020-11-01),
 #' with each data frame containing the following 10 variables:
 #' \describe{
 #'   \item{transponder}{integer, unique electronic ID for each bin}
@@ -160,11 +160,11 @@
 #' Combined feeding and drinking behavior data with outliers removed
 #'
 #' A fully cleaned dataset containing both feeding and drinking behavior data for cattle
-#' over a three-day period (2020-10-31 to 2020-11-02). This dataset is the result of
+#' over a two-day period (2020-10-31 to 2020-11-01). This dataset is the result of
 #' applying quality control procedures and KNN-based outlier removal to both feed and water data,
 #' then combining them into a single dataset for integrated analysis.
 #'
-#' @format A list of 3 data frames, one for each date (2020-10-31, 2020-11-01, 2020-11-02),
+#' @format A list of 2 data frames, one for each date (2020-10-31, 2020-11-01),
 #' with each data frame containing the following 11 variables:
 #' \describe{
 #'   \item{transponder}{integer, unique electronic ID for each bin}
@@ -205,7 +205,7 @@
 #' Daily summary of cattle feeding and drinking behavior
 #'
 #' A summarized dataset containing daily feed and water intake metrics for cattle 
-#' over a three-day period (2020-10-31 to 2020-11-02). This dataset aggregates the 
+#' over a two-day period (2020-10-31 to 2020-11-01). This dataset aggregates the 
 #' quality-checked `clean_feed` and `clean_water` data to provide daily totals per animal.
 #'
 #' @format A data frame with the following variables:
@@ -295,8 +295,8 @@
 
 #' Unique bin visit patterns by cow
 #'
-#' A dataset containing the unique bin visit patterns for each cow across the three-day period
-#' (2020-10-31 to 2020-11-02). This dataset is the result of applying the [unique_bin_visits()]
+#' A dataset containing the unique bin visit patterns for each cow across the two-day period
+#' (2020-10-31 to 2020-11-01). This dataset is the result of applying the [unique_bin_visits()]
 #' function to the quality-checked feeding and drinking data.
 #'
 #' @format A data frame with the following variables:
@@ -327,10 +327,10 @@
 #' Replacement events between cows
 #'
 #' A dataset containing validated replacement events where one cow (actor) replaces another cow (reactor)
-#' at a feeding bin across the three-day period (2020-10-31 to 2020-11-02). This dataset is the result
+#' at a feeding bin across the two-day period (2020-10-31 to 2020-11-01). This dataset is the result
 #' of applying the [record_replacement_days()] function to the quality-checked feeding data.
 #'
-#' @format A list of 3 data frames, one for each date (2020-10-31, 2020-11-01, 2020-11-02),
+#' @format A list of 2 data frames, one for each date (2020-10-31, 2020-11-01),
 #' with each data frame containing the following variables:
 #' \describe{
 #'   \item{reactor_cow}{integer, ID of the cow that was replaced (had to leave the bin)}
