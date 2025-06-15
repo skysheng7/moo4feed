@@ -101,10 +101,10 @@ match your data structure:</p>
 <h2 id="introduction-to-replacement-detection">2. Introduction to Replacement Detection<a class="anchor" aria-label="anchor" href="#introduction-to-replacement-detection"></a>
 </h2>
 <p>🦦 Ollie the Otter explains: “Replacement events occur when one
-animal pushes and displaces another animal that is actively feedingfrom
-a feeding station within a short time window. These social interactions
-reveal important information about herd dynamics and dominance
-hierarchies.”</p>
+animal pushes and displaces another animal that is actively feeding or
+drinking from a feeding station within a short time window. These social
+interactions reveal important information about herd dynamics and
+dominance hierarchies.”</p>
 <p>Understanding replacement behavior helps researchers and farm
 managers: - <strong>Monitor social stress</strong>: High replacement
 rates may indicate social tension - <strong>Identify dominant
@@ -129,17 +129,16 @@ events</strong> using validated time thresholds</p>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load cleaned example data</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">clean_feed</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">clean_water</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">clean_comb</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># If you're using your own data from previous tutorials, use this instead:</span></span>
 <span><span class="co"># clean_feed &lt;- your_cleaned_feed_data     # From your cleaning results</span></span>
 <span><span class="co"># clean_water &lt;- your_cleaned_water_data   # From your cleaning results</span></span>
 <span></span>
 <span><span class="co"># Quick peek at our data structure</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Feed data structure:\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Feed data structure:</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">clean_feed</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="fl">3</span><span class="op">)</span>  <span class="co"># First day, first 3 rows</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Feed and water data structure:\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Feed and water data structure:</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">clean_comb</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="fl">3</span><span class="op">)</span>  <span class="co"># First day, first 3 rows</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 11</span></span></span>
 <span><span class="co">#&gt;   transponder   cow   bin start               end                 duration</span></span>
 <span><span class="co">#&gt;         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
@@ -149,9 +148,9 @@ events</strong> using validated time thresholds</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 5 more variables: start_weight &lt;dbl&gt;, end_weight &lt;dbl&gt;, intake &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   date &lt;date&gt;, rate &lt;dbl&gt;</span></span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\nTotal days of feed data:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">clean_feed</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\nTotal days of feed &amp; water data:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">clean_comb</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Total days of feed data: 2</span></span></code></pre></div>
+<span><span class="co">#&gt; Total days of feed &amp; water data: 2</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="understanding-replacement-events">5. Understanding Replacement Events<a class="anchor" aria-label="anchor" href="#understanding-replacement-events"></a>
@@ -186,7 +185,7 @@ left)</li>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Process replacement events for all days</span></span>
 <span><span class="va">replacements</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/record_replacement_days.html">record_replacement_days</a></span><span class="op">(</span></span>
-<span>  comb <span class="op">=</span> <span class="va">clean_feed</span>,           <span class="co"># Our cleaned feed data</span></span>
+<span>  comb <span class="op">=</span> <span class="va">clean_comb</span>,           <span class="co"># Our cleaned feed data</span></span>
 <span>  cfg <span class="op">=</span> <span class="fu"><a href="../reference/qc_config.html">qc_config</a></span><span class="op">(</span>replacement_threshold <span class="op">=</span> <span class="fl">26</span><span class="op">)</span>      <span class="co"># Time gap (seconds) to classify replacement behavior</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -207,7 +206,7 @@ left)</li>
 <span><span class="co">#&gt; Replacement events per day:</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">replacements</span>, <span class="va">nrow</span><span class="op">)</span></span>
 <span><span class="co">#&gt; 2020-10-31 2020-11-01 </span></span>
-<span><span class="co">#&gt;        627        679</span></span></code></pre></div>
+<span><span class="co">#&gt;        655        709</span></span></code></pre></div>
 <p>Each replacement event contains: -
 <strong><code>reactor_cow</code></strong>: ID of the cow that was
 replaced - <strong><code>actor_cow</code></strong>: ID of the cow that
@@ -240,11 +239,11 @@ reactor left and actor entered the bin</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 2</span></span></span>
 <span><span class="co">#&gt;   actor_cow times_replaced_others</span></span>
 <span><span class="co">#&gt;       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>      <span style="text-decoration: underline;">6</span>050                    61</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>      <span style="text-decoration: underline;">5</span>124                    59</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>      <span style="text-decoration: underline;">5</span>120                    58</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>      <span style="text-decoration: underline;">5</span>042                    52</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>      <span style="text-decoration: underline;">5</span>058                    49</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>      <span style="text-decoration: underline;">6</span>050                    65</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>      <span style="text-decoration: underline;">5</span>124                    61</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>      <span style="text-decoration: underline;">5</span>120                    60</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>      <span style="text-decoration: underline;">5</span>058                    55</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>      <span style="text-decoration: underline;">5</span>042                    52</span></span>
 <span></span>
 <span><span class="co"># cows that are most frequently replaced (reactors)</span></span>
 <span><span class="va">top_reactors</span> <span class="op">&lt;-</span> <span class="va">all_replacements</span> <span class="op">|&gt;</span></span>
@@ -258,11 +257,11 @@ reactor left and actor entered the bin</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 2</span></span></span>
 <span><span class="co">#&gt;   reactor_cow times_replaced</span></span>
 <span><span class="co">#&gt;         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>        <span style="text-decoration: underline;">7</span>018             54</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>        <span style="text-decoration: underline;">7</span>027             49</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>        <span style="text-decoration: underline;">5</span>042             48</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>        <span style="text-decoration: underline;">7</span>030             45</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>        <span style="text-decoration: underline;">6</span>050             42</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>        <span style="text-decoration: underline;">7</span>018             57</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>        <span style="text-decoration: underline;">5</span>042             50</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>        <span style="text-decoration: underline;">7</span>027             49</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>        <span style="text-decoration: underline;">7</span>030             46</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>        <span style="text-decoration: underline;">5</span>123             43</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="replacement-timing-patterns">Replacement Timing Patterns<a class="anchor" aria-label="anchor" href="#replacement-timing-patterns"></a>
@@ -285,11 +284,11 @@ reactor left and actor entered the bin</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>     2                 3</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>     3                 3</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>     5                 1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>     6               165</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>     7                37</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>     8                36</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>     6               178</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>     7                39</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>     8                37</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>     9                46</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>    10                90</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>    10                94</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 13 more rows</span></span></span></code></pre></div>
 </div>
 </div>
@@ -328,11 +327,13 @@ replacement events occur throughout the day</p>
 <span><span class="co"># ---- STEP 1: Load Your Data ----</span></span>
 <span><span class="co"># Use your own cleaned data from previous tutorials:</span></span>
 <span><span class="co"># clean_feed &lt;- your_cleaned_feed_data</span></span>
+<span><span class="co"># clean_water &lt;- your_cleaned_water_data</span></span>
+<span><span class="co"># clean_comb &lt;- your_cleaned_comb_data</span></span>
 <span></span>
 <span><span class="co"># ---- STEP 2: Detect Replacement Events ----</span></span>
 <span><span class="co"># Process replacement events for all days</span></span>
 <span><span class="va">replacements</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/record_replacement_days.html">record_replacement_days</a></span><span class="op">(</span></span>
-<span>  comb <span class="op">=</span> <span class="va">your_clean_feed</span>,         <span class="co"># Your cleaned feed data</span></span>
+<span>  comb <span class="op">=</span> <span class="va">your_clean_comb</span>,         <span class="co"># Your cleaned feed/water or both feed + water data</span></span>
 <span>  cfg <span class="op">=</span> <span class="fu"><a href="../reference/qc_config.html">qc_config</a></span><span class="op">(</span>replacement_threshold <span class="op">=</span> <span class="fl">26</span><span class="op">)</span>,     <span class="co"># Time gap (seconds) to classify replacement behavior</span></span>
 <span>  id_col <span class="op">=</span> <span class="fu"><a href="../reference/id_col2.html">id_col2</a></span><span class="op">(</span><span class="op">)</span>,             <span class="co"># Animal ID column (default from global vars)</span></span>
 <span>  bin_col <span class="op">=</span> <span class="fu"><a href="../reference/bin_col2.html">bin_col2</a></span><span class="op">(</span><span class="op">)</span>,           <span class="co"># Bin/feeder ID column (default from global vars)</span></span>
