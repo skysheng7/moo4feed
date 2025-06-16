@@ -107,13 +107,23 @@ clustering groups related visits into meaningful feeding events.”</p>
 <div class="section level3">
 <h3 id="objectives">Objectives<a class="anchor" aria-label="anchor" href="#objectives"></a>
 </h3>
-<p>This tutorial demonstrates how to: 1. <strong>Analyze inter-visit
-intervals</strong> - Examine time gaps between consecutive visits 2.
+<p>This tutorial demonstrates how to:</p>
+<blockquote>
+<ol style="list-style-type: decimal">
+<li>
+<strong>Analyze inter-visit intervals</strong> - Examine time gaps
+between consecutive visits</li>
+<li>
 <strong>Determine optimal clustering parameters</strong> - Find
-biologically meaningful thresholds using Gaussian Mixture Model 3.
-<strong>Apply clustering algorithms</strong> - Group visits into meals
-using DBSCAN 4. <strong>Visualize feeding patterns</strong> - Create
-timeline plots to visualize meal behavior</p>
+biologically meaningful thresholds using Gaussian Mixture Model</li>
+<li>
+<strong>Apply clustering algorithms</strong> - Group visits into
+meals using DBSCAN</li>
+<li>
+<strong>Visualize feeding patterns</strong> - Create timeline plots
+to visualize meal behavior</li>
+</ol>
+</blockquote>
 </div>
 </div>
 <div class="section level2">
@@ -235,6 +245,7 @@ belong to the same meal.</p>
 Mixture Model (GMM) is a more flexible method that can find natural
 discontinuities in YOUR data. The GMM method is like fitting two bell
 curves to our data:</p>
+<blockquote>
 <ol style="list-style-type: decimal">
 <li>Fits a 2-component Gaussian mixture model to inter-visit gaps</li>
 <li>Identifies two populations: <strong>within-meal gaps</strong>
@@ -244,6 +255,7 @@ optimal threshold</li>
 <li>Can use log-transformation to better handle skewed gap
 distributions</li>
 </ol>
+</blockquote>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Calculate optimal interval using GMM method</span></span>
 <span><span class="va">eps_gmm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/meal_interval.html">meal_interval</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">demo_data</span>, </span>
@@ -307,7 +319,7 @@ distributions:</p>
 <span>                            use_log_transform <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                            xlim <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_gmm_no_log</span><span class="op">)</span></span></code></pre></div>
-<p><img src="meal_clustering_files/figure-html/gmm-comparison-1.png" width="480"></p>
+<p><img src="meal_clustering_files/figure-html/gmm-comparison-1.png" width="576"></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># with basic log transformation: log(x + 1) where x is the gap in minutes</span></span>
@@ -316,14 +328,14 @@ distributions:</p>
 <span>                        upper_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>                        bins <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>                        colors <span class="op">=</span> <span class="fu">grDevices</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span><span class="fl">4</span>, <span class="st">"Set 3"</span><span class="op">)</span>,</span>
-<span>                        title_prefix <span class="op">=</span> <span class="st">"Distribution of time gap between visits \n&amp; GMM-based meal interval (eps)"</span>,</span>
+<span>                        title_prefix <span class="op">=</span> <span class="st">"Distribution of time gap between visits \n&amp; GMM-based meal interval (eps)\n"</span>,</span>
 <span>                        show_components <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                        use_log_transform <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                        log_multiplier <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>                        log_offset <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>                        xlim <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_gmm_log</span><span class="op">)</span></span></code></pre></div>
-<p><img src="meal_clustering_files/figure-html/gmm-comparison-2.png" width="480"></p>
+<p><img src="meal_clustering_files/figure-html/gmm-comparison-2.png" width="576"></p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># with customzied log transformation: log(20x + 1) where x is the gap in minutes</span></span>
@@ -332,14 +344,14 @@ distributions:</p>
 <span>                            upper_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>                            bins <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>                            colors <span class="op">=</span> <span class="fu">grDevices</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span><span class="fl">4</span>, <span class="st">"Set 3"</span><span class="op">)</span>,</span>
-<span>                            title_prefix <span class="op">=</span> <span class="st">"Distribution of time gap between visits \n&amp; GMM-based meal interval (eps)"</span>,</span>
+<span>                            title_prefix <span class="op">=</span> <span class="st">"Distribution of time gap between visits \n&amp; GMM-based meal interval (eps)\n"</span>,</span>
 <span>                            show_components <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                            use_log_transform <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                            log_multiplier <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>                            log_offset <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>                            xlim <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_gmm_log_20</span><span class="op">)</span></span></code></pre></div>
-<p><img src="meal_clustering_files/figure-html/gmm-comparison-3.png" width="480"></p>
+<p><img src="meal_clustering_files/figure-html/gmm-comparison-3.png" width="576"></p>
 <p>It’s obvious that using log(20x + 1) yield a better fitted model for
 our data. The data-driven approaches allows you to visualize and set the
 threshold customized to YOUR data.</p>
@@ -354,7 +366,9 @@ meal clustering results.</p>
 <div class="section level3">
 <h3 id="how-dbscan-works">How DBSCAN Works<a class="anchor" aria-label="anchor" href="#how-dbscan-works"></a>
 </h3>
-<p>DBSCAN is like looking for “busy neighborhoods of visits”:</p>
+<p>DBSCAN is an unsupervised learning algorithm. It is like looking for
+“busy neighborhoods of visits”:</p>
+<blockquote>
 <ol style="list-style-type: decimal">
 <li>
 <strong>Core points</strong>: Visits with enough nearby friends (at
@@ -370,6 +384,7 @@ any meal (isolated visit/visits)</li>
 <strong>MEALS!</strong>
 </li>
 </ol>
+</blockquote>
 <p>For meal clustering:</p>
 <ul>
 <li>
@@ -439,14 +454,20 @@ cluster 🍽️</li>
 <div class="section level3">
 <h3 id="different-eps-scopes">Different eps Scopes<a class="anchor" aria-label="anchor" href="#different-eps-scopes"></a>
 </h3>
-<p>You can calculate optimal eps using different data scopes: -
-<strong>all_animals</strong> = calculate a universal optimal eps using
-visit gaps for all animals from all days -
-<strong>one_animal_all_days</strong> = Customize eps for each individual
-animal, calculate eps based on every animal across all days -
+<p>You can calculate optimal eps using different data scopes:</p>
+<ul>
+<li>
+<strong>all_animals</strong> = calculate a universal optimal eps
+using visit gaps for all animals from all days</li>
+<li>
+<strong>one_animal_all_days</strong> = Customize eps for each
+individual animal, calculate eps based on every animal across all
+days</li>
+<li>
 <strong>one_animal_single_day</strong> = Customize eps for each
 individual and different days, calculate eps based on each animal on
-each day</p>
+each day</li>
+</ul>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Compare different eps calculation scopes</span></span>
 <span><span class="va">scopes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"all_animals"</span>, <span class="st">"one_animal_all_days"</span>, <span class="st">"one_animal_single_day"</span><span class="op">)</span></span>
@@ -481,12 +502,10 @@ each day</p>
 <div class="section level2">
 <h2 id="labeling-individual-visits">7. Labeling Individual Visits<a class="anchor" aria-label="anchor" href="#labeling-individual-visits"></a>
 </h2>
-<ul>
-<li>The <code><a href="../reference/meal_label_visits.html">meal_label_visits()</a></code> function respect your input
-data structure. If your input data is a list of dataframes, it will
-return a labeled list of dataframes; if your input data is a dataframe,
-it will return a labeled dataframe.</li>
-</ul>
+<p><strong>Note</strong>:The <code><a href="../reference/meal_label_visits.html">meal_label_visits()</a></code> function
+respect your input data structure. If your input data is a list of
+dataframes, it will return a labeled list of dataframes; if your input
+data is a dataframe, it will return a labeled dataframe.</p>
 <p>Label individual visits with meal assignments for detailed
 analysis:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
@@ -565,7 +584,7 @@ is organized by animal then date</li>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Cluster meals with fixed 90-minute interval</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_fixed</span><span class="op">)</span></span></code></pre></div>
-<p><img src="meal_clustering_files/figure-html/fixed-interval-clustering-reshow-1.png" width="480"></p>
+<p><img src="meal_clustering_files/figure-html/fixed-interval-clustering-reshow-1.png" width="384"></p>
 <p>Using data-driven GMM method to determine the eps and DBSCAN for
 clustering:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
@@ -573,7 +592,7 @@ clustering:</p>
 <span><span class="co"># first digit means sequence of the animal, second digit means sequence of the day</span></span>
 <span><span class="co"># Display sample plots</span></span>
 <span><span class="va">meal_plots</span><span class="op">[[</span><span class="st">"6027"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span>  <span class="co"># First animal, second day</span></span></code></pre></div>
-<p><img src="meal_clustering_files/figure-html/compare-clustering-1.png" width="480"></p>
+<p><img src="meal_clustering_files/figure-html/compare-clustering-1.png" width="384"></p>
 <p>It’s obvious that the data-driven clustering method yields a more
 reasonable clustering result.</p>
 </div>
@@ -609,12 +628,18 @@ reasonable clustering result.</p>
 <h2 id="summary">9. Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
 </h2>
 <p>This tutorial demonstrated advanced meal clustering techniques. Key
-advantages of data-driven meal clustering: - <strong>Biological
-relevance</strong>: We find natural cutoffs between within-meal and
-between-meal gaps - <strong>Individual accommodation</strong>: Methods
-can adapt to individual animal differences - <strong>Validation
-capability</strong>: Visual tools allow verification of clustering
-results</p>
+advantages of data-driven meal clustering:</p>
+<ul>
+<li>
+<strong>Biological relevance</strong>: We find natural cutoffs
+between within-meal and between-meal gaps</li>
+<li>
+<strong>Individual accommodation</strong>: Methods can adapt to
+individual animal differences</li>
+<li>
+<strong>Validation capability</strong>: Visual tools allow
+verification of clustering results</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="code-cheatsheet">10. Code Cheatsheet<a class="anchor" aria-label="anchor" href="#code-cheatsheet"></a>

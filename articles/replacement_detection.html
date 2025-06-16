@@ -106,11 +106,18 @@ drinking from a feeding station within a short time window. These social
 interactions reveal important information about herd dynamics and
 dominance hierarchies.”</p>
 <p>Understanding replacement behavior helps researchers and farm
-managers: - <strong>Monitor social stress</strong>: High replacement
-rates may indicate social tension - <strong>Identify dominant
-animals</strong>: Animals that frequently replace others -
-<strong>Affective state</strong>: Animals frequently get replaced may
-experience longitudinal stress</p>
+managers:</p>
+<ul>
+<li>
+<strong>Monitor social stress</strong>: High replacement rates may
+indicate social tension</li>
+<li>
+<strong>Identify dominant animals</strong>: Animals that frequently
+replace others</li>
+<li>
+<strong>Affective state</strong>: Animals frequently get replaced
+may experience longitudinal stress</li>
+</ul>
 <div class="section level3">
 <h3 id="what-well-learn">What We’ll Learn<a class="anchor" aria-label="anchor" href="#what-well-learn"></a>
 </h3>
@@ -207,15 +214,26 @@ left)</li>
 <span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">replacements</span>, <span class="va">nrow</span><span class="op">)</span></span>
 <span><span class="co">#&gt; 2020-10-31 2020-11-01 </span></span>
 <span><span class="co">#&gt;        655        709</span></span></code></pre></div>
-<p>Each replacement event contains: -
+<p>Each replacement event contains:</p>
+<ul>
+<li>
 <strong><code>reactor_cow</code></strong>: ID of the cow that was
-replaced - <strong><code>actor_cow</code></strong>: ID of the cow that
-initiated the replacement - <strong><code>bin</code></strong>:
-Feeding/drinking station where the replacement occurred -
+replaced</li>
+<li>
+<strong><code>actor_cow</code></strong>: ID of the cow that
+initiated the replacement</li>
+<li>
+<strong><code>bin</code></strong>: Feeding/drinking station where
+the replacement occurred</li>
+<li>
 <strong><code>time</code></strong>: Timestamp when the replacement
-happened - <strong><code>date</code></strong>: Date of the event -
-<strong><code>bout_interval</code></strong>: Time gap between when the
-reactor left and actor entered the bin</p>
+happened</li>
+<li>
+<strong><code>date</code></strong>: Date of the event</li>
+<li>
+<strong><code>bout_interval</code></strong>: Time gap between when
+the reactor left and actor entered the bin</li>
+</ul>
 </div>
 </div>
 <div class="section level2">
@@ -298,10 +316,11 @@ reactor left and actor entered the bin</p>
 <p>This tutorial demonstrated replacement detection for understanding
 social dynamics:</p>
 <p>✅ <strong>Event detection</strong>: Identified and validated
-replacement events using time thresholds ✅ <strong>Pattern
-analysis</strong>: Analyzed which cows are most active in displacement
-behavior ✅ <strong>Timing insights</strong>: Examined when most
-replacement events occur throughout the day</p>
+replacement events using time thresholds</p>
+<p>✅ <strong>Pattern analysis</strong>: Analyzed which cows are most
+active in displacement behavior</p>
+<p>✅ <strong>Timing insights</strong>: Examined when most replacement
+events occur throughout the day</p>
 </div>
 <div class="section level2">
 <h2 id="code-cheatsheet">8. Code Cheatsheet<a class="anchor" aria-label="anchor" href="#code-cheatsheet"></a>
