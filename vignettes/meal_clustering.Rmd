@@ -58,10 +58,11 @@ cat("Timezone:", tz2(), "\n")
 ### Objectives
 
 This tutorial demonstrates how to:
-1. **Analyze inter-visit intervals** - Examine time gaps between consecutive visits
-2. **Determine optimal clustering parameters** - Find biologically meaningful thresholds using Gaussian Mixture Model
-3. **Apply clustering algorithms** - Group visits into meals using DBSCAN
-4. **Visualize feeding patterns** - Create timeline plots to visualize meal behavior
+
+> 1. **Analyze inter-visit intervals** - Examine time gaps between consecutive visits
+> 2. **Determine optimal clustering parameters** - Find biologically meaningful thresholds using Gaussian Mixture Model
+> 3. **Apply clustering algorithms** - Group visits into meals using DBSCAN
+> 4. **Visualize feeding patterns** - Create timeline plots to visualize meal behavior
 
 ## 3. Data Preparation
 
@@ -157,10 +158,10 @@ print(p1)
 
 Using the percentile method could still be a bit rigid. Gaussian Mixture Model (GMM) is a more flexible method that can find natural discontinuities in YOUR data. The GMM method is like fitting two bell curves to our data:
 
-1. Fits a 2-component Gaussian mixture model to inter-visit gaps
-2. Identifies two populations: **within-meal gaps** (short) and **between-meal gaps** (long)
-3. Finds the intersection point between these distributions as the optimal threshold
-4. Can use log-transformation to better handle skewed gap distributions
+> 1. Fits a 2-component Gaussian mixture model to inter-visit gaps
+> 2. Identifies two populations: **within-meal gaps** (short) and **between-meal gaps** (long)
+> 3. Finds the intersection point between these distributions as the optimal threshold
+> 4. Can use log-transformation to better handle skewed gap distributions
 
 ```{r gmm-method}
 # Calculate optimal interval using GMM method
@@ -209,7 +210,7 @@ for (i in seq_along(log_params)) {
 
 Log transformation often improves GMM fitting for highly skewed gap distributions:
 
-```{r gmm-comparison, fig.width=5, fig.height=3}
+```{r gmm-comparison, fig.width=6, fig.height=4}
 # Compare GMM with and without log transformation
 p_gmm_no_log <- viz_eps_gmm(demo_data, 
                             lower_bound = NULL,
@@ -228,7 +229,7 @@ p_gmm_log <- viz_eps_gmm(demo_data,
                         upper_bound = NULL,
                         bins = 100,
                         colors = grDevices::hcl.colors(4, "Set 3"),
-                        title_prefix = "Distribution of time gap between visits \n& GMM-based meal interval (eps)",
+                        title_prefix = "Distribution of time gap between visits \n& GMM-based meal interval (eps)\n",
                         show_components = TRUE,
                         use_log_transform = TRUE,
                         log_multiplier = 1,
@@ -242,7 +243,7 @@ p_gmm_log_20 <- viz_eps_gmm(demo_data,
                             upper_bound = NULL,
                             bins = 100,
                             colors = grDevices::hcl.colors(4, "Set 3"),
-                            title_prefix = "Distribution of time gap between visits \n& GMM-based meal interval (eps)",
+                            title_prefix = "Distribution of time gap between visits \n& GMM-based meal interval (eps)\n",
                             show_components = TRUE,
                             use_log_transform = TRUE,
                             log_multiplier = 20,
@@ -260,12 +261,12 @@ Now let's cluster the data using the GMM method and visualize the meal clusterin
 
 ### How DBSCAN Works
 
-DBSCAN is like looking for "busy neighborhoods of visits":
+DBSCAN is an unsupervised learning algorithm. It is like looking for "busy neighborhoods of visits":
 
-1. **Core points**: Visits with enough nearby friends (at least `min_pts` neighbors within `eps` time)
-2. **Border points**: Visits near a busy neighborhood but not busy around themselves
-3. **Noise points**: Lonely visits that don't belong to any meal (isolated visit/visits)
-4. **Clusters**: Groups of connected busy neighborhoods = **MEALS!**
+> 1. **Core points**: Visits with enough nearby friends (at least `min_pts` neighbors within `eps` time)
+> 2. **Border points**: Visits near a busy neighborhood but not busy around themselves
+> 3. **Noise points**: Lonely visits that don't belong to any meal (isolated visit/visits)
+> 4. **Clusters**: Groups of connected busy neighborhoods = **MEALS!**
 
 For meal clustering:
 
@@ -305,6 +306,7 @@ head(table(meals_basic$cow, meals_basic$date))
 ### Different eps Scopes
 
 You can calculate optimal eps using different data scopes:
+
 - **all_animals** = calculate a universal optimal eps using visit gaps for all animals from all days
 - **one_animal_all_days** = Customize eps for each individual animal, calculate eps based on every animal across all days
 - **one_animal_single_day** = Customize eps for each individual and different days, calculate eps based on each animal on each day
@@ -338,7 +340,7 @@ for (scope in names(scope_results)) {
 
 ## 7. Labeling Individual Visits
 
-- The `meal_label_visits()` function respect your input data structure. If your input data is a list of dataframes, it will return a labeled list of dataframes; if your input data is a dataframe, it will return a labeled dataframe.
+**Note**:The `meal_label_visits()` function respect your input data structure. If your input data is a list of dataframes, it will return a labeled list of dataframes; if your input data is a dataframe, it will return a labeled dataframe.
 
 Label individual visits with meal assignments for detailed analysis:
 
@@ -397,14 +399,14 @@ meal_plots <- viz_meal_clusters(data = labeled_visits,
 - Now let's compare the data-driven vs. fixed interval results!
 
 Using fixed interval clustering, we set the eps to 90 minutes:
-```{r fixed-interval-clustering-reshow, fig.width=5, fig.height=3}
+```{r fixed-interval-clustering-reshow, fig.width=4, fig.height=2}
 # Cluster meals with fixed 90-minute interval
 print(p_fixed)
 ```
 
 Using data-driven GMM method to determine the eps and DBSCAN for clustering:
 
-```{r compare-clustering, fig.width=5, fig.height=3}
+```{r compare-clustering, fig.width=4, fig.height=2}
 # Compare optimized vs. fixed interval for the same animal
 # first digit means sequence of the animal, second digit means sequence of the day
 # Display sample plots
@@ -417,7 +419,7 @@ It's obvious that the data-driven clustering method yields a more reasonable clu
 
 Extract plots for specific animals on specific dates:
 
-```{r individual-plots, fig.width=5, fig.height=3}
+```{r individual-plots, fig.width=5, fig.height=5}
 # Get plots for a specific animal on specific day
 animal_plot <- extract_plots(meal_plots, animals = "7022", dates = "2020-10-31")
 
@@ -432,7 +434,7 @@ print(combined_plots[[1]])
 
 Compare multiple animals on the same date:
 
-```{r date-plots, fig.width=5, fig.height=3}
+```{r date-plots, fig.width=5, fig.height=7}
 # Combine multiple animals for one date
 date_plots <- combine_date_plots(meal_plots,
                                 date = "2020-10-31",
@@ -445,6 +447,7 @@ date_plots[["1"]]
 ## 9. Summary
 
 This tutorial demonstrated advanced meal clustering techniques. Key advantages of data-driven meal clustering:
+
 - **Biological relevance**: We find natural cutoffs between within-meal and between-meal gaps
 - **Individual accommodation**: Methods can adapt to individual animal differences
 - **Validation capability**: Visual tools allow verification of clustering results

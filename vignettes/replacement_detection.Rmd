@@ -56,6 +56,7 @@ cat("Timezone:", tz2(), "\n")
 🦦 Ollie the Otter explains: "Replacement events occur when one animal pushes and displaces another animal that is actively feeding or drinking from a feeding station within a short time window. These social interactions reveal important information about herd dynamics and dominance hierarchies."
 
 Understanding replacement behavior helps researchers and farm managers:
+
 - **Monitor social stress**: High replacement rates may indicate social tension
 - **Identify dominant animals**: Animals that frequently replace others
 - **Affective state**: Animals frequently get replaced may experience longitudinal stress
@@ -115,6 +116,7 @@ sapply(replacements, nrow)
 ```
 
 Each replacement event contains:
+
 - **`reactor_cow`**: ID of the cow that was replaced
 - **`actor_cow`**: ID of the cow that initiated the replacement
 - **`bin`**: Feeding/drinking station where the replacement occurred
@@ -165,7 +167,9 @@ print(hourly_replacements)
 This tutorial demonstrated replacement detection for understanding social dynamics:
 
 ✅ **Event detection**: Identified and validated replacement events using time thresholds
+
 ✅ **Pattern analysis**: Analyzed which cows are most active in displacement behavior
+
 ✅ **Timing insights**: Examined when most replacement events occur throughout the day
 
 ## 8. Code Cheatsheet
