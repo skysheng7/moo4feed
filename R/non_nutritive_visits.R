@@ -1,118 +1,108 @@
-#' Calculate non-nutritive visits
+#' Calculate non-nutritive visits per animal per day
 #'
-#' This function calculates the number of non-nutritive visits for each date.
-#' A non-nutritive visit occurs when a cow visits a bin that has feed available
-#' (more than the calibration error) but doesn't eat anything.
+#' @description
+#' Calculates the number of non-nutritive visits for each animal on each day.
+#' A non-nutritive visit occurs when an animal visits a bin that has feed
+#' available
+#' (more than the calibration error) but does not eat anything.
 #'
-#' @param data A list of data frames, where each element represents a day's data.
-#'   Each data frame should contain columns for cow ID, intake, and start weight.
-#' @param calibration_error Numeric. The threshold for considering a weight reading
-#'   as significant (default: 0.5 kg).
+#' @param data A named list of daily data frames (one per day),
+#' each containing visit-level data.
+#' @param cfg A configuration list created by [qc_config()].
+#' @inheritParams set_global_cols
+#' @inheritParams qc_config
 #'
-#' @return A list of data frames, where each element contains the count of
-#'   non-nutritive visits per cow for that day.
+#' @return A named list of data frames, one per day, each containing columns
+#' for animal ID and the count of non-nutritive visits.
 #'
 #' @examples
-#' # Example data
-#' data <- list(
+#' toy_data <- list(
 #'   "2023-01-01" = data.frame(
-#'     Cow = c("1", "2", "3"),
-#'     Intake = c(0.2, 0.3, 0.4),
-#'     Startweight = c(10, 15, 20)
+#'     cow = c("1", "2", "3", "1"),
+#'     intake = c(0.2, 0.3, 0.4, 0.0),
+#'     start_weight = c(10, 15, 20, 12)
 #'   )
 #' )
-#' result <- calculate_non_nutritive_visits(data, calibration_error = 0.5)
+#' cfg <- qc_config(calibration_error = 0.5)
+#' result <- calculate_non_nutritive_visits(toy_data, cfg = cfg)
+#' result[[1]]
 #'
 #' @export
-calculate_non_nutritive_visits <- function(data, calibration_error = 0.5) {
+calculate_non_nutritive_visits <- function(
+  data,
+  cfg = qc_config(),
+  id_col = id_col2(),
+  intake_col = intake_col2(),
+  start_weight_col = start_weight_col2()
+) {
+  calibration_error <- cfg$calibration_error
   # Input validation
-  if (!is.list(data)) {
-    stop("`data` must be a list of data frames")
+  if (!is.list(data) || length(data) == 0 || !all(sapply(data, is.data.frame))) {
+    stop("`data` must be a non-empty list of data frames.")
   }
-  if (length(data) == 0) {
-    stop("`data` list is empty")
-  }
-  
-  # Process each day's data
-  result <- list()
-  for (date in names(data)) {
-    daily_data <- data[[date]]
-    
-    # Filter for non-nutritive visits
-    non_nutritive <- daily_data[
-      daily_data$Intake <= calibration_error & 
-      daily_data$Startweight > calibration_error,
-    ]
-    
-    # Count visits per cow
-    visit_counts <- stats::aggregate(
-      list(number_of_non_nutritive_visits = rep(1, nrow(non_nutritive))),
-      by = list(Cow = non_nutritive$Cow),
-      FUN = sum
-    )
-    
-    result[[date]] <- visit_counts
-  }
-  
+  .validate_calibration_error(calibration_error)
+
+  result <- lapply(data, function(df) {
+    .validate_daily_data(df, id_col, intake_col, start_weight_col)
+    dplyr::as_tibble(df) |>
+      dplyr::filter(.data[[intake_col]] <= calibration_error,
+                    .data[[start_weight_col]] > calibration_error) |>
+      dplyr::count(.data[[id_col]], name = "number_of_non_nutritive_visits")
+  })
+  names(result) <- names(data)
   return(result)
 }
 
-#' Calculate visits with no feed available
+#' Calculate visits with no feed available per animal per day
 #'
-#' This function calculates the number of visits when there was no feed available
-#' for each date. This occurs when a cow visits a bin that has less than the
-#' calibration error amount of feed left and doesn't eat anything.
+#' @description
+#' Calculates the number of visits for each animal on each day
+#' when there was no feed available (start weight less than or equal to
+#' calibration error and intake less than or equal to calibration error).
 #'
-#' @param data A list of data frames, where each element represents a day's data.
-#'   Each data frame should contain columns for cow ID, intake, and start weight.
-#' @param calibration_error Numeric. The threshold for considering a weight reading
-#'   as significant (default: 0.5 kg).
+#' @param data A named list of daily data frames (one per day), each containing visit-level data.
+#' @param cfg A configuration list created by [qc_config()].
+#' @inheritParams set_global_cols
+#' @inheritParams qc_config
 #'
-#' @return A list of data frames, where each element contains the count of
-#'   visits with no feed available per cow for that day.
+#' @return A named list of data frames, one per day, each containing columns
+#' for animal ID and the count of visits with no feed available.
 #'
 #' @examples
-#' # Example data
-#' data <- list(
+#' toy_data <- list(
 #'   "2023-01-01" = data.frame(
-#'     Cow = c("1", "2", "3"),
-#'     Intake = c(0.2, 0.3, 0.4),
-#'     Startweight = c(0.3, 0.2, 0.1)
+#'     cow = c("1", "2", "3", "1"),
+#'     intake = c(0.2, 0.3, 0.4, 0.0),
+#'     start_weight = c(0.3, 0.2, 0.1, 0.4)
 #'   )
 #' )
-#' result <- calculate_no_feed_visits(data, calibration_error = 0.5)
+#' cfg <- qc_config(calibration_error = 0.5)
+#' result <- calculate_no_feed_visits(toy_data, cfg = cfg)
+#' result[[1]]
 #'
 #' @export
-calculate_no_feed_visits <- function(data, calibration_error = 0.5) {
+calculate_no_feed_visits <- function(
+  data,
+  cfg = qc_config(),
+  id_col = id_col2(),
+  intake_col = intake_col2(),
+  start_weight_col = start_weight_col2()
+) {
+  calibration_error <- cfg$calibration_error
   # Input validation
-  if (!is.list(data)) {
-    stop("`data` must be a list of data frames")
+  if (!is.list(data) || length(data) == 0 || !all(sapply(data, is.data.frame))) {
+    stop("`data` must be a non-empty list of data frames.")
   }
-  if (length(data) == 0) {
-    stop("`data` list is empty")
-  }
-  
-  # Process each day's data
-  result <- list()
-  for (date in names(data)) {
-    daily_data <- data[[date]]
-    
-    # Filter for visits with no feed
-    no_feed <- daily_data[
-      daily_data$Intake <= calibration_error & 
-      daily_data$Startweight <= calibration_error,
-    ]
-    
-    # Count visits per cow
-    visit_counts <- stats::aggregate(
-      list(number_of_visits_when_no_feed = rep(1, nrow(no_feed))),
-      by = list(Cow = no_feed$Cow),
-      FUN = sum
-    )
-    
-    result[[date]] <- visit_counts
-  }
-  
+  .validate_calibration_error(calibration_error)
+
+  result <- lapply(data, function(df) {
+    .validate_daily_data(df, id_col, intake_col, start_weight_col)
+    dplyr::as_tibble(df) |>
+      dplyr::filter(.data[[intake_col]] <= calibration_error,
+                    .data[[start_weight_col]] <= calibration_error) |>
+      dplyr::count(.data[[id_col]], name = "number_of_visits_when_no_feed")
+  })
+  names(result) <- names(data)
   return(result)
 }
 
@@ -121,7 +111,7 @@ calculate_no_feed_visits <- function(data, calibration_error = 0.5) {
 #' @keywords internal
 #' @noRd
 .validate_calibration_error <- function(calibration_error) {
-  if (!is.numeric(calibration_error) || length(calibration_error) != 1 || 
+  if (!is.numeric(calibration_error) || length(calibration_error) != 1 ||
       calibration_error <= 0 || is.na(calibration_error)) {
     stop("`calibration_error` must be a positive numeric scalar", call. = FALSE)
   }
@@ -129,12 +119,12 @@ calculate_no_feed_visits <- function(data, calibration_error = 0.5) {
 
 #' @keywords internal
 #' @noRd
-.validate_daily_data <- function(daily_data) {
-  required_cols <- c("Cow", "Intake", "Startweight")
-  missing_cols <- setdiff(required_cols, names(daily_data))
+.validate_daily_data <- function(df, id_col, intake_col, start_weight_col) {
+  required_cols <- c(id_col, intake_col, start_weight_col)
+  missing_cols <- setdiff(required_cols, names(df))
   if (length(missing_cols) > 0) {
-    stop("Missing required columns: ", 
-         paste(missing_cols, collapse = ", "), 
+    stop("Missing required columns: ",
+         paste(missing_cols, collapse = ", "),
          call. = FALSE)
   }
-} 
+}
