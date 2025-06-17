@@ -108,23 +108,42 @@ calculate_no_feed_visits <- function(
 
 # Internal helper functions ----------------------------------------------------
 
+#' Validate calibration_error parameter
+#'
+#' @description
+#' Checks that the calibration_error parameter is a single positive numeric value and not NA.
+#'
+#' @param calibration_error Numeric. The calibration error threshold to validate.
+#'
+#' @return None. Throws an error if validation fails.
 #' @keywords internal
 #' @noRd
 .validate_calibration_error <- function(calibration_error) {
-  if (!is.numeric(calibration_error) || length(calibration_error) != 1 ||
+  if (!is.numeric(calibration_error) || length(calibration_error) != 1 || 
       calibration_error <= 0 || is.na(calibration_error)) {
     stop("`calibration_error` must be a positive numeric scalar", call. = FALSE)
   }
 }
 
+#' Validate required columns in daily data
+#'
+#' @description
+#' Checks that the required columns are present in the input data frame for non-nutritive visit calculations.
+#'
+#' @param df A data frame to check for required columns.
+#' @param id_col Character. Name of the animal ID column.
+#' @param intake_col Character. Name of the intake column.
+#' @param start_weight_col Character. Name of the start weight column.
+#'
+#' @return None. Throws an error if any required columns are missing.
 #' @keywords internal
 #' @noRd
 .validate_daily_data <- function(df, id_col, intake_col, start_weight_col) {
   required_cols <- c(id_col, intake_col, start_weight_col)
   missing_cols <- setdiff(required_cols, names(df))
   if (length(missing_cols) > 0) {
-    stop("Missing required columns: ",
-         paste(missing_cols, collapse = ", "),
+    stop("Missing required columns: ", 
+         paste(missing_cols, collapse = ", "), 
          call. = FALSE)
   }
 }
