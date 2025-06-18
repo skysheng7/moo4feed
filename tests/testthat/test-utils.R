@@ -84,23 +84,23 @@ test_that("moo4feed_example() lists the six bundled .DAT files", {
 
   # The listing should be character, length 6, and match the expected names
   expect_type(files, "character")
-  expect_length(files, 6)
+  expect_length(files, 4)
   expect_setequal(
     files,
     c(
-      "VR201031.DAT", "VR201101.DAT", "VR201102.DAT",
-      "VW201031.DAT", "VW201101.DAT", "VW201102.DAT"
+      "VR201031.DAT", "VR201101.DAT",
+      "VW201031.DAT", "VW201101.DAT"
     )
   )
 })
 
 test_that("moo4feed_example() returns a valid absolute path", {
   # Retrieve one of the files (same as in your example)
-  fp <- moo4feed_example("VR201102.DAT")
+  fp <- moo4feed_example("VR201101.DAT")
 
   # It should exist on disk and end with the correct filename
   expect_true(file.exists(fp))
-  expect_true(grepl("VR201102\\.DAT$", fp))
+  expect_true(grepl("VR201101\\.DAT$", fp))
 })
 
 test_that("moo4feed_example() errors on a missing file name", {

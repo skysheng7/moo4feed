@@ -279,15 +279,16 @@ create_paginated_plots <- function(plots, plots_per_page, method, title_prefix) 
 #' @keywords internal
 combine_plots_vertical <- function(plots, title) {
   
-  # Remove individual plot titles to avoid clutter
-  plots_no_titles <- lapply(plots, function(p) {
-    p + ggplot2::theme(plot.title = ggplot2::element_blank())
-  })
-  
+  # Keep individual plot titles (they contain animal IDs)
   # Combine vertically
-  combined_plot <- patchwork::wrap_plots(plots_no_titles, ncol = 1) +
-    patchwork::plot_annotation(title = title,
-                              theme = ggplot2::theme(plot.title = ggplot2::element_text(size = 14, hjust = 0.5)))
+  combined_plot <- patchwork::wrap_plots(plots, ncol = 1)
+  
+  # Add master title only if provided
+  if (!is.null(title) && title != "") {
+    combined_plot <- combined_plot +
+      patchwork::plot_annotation(title = title,
+                                theme = ggplot2::theme(plot.title = ggplot2::element_text(size = 14, hjust = 0.5)))
+  }
   
   return(combined_plot)
 }
@@ -306,15 +307,16 @@ combine_plots_grid <- function(plots, title) {
   n_plots <- length(plots)
   ncol <- ceiling(sqrt(n_plots))
   
-  # Remove individual plot titles to avoid clutter
-  plots_no_titles <- lapply(plots, function(p) {
-    p + ggplot2::theme(plot.title = ggplot2::element_blank())
-  })
-  
+  # Keep individual plot titles (they contain animal IDs)
   # Combine in grid
-  combined_plot <- patchwork::wrap_plots(plots_no_titles, ncol = ncol) +
-    patchwork::plot_annotation(title = title,
-                              theme = ggplot2::theme(plot.title = ggplot2::element_text(size = 14, hjust = 0.5)))
+  combined_plot <- patchwork::wrap_plots(plots, ncol = ncol)
+  
+  # Add master title only if provided
+  if (!is.null(title) && title != "") {
+    combined_plot <- combined_plot +
+      patchwork::plot_annotation(title = title,
+                                theme = ggplot2::theme(plot.title = ggplot2::element_text(size = 14, hjust = 0.5)))
+  }
   
   return(combined_plot)
 } 

@@ -5,7 +5,7 @@
 \alias{clean_feed}
 \title{Cattle feeding behavior data after quality check and outlier removal}
 \format{
-A list of 3 data frames, one for each date (2020-10-31, 2020-11-01, 2020-11-02),
+A list of 2 data frames, one for each date (2020-10-31, 2020-11-01),
 with each data frame containing the following 10 variables:
 \describe{
 \item{transponder}{integer, unique electronic ID for each bin}
@@ -30,7 +30,7 @@ clean_feed
 }
 \description{
 A dataset containing feeding visit records for cattle
-over a three-day period (2020-10-31 to 2020-11-02). This dataset is the result of
+over a two-day period (2020-10-31 to 2020-11-01). This dataset is the result of
 applying quality control procedures and KNN-based outlier removal to the raw \link{all_fed} data.
 }
 \details{

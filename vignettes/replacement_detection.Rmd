@@ -1,0 +1,248 @@
+---
+title: "4. Replacement Detection"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{4. Replacement Detection}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 6,
+  fig.height = 4,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+```{r setup}
+library(moo4feed)
+library(ggplot2)
+library(dplyr)
+```
+
+## 1. 🚨 Important: Set Your Global Variables First!
+
+Before analyzing replacement behavior, configure global variables to match your data structure:
+
+```{r global-setup}
+# Configure global variables for your data structure
+set_global_cols(
+  id_col = "cow",           # Animal ID column name
+  start_col = "start",      # Visit start time column  
+  end_col = "end",          # Visit end time column
+  bin_col = "bin",          # Bin/feeder ID column
+  intake_col = "intake",    # Feed intake amount column
+  dur_col = "duration",     # Visit duration column
+  tz = "America/Vancouver"  # Your timezone
+)
+
+# Verify configuration
+cat("✅ Global variables configured:\n")
+cat("ID column:", id_col2(), "\n")
+cat("Start time column:", start_col2(), "\n") 
+cat("End time column:", end_col2(), "\n")
+cat("Bin column:", bin_col2(), "\n")
+cat("Intake column:", intake_col2(), "\n")
+cat("Duration column:", duration_col2(), "\n")
+cat("Timezone:", tz2(), "\n")
+```
+
+## 2. Introduction to Replacement Detection
+
+🦦 Ollie the Otter explains: "Replacement events occur when one animal pushes and displaces another animal that is actively feeding or drinking from a feeding station within a short time window. These social interactions reveal important information about herd dynamics and dominance hierarchies."
+
+Understanding replacement behavior helps researchers and farm managers:
+
+- **Monitor social stress**: High replacement rates may indicate social tension
+- **Identify dominant animals**: Animals that frequently replace others
+- **Affective state**: Animals frequently get replaced may experience longitudinal stress
+
+### What We'll Learn
+
+This tutorial demonstrates how to: **Detect replacement events** using validated time thresholds
+
+## 3. Prerequisites
+
+This tutorial assumes completion of previous data processing steps in **Tutorial 1: Data Cleaning** 
+
+
+## 4. Data Preparation
+
+```{r data-prep}
+# Load cleaned example data
+data(clean_comb)
+
+# If you're using your own data from previous tutorials, use this instead:
+# clean_feed <- your_cleaned_feed_data     # From your cleaning results
+# clean_water <- your_cleaned_water_data   # From your cleaning results
+
+# Quick peek at our data structure
+cat("Feed and water data structure:\n")
+head(clean_comb[[1]], 3)  # First day, first 3 rows
+
+cat("\nTotal days of feed & water data:", length(clean_comb), "\n")
+```
+
+## 5. Understanding Replacement Events
+
+A replacement event is defined as when one animal (actor) takes over a feeding station from another animal (reactor) within a short time threshold. The default threshold of 26 seconds is based on validated research.
+
+### Key Components
+
+- **Reactor cow**: The cow that was replaced (had to leave the bin)
+- **Actor cow**: The cow that initiated the replacement (took over the bin)  
+- **Time threshold**: Maximum gap between when one cow leaves and another arrives (default: 26 seconds)
+- **Validation**: Events are verified by checking if the actor cow has an "alibi" (was feeding elsewhere when the reactor left)
+
+### Detecting Replacement Events
+
+```{r replacement-analysis}
+# Process replacement events for all days
+replacements <- record_replacement_days(
+  comb = clean_comb,           # Our cleaned feed data
+  cfg = qc_config(replacement_threshold = 26)      # Time gap (seconds) to classify replacement behavior
+)
+
+# Examine the first few replacement events
+head(replacements[[1]])
+
+# Summary of replacement events
+cat("Replacement events per day:\n")
+sapply(replacements, nrow)
+```
+
+Each replacement event contains:
+
+- **`reactor_cow`**: ID of the cow that was replaced
+- **`actor_cow`**: ID of the cow that initiated the replacement
+- **`bin`**: Feeding/drinking station where the replacement occurred
+- **`time`**: Timestamp when the replacement happened
+- **`date`**: Date of the event
+- **`bout_interval`**: Time gap between when the reactor left and actor entered the bin
+
+## 6. Analyzing Replacement Patterns
+
+### Most Active cows
+
+```{r replacement-patterns}
+# Combine all days for analysis
+all_replacements <- do.call(rbind, replacements)
+
+# cows that most frequently replace others (actors)
+top_actors <- all_replacements |>
+  dplyr::count(actor_cow, sort = TRUE, name = "times_replaced_others") |>
+  head(5)
+
+cat("Top 10 cows that most frequently displace others:\n")
+print(top_actors)
+
+# cows that are most frequently replaced (reactors)
+top_reactors <- all_replacements |>
+  dplyr::count(reactor_cow, sort = TRUE, name = "times_replaced") |>
+  head(5)
+
+cat("\nTop 10 cows that are most frequently displaced:\n")
+print(top_reactors)
+```
+
+### Replacement Timing Patterns
+
+```{r timing-patterns}
+# Analyze replacement timing throughout the day
+all_replacements$hour <- lubridate::hour(all_replacements$time)
+
+hourly_replacements <- all_replacements |>
+  dplyr::count(hour, name = "replacement_count")
+
+cat("Replacement events by hour of day:\n")
+print(hourly_replacements)
+```
+
+## 7. Summary
+
+This tutorial demonstrated replacement detection for understanding social dynamics:
+
+✅ **Event detection**: Identified and validated replacement events using time thresholds
+
+✅ **Pattern analysis**: Analyzed which cows are most active in displacement behavior
+
+✅ **Timing insights**: Examined when most replacement events occur throughout the day
+
+## 8. Code Cheatsheet
+
+```{r cheatsheet, eval=FALSE}
+#' Copy and modify these code blocks for your own analysis!
+
+# ---- SETUP: Global Variables (REQUIRED FIRST!) ----
+library(moo4feed)
+library(dplyr)
+
+# Set up your column names and timezone (modify these!)
+set_global_cols(
+  id_col = "cow",           # Your animal ID column
+  start_col = "start",      # Visit start time column  
+  end_col = "end",          # Visit end time column
+  bin_col = "bin",          # Bin/feeder ID column
+  intake_col = "intake",    # Feed intake amount column
+  dur_col = "duration",     # Visit duration column
+  tz = "America/Vancouver"  # Your timezone
+)
+
+# ---- STEP 1: Load Your Data ----
+# Use your own cleaned data from previous tutorials:
+# clean_feed <- your_cleaned_feed_data
+# clean_water <- your_cleaned_water_data
+# clean_comb <- your_cleaned_comb_data
+
+# ---- STEP 2: Detect Replacement Events ----
+# Process replacement events for all days
+replacements <- record_replacement_days(
+  comb = your_clean_comb,         # Your cleaned feed/water or both feed + water data
+  cfg = qc_config(replacement_threshold = 26),     # Time gap (seconds) to classify replacement behavior
+  id_col = id_col2(),             # Animal ID column (default from global vars)
+  bin_col = bin_col2(),           # Bin/feeder ID column (default from global vars)
+  start_col = start_col2(),       # Visit start time column (default from global vars)
+  end_col = end_col2()            # Visit end time column (default from global vars)
+)
+
+# Check results
+cat("Total replacement events found:\n")
+sapply(replacements, nrow)
+
+# Look at first few events from first day
+head(replacements[[1]])
+
+# ---- STEP 3: Analyze Replacement Patterns ----
+# Combine all days for analysis
+all_replacements <- do.call(rbind, replacements)
+
+# Find most active displacing animals
+top_actors <- all_replacements |>
+  dplyr::count(actor_cow, sort = TRUE, name = "times_displaced_others") |>
+  head(10)
+
+# Find most frequently displaced animals  
+top_reactors <- all_replacements |>
+  dplyr::count(reactor_cow, sort = TRUE, name = "times_displaced") |>
+  head(10)
+
+# Analyze timing patterns
+all_replacements$hour <- lubridate::hour(all_replacements$time)
+hourly_replacements <- all_replacements |>
+  dplyr::count(hour, name = "replacement_count")
+
+# ---- STEP 4: Quick Analysis ----
+# Check replacement results
+cat("Replacement events per day:\n")
+sapply(replacements, nrow)
+
+cat("Most active displacing animals:\n")
+print(top_actors)
+
+cat("Most frequently displaced animals:\n")
+print(top_reactors)
+``` 
