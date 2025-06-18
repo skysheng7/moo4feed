@@ -4,13 +4,13 @@
 \alias{synch_matrix_creation}
 \title{Synchronicity Matrix Creation Functions}
 \description{
-Functions for creating time sequences and empty matrices for cow feeding/drinking analysis.
+Functions for creating time sequences and empty matrices for animal feeding/drinking analysis.
 }
 \section{Functions}{
 
 \itemize{
 \item create_time_sequence
-\item prepare_time_cow_matrix
+\item prepare_time_animal_matrix
 \item prepare_time_bin_matrix
 \item prepare_time_feed_matrix
 }

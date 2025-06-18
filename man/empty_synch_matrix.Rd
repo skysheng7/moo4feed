@@ -6,23 +6,57 @@
 \usage{
 empty_synch_matrix(
   data_list,
-  min_feed_bin = NULL,
-  max_feed_bin = NULL,
-  type = "feed"
+  type = "feed",
+  id_col = id_col2(),
+  start_col = start_col2(),
+  end_col = end_col2(),
+  bin_col = bin_col2(),
+  bins_feed = bins_feed2(),
+  bins_wat = bins_wat2()
 )
 }
 \arguments{
-\item{data_list}{List of data frames grouped by date.}
+\item{data_list}{List of data frames grouped by date}
 
-\item{min_feed_bin}{Integer, minimum bin number (required for type 'feed').}
+\item{type}{Character, one of 'feed', 'drink', 'feed_and_drink'}
 
-\item{max_feed_bin}{Integer, maximum bin number (required for type 'feed').}
+\item{id_col}{Animal ID column name (default current global value from \code{\link[=id_col2]{id_col2()}})}
 
-\item{type}{Character, one of 'feed', 'drink', 'feed_and_drink'.}
+\item{start_col}{Start time column name (default current global value from \code{\link[=start_col2]{start_col2()}})}
+
+\item{end_col}{End time column name (default current global value from \code{\link[=end_col2]{end_col2()}})}
+
+\item{bin_col}{Bin ID column name (default current global value from \code{\link[=bin_col2]{bin_col2()}})}
+
+\item{bins_feed}{Integer vector of feed bins (default current global value from \code{\link[=bins_feed2]{bins_feed2()}})}
+
+\item{bins_wat}{Integer vector of water bins (default current global value from \code{\link[=bins_wat2]{bins_wat2()}})}
 }
 \value{
-List of matrices (see details in docs).
+List of matrices depending on type:
+\itemize{
+\item If type = "feed": synch_master_animal, synch_master_bin, synch_master_feed
+\item If type = "drink" or "feed_and_drink": synch_master_animal, synch_master_bin
+}
 }
 \description{
-Generate empty synchronization matrices for feed/water data
+Creates empty synchronization matrices (time-animal, time-bin, and optionally time-feed)
+for analyzing feeding and drinking synchronicity patterns.
+}
+\examples{
+# Create toy data
+toy_data <- list(
+  day1 = data.frame(
+    cow = 1,
+    start = lubridate::ymd_hms("2023-01-01 10:00:00"),
+    end = lubridate::ymd_hms("2023-01-01 10:00:02"),
+    bin = 1
+  )
+)
+
+# Generate empty matrices for feed data
+matrices <- empty_synch_matrix(toy_data, type = "feed", bins_feed = 1:3,
+                              start_col = "start", end_col = "end", id_col = "cow")
+names(matrices)
+
 }

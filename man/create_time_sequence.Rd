@@ -4,15 +4,34 @@
 \alias{create_time_sequence}
 \title{Create a time sequence from start to end, by seconds}
 \usage{
-create_time_sequence(cur_data)
+create_time_sequence(cur_data, start_col = start_col2(), end_col = end_col2())
 }
 \arguments{
-\item{cur_data}{A data frame containing feeding or drinking data. Must have 'Start' and 'End' columns (POSIXct).}
+\item{cur_data}{A data frame containing feeding or drinking data}
+
+\item{start_col}{Start time column name (default current global value from \code{\link[=start_col2]{start_col2()}})}
+
+\item{end_col}{End time column name (default current global value from \code{\link[=end_col2]{end_col2()}})}
 }
 \value{
-A POSIXct vector of time sequence.
+A POSIXct vector of time sequence by seconds
 }
 \description{
-Create a time sequence from start to end, by seconds
+Creates a sequence of timestamps by seconds from the earliest start time
+to the latest end time in the provided data.
+}
+\examples{
+\dontrun{
+# Create toy data
+toy_data <- data.frame(
+  start = lubridate::ymd_hms("2023-01-01 10:00:00"),
+  end = lubridate::ymd_hms("2023-01-01 10:00:05")
+)
+
+# Create time sequence
+time_seq <- create_time_sequence(toy_data, start_col = "start", end_col = "end")
+length(time_seq) # Should be 6 seconds
+}
+
 }
 \keyword{internal}

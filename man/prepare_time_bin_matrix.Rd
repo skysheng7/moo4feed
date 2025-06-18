@@ -4,15 +4,32 @@
 \alias{prepare_time_bin_matrix}
 \title{Create an empty time-bin matrix for tracking bin occupancy}
 \usage{
-prepare_time_bin_matrix(cow_time_matrix)
+prepare_time_bin_matrix(animal_time_matrix)
 }
 \arguments{
-\item{cow_time_matrix}{Data frame as from prepare_time_cow_matrix.}
+\item{animal_time_matrix}{Data frame as returned from prepare_time_animal_matrix}
 }
 \value{
-Data frame with same structure as cow_time_matrix.
+Data frame with same structure as animal_time_matrix
 }
 \description{
-Create an empty time-bin matrix for tracking bin occupancy
+Creates a matrix with the same structure as the time-animal matrix but
+for tracking which bin each animal is at.
+}
+\examples{
+\dontrun{
+# Create toy data and matrices
+toy_data <- data.frame(
+  cow = c(1, 2),
+  start = lubridate::ymd_hms("2023-01-01 10:00:00"),
+  end = lubridate::ymd_hms("2023-01-01 10:00:02")
+)
+
+time_seq <- create_time_sequence(toy_data, start_col = "start", end_col = "end")
+animal_matrix <- prepare_time_animal_matrix(toy_data, time_seq, id_col = "cow")
+bin_matrix <- prepare_time_bin_matrix(animal_matrix)
+identical(dim(animal_matrix), dim(bin_matrix)) # Should be TRUE
+}
+
 }
 \keyword{internal}

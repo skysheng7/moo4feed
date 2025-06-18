@@ -6,23 +6,63 @@
 \usage{
 matrix_initialize(
   data_list,
-  min_feed_bin = NULL,
-  max_feed_bin = NULL,
-  type = "feed"
+  type = "feed",
+  id_col = id_col2(),
+  start_col = start_col2(),
+  end_col = end_col2(),
+  bin_col = bin_col2(),
+  start_weight_col = start_weight_col2(),
+  end_weight_col = end_weight_col2(),
+  bins_feed = bins_feed2(),
+  bins_wat = bins_wat2()
 )
 }
 \arguments{
-\item{data_list}{List of data frames.}
+\item{data_list}{List of data frames}
 
-\item{min_feed_bin}{Integer, minimum bin number (required for type 'feed').}
+\item{type}{Character, one of 'feed', 'drink', 'feed_and_drink'}
 
-\item{max_feed_bin}{Integer, maximum bin number (required for type 'feed').}
+\item{id_col}{Animal ID column name (default current global value from \code{\link[=id_col2]{id_col2()}})}
 
-\item{type}{Character, one of 'feed', 'drink', 'feed_and_drink'.}
+\item{start_col}{Start time column name (default current global value from \code{\link[=start_col2]{start_col2()}})}
+
+\item{end_col}{End time column name (default current global value from \code{\link[=end_col2]{end_col2()}})}
+
+\item{bin_col}{Bin ID column name (default current global value from \code{\link[=bin_col2]{bin_col2()}})}
+
+\item{start_weight_col}{Start weight column name (default current global value from \code{\link[=start_weight_col2]{start_weight_col2()}})}
+
+\item{end_weight_col}{End weight column name (default current global value from \code{\link[=end_weight_col2]{end_weight_col2()}})}
+
+\item{bins_feed}{Integer vector of feed bins (default current global value from \code{\link[=bins_feed2]{bins_feed2()}})}
+
+\item{bins_wat}{Integer vector of water bins (default current global value from \code{\link[=bins_wat2]{bins_wat2()}})}
 }
 \value{
-List of processed matrices.
+List of processed matrices
 }
 \description{
-Initialize and process synchronization matrices
+Initializes synchronization matrices and processes feed/water data to populate
+the matrices with actual feeding/drinking events.
+}
+\examples{
+# Create toy data with more complete structure
+toy_data <- list(
+  day1 = data.frame(
+    cow = 1,
+    start = lubridate::ymd_hms("2023-01-01 10:00:00"),
+    end = lubridate::ymd_hms("2023-01-01 10:00:02"),
+    bin = 1,
+    start_weight = 10.5,
+    end_weight = 10.2
+  )
+)
+
+# Initialize and process matrices
+processed <- matrix_initialize(toy_data, type = "feed", bins_feed = 1:3,
+                              id_col = "cow", start_col = "start", end_col = "end",
+                              bin_col = "bin", start_weight_col = "start_weight",
+                              end_weight_col = "end_weight")
+names(processed)
+
 }

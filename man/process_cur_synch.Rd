@@ -4,17 +4,36 @@
 \alias{process_cur_synch}
 \title{Process the current synchronization data to replace NA values and compute total feed}
 \usage{
-process_cur_synch(cur_synch, total_feed_bin)
+process_cur_synch(cur_synch, bins_feed = bins_feed2())
 }
 \arguments{
-\item{cur_synch}{Data frame representing the current synchronization data.}
+\item{cur_synch}{Data frame representing the current synchronization data}
 
-\item{total_feed_bin}{Integer, total number of bins.}
+\item{bins_feed}{Vector of feed bin IDs used in the analysis}
 }
 \value{
-Data frame with NA values replaced and a new column 'totalFeed'.
+Data frame with NA values replaced and a new column 'totalFeed'
 }
 \description{
-Process the current synchronization data to replace NA values and compute total feed
+Processes synchronization data by replacing NA values with appropriate values
+and computing total feed across all bins.
+}
+\examples{
+\dontrun{
+# Create toy synchronization data
+time_seq <- seq(lubridate::ymd_hms("2023-01-01 10:00:00"), 
+                lubridate::ymd_hms("2023-01-01 10:00:02"), by = "sec")
+sync_data <- data.frame(
+  Time = time_seq,
+  `1` = c(NA, 2, 3),
+  `2` = c(1, NA, 3),
+  check.names = FALSE
+)
+
+# Process the data
+processed <- process_cur_synch(sync_data, bins_feed = 1:2)
+head(processed)
+}
+
 }
 \keyword{internal}

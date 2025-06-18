@@ -4,7 +4,7 @@
 \alias{synch_matrix_processing}
 \title{Synchronicity Matrix Processing Functions}
 \description{
-Functions for initializing and processing synchronicity matrices for cow feeding/drinking analysis.
+Functions for initializing and processing synchronicity matrices for animal feeding/drinking analysis.
 }
 \section{Functions}{
 

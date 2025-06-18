@@ -4,19 +4,28 @@
 \alias{prepare_time_feed_matrix}
 \title{Create an empty time-feed matrix for feed bin tracking}
 \usage{
-prepare_time_feed_matrix(dateTime_seq, min_feed_bin, max_feed_bin)
+prepare_time_feed_matrix(dateTime_seq, bins_feed = bins_feed2())
 }
 \arguments{
-\item{dateTime_seq}{POSIXct vector of time sequence.}
+\item{dateTime_seq}{POSIXct vector of time sequence from create_time_sequence}
 
-\item{min_feed_bin}{Integer, minimum bin number.}
-
-\item{max_feed_bin}{Integer, maximum bin number.}
+\item{bins_feed}{Integer vector of feed bins (default current global value from \code{\link[=bins_feed2]{bins_feed2()}})}
 }
 \value{
-Data frame: first column 'Time', others are bin numbers, initialized to NA.
+Data frame: first column 'Time', others are bin numbers, initialized to NA
 }
 \description{
-Create an empty time-feed matrix for feed bin tracking
+Creates a matrix where rows represent time (by seconds) and columns represent
+feed bins, initialized to NA.
+}
+\examples{
+\dontrun{
+# Create toy data and feed matrix
+time_seq <- seq(lubridate::ymd_hms("2023-01-01 10:00:00"), 
+                lubridate::ymd_hms("2023-01-01 10:00:02"), by = "sec")
+feed_matrix <- prepare_time_feed_matrix(time_seq, bins_feed = 1:3)
+head(feed_matrix)
+}
+
 }
 \keyword{internal}
