@@ -29,12 +29,11 @@
 #'
 #' @export
 calculate_non_nutritive_visits <- function(
-  data,
-  cfg = qc_config(),
-  id_col = id_col2(),
-  intake_col = intake_col2(),
-  start_weight_col = start_weight_col2()
-) {
+    data,
+    cfg = qc_config(),
+    id_col = id_col2(),
+    intake_col = intake_col2(),
+    start_weight_col = start_weight_col2()) {
   calibration_error <- cfg$calibration_error
   # Input validation
   if (!is.list(data) || length(data) == 0 || !all(sapply(data, is.data.frame))) {
@@ -45,8 +44,10 @@ calculate_non_nutritive_visits <- function(
   result <- lapply(data, function(df) {
     .validate_daily_data(df, id_col, intake_col, start_weight_col)
     dplyr::as_tibble(df) |>
-      dplyr::filter(.data[[intake_col]] <= calibration_error,
-                    .data[[start_weight_col]] > calibration_error) |>
+      dplyr::filter(
+        .data[[intake_col]] <= calibration_error,
+        .data[[start_weight_col]] > calibration_error
+      ) |>
       dplyr::count(.data[[id_col]], name = "number_of_non_nutritive_visits")
   })
   names(result) <- names(data)
@@ -82,12 +83,11 @@ calculate_non_nutritive_visits <- function(
 #'
 #' @export
 calculate_no_feed_visits <- function(
-  data,
-  cfg = qc_config(),
-  id_col = id_col2(),
-  intake_col = intake_col2(),
-  start_weight_col = start_weight_col2()
-) {
+    data,
+    cfg = qc_config(),
+    id_col = id_col2(),
+    intake_col = intake_col2(),
+    start_weight_col = start_weight_col2()) {
   calibration_error <- cfg$calibration_error
   # Input validation
   if (!is.list(data) || length(data) == 0 || !all(sapply(data, is.data.frame))) {
@@ -98,8 +98,10 @@ calculate_no_feed_visits <- function(
   result <- lapply(data, function(df) {
     .validate_daily_data(df, id_col, intake_col, start_weight_col)
     dplyr::as_tibble(df) |>
-      dplyr::filter(.data[[intake_col]] <= calibration_error,
-                    .data[[start_weight_col]] <= calibration_error) |>
+      dplyr::filter(
+        .data[[intake_col]] <= calibration_error,
+        .data[[start_weight_col]] <= calibration_error
+      ) |>
       dplyr::count(.data[[id_col]], name = "number_of_visits_when_no_feed")
   })
   names(result) <- names(data)
@@ -119,8 +121,8 @@ calculate_no_feed_visits <- function(
 #' @keywords internal
 #' @noRd
 .validate_calibration_error <- function(calibration_error) {
-  if (!is.numeric(calibration_error) || length(calibration_error) != 1 || 
-      calibration_error <= 0 || is.na(calibration_error)) {
+  if (!is.numeric(calibration_error) || length(calibration_error) != 1 ||
+    calibration_error <= 0 || is.na(calibration_error)) {
     stop("`calibration_error` must be a positive numeric scalar", call. = FALSE)
   }
 }
@@ -142,8 +144,9 @@ calculate_no_feed_visits <- function(
   required_cols <- c(id_col, intake_col, start_weight_col)
   missing_cols <- setdiff(required_cols, names(df))
   if (length(missing_cols) > 0) {
-    stop("Missing required columns: ", 
-         paste(missing_cols, collapse = ", "), 
-         call. = FALSE)
+    stop("Missing required columns: ",
+      paste(missing_cols, collapse = ", "),
+      call. = FALSE
+    )
   }
 }

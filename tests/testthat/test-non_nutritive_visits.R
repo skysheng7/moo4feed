@@ -136,7 +136,8 @@ test_that("calculate_non_nutritive_visits works with custom column names", {
   )
   cfg <- qc_config(calibration_error = 0.5)
   result <- calculate_non_nutritive_visits(
-    data, cfg = cfg, id_col = "animal", intake_col = "eat", start_weight_col = "sw"
+    data,
+    cfg = cfg, id_col = "animal", intake_col = "eat", start_weight_col = "sw"
   )
   expect_true("animal" %in% names(result[[1]]))
 })
@@ -270,7 +271,8 @@ test_that("calculate_no_feed_visits works with custom column names", {
   )
   cfg <- qc_config(calibration_error = 0.5)
   result <- calculate_no_feed_visits(
-    data, cfg = cfg, id_col = "animal", intake_col = "eat", start_weight_col = "sw"
+    data,
+    cfg = cfg, id_col = "animal", intake_col = "eat", start_weight_col = "sw"
   )
   expect_true("animal" %in% names(result[[1]]))
 })
