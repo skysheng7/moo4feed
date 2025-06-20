@@ -65,6 +65,7 @@ Full documentation and examples are available at the [package website](https://s
   - Email: <nicoleangelpty@gmail.com>
 
 - **Contributor:** Colombe Tolokin
+  - ORCID: 0009-0002-5355-4851
   - Affiliation: University of British Columbia  
   - Email: <colombe.tolokin@outlook.com>
   
