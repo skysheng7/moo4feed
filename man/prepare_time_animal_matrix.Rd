@@ -24,14 +24,17 @@ represent individual animals, initialized to 0.
 \dontrun{
 # Create toy data
 toy_data <- data.frame(
-  cow = c(1, 2),
+  animal = c(1, 2),
   start = lubridate::ymd_hms("2023-01-01 10:00:00"),
   end = lubridate::ymd_hms("2023-01-01 10:00:02")
 )
 
-# Create time sequence and animal matrix
-time_seq <- create_time_sequence(toy_data, start_col = "start", end_col = "end")
-animal_matrix <- prepare_time_animal_matrix(toy_data, time_seq, id_col = "cow")
+# Set global column names and create matrices
+set_id_col2("animal")
+set_start_col2("start")
+set_end_col2("end")
+time_seq <- create_time_sequence(toy_data)
+animal_matrix <- prepare_time_animal_matrix(toy_data, time_seq)
 head(animal_matrix)
 }
 

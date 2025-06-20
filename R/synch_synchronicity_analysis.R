@@ -31,12 +31,14 @@ NULL
 #' \dontrun{
 #' # Create toy data
 #' toy_data <- data.frame(
-#'   cow = c(1, 2, 3),
+#'   animal = c(1, 2, 3),
 #'   other_col = c("a", "b", "c")
 #' )
 #' 
-#' result <- empty_animal_matrix(toy_data, id_col = "cow")
-#' result$empty_matrix  # 3x3 matrix with cow IDs as names
+#' # Set global column name
+#' set_id_col2("animal")
+#' result <- empty_animal_matrix(toy_data)
+#' result$empty_matrix  # 3x3 matrix with animal IDs as names
 #' result$animal_num    # 3
 #' }
 #' 
@@ -95,8 +97,8 @@ empty_animal_matrix <- function(master_data,
 #' toy_data <- data.frame(
 #'   Time = lubridate::ymd_hms(c("2023-01-01 10:00:00", "2023-01-01 10:00:01", 
 #'                               "2023-01-01 10:00:03", "2023-01-01 10:00:04")),
-#'   cow1 = c(1, 1, 1, 1),
-#'   cow2 = c(1, 1, 1, 1)
+#'   animal1 = c(1, 1, 1, 1),
+#'   animal2 = c(1, 1, 1, 1)
 #' )
 #' 
 #' result <- calculate_bout_duration(toy_data)
@@ -540,7 +542,7 @@ neighbor_synchronicity_analysis <- function(synch_master_animal,
 #'   )
 #' )
 #' 
-#' # Run complete synchronicity analysis
+#' # Run complete synchronicity analysis (uses global column settings)
 #' result <- synchronicity_matrix_process(toy_animal_data, toy_bin_data)
 #' 
 #' # Access results

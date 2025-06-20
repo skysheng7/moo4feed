@@ -49,7 +49,7 @@ total bins occupied, and date information.
 # Create toy data with more realistic structure
 toy_data <- list(
   day1 = data.frame(
-    cow = c(1, 2),
+    animal = c(1, 2),
     start = lubridate::ymd_hms(c("2023-01-01 10:00:00", "2023-01-01 10:00:01")),
     end = lubridate::ymd_hms(c("2023-01-01 10:00:02", "2023-01-01 10:00:03")),
     bin = c(1, 2),
@@ -58,11 +58,17 @@ toy_data <- list(
   )
 )
 
-# Process matrices
-result <- matrix_process(toy_data, type = "feed", bins_feed = 1:3,
-                        id_col = "cow", start_col = "start", end_col = "end",
-                        bin_col = "bin", start_weight_col = "start_weight", 
-                        end_weight_col = "end_weight")
+# Set global column names to match data
+set_id_col2("animal")
+set_start_col2("start")
+set_end_col2("end")
+set_bin_col2("bin")
+set_start_weight_col2("start_weight")
+set_end_weight_col2("end_weight")
+
+# Process matrices (uses global variable settings)
+set_bins_feed2(1:3)
+result <- matrix_process(toy_data, type = "feed")
 names(result)
 
 }

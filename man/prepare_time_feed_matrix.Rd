@@ -23,7 +23,8 @@ feed bins, initialized to NA.
 # Create toy data and feed matrix
 time_seq <- seq(lubridate::ymd_hms("2023-01-01 10:00:00"), 
                 lubridate::ymd_hms("2023-01-01 10:00:02"), by = "sec")
-feed_matrix <- prepare_time_feed_matrix(time_seq, bins_feed = 1:3)
+set_bins_feed2(1:3)
+feed_matrix <- prepare_time_feed_matrix(time_seq)
 head(feed_matrix)
 }
 

@@ -26,12 +26,14 @@ initialized to 0 for storing synchronicity analysis results.
 \dontrun{
 # Create toy data
 toy_data <- data.frame(
-  cow = c(1, 2, 3),
+  animal = c(1, 2, 3),
   other_col = c("a", "b", "c")
 )
 
-result <- empty_animal_matrix(toy_data, id_col = "cow")
-result$empty_matrix  # 3x3 matrix with cow IDs as names
+# Set global column name
+set_id_col2("animal")
+result <- empty_animal_matrix(toy_data)
+result$empty_matrix  # 3x3 matrix with animal IDs as names
 result$animal_num    # 3
 }
 

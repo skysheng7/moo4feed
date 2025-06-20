@@ -55,7 +55,7 @@ This function performs the complete workflow:
 # Create toy feeding/drinking data (interval format)
 toy_data <- list(
   day1 = data.frame(
-    cow = c(1, 1, 2, 2),
+    animal = c(1, 1, 2, 2),
     start = lubridate::ymd_hms(c("2023-01-01 10:00:00", "2023-01-01 10:00:03", 
                                  "2023-01-01 10:00:00", "2023-01-01 10:00:04")),
     end = lubridate::ymd_hms(c("2023-01-01 10:00:01", "2023-01-01 10:00:04", 
@@ -64,8 +64,17 @@ toy_data <- list(
   )
 )
 
-# Process the data (uses default column names: cow, start, end, bin)
-result <- feed_drink_matrix_process(toy_data, bins_feed = 1:30, bins_wat = 101:105)
+# Set global column names to match data
+set_id_col2("animal")
+set_start_col2("start")
+set_end_col2("end")
+set_bin_col2("bin")
+
+# Process the data (uses global column name settings)
+# Set global bin parameters
+set_bins_feed2(1:30)
+set_bins_wat2(101:105)
+result <- feed_drink_matrix_process(toy_data)
 # Returns processed animal and bin matrices
 
 }

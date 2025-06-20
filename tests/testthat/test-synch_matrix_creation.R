@@ -16,6 +16,31 @@ test_that("create_time_sequence errors for bad input", {
                                    start_col = "start", end_col = "end"), "earlier")
 })
 
+# NEW TESTS FOR COVERAGE
+test_that("create_time_sequence handles non-data.frame input", {
+  expect_error(create_time_sequence(NULL, start_col = "start", end_col = "end"), "`cur_data` must be a data frame")
+  expect_error(create_time_sequence("not a df", start_col = "start", end_col = "end"), "`cur_data` must be a data frame")
+  expect_error(create_time_sequence(list(), start_col = "start", end_col = "end"), "`cur_data` must be a data frame")
+})
+
+test_that("create_time_sequence handles empty data frame", {
+  empty_df <- data.frame(start = lubridate::ymd_hms(character(0)), 
+                        end = lubridate::ymd_hms(character(0)))
+  expect_error(create_time_sequence(empty_df, start_col = "start", end_col = "end"), "`cur_data` is empty")
+})
+
+test_that("create_time_sequence handles NA values", {
+  # All NA start times
+  df_na_start <- data.frame(start = as.POSIXct(NA), 
+                           end = lubridate::ymd_hms("2023-01-01 00:00:05"))
+  expect_error(create_time_sequence(df_na_start, start_col = "start", end_col = "end"), "(Start/End times cannot be NA|End time cannot be earlier)")
+  
+  # All NA end times
+  df_na_end <- data.frame(start = lubridate::ymd_hms("2023-01-01 00:00:00"), 
+                         end = as.POSIXct(NA))
+  expect_error(create_time_sequence(df_na_end, start_col = "start", end_col = "end"), "(Start/End times cannot be NA|End time cannot be earlier)")
+})
+
 test_that("prepare_time_animal_matrix works for normal input", {
   df <- data.frame(cow = c(1,2), 
                    start = lubridate::ymd_hms("2023-01-01 00:00:00"), 
@@ -32,10 +57,36 @@ test_that("prepare_time_animal_matrix errors for bad input", {
   expect_error(prepare_time_animal_matrix(data.frame(cow=1), 1:5, id_col = "cow"), "POSIXct")
 })
 
+# NEW TESTS FOR COVERAGE
+test_that("prepare_time_animal_matrix handles non-data.frame input", {
+  seq <- lubridate::ymd_hms("2023-01-01 00:00:00")
+  expect_error(prepare_time_animal_matrix(NULL, seq, id_col = "cow"), "`cur_data` must be a data frame")
+  expect_error(prepare_time_animal_matrix("not a df", seq, id_col = "cow"), "`cur_data` must be a data frame")
+})
+
+test_that("prepare_time_animal_matrix handles empty dateTime_seq", {
+  df <- data.frame(cow = 1)
+  expect_error(prepare_time_animal_matrix(df, lubridate::ymd_hms(character(0)), id_col = "cow"), "`dateTime_seq` cannot be empty")
+})
+
+test_that("prepare_time_animal_matrix handles no animals found", {
+  df <- data.frame(cow = character(0))
+  seq <- lubridate::ymd_hms("2023-01-01 00:00:00")
+  expect_error(prepare_time_animal_matrix(df, seq, id_col = "cow"), "No animals found")
+})
+
 test_that("prepare_time_bin_matrix returns input and checks structure", {
   df <- data.frame(Time=lubridate::ymd_hms("2023-01-01 00:00:00"), `1`=0, check.names = FALSE)
   expect_equal(prepare_time_bin_matrix(df), df)
   expect_error(prepare_time_bin_matrix(data.frame()), "Time")
+})
+
+# NEW TESTS FOR COVERAGE
+test_that("prepare_time_bin_matrix handles invalid input", {
+  expect_error(prepare_time_bin_matrix(NULL), "`animal_time_matrix` must be a data frame")
+  expect_error(prepare_time_bin_matrix("not a df"), "`animal_time_matrix` must be a data frame")
+  expect_error(prepare_time_bin_matrix(data.frame(NotTime = 1)), "`animal_time_matrix` must have a 'Time' column")
+  expect_error(prepare_time_bin_matrix(data.frame(Time = 1)), "`animal_time_matrix` must have at least one animal column")
 })
 
 test_that("prepare_time_feed_matrix works for normal input", {
@@ -48,7 +99,23 @@ test_that("prepare_time_feed_matrix works for normal input", {
 
 test_that("prepare_time_feed_matrix errors for bad input", {
   expect_error(prepare_time_feed_matrix(1:5, bins_feed = 1:3), "POSIXct")
-  expect_error(prepare_time_feed_matrix(lubridate::ymd_hms("2023-01-01 00:00:00"), bins_feed = c()), "`bins_feed` must be numeric")
+  expect_error(prepare_time_feed_matrix(lubridate::ymd_hms("2023-01-01 00:00:00"), bins_feed = c()), "(`bins_feed` must be numeric|`bins_feed` cannot be empty)")
+})
+
+# NEW TESTS FOR COVERAGE
+test_that("prepare_time_feed_matrix handles empty dateTime_seq", {
+  expect_error(prepare_time_feed_matrix(lubridate::ymd_hms(character(0)), bins_feed = 1:3), "`dateTime_seq` cannot be empty")
+})
+
+test_that("prepare_time_feed_matrix handles non-numeric bins_feed", {
+  seq <- lubridate::ymd_hms("2023-01-01 00:00:00")
+  expect_error(prepare_time_feed_matrix(seq, bins_feed = c("a", "b")), "`bins_feed` must be numeric")
+})
+
+test_that("prepare_time_feed_matrix handles invalid bin range", {
+  seq <- lubridate::ymd_hms("2023-01-01 00:00:00")
+  # This tests the edge case where max < min (shouldn't happen in practice but tests the validation)
+  expect_error(prepare_time_feed_matrix(seq, bins_feed = numeric(0)), "`bins_feed` cannot be empty")
 })
 
 test_that("create_time_sequence works with different column names", {

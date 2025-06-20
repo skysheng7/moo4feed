@@ -47,16 +47,20 @@ for analyzing feeding and drinking synchronicity patterns.
 # Create toy data
 toy_data <- list(
   day1 = data.frame(
-    cow = 1,
+    animal = 1,
     start = lubridate::ymd_hms("2023-01-01 10:00:00"),
     end = lubridate::ymd_hms("2023-01-01 10:00:02"),
     bin = 1
   )
 )
 
-# Generate empty matrices for feed data
-matrices <- empty_synch_matrix(toy_data, type = "feed", bins_feed = 1:3,
-                              start_col = "start", end_col = "end", id_col = "cow")
+# Set global column names and generate empty matrices
+set_id_col2("animal")
+set_start_col2("start")
+set_end_col2("end")
+set_bin_col2("bin")
+set_bins_feed2(1:3)
+matrices <- empty_synch_matrix(toy_data, type = "feed")
 names(matrices)
 
 }

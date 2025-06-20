@@ -67,6 +67,13 @@ test_that("empty_animal_matrix errors on invalid input", {
   expect_error(moo4feed:::empty_animal_matrix(data.frame(cow = character(0)), id_col = "cow"), "`master_data` cannot be empty")
 })
 
+# NEW TESTS FOR COVERAGE
+test_that("empty_animal_matrix handles zero animals found", {
+  # Data frame with rows but no valid animal IDs
+  test_data <- data.frame(cow = character(0), other = character(0))
+  expect_error(moo4feed:::empty_animal_matrix(test_data, id_col = "cow"), "`master_data` cannot be empty")
+})
+
 # Tests for calculate_bout_duration
 test_that("calculate_bout_duration works with continuous time", {
   test_data <- data.frame(
@@ -132,6 +139,12 @@ test_that("calculate_bout_duration errors on invalid input", {
   expect_error(moo4feed:::calculate_bout_duration(data.frame(Time = "not a time")), "'Time' column must be POSIXct")
 })
 
+# NEW TESTS FOR COVERAGE
+test_that("calculate_bout_duration handles empty data frame", {
+  test_data <- data.frame(Time = lubridate::ymd_hms(character(0)))
+  expect_error(moo4feed:::calculate_bout_duration(test_data), "`cur_worksheet` cannot be empty")
+})
+
 # Tests for paired_synchronicity_analysis
 test_that("paired_synchronicity_analysis works with valid data", {
   animal_data <- create_test_animal_data()
@@ -187,6 +200,25 @@ test_that("paired_synchronicity_analysis errors on invalid input", {
   expect_error(moo4feed:::paired_synchronicity_analysis(NULL, list(), 2), "`synch_master_animal` cannot be NULL or empty")
   expect_error(moo4feed:::paired_synchronicity_analysis(list(), list(), -1), "`synch_master_animal` cannot be NULL or empty")
   expect_error(moo4feed:::paired_synchronicity_analysis(list(a = data.frame()), list(a = data.frame()), "not a number"), "`animal_num` must be a positive number")
+})
+
+# NEW TESTS FOR COVERAGE
+test_that("paired_synchronicity_analysis handles data without total_animal_num column", {
+  # Data without total_animal_num should still work
+  animal_data <- list(
+    "2023-01-01" = data.frame(
+      Time = lubridate::ymd_hms(c("2023-01-01 10:00:00", "2023-01-01 10:00:01")),
+      "1" = c(1, 1),
+      "2" = c(1, 1),
+      check.names = FALSE
+    )
+  )
+  bin_data <- create_test_bin_data()
+  
+  result <- moo4feed:::paired_synchronicity_analysis(animal_data, bin_data, 2)
+  
+  expect_type(result, "list")
+  expect_equal(length(result), 3)
 })
 
 # Tests for neighbor_synchronicity_analysis  
@@ -273,6 +305,40 @@ test_that("neighbor_synchronicity_analysis errors on invalid input", {
   expect_error(moo4feed:::neighbor_synchronicity_analysis(list(a = data.frame()), NULL, 2), "`synch_master_bin` cannot be NULL or empty")
   expect_error(moo4feed:::neighbor_synchronicity_analysis(list(a = 1), list(a = 1, b = 2), 2), "`synch_master_animal` and `synch_master_bin` must have the same length")
   expect_error(moo4feed:::neighbor_synchronicity_analysis(list(), list(), -1), "`synch_master_animal` cannot be NULL or empty")
+})
+
+# NEW TESTS FOR COVERAGE
+test_that("neighbor_synchronicity_analysis handles empty data frame", {
+  empty_data <- list("2023-01-01" = data.frame())
+  
+  result <- moo4feed:::neighbor_synchronicity_analysis(empty_data, empty_data, 2)
+  
+  expect_equal(length(result$neighbor_bout), 1)
+  expect_true(all(result$neighbor_bout[["2023-01-01"]] == 0))
+})
+
+test_that("neighbor_synchronicity_analysis handles data with fewer than 2 animals", {
+  # Data with only one animal column
+  animal_data <- list(
+    "2023-01-01" = data.frame(
+      Time = lubridate::ymd_hms(c("2023-01-01 10:00:00", "2023-01-01 10:00:01")),
+      "1" = c(1, 1),
+      check.names = FALSE
+    )
+  )
+  
+  bin_data <- list(
+    "2023-01-01" = data.frame(
+      Time = lubridate::ymd_hms(c("2023-01-01 10:00:00", "2023-01-01 10:00:01")),
+      "1" = c(201, 201),
+      check.names = FALSE
+    )
+  )
+  
+  result <- moo4feed:::neighbor_synchronicity_analysis(animal_data, bin_data, 2)
+  
+  # Should return zero matrices since no pairs can be formed
+  expect_true(all(result$neighbor_bout[["2023-01-01"]] == 0))
 })
 
 # Tests for synchronicity_matrix_process
@@ -379,6 +445,45 @@ test_that("synchronicity_matrix_process errors on invalid input", {
     check.names = FALSE
   ))
   expect_error(moo4feed::synchronicity_matrix_process(single_animal, single_animal), "At least 2 animals are required")
+})
+
+# NEW TESTS FOR COVERAGE
+test_that("synchronicity_matrix_process handles all empty datasets", {
+  # All datasets are NULL or empty
+  empty_data <- list(
+    "2023-01-01" = NULL,
+    "2023-01-02" = data.frame()
+  )
+  
+  expect_error(moo4feed::synchronicity_matrix_process(empty_data, empty_data), "No animals found")
+})
+
+test_that("synchronicity_matrix_process handles mixed empty and valid datasets", {
+  # Some empty, some valid data
+  mixed_data <- list(
+    "2023-01-01" = data.frame(),  # Empty
+    "2023-01-02" = data.frame(    # Valid
+      Time = lubridate::ymd_hms("2023-01-02 10:00:00"),
+      "1" = 1, "2" = 1,
+      total_animal_num = 2,
+      check.names = FALSE
+    )
+  )
+  
+  bin_data <- list(
+    "2023-01-01" = data.frame(),
+    "2023-01-02" = data.frame(
+      Time = lubridate::ymd_hms("2023-01-02 10:00:00"),
+      "1" = 201, "2" = 202,
+      total_animal_num = 2,
+      check.names = FALSE
+    )
+  )
+  
+  result <- moo4feed::synchronicity_matrix_process(mixed_data, bin_data)
+  
+  expect_type(result, "list")
+  expect_equal(length(result), 6)
 })
 
 # Integration tests

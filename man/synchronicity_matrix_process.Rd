@@ -68,7 +68,7 @@ toy_bin_data <- list(
   )
 )
 
-# Run complete synchronicity analysis
+# Run complete synchronicity analysis (uses global column settings)
 result <- synchronicity_matrix_process(toy_animal_data, toy_bin_data)
 
 # Access results

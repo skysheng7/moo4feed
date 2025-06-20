@@ -31,7 +31,8 @@ sync_data <- data.frame(
 )
 
 # Process the data
-processed <- process_cur_synch(sync_data, bins_feed = 1:2)
+set_bins_feed2(1:2)
+processed <- process_cur_synch(sync_data)
 head(processed)
 }
 

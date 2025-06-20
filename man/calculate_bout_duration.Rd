@@ -28,8 +28,8 @@ A new bout starts when there's a gap > 1 second between consecutive time points.
 toy_data <- data.frame(
   Time = lubridate::ymd_hms(c("2023-01-01 10:00:00", "2023-01-01 10:00:01", 
                               "2023-01-01 10:00:03", "2023-01-01 10:00:04")),
-  cow1 = c(1, 1, 1, 1),
-  cow2 = c(1, 1, 1, 1)
+  animal1 = c(1, 1, 1, 1),
+  animal2 = c(1, 1, 1, 1)
 )
 
 result <- calculate_bout_duration(toy_data)
