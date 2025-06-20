@@ -10,7 +10,7 @@
 #' - synchronicity_matrix_process
 #'
 #' @name synch_synchronicity_analysis
-#' @keywords internal
+#' @noRd
 NULL
 
 #' Create empty Animal × Animal matrix for synchronicity analysis
@@ -28,7 +28,6 @@ NULL
 #'   }
 #' 
 #' @examples
-#' \dontrun{
 #' # Create toy data
 #' toy_data <- data.frame(
 #'   animal = c(1, 2, 3),
@@ -40,9 +39,8 @@ NULL
 #' result <- empty_animal_matrix(toy_data, id_col = "animal")
 #' result$empty_matrix  # 3x3 matrix with animal IDs as names
 #' result$animal_num    # 3
-#' }
 #' 
-#' @keywords internal
+#' @noRd
 empty_animal_matrix <- function(master_data, 
                                id_col = id_col2()) {
   
@@ -92,7 +90,6 @@ empty_animal_matrix <- function(master_data,
 #' - duration: Seconds within current bout (resets to 1 for new bouts)
 #' 
 #' @examples
-#' \dontrun{
 #' # Create toy time series data
 #' toy_data <- data.frame(
 #'   Time = lubridate::ymd_hms(c("2023-01-01 10:00:00", "2023-01-01 10:00:01", 
@@ -104,9 +101,8 @@ empty_animal_matrix <- function(master_data,
 #' result <- calculate_bout_duration(toy_data)
 #' # bout: 1, 1, 2, 2 (gap between 10:00:01 and 10:00:03)
 #' # duration: 1, 2, 1, 2
-#' }
 #' 
-#' @keywords internal
+#' @noRd
 calculate_bout_duration <- function(cur_worksheet) {
   
   # Input validation
@@ -183,12 +179,10 @@ calculate_bout_duration <- function(cur_worksheet) {
 #' - Average duration of each synchronicity bout
 #' 
 #' @examples
-#' \dontrun{
 #' # This function is typically called from synchronicity_matrix_process()
 #' # See that function for complete examples
-#' }
 #' 
-#' @keywords internal
+#' @noRd
 paired_synchronicity_analysis <- function(synch_master_animal, 
                                          synch_master_bin, 
                                          animal_num) {
@@ -338,12 +332,10 @@ paired_synchronicity_analysis <- function(synch_master_animal,
 #' Adjacent bins are defined as bins with |bin1 - bin2| = 1
 #' 
 #' @examples
-#' \dontrun{
 #' # This function is typically called from synchronicity_matrix_process()
 #' # See that function for complete examples
-#' }
 #' 
-#' @keywords internal
+#' @noRd
 neighbor_synchronicity_analysis <- function(synch_master_animal, 
                                            synch_master_bin, 
                                            animal_num) {
@@ -519,7 +511,6 @@ neighbor_synchronicity_analysis <- function(synch_master_animal,
 #' Matrix element at position i,j represents the synchronicity measure between animal i and animal j.
 #' 
 #' @examples
-#' \dontrun{
 #' # Create toy synchronicity data
 #' times <- lubridate::ymd_hms(c("2023-01-01 10:00:00", "2023-01-01 10:00:01"))
 #' toy_animal_data <- list(
@@ -548,7 +539,6 @@ neighbor_synchronicity_analysis <- function(synch_master_animal,
 #' # Access results
 #' names(result)  # Shows all 6 result types
 #' result$paired_bout[["2023-01-01"]]  # 2x2 matrix of bout counts
-#' }
 #' 
 #' @export
 synchronicity_matrix_process <- function(synch_master_animal, 

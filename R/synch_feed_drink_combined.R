@@ -10,7 +10,7 @@
 #' - feed_drink_matrix_process
 #'
 #' @name synch_feed_drink_combined
-#' @keywords internal
+#' @noRd
 NULL
 
 #' Calculate total number of animals present at each time point
@@ -28,7 +28,7 @@ NULL
 #'     \item empty_bin_num: Number of empty bins at each time
 #'   }
 #' 
-#' @keywords internal
+#' @noRd
 total_animals_present <- function(feed_drink_synch_master_animal,
                                  bins_feed = bins_feed2(),
                                  bins_wat = bins_wat2()) {
@@ -103,7 +103,7 @@ total_animals_present <- function(feed_drink_synch_master_animal,
 #'     \item Second element: Filtered bin matrices with only active time periods
 #'   }
 #' 
-#' @keywords internal
+#' @noRd
 delete_inactive_time <- function(feed_drink_synch_master_animal, 
                                 feed_drink_synch_master_bin) {
   
@@ -187,7 +187,7 @@ delete_inactive_time <- function(feed_drink_synch_master_animal,
 #'     \item Second element: Bin matrices with added date column and updated names
 #'   }
 #' 
-#' @keywords internal
+#' @noRd
 add_date <- function(feed_drink_synch_master_animal, 
                     feed_drink_synch_master_bin) {
   
@@ -274,7 +274,7 @@ add_date <- function(feed_drink_synch_master_animal,
 #'   \item Feed bins: Maps bins_feed to new sequential numbers with offsets based on position
 #' }
 #' 
-#' @keywords internal
+#' @noRd
 bin_update <- function(feed_drink_synch_master_bin,
                       bins_feed = bins_feed2(),
                       bins_wat = bins_wat2()) {

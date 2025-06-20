@@ -103,7 +103,7 @@ test_that("matrix_initialize handles missing columns", {
 test_that("process_cur_synch fills NAs and computes totalFeed", {
   time_seq <- lubridate::ymd_hms("2023-01-01 00:00:00") + 0:2
   mat <- data.frame(Time = time_seq, `1` = c(NA, 2, 3), `2` = c(1, NA, 3), check.names = FALSE)
-  res <- process_cur_synch(mat, bins_feed = 1:2)
+  res <- moo4feed:::process_cur_synch(mat, bins_feed = 1:2)
   expect_true(!any(is.na(res[1,2:3])))
   expect_true(all(!is.na(res$totalFeed)))
   expect_equal(res$totalFeed[1], sum(res[1,2:3]))
@@ -112,56 +112,56 @@ test_that("process_cur_synch fills NAs and computes totalFeed", {
 test_that("process_cur_synch handles all-NA columns", {
   time_seq <- lubridate::ymd_hms("2023-01-01 00:00:00") + 0:2
   mat <- data.frame(Time = time_seq, `1` = c(NA, NA, NA), `2` = c(1, NA, 3), check.names = FALSE)
-  res <- process_cur_synch(mat, bins_feed = 1:2)
+  res <- moo4feed:::process_cur_synch(mat, bins_feed = 1:2)
   expect_true(!is.na(res$totalFeed[1]))
   expect_equal(res[1, "1"], 0)  # Should default to 0 for all-NA column
 })
 
 test_that("process_cur_synch errors for bad input", {
-  expect_error(process_cur_synch(NULL, bins_feed = 1:2), "NULL")
-  expect_error(process_cur_synch(data.frame(), bins_feed = 1:2), "empty")
-  expect_error(process_cur_synch(data.frame(Time=1), bins_feed = 1:2), "at least one bin")
-  expect_error(process_cur_synch(data.frame(Time=1, X=1), bins_feed = c()), "non-empty")
+  expect_error(moo4feed:::process_cur_synch(NULL, bins_feed = 1:2), "NULL")
+  expect_error(moo4feed:::process_cur_synch(data.frame(), bins_feed = 1:2), "empty")
+  expect_error(moo4feed:::process_cur_synch(data.frame(Time=1), bins_feed = 1:2), "at least one bin")
+  expect_error(moo4feed:::process_cur_synch(data.frame(Time=1, X=1), bins_feed = c()), "non-empty")
 })
 
 test_that("process_cur_synch handles empty input", {
-  expect_error(process_cur_synch(NULL, bins_feed = 1:2), "`cur_synch` cannot be NULL or empty")
-  expect_error(process_cur_synch(data.frame(), bins_feed = 1:2), "`cur_synch` cannot be NULL or empty")
+  expect_error(moo4feed:::process_cur_synch(NULL, bins_feed = 1:2), "`cur_synch` cannot be NULL or empty")
+  expect_error(moo4feed:::process_cur_synch(data.frame(), bins_feed = 1:2), "`cur_synch` cannot be NULL or empty")
 })
 
 test_that("process_cur_synch handles missing Time column", {
   mat <- data.frame(`1` = c(1, 2, 3), `2` = c(1, NA, 3), check.names = FALSE)
-  expect_error(process_cur_synch(mat, bins_feed = 1:2), "Input matrix must contain a 'Time' column")
+  expect_error(moo4feed:::process_cur_synch(mat, bins_feed = 1:2), "Input matrix must contain a 'Time' column")
 })
 
 test_that("process_cur_synch handles no bin columns", {
   time_seq <- lubridate::ymd_hms("2023-01-01 00:00:00") + 0:2
   mat <- data.frame(Time = time_seq)
-  expect_error(process_cur_synch(mat, bins_feed = 1:2), "Input matrix must have at least one bin column")
+  expect_error(moo4feed:::process_cur_synch(mat, bins_feed = 1:2), "Input matrix must have at least one bin column")
 })
 
 test_that("process_cur_synch handles empty bins_feed", {
   time_seq <- lubridate::ymd_hms("2023-01-01 00:00:00") + 0:2
   mat <- data.frame(Time = time_seq, `1` = c(1, 2, 3), check.names = FALSE)
-  expect_error(process_cur_synch(mat, bins_feed = c()), "bins_feed must be a non-empty numeric vector")
+  expect_error(moo4feed:::process_cur_synch(mat, bins_feed = c()), "bins_feed must be a non-empty numeric vector")
 })
 
 test_that("process_cur_synch handles non-numeric bins_feed", {
   time_seq <- lubridate::ymd_hms("2023-01-01 00:00:00") + 0:2
   mat <- data.frame(Time = time_seq, `1` = c(1, 2, 3), check.names = FALSE)
-  expect_error(process_cur_synch(mat, bins_feed = c("a", "b")), "bins_feed must be a non-empty numeric vector")
+  expect_error(moo4feed:::process_cur_synch(mat, bins_feed = c("a", "b")), "bins_feed must be a non-empty numeric vector")
 })
 
 test_that("process_cur_synch handles no matching bin columns", {
   time_seq <- lubridate::ymd_hms("2023-01-01 00:00:00") + 0:2
   mat <- data.frame(Time = time_seq, `99` = c(1, 2, 3), check.names = FALSE)
-  expect_error(process_cur_synch(mat, bins_feed = 1:2), "No matching bin columns found in input matrix")
+  expect_error(moo4feed:::process_cur_synch(mat, bins_feed = 1:2), "No matching bin columns found in input matrix")
 })
 
 test_that("process_cur_synch handles single row data", {
   time_seq <- lubridate::ymd_hms("2023-01-01 00:00:00")
   mat <- data.frame(Time = time_seq, `1` = 5, `2` = 3, check.names = FALSE)
-  res <- process_cur_synch(mat, bins_feed = 1:2)
+  res <- moo4feed:::process_cur_synch(mat, bins_feed = 1:2)
   expect_equal(nrow(res), 1)
   expect_equal(res$totalFeed[1], 8)
   expect_equal(res[1, "1"], 5)
@@ -174,7 +174,7 @@ test_that("process_cur_synch handles mixed NA and non-NA values", {
                    `1` = c(NA, 5, NA, 7), 
                    `2` = c(3, NA, 4, NA), 
                    check.names = FALSE)
-  res <- process_cur_synch(mat, bins_feed = 1:2)
+  res <- moo4feed:::process_cur_synch(mat, bins_feed = 1:2)
   
   # First row should get first non-NA values
   expect_equal(res[1, "1"], 5)  # First non-NA from column 1
@@ -192,7 +192,7 @@ test_that("process_cur_synch handles column with all NA after first value", {
                    `1` = c(5, NA, NA), 
                    `2` = c(NA, NA, NA), 
                    check.names = FALSE)
-  res <- process_cur_synch(mat, bins_feed = 1:2)
+  res <- moo4feed:::process_cur_synch(mat, bins_feed = 1:2)
   
   # Column 1 should carry forward the 5
   expect_equal(res[1, "1"], 5)
@@ -253,7 +253,7 @@ test_that("matrix_process handles empty animal matrix", {
                              id_col = "cow", start_col = "start", end_col = "end",
                              bin_col = "bin", start_weight_col = "start_weight", 
                              end_weight_col = "end_weight"), 
-               "(Missing required columns|No animals found|`cur_data` is empty)")
+               "`cur_data` is empty")
 })
 
 test_that("matrix_process handles single animal column", {

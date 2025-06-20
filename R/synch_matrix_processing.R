@@ -9,7 +9,7 @@
 #' - matrix_process
 #'
 #' @name synch_matrix_processing
-#' @keywords internal
+#' @noRd
 NULL
 
 #' Generate empty synchronization matrices for feed/water data
@@ -239,7 +239,6 @@ matrix_initialize <- function(data_list,
 #' @return Data frame with NA values replaced and a new column 'totalFeed'
 #' 
 #' @examples
-#' \dontrun{
 #' # Create toy synchronization data
 #' time_seq <- seq(lubridate::ymd_hms("2023-01-01 10:00:00"), 
 #'                 lubridate::ymd_hms("2023-01-01 10:00:02"), by = "sec")
@@ -253,9 +252,8 @@ matrix_initialize <- function(data_list,
 #' # Process the data with explicit bin parameters
 #' processed <- process_cur_synch(sync_data, bins_feed = 1:2)
 #' head(processed)
-#' }
 #' 
-#' @keywords internal
+#' @noRd
 process_cur_synch <- function(cur_synch, bins_feed = bins_feed2()) {
   if (is.null(cur_synch) || nrow(cur_synch) == 0) stop("`cur_synch` cannot be NULL or empty")
   if (!"Time" %in% colnames(cur_synch)) stop("Input matrix must contain a 'Time' column")

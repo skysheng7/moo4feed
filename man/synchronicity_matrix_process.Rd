@@ -45,7 +45,6 @@ Each result element is a list of Animal × Animal matrices, one per date.
 Matrix element at position i,j represents the synchronicity measure between animal i and animal j.
 }
 \examples{
-\dontrun{
 # Create toy synchronicity data
 times <- lubridate::ymd_hms(c("2023-01-01 10:00:00", "2023-01-01 10:00:01"))
 toy_animal_data <- list(
@@ -74,6 +73,5 @@ result <- synchronicity_matrix_process(toy_animal_data, toy_bin_data)
 # Access results
 names(result)  # Shows all 6 result types
 result$paired_bout[["2023-01-01"]]  # 2x2 matrix of bout counts
-}
 
 }

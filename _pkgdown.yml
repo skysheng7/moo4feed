@@ -82,16 +82,6 @@ reference:
   contents:
   - unique_bin_visits
 
-- subtitle: Synchronicity Matrix Analysis
-  desc: >
-    Create and process synchronicity matrices for feeding and drinking behavior analysis.
-  contents:
-  - empty_synch_matrix
-  - matrix_initialize
-  - matrix_process
-  - feed_drink_matrix_process
-  - synchronicity_matrix_process
-
 - subtitle: Replacement Behavior Analysis
   desc: >
     Functions to identify replacement behavior across multiple days, and validate those events by checking whether the actor cow was already present at another bin.
@@ -145,6 +135,16 @@ reference:
   - set_start_weight_col2
   - end_weight_col2
   - set_end_weight_col2
+
+- title: Synchronicity Analysis
+  desc: >
+    Functions for analyzing synchronous feeding and drinking behavior between animals.
+  contents:
+  - empty_synch_matrix
+  - matrix_initialize
+  - matrix_process
+  - feed_drink_matrix_process
+  - synchronicity_matrix_process
 
 - title: Example Data
   desc: >

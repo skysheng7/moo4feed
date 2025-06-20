@@ -24,7 +24,7 @@ create_toy_synch_data <- function() {
 # Tests for total_animals_present function
 test_that("total_animals_present works with normal input", {
   toy_data <- create_toy_synch_data()
-  result <- total_animals_present(toy_data, bins_feed = 1:5, bins_wat = 101:103)
+  result <- moo4feed:::total_animals_present(toy_data, bins_feed = 1:5, bins_wat = 101:103)
   
   # Check structure
   expect_equal(length(result), 2)
@@ -59,7 +59,7 @@ test_that("total_animals_present handles single animal correctly", {
     )
   )
   
-  result <- total_animals_present(single_animal_data, bins_feed = 1:3, bins_wat = 101:102)
+  result <- moo4feed:::total_animals_present(single_animal_data, bins_feed = 1:3, bins_wat = 101:102)
   
   expect_equal(result[[1]]$total_animal_num, 1)
   expect_equal(result[[1]]$total_bin_occupied, 1)
@@ -77,7 +77,7 @@ test_that("total_animals_present handles no animals present", {
     )
   )
   
-  result <- total_animals_present(no_animals_data, bins_feed = 1:4, bins_wat = 101:103)
+  result <- moo4feed:::total_animals_present(no_animals_data, bins_feed = 1:4, bins_wat = 101:103)
   
   expect_equal(result[[1]]$total_animal_num, c(0, 0))
   expect_equal(result[[1]]$total_bin_occupied, c(0, 0))
@@ -88,7 +88,7 @@ test_that("total_animals_present preserves original list names", {
   toy_data <- create_toy_synch_data()
   names(toy_data) <- c("custom_day1", "custom_day2")
   
-  result <- total_animals_present(toy_data, bins_feed = 1:3, bins_wat = 101:102)
+  result <- moo4feed:::total_animals_present(toy_data, bins_feed = 1:3, bins_wat = 101:102)
   
   expect_equal(names(result), c("custom_day1", "custom_day2"))
 })
@@ -97,7 +97,7 @@ test_that("total_animals_present handles missing list names", {
   toy_data <- create_toy_synch_data()
   names(toy_data) <- NULL
   
-  result <- total_animals_present(toy_data, bins_feed = 1:3, bins_wat = 101:102)
+  result <- moo4feed:::total_animals_present(toy_data, bins_feed = 1:3, bins_wat = 101:102)
   
   expect_equal(length(result), 2)
   # Names should be NULL when input has no names
@@ -115,7 +115,7 @@ test_that("total_animals_present handles NA values correctly", {
     )
   )
   
-  result <- total_animals_present(na_data, bins_feed = 1:3, bins_wat = 101:102)
+  result <- moo4feed:::total_animals_present(na_data, bins_feed = 1:3, bins_wat = 101:102)
   
   # rowSums with na.rm = TRUE should handle NAs correctly
   expected_totals <- c(1, 1, 2)  # NA values ignored in sum
@@ -124,30 +124,30 @@ test_that("total_animals_present handles NA values correctly", {
 
 # Error handling tests
 test_that("total_animals_present errors for NULL or empty input", {
-  expect_error(total_animals_present(NULL, bins_feed = 1:3, bins_wat = 101:102), 
+  expect_error(moo4feed:::total_animals_present(NULL, bins_feed = 1:3, bins_wat = 101:102), 
                "`feed_drink_synch_master_animal` cannot be NULL or empty")
   
-  expect_error(total_animals_present(list(), bins_feed = 1:3, bins_wat = 101:102), 
+  expect_error(moo4feed:::total_animals_present(list(), bins_feed = 1:3, bins_wat = 101:102), 
                "`feed_drink_synch_master_animal` cannot be NULL or empty")
 })
 
 test_that("total_animals_present errors for non-numeric bins", {
   toy_data <- create_toy_synch_data()
   
-  expect_error(total_animals_present(toy_data, bins_feed = c("a", "b"), bins_wat = 101:102), 
+  expect_error(moo4feed:::total_animals_present(toy_data, bins_feed = c("a", "b"), bins_wat = 101:102), 
                "`bins_feed` and `bins_wat` must be numeric")
   
-  expect_error(total_animals_present(toy_data, bins_feed = 1:3, bins_wat = c("x", "y")), 
+  expect_error(moo4feed:::total_animals_present(toy_data, bins_feed = 1:3, bins_wat = c("x", "y")), 
                "`bins_feed` and `bins_wat` must be numeric")
 })
 
 test_that("total_animals_present errors for empty bins", {
   toy_data <- create_toy_synch_data()
   
-  expect_error(total_animals_present(toy_data, bins_feed = numeric(0), bins_wat = 101:102), 
+  expect_error(moo4feed:::total_animals_present(toy_data, bins_feed = numeric(0), bins_wat = 101:102), 
                "`bins_feed` and `bins_wat` cannot be empty")
   
-  expect_error(total_animals_present(toy_data, bins_feed = 1:3, bins_wat = numeric(0)), 
+  expect_error(moo4feed:::total_animals_present(toy_data, bins_feed = 1:3, bins_wat = numeric(0)), 
                "`bins_feed` and `bins_wat` cannot be empty")
 })
 
@@ -156,7 +156,7 @@ test_that("total_animals_present errors for invalid data frame structure", {
     day1 = "not a data frame"
   )
   
-  expect_error(total_animals_present(invalid_data, bins_feed = 1:3, bins_wat = 101:102), 
+  expect_error(moo4feed:::total_animals_present(invalid_data, bins_feed = 1:3, bins_wat = 101:102), 
                "Each element in `feed_drink_synch_master_animal` must be a data frame")
 })
 
@@ -169,7 +169,7 @@ test_that("total_animals_present errors for missing Time column", {
     )
   )
   
-  expect_error(total_animals_present(no_time_data, bins_feed = 1:3, bins_wat = 101:102), 
+  expect_error(moo4feed:::total_animals_present(no_time_data, bins_feed = 1:3, bins_wat = 101:102), 
                "Each data frame must have a 'Time' column")
 })
 
@@ -180,7 +180,7 @@ test_that("total_animals_present errors for insufficient columns", {
     )
   )
   
-  expect_error(total_animals_present(insufficient_cols_data, bins_feed = 1:3, bins_wat = 101:102), 
+  expect_error(moo4feed:::total_animals_present(insufficient_cols_data, bins_feed = 1:3, bins_wat = 101:102), 
                "Each data frame must have at least one animal column")
 })
 
@@ -188,11 +188,11 @@ test_that("total_animals_present works with different bin ranges", {
   toy_data <- create_toy_synch_data()
   
   # Test with large bin ranges
-  result1 <- total_animals_present(toy_data, bins_feed = 1:10, bins_wat = 101:110)
+  result1 <- moo4feed:::total_animals_present(toy_data, bins_feed = 1:10, bins_wat = 101:110)
   expect_equal(result1[[1]]$empty_bin_num[1], 19)  # 20 total bins - 1 occupied
   
   # Test with minimal bins
-  result2 <- total_animals_present(toy_data, bins_feed = 1, bins_wat = 101)
+  result2 <- moo4feed:::total_animals_present(toy_data, bins_feed = 1, bins_wat = 101)
   expect_equal(result2[[1]]$empty_bin_num[1], 1)  # 2 total bins - 1 occupied
 })
 
@@ -207,11 +207,11 @@ test_that("total_animals_present handles edge case with all animals present", {
   )
   
   # This should error because bins_wat is empty
-  expect_error(total_animals_present(all_animals_data, bins_feed = 1:2, bins_wat = integer(0)), 
+  expect_error(moo4feed:::total_animals_present(all_animals_data, bins_feed = 1:2, bins_wat = integer(0)), 
                "`bins_feed` and `bins_wat` cannot be empty")
   
   # Test with proper bins
-  result <- total_animals_present(all_animals_data, bins_feed = 1, bins_wat = 101)
+  result <- moo4feed:::total_animals_present(all_animals_data, bins_feed = 1, bins_wat = 101)
   expect_equal(result[[1]]$total_animal_num, 2)
   expect_equal(result[[1]]$empty_bin_num, 0)  # All bins occupied
 })
@@ -240,7 +240,7 @@ test_that("delete_inactive_time works with normal input", {
     )
   )
   
-  result <- delete_inactive_time(animal_data, bin_data)
+  result <- moo4feed:::delete_inactive_time(animal_data, bin_data)
   
   # Check structure
   expect_equal(length(result), 2)
@@ -273,7 +273,7 @@ test_that("delete_inactive_time preserves list names", {
     )
   )
   
-  result <- delete_inactive_time(animal_data, bin_data)
+  result <- moo4feed:::delete_inactive_time(animal_data, bin_data)
   
   expect_equal(names(result[[1]]), "custom_day1")
   expect_equal(names(result[[2]]), "custom_day1")
@@ -302,7 +302,7 @@ test_that("delete_inactive_time handles all inactive periods", {
     )
   )
   
-  result <- delete_inactive_time(animal_data, bin_data)
+  result <- moo4feed:::delete_inactive_time(animal_data, bin_data)
   
   # Should return empty data frames with same structure
   expect_equal(nrow(result[[1]][[1]]), 0)
@@ -333,7 +333,7 @@ test_that("delete_inactive_time handles all active periods", {
     )
   )
   
-  result <- delete_inactive_time(animal_data, bin_data)
+  result <- moo4feed:::delete_inactive_time(animal_data, bin_data)
   
   # Should keep all rows since all periods are active
   expect_equal(nrow(result[[1]][[1]]), 3)
@@ -374,7 +374,7 @@ test_that("delete_inactive_time handles multiple days", {
     )
   )
   
-  result <- delete_inactive_time(animal_data, bin_data)
+  result <- moo4feed:::delete_inactive_time(animal_data, bin_data)
   
   expect_equal(length(result[[1]]), 2)
   expect_equal(length(result[[2]]), 2)
@@ -389,16 +389,16 @@ test_that("delete_inactive_time errors for NULL or empty input", {
   bin_data <- list(day1 = data.frame(Time = lubridate::ymd_hms("2023-01-01 10:00:00"), 
                                     `1` = 1, check.names = FALSE))
   
-  expect_error(delete_inactive_time(NULL, bin_data), 
+  expect_error(moo4feed:::delete_inactive_time(NULL, bin_data), 
                "`feed_drink_synch_master_animal` cannot be NULL or empty")
   
-  expect_error(delete_inactive_time(animal_data, NULL), 
+  expect_error(moo4feed:::delete_inactive_time(animal_data, NULL), 
                "`feed_drink_synch_master_bin` cannot be NULL or empty")
   
-  expect_error(delete_inactive_time(list(), bin_data), 
+  expect_error(moo4feed:::delete_inactive_time(list(), bin_data), 
                "`feed_drink_synch_master_animal` cannot be NULL or empty")
   
-  expect_error(delete_inactive_time(animal_data, list()), 
+  expect_error(moo4feed:::delete_inactive_time(animal_data, list()), 
                "`feed_drink_synch_master_bin` cannot be NULL or empty")
 })
 
@@ -415,7 +415,7 @@ test_that("delete_inactive_time errors for mismatched lengths", {
                      `1` = 1, check.names = FALSE)
   )
   
-  expect_error(delete_inactive_time(animal_data, bin_data), 
+  expect_error(moo4feed:::delete_inactive_time(animal_data, bin_data), 
                "feed_drink_synch_master_animal and feed_drink_synch_master_bin must have the same length")
 })
 
@@ -424,7 +424,7 @@ test_that("delete_inactive_time errors for invalid data frame structure", {
   bin_data <- list(day1 = data.frame(Time = lubridate::ymd_hms("2023-01-01 10:00:00"), 
                                     `1` = 1, check.names = FALSE))
   
-  expect_error(delete_inactive_time(animal_data, bin_data), 
+  expect_error(moo4feed:::delete_inactive_time(animal_data, bin_data), 
                "Each element must be a data frame")
 })
 
@@ -439,7 +439,7 @@ test_that("delete_inactive_time errors for missing total_animal_num column", {
                      `1` = 1, check.names = FALSE)
   )
   
-  expect_error(delete_inactive_time(animal_data, bin_data), 
+  expect_error(moo4feed:::delete_inactive_time(animal_data, bin_data), 
                "Animal data frames must have a 'total_animal_num' column \\(run total_animals_present first\\)")
 })
 
@@ -463,7 +463,7 @@ test_that("delete_inactive_time errors for mismatched row counts", {
     )
   )
   
-  expect_error(delete_inactive_time(animal_data, bin_data), 
+  expect_error(moo4feed:::delete_inactive_time(animal_data, bin_data), 
                "Corresponding animal and bin data frames must have the same number of rows")
 })
 
@@ -489,7 +489,7 @@ test_that("add_date works with normal input", {
     )
   )
   
-  result <- add_date(animal_data, bin_data)
+  result <- moo4feed:::add_date(animal_data, bin_data)
   
   # Check structure
   expect_equal(length(result), 2)
@@ -541,7 +541,7 @@ test_that("add_date handles multiple days", {
     )
   )
   
-  result <- add_date(animal_data, bin_data)
+  result <- moo4feed:::add_date(animal_data, bin_data)
   
   # Check that both days are processed
   expect_equal(length(result[[1]]), 2)
@@ -573,7 +573,7 @@ test_that("add_date handles empty data frames", {
     )
   )
   
-  result <- add_date(animal_data, bin_data)
+  result <- moo4feed:::add_date(animal_data, bin_data)
   
   # Check that date column is added even for empty data frames
   expect_true("date" %in% names(result[[1]][[1]]))
@@ -605,7 +605,7 @@ test_that("add_date handles single time point", {
     )
   )
   
-  result <- add_date(animal_data, bin_data)
+  result <- moo4feed:::add_date(animal_data, bin_data)
   
   expect_equal(result[[1]][[1]]$date, lubridate::ymd("2023-03-15"))
   expect_equal(result[[2]][[1]]$date, lubridate::ymd("2023-03-15"))
@@ -633,7 +633,7 @@ test_that("add_date handles data spanning multiple dates within one day entry", 
     )
   )
   
-  result <- add_date(animal_data, bin_data)
+  result <- moo4feed:::add_date(animal_data, bin_data)
   
   # Should have dates for both days
   expected_dates <- c(lubridate::ymd("2023-01-01"), lubridate::ymd("2023-01-02"))
@@ -650,16 +650,16 @@ test_that("add_date errors for NULL or empty input", {
   bin_data <- list(day1 = data.frame(Time = lubridate::ymd_hms("2023-01-01 10:00:00"), 
                                     `1` = 1, check.names = FALSE))
   
-  expect_error(add_date(NULL, bin_data), 
+  expect_error(moo4feed:::add_date(NULL, bin_data), 
                "`feed_drink_synch_master_animal` cannot be NULL or empty")
   
-  expect_error(add_date(animal_data, NULL), 
+  expect_error(moo4feed:::add_date(animal_data, NULL), 
                "`feed_drink_synch_master_bin` cannot be NULL or empty")
   
-  expect_error(add_date(list(), bin_data), 
+  expect_error(moo4feed:::add_date(list(), bin_data), 
                "`feed_drink_synch_master_animal` cannot be NULL or empty")
   
-  expect_error(add_date(animal_data, list()), 
+  expect_error(moo4feed:::add_date(animal_data, list()), 
                "`feed_drink_synch_master_bin` cannot be NULL or empty")
 })
 
@@ -676,7 +676,7 @@ test_that("add_date errors for mismatched lengths", {
                      `1` = 1, check.names = FALSE)
   )
   
-  expect_error(add_date(animal_data, bin_data), 
+  expect_error(moo4feed:::add_date(animal_data, bin_data), 
                "feed_drink_synch_master_animal and feed_drink_synch_master_bin must have the same length")
 })
 
@@ -685,7 +685,7 @@ test_that("add_date errors for invalid data frame structure", {
   bin_data <- list(day1 = data.frame(Time = lubridate::ymd_hms("2023-01-01 10:00:00"), 
                                     `1` = 1, check.names = FALSE))
   
-  expect_error(add_date(animal_data, bin_data), 
+  expect_error(moo4feed:::add_date(animal_data, bin_data), 
                "Each element must be a data frame")
 })
 
@@ -699,7 +699,7 @@ test_that("add_date errors for missing Time column", {
                      `1` = 1, check.names = FALSE)
   )
   
-  expect_error(add_date(animal_data, bin_data), 
+  expect_error(moo4feed:::add_date(animal_data, bin_data), 
                "Both animal and bin data frames must have a 'Time' column")
 })
 
@@ -722,7 +722,7 @@ test_that("add_date errors for mismatched row counts", {
     )
   )
   
-  expect_error(add_date(animal_data, bin_data), 
+  expect_error(moo4feed:::add_date(animal_data, bin_data), 
                "Corresponding animal and bin data frames must have the same number of rows")
 })
 
@@ -743,7 +743,7 @@ test_that("add_date errors for non-POSIXct Time column", {
     )
   )
   
-  expect_error(add_date(animal_data, bin_data), 
+  expect_error(moo4feed:::add_date(animal_data, bin_data), 
                "Time columns must be POSIXct")
 })
 
@@ -760,7 +760,7 @@ test_that("bin_update works with normal input", {
     )
   )
   
-  result <- bin_update(bin_data, bins_feed = 1:6, bins_wat = 101:105)
+  result <- moo4feed:::bin_update(bin_data, bins_feed = 1:6, bins_wat = 101:105)
   
   # Check structure
   expect_equal(length(result), 1)
@@ -785,7 +785,7 @@ test_that("bin_update handles different feed bin value offsets", {
     )
   )
   
-  result <- bin_update(bin_data, bins_feed = c(5, 10, 25), bins_wat = 101)
+  result <- moo4feed:::bin_update(bin_data, bins_feed = c(5, 10, 25), bins_wat = 101)
   
   # Check different offsets based on bin VALUE, not position
   expect_equal(result[[1]]$`1`, 205)  # 5 + 200 (value <= 6)
@@ -804,7 +804,7 @@ test_that("bin_update handles water bin hard-coded mapping", {
     )
   )
   
-  result <- bin_update(bin_data, bins_feed = 1, bins_wat = 101:105)
+  result <- moo4feed:::bin_update(bin_data, bins_feed = 1, bins_wat = 101:105)
   
   # Water bins should map: 101->207, 102->208, 103->221, 104->222, 105->235 (hard-coded)
   expected_mapping <- c(207, 208, 221, 222, 235)
@@ -822,7 +822,7 @@ test_that("bin_update preserves non-matching bin numbers", {
     )
   )
   
-  result <- bin_update(bin_data, bins_feed = 1:2, bins_wat = 101:102)
+  result <- moo4feed:::bin_update(bin_data, bins_feed = 1:2, bins_wat = 101:102)
   
   # 1->201, 999 unchanged, 101->207
   expect_equal(result[[1]]$`1`, c(201, 999, 207))
@@ -840,7 +840,7 @@ test_that("bin_update handles zero values correctly", {
     )
   )
   
-  result <- bin_update(bin_data, bins_feed = 1, bins_wat = 101)
+  result <- moo4feed:::bin_update(bin_data, bins_feed = 1, bins_wat = 101)
   
   # Zeros should remain unchanged, only 1->201 and 101->207
   expect_equal(result[[1]]$`1`, c(0, 201, 0))
@@ -863,7 +863,7 @@ test_that("bin_update handles multiple days", {
     )
   )
   
-  result <- bin_update(bin_data, bins_feed = 1, bins_wat = 101)
+  result <- moo4feed:::bin_update(bin_data, bins_feed = 1, bins_wat = 101)
   
   expect_equal(length(result), 2)
   expect_equal(names(result), c("2023-01-01", "2023-01-02"))
@@ -882,7 +882,7 @@ test_that("bin_update preserves Time and date columns", {
     )
   )
   
-  result <- bin_update(bin_data, bins_feed = 1, bins_wat = 101)
+  result <- moo4feed:::bin_update(bin_data, bins_feed = 1, bins_wat = 101)
   
   # Time and date columns should be unchanged
   expect_equal(result[[1]]$Time, bin_data[[1]]$Time)
@@ -901,7 +901,7 @@ test_that("bin_update handles empty data frames", {
     )
   )
   
-  result <- bin_update(bin_data, bins_feed = 1:5, bins_wat = 101:105)
+  result <- moo4feed:::bin_update(bin_data, bins_feed = 1:5, bins_wat = 101:105)
   
   expect_equal(nrow(result[[1]]), 0)
   expect_equal(ncol(result[[1]]), 2)  # Time and `1` columns
@@ -916,7 +916,7 @@ test_that("bin_update handles data without date column", {
     )
   )
   
-  result <- bin_update(bin_data, bins_feed = 1, bins_wat = 101)
+  result <- moo4feed:::bin_update(bin_data, bins_feed = 1, bins_wat = 101)
   
   # Should preserve original name since no date column
   expect_equal(names(result), "custom_day")
@@ -925,10 +925,10 @@ test_that("bin_update handles data without date column", {
 
 # Error handling tests for bin_update
 test_that("bin_update errors for NULL or empty input", {
-  expect_error(bin_update(NULL, bins_feed = 1:3, bins_wat = 101:102), 
+  expect_error(moo4feed:::bin_update(NULL, bins_feed = 1:3, bins_wat = 101:102), 
                "`feed_drink_synch_master_bin` cannot be NULL or empty")
   
-  expect_error(bin_update(list(), bins_feed = 1:3, bins_wat = 101:102), 
+  expect_error(moo4feed:::bin_update(list(), bins_feed = 1:3, bins_wat = 101:102), 
                "`feed_drink_synch_master_bin` cannot be NULL or empty")
 })
 
@@ -936,10 +936,10 @@ test_that("bin_update errors for non-numeric bins", {
   bin_data <- list(day1 = data.frame(Time = lubridate::ymd_hms("2023-01-01 10:00:00"), 
                                     `1` = 1, check.names = FALSE))
   
-  expect_error(bin_update(bin_data, bins_feed = c("a", "b"), bins_wat = 101:102), 
+  expect_error(moo4feed:::bin_update(bin_data, bins_feed = c("a", "b"), bins_wat = 101:102), 
                "`bins_feed` and `bins_wat` must be numeric")
   
-  expect_error(bin_update(bin_data, bins_feed = 1:3, bins_wat = c("x", "y")), 
+  expect_error(moo4feed:::bin_update(bin_data, bins_feed = 1:3, bins_wat = c("x", "y")), 
                "`bins_feed` and `bins_wat` must be numeric")
 })
 
@@ -947,17 +947,17 @@ test_that("bin_update errors for empty bins", {
   bin_data <- list(day1 = data.frame(Time = lubridate::ymd_hms("2023-01-01 10:00:00"), 
                                     `1` = 1, check.names = FALSE))
   
-  expect_error(bin_update(bin_data, bins_feed = numeric(0), bins_wat = 101:102), 
+  expect_error(moo4feed:::bin_update(bin_data, bins_feed = numeric(0), bins_wat = 101:102), 
                "`bins_feed` and `bins_wat` cannot be empty")
   
-  expect_error(bin_update(bin_data, bins_feed = 1:3, bins_wat = numeric(0)), 
+  expect_error(moo4feed:::bin_update(bin_data, bins_feed = 1:3, bins_wat = numeric(0)), 
                "`bins_feed` and `bins_wat` cannot be empty")
 })
 
 test_that("bin_update errors for invalid data frame structure", {
   bin_data <- list(day1 = "not a data frame")
   
-  expect_error(bin_update(bin_data, bins_feed = 1:3, bins_wat = 101:102), 
+  expect_error(moo4feed:::bin_update(bin_data, bins_feed = 1:3, bins_wat = 101:102), 
                "Each element must be a data frame")
 })
 
@@ -966,7 +966,7 @@ test_that("bin_update errors for missing Time column", {
     day1 = data.frame(`1` = 1, check.names = FALSE)
   )
   
-  expect_error(bin_update(bin_data, bins_feed = 1:3, bins_wat = 101:102), 
+  expect_error(moo4feed:::bin_update(bin_data, bins_feed = 1:3, bins_wat = 101:102), 
                "Each data frame must have a 'Time' column")
 })
 
@@ -981,7 +981,7 @@ test_that("bin_update works with edge case bin ranges", {
   )
   
   # Test with 30 feed bins to check value logic
-  result <- bin_update(bin_data, bins_feed = 1:30, bins_wat = 101)
+  result <- moo4feed:::bin_update(bin_data, bins_feed = 1:30, bins_wat = 101)
   
   # Bin 30 has value 30 > 18, so should get +204 offset
   expect_equal(result[[1]]$`1`, 234)  # 30 + 204
@@ -998,7 +998,7 @@ test_that("bin_update handles complex mixed bin scenario", {
     )
   )
   
-  result <- bin_update(bin_data, bins_feed = c(3, 10, 20), bins_wat = 101)
+  result <- moo4feed:::bin_update(bin_data, bins_feed = c(3, 10, 20), bins_wat = 101)
   
   # Expected: 3->203 (value 3 <= 6, +200), 0->0, 10->212 (value 10 <= 18, +202), 101->207, 999->999, 20->224 (value 20 > 18, +204)
   expect_equal(result[[1]]$`1`, c(203, 0, 212, 207, 999, 224))

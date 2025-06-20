@@ -9,7 +9,7 @@
 #' - prepare_time_feed_matrix
 #'
 #' @name synch_matrix_creation
-#' @keywords internal
+#' @noRd
 NULL
 
 #' Create a time sequence from start to end, by seconds
@@ -23,7 +23,6 @@ NULL
 #' @return A POSIXct vector of time sequence by seconds
 #' 
 #' @examples
-#' \dontrun{
 #' # Create toy data
 #' toy_data <- data.frame(
 #'   start = lubridate::ymd_hms("2023-01-01 10:00:00"),
@@ -33,9 +32,8 @@ NULL
 #' # Create time sequence
 #' time_seq <- create_time_sequence(toy_data, start_col = "start", end_col = "end")
 #' length(time_seq) # Should be 6 seconds
-#' }
 #' 
-#' @keywords internal
+#' @noRd
 create_time_sequence <- function(cur_data, 
                                 start_col = start_col2(),
                                 end_col = end_col2()) {
@@ -72,7 +70,6 @@ create_time_sequence <- function(cur_data,
 #' @return Data frame: first column 'Time', others are animal IDs, initialized to 0
 #' 
 #' @examples
-#' \dontrun{
 #' # Use package data with explicit column parameters  
 #' sample_data <- all_fed[[1]][1:10,]
 #' 
@@ -80,9 +77,8 @@ create_time_sequence <- function(cur_data,
 #' time_seq <- create_time_sequence(sample_data, start_col = "start", end_col = "end")
 #' animal_matrix <- prepare_time_animal_matrix(sample_data, time_seq, id_col = "cow")
 #' head(animal_matrix)
-#' }
 #' 
-#' @keywords internal
+#' @noRd
 prepare_time_animal_matrix <- function(cur_data, 
                                       dateTime_seq,
                                       id_col = id_col2()) {
@@ -116,7 +112,6 @@ prepare_time_animal_matrix <- function(cur_data,
 #' @return Data frame with same structure as animal_time_matrix
 #' 
 #' @examples
-#' \dontrun{
 #' # Use package data with explicit column parameters
 #' sample_data <- all_fed[[1]][1:10,]
 #' 
@@ -125,9 +120,8 @@ prepare_time_animal_matrix <- function(cur_data,
 #' animal_matrix <- prepare_time_animal_matrix(sample_data, time_seq, id_col = "cow")
 #' bin_matrix <- prepare_time_bin_matrix(animal_matrix)
 #' identical(dim(animal_matrix), dim(bin_matrix)) # Should be TRUE
-#' }
 #' 
-#' @keywords internal
+#' @noRd
 prepare_time_bin_matrix <- function(animal_time_matrix) {
   if (!is.data.frame(animal_time_matrix)) stop("`animal_time_matrix` must be a data frame")
   if (!"Time" %in% names(animal_time_matrix)) stop("`animal_time_matrix` must have a 'Time' column")
@@ -147,15 +141,13 @@ prepare_time_bin_matrix <- function(animal_time_matrix) {
 #' @return Data frame: first column 'Time', others are bin numbers, initialized to NA
 #' 
 #' @examples
-#' \dontrun{
 #' # Create feed matrix with explicit bin parameters
 #' time_seq <- seq(lubridate::ymd_hms("2023-01-01 10:00:00"), 
 #'                 lubridate::ymd_hms("2023-01-01 10:00:02"), by = "sec")
 #' feed_matrix <- prepare_time_feed_matrix(time_seq, bins_feed = 1:3)
 #' head(feed_matrix)
-#' }
 #' 
-#' @keywords internal
+#' @noRd
 prepare_time_feed_matrix <- function(dateTime_seq, 
                                     bins_feed = bins_feed2()) {
   if (!lubridate::is.POSIXct(dateTime_seq)) stop("`dateTime_seq` must be POSIXct")
