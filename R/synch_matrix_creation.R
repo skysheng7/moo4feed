@@ -73,8 +73,8 @@ create_time_sequence <- function(cur_data,
 #' 
 #' @examples
 #' \dontrun{
-#' # Use package data with explicit column parameters
-#' sample_data <- all_fed[[1]][1:10,]  # Small sample for example
+#' # Use package data with explicit column parameters  
+#' sample_data <- all_fed[[1]][1:10,]
 #' 
 #' # Create time sequence and animal matrix
 #' time_seq <- create_time_sequence(sample_data, start_col = "start", end_col = "end")
@@ -118,7 +118,7 @@ prepare_time_animal_matrix <- function(cur_data,
 #' @examples
 #' \dontrun{
 #' # Use package data with explicit column parameters
-#' sample_data <- all_fed[[1]][1:10,]  # Small sample for example
+#' sample_data <- all_fed[[1]][1:10,]
 #' 
 #' # Create matrices using explicit column parameters
 #' time_seq <- create_time_sequence(sample_data, start_col = "start", end_col = "end")

@@ -22,8 +22,8 @@ represent individual animals, initialized to 0.
 }
 \examples{
 \dontrun{
-# Use package data with explicit column parameters
-sample_data <- all_fed[[1]][1:10,]  # Small sample for example
+# Use package data with explicit column parameters  
+sample_data <- all_fed[[1]][1:10,]
 
 # Create time sequence and animal matrix
 time_seq <- create_time_sequence(sample_data, start_col = "start", end_col = "end")

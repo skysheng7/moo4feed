@@ -19,7 +19,7 @@ for tracking which bin each animal is at.
 \examples{
 \dontrun{
 # Use package data with explicit column parameters
-sample_data <- all_fed[[1]][1:10,]  # Small sample for example
+sample_data <- all_fed[[1]][1:10,]
 
 # Create matrices using explicit column parameters
 time_seq <- create_time_sequence(sample_data, start_col = "start", end_col = "end")
