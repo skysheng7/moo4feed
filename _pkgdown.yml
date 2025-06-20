@@ -80,6 +80,7 @@ reference:
   - empty_synch_matrix
   - matrix_initialize
   - matrix_process
+  - feed_drink_matrix_process
 
 - subtitle: Replacement Behavior Analysis
   desc: >

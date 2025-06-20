@@ -25,8 +25,8 @@ time_seq <- seq(lubridate::ymd_hms("2023-01-01 10:00:00"),
                 lubridate::ymd_hms("2023-01-01 10:00:02"), by = "sec")
 sync_data <- data.frame(
   Time = time_seq,
-  `1` = c(NA, 2, 3),
-  `2` = c(1, NA, 3),
+  bin1 = c(NA, 2, 3),
+  bin2 = c(1, NA, 3),
   check.names = FALSE
 )
 
