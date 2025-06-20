@@ -30,9 +30,8 @@ sync_data <- data.frame(
   check.names = FALSE
 )
 
-# Process the data
-set_bins_feed2(1:2)
-processed <- process_cur_synch(sync_data)
+# Process the data with explicit bin parameters
+processed <- process_cur_synch(sync_data, bins_feed = 1:2)
 head(processed)
 }
 

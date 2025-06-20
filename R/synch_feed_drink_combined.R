@@ -402,16 +402,11 @@ bin_update <- function(feed_drink_synch_master_bin,
 #' )
 #' 
 #' # Set global column names to match data
-#' set_id_col2("animal")
-#' set_start_col2("start")
-#' set_end_col2("end")
-#' set_bin_col2("bin")
-#' 
-#' # Process the data (uses global column name settings)
-#' # Set global bin parameters
-#' set_bins_feed2(1:30)
-#' set_bins_wat2(101:105)
-#' result <- feed_drink_matrix_process(toy_data)
+#' # Process the data with explicit parameters
+#' result <- feed_drink_matrix_process(toy_data,
+#'                                   id_col = "animal", start_col = "start", 
+#'                                   end_col = "end", bin_col = "bin",
+#'                                   bins_feed = 1:30, bins_wat = 101:105)
 #' # Returns processed animal and bin matrices
 #' 
 #' @export

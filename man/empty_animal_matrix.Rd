@@ -31,8 +31,8 @@ toy_data <- data.frame(
 )
 
 # Set global column name
-set_id_col2("animal")
-result <- empty_animal_matrix(toy_data)
+# Use explicit column parameter
+result <- empty_animal_matrix(toy_data, id_col = "animal")
 result$empty_matrix  # 3x3 matrix with animal IDs as names
 result$animal_num    # 3
 }

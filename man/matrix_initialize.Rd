@@ -58,15 +58,12 @@ toy_data <- list(
   )
 )
 
-# Set global column names and initialize matrices
-set_id_col2("animal")
-set_start_col2("start")
-set_end_col2("end")
-set_bin_col2("bin")
-set_start_weight_col2("start_weight")
-set_end_weight_col2("end_weight")
-set_bins_feed2(1:3)
-processed <- matrix_initialize(toy_data, type = "feed")
+# Initialize matrices with explicit parameters
+processed <- matrix_initialize(toy_data, type = "feed",
+                              id_col = "animal", start_col = "start", 
+                              end_col = "end", bin_col = "bin",
+                              start_weight_col = "start_weight", 
+                              end_weight_col = "end_weight", bins_feed = 1:3)
 names(processed)
 
 }

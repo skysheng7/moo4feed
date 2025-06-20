@@ -38,13 +38,10 @@ NULL
 #'   )
 #' )
 #' 
-#' # Set global column names and generate empty matrices
-#' set_id_col2("animal")
-#' set_start_col2("start")
-#' set_end_col2("end")
-#' set_bin_col2("bin")
-#' set_bins_feed2(1:3)
-#' matrices <- empty_synch_matrix(toy_data, type = "feed")
+#' # Generate empty matrices with explicit parameters
+#' matrices <- empty_synch_matrix(toy_data, type = "feed", 
+#'                               id_col = "animal", start_col = "start", 
+#'                               end_col = "end", bin_col = "bin", bins_feed = 1:3)
 #' names(matrices)
 #' 
 #' @export
@@ -128,15 +125,12 @@ empty_synch_matrix <- function(data_list,
 #'   )
 #' )
 #' 
-#' # Set global column names and initialize matrices
-#' set_id_col2("animal")
-#' set_start_col2("start")
-#' set_end_col2("end")
-#' set_bin_col2("bin")
-#' set_start_weight_col2("start_weight")
-#' set_end_weight_col2("end_weight")
-#' set_bins_feed2(1:3)
-#' processed <- matrix_initialize(toy_data, type = "feed")
+#' # Initialize matrices with explicit parameters
+#' processed <- matrix_initialize(toy_data, type = "feed",
+#'                               id_col = "animal", start_col = "start", 
+#'                               end_col = "end", bin_col = "bin",
+#'                               start_weight_col = "start_weight", 
+#'                               end_weight_col = "end_weight", bins_feed = 1:3)
 #' names(processed)
 #' 
 #' @export
@@ -256,9 +250,8 @@ matrix_initialize <- function(data_list,
 #'   check.names = FALSE
 #' )
 #' 
-#' # Process the data
-#' set_bins_feed2(1:2)
-#' processed <- process_cur_synch(sync_data)
+#' # Process the data with explicit bin parameters
+#' processed <- process_cur_synch(sync_data, bins_feed = 1:2)
 #' head(processed)
 #' }
 #' 
@@ -340,17 +333,12 @@ process_cur_synch <- function(cur_synch, bins_feed = bins_feed2()) {
 #'   )
 #' )
 #' 
-#' # Set global column names to match data
-#' set_id_col2("animal")
-#' set_start_col2("start")
-#' set_end_col2("end")
-#' set_bin_col2("bin")
-#' set_start_weight_col2("start_weight")
-#' set_end_weight_col2("end_weight")
-#' 
-#' # Process matrices (uses global variable settings)
-#' set_bins_feed2(1:3)
-#' result <- matrix_process(toy_data, type = "feed")
+#' # Process matrices with explicit parameters
+#' result <- matrix_process(toy_data, type = "feed",
+#'                         id_col = "animal", start_col = "start", 
+#'                         end_col = "end", bin_col = "bin",
+#'                         start_weight_col = "start_weight", 
+#'                         end_weight_col = "end_weight", bins_feed = 1:3)
 #' names(result)
 #' 
 #' @export
