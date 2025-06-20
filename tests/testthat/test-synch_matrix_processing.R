@@ -45,7 +45,7 @@ test_that("empty_synch_matrix works for drink", {
 
 test_that("empty_synch_matrix errors for bad input", {
   expect_error(empty_synch_matrix(list(), type = "feed"), "empty")
-  expect_error(empty_synch_matrix(list(day1 = minimal_data()), type = "badtype"), "Type must be one of")
+  expect_error(empty_synch_matrix(list(day1 = minimal_data()), type = "badtype"), "`type` must be one of")
   expect_error(empty_synch_matrix(list(day1 = data.frame()), type = "feed"), "Missing required columns")
 })
 
@@ -70,7 +70,7 @@ test_that("matrix_initialize works for drink", {
 
 test_that("matrix_initialize errors for bad input", {
   expect_error(matrix_initialize(list(), type = "feed"), "empty")
-  expect_error(matrix_initialize(list(day1 = minimal_data()), type = "badtype"), "Type must be one of")
+  expect_error(matrix_initialize(list(day1 = minimal_data()), type = "badtype"), "`type` must be one of")
   expect_error(matrix_initialize(list(day1 = data.frame(cow = 1)), type = "feed"), "Missing required columns")
 })
 

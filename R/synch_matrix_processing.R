@@ -53,8 +53,8 @@ empty_synch_matrix <- function(data_list,
                               bins_feed = bins_feed2(),
                               bins_wat = bins_wat2()) {
   
-  if (is.null(data_list) || length(data_list) == 0) stop("Input data_list cannot be NULL or empty")
-  if (!type %in% c("feed", "drink", "feed_and_drink")) stop("Type must be one of: 'feed', 'drink', 'feed_and_drink'")
+  if (is.null(data_list) || length(data_list) == 0) stop("`data_list` cannot be NULL or empty")
+  if (!type %in% c("feed", "drink", "feed_and_drink")) stop("`type` must be one of: 'feed', 'drink', 'feed_and_drink'")
   
   synch_master_animal <- list()
   synch_master_bin <- list()
@@ -143,8 +143,8 @@ matrix_initialize <- function(data_list,
                              bins_feed = bins_feed2(),
                              bins_wat = bins_wat2()) {
   
-  if (is.null(data_list) || length(data_list) == 0) stop("Input data_list cannot be NULL or empty")
-  if (!type %in% c("feed", "drink", "feed_and_drink")) stop("Type must be one of: 'feed', 'drink', 'feed_and_drink'")
+  if (is.null(data_list) || length(data_list) == 0) stop("`data_list` cannot be NULL or empty")
+  if (!type %in% c("feed", "drink", "feed_and_drink")) stop("`type` must be one of: 'feed', 'drink', 'feed_and_drink'")
   
   results <- empty_synch_matrix(data_list, type, id_col, start_col, end_col, bin_col, bins_feed, bins_wat)
   synch_master_animal <- results$synch_master_animal
@@ -255,7 +255,7 @@ matrix_initialize <- function(data_list,
 #' 
 #' @keywords internal
 process_cur_synch <- function(cur_synch, bins_feed = bins_feed2()) {
-  if (is.null(cur_synch) || nrow(cur_synch) == 0) stop("Input matrix cannot be NULL or empty")
+  if (is.null(cur_synch) || nrow(cur_synch) == 0) stop("`cur_synch` cannot be NULL or empty")
   if (!"Time" %in% colnames(cur_synch)) stop("Input matrix must contain a 'Time' column")
   if (ncol(cur_synch) <= 1) stop("Input matrix must have at least one bin column")
   if (!is.numeric(bins_feed) || length(bins_feed) == 0) stop("bins_feed must be a non-empty numeric vector")
@@ -350,7 +350,7 @@ matrix_process <- function(data_list,
                           bins_feed = bins_feed2(),
                           bins_wat = bins_wat2()) {
   
-  if (is.null(data_list) || length(data_list) == 0) stop("Input data_list cannot be NULL or empty")
+  if (is.null(data_list) || length(data_list) == 0) stop("`data_list` cannot be NULL or empty")
   if (!type %in% c("feed", "drink", "feed_and_drink")) stop("Type must be one of: 'feed', 'drink', 'feed_and_drink'")
   
   results <- matrix_initialize(data_list, type, id_col, start_col, end_col, bin_col, 

@@ -39,7 +39,7 @@ NULL
 create_time_sequence <- function(cur_data, 
                                 start_col = start_col2(),
                                 end_col = end_col2()) {
-  if (!is.data.frame(cur_data)) stop("cur_data must be a data frame")
+  if (!is.data.frame(cur_data)) stop("`cur_data` must be a data frame")
   
   required_cols <- c(start_col, end_col)
   missing_cols <- setdiff(required_cols, names(cur_data))
@@ -50,7 +50,7 @@ create_time_sequence <- function(cur_data,
   if (!lubridate::is.POSIXct(cur_data[[start_col]]) || !lubridate::is.POSIXct(cur_data[[end_col]])) {
     stop("Start and end columns must be POSIXct")
   }
-  if (nrow(cur_data) == 0) stop("cur_data is empty")
+  if (nrow(cur_data) == 0) stop("`cur_data` is empty")
   
   total_start <- min(cur_data[[start_col]], na.rm = TRUE)
   total_end <- max(cur_data[[end_col]], na.rm = TRUE)
@@ -90,17 +90,17 @@ create_time_sequence <- function(cur_data,
 prepare_time_animal_matrix <- function(cur_data, 
                                       dateTime_seq,
                                       id_col = id_col2()) {
-  if (!is.data.frame(cur_data)) stop("cur_data must be a data frame")
+  if (!is.data.frame(cur_data)) stop("`cur_data` must be a data frame")
   
   if (!(id_col %in% names(cur_data))) {
     stop("Missing required column: ", id_col)
   }
   
-  if (!lubridate::is.POSIXct(dateTime_seq)) stop("dateTime_seq must be POSIXct")
-  if (length(dateTime_seq) == 0) stop("dateTime_seq cannot be empty")
+  if (!lubridate::is.POSIXct(dateTime_seq)) stop("`dateTime_seq` must be POSIXct")
+  if (length(dateTime_seq) == 0) stop("`dateTime_seq` cannot be empty")
   
   animal_list <- sort(unique(cur_data[[id_col]]))
-  if (length(animal_list) == 0) stop("No animals found in cur_data")
+  if (length(animal_list) == 0) stop("No animals found in `cur_data`")
   
   col_num <- length(animal_list) + 1
   synch_master_animal <- data.frame(matrix(0, length(dateTime_seq), col_num))
@@ -136,9 +136,9 @@ prepare_time_animal_matrix <- function(cur_data,
 #' 
 #' @keywords internal
 prepare_time_bin_matrix <- function(animal_time_matrix) {
-  if (!is.data.frame(animal_time_matrix)) stop("Input must be a data frame")
-  if (!"Time" %in% names(animal_time_matrix)) stop("Input must have a 'Time' column")
-  if (ncol(animal_time_matrix) < 2) stop("Input must have at least one animal column")
+  if (!is.data.frame(animal_time_matrix)) stop("`animal_time_matrix` must be a data frame")
+  if (!"Time" %in% names(animal_time_matrix)) stop("`animal_time_matrix` must have a 'Time' column")
+  if (ncol(animal_time_matrix) < 2) stop("`animal_time_matrix` must have at least one animal column")
   
   animal_time_matrix
 }
@@ -165,10 +165,10 @@ prepare_time_bin_matrix <- function(animal_time_matrix) {
 #' @keywords internal
 prepare_time_feed_matrix <- function(dateTime_seq, 
                                     bins_feed = bins_feed2()) {
-  if (!lubridate::is.POSIXct(dateTime_seq)) stop("dateTime_seq must be POSIXct")
-  if (length(dateTime_seq) == 0) stop("dateTime_seq cannot be empty")
-  if (!is.numeric(bins_feed)) stop("bins_feed must be numeric")
-  if (length(bins_feed) == 0) stop("bins_feed cannot be empty")
+  if (!lubridate::is.POSIXct(dateTime_seq)) stop("`dateTime_seq` must be POSIXct")
+  if (length(dateTime_seq) == 0) stop("`dateTime_seq` cannot be empty")
+  if (!is.numeric(bins_feed)) stop("`bins_feed` must be numeric")
+  if (length(bins_feed) == 0) stop("`bins_feed` cannot be empty")
   
   min_feed_bin <- min(bins_feed)
   max_feed_bin <- max(bins_feed)

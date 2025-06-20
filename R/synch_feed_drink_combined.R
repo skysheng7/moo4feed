@@ -35,15 +35,15 @@ total_animals_present <- function(feed_drink_synch_master_animal,
   
   # Input validation
   if (is.null(feed_drink_synch_master_animal) || length(feed_drink_synch_master_animal) == 0) {
-    stop("Input feed_drink_synch_master_animal cannot be NULL or empty")
+    stop("`feed_drink_synch_master_animal` cannot be NULL or empty")
   }
   
   if (!is.numeric(bins_feed) || !is.numeric(bins_wat)) {
-    stop("bins_feed and bins_wat must be numeric")
+    stop("`bins_feed` and `bins_wat` must be numeric")
   }
   
   if (length(bins_feed) == 0 || length(bins_wat) == 0) {
-    stop("bins_feed and bins_wat cannot be empty")
+    stop("`bins_feed` and `bins_wat` cannot be empty")
   }
   
   # Calculate total bins available (feed + water)
@@ -56,7 +56,7 @@ total_animals_present <- function(feed_drink_synch_master_animal,
     
     # Validate current data frame
     if (!is.data.frame(cur_data)) {
-      stop("Each element in feed_drink_synch_master_animal must be a data frame")
+      stop("Each element in `feed_drink_synch_master_animal` must be a data frame")
     }
     
     if (!"Time" %in% names(cur_data)) {
@@ -109,11 +109,11 @@ delete_inactive_time <- function(feed_drink_synch_master_animal,
   
   # Input validation
   if (is.null(feed_drink_synch_master_animal) || length(feed_drink_synch_master_animal) == 0) {
-    stop("Input feed_drink_synch_master_animal cannot be NULL or empty")
+    stop("`feed_drink_synch_master_animal` cannot be NULL or empty")
   }
   
   if (is.null(feed_drink_synch_master_bin) || length(feed_drink_synch_master_bin) == 0) {
-    stop("Input feed_drink_synch_master_bin cannot be NULL or empty")
+    stop("`feed_drink_synch_master_bin` cannot be NULL or empty")
   }
   
   if (length(feed_drink_synch_master_animal) != length(feed_drink_synch_master_bin)) {
@@ -193,11 +193,11 @@ add_date <- function(feed_drink_synch_master_animal,
   
   # Input validation
   if (is.null(feed_drink_synch_master_animal) || length(feed_drink_synch_master_animal) == 0) {
-    stop("Input feed_drink_synch_master_animal cannot be NULL or empty")
+    stop("`feed_drink_synch_master_animal` cannot be NULL or empty")
   }
   
   if (is.null(feed_drink_synch_master_bin) || length(feed_drink_synch_master_bin) == 0) {
-    stop("Input feed_drink_synch_master_bin cannot be NULL or empty")
+    stop("`feed_drink_synch_master_bin` cannot be NULL or empty")
   }
   
   if (length(feed_drink_synch_master_animal) != length(feed_drink_synch_master_bin)) {
@@ -281,15 +281,15 @@ bin_update <- function(feed_drink_synch_master_bin,
   
   # Input validation
   if (is.null(feed_drink_synch_master_bin) || length(feed_drink_synch_master_bin) == 0) {
-    stop("Input feed_drink_synch_master_bin cannot be NULL or empty")
+    stop("`feed_drink_synch_master_bin` cannot be NULL or empty")
   }
   
   if (!is.numeric(bins_feed) || !is.numeric(bins_wat)) {
-    stop("bins_feed and bins_wat must be numeric")
+    stop("`bins_feed` and `bins_wat` must be numeric")
   }
   
   if (length(bins_feed) == 0 || length(bins_wat) == 0) {
-    stop("bins_feed and bins_wat cannot be empty")
+    stop("`bins_feed` and `bins_wat` cannot be empty")
   }
   
   new_list_bin <- list()
@@ -416,17 +416,17 @@ feed_drink_matrix_process <- function(all_comb,
   
   # Input validation
   if (is.null(all_comb) || length(all_comb) == 0) {
-    stop("Input all_comb cannot be NULL or empty")
+    stop("`all_comb` cannot be NULL or empty")
   }
   
   if (!is.list(all_comb)) {
-    stop("all_comb must be a list")
+    stop("`all_comb` must be a list")
   }
   
   # Validate that each element is a data frame with required columns
   for (i in seq_along(all_comb)) {
     if (!is.data.frame(all_comb[[i]])) {
-      stop("Each element in all_comb must be a data frame")
+      stop("Each element in `all_comb` must be a data frame")
     }
     
     required_cols <- c(id_col, start_col, end_col, bin_col)

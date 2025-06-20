@@ -125,30 +125,30 @@ test_that("total_animals_present handles NA values correctly", {
 # Error handling tests
 test_that("total_animals_present errors for NULL or empty input", {
   expect_error(total_animals_present(NULL, bins_feed = 1:3, bins_wat = 101:102), 
-               "Input feed_drink_synch_master_animal cannot be NULL or empty")
+               "`feed_drink_synch_master_animal` cannot be NULL or empty")
   
   expect_error(total_animals_present(list(), bins_feed = 1:3, bins_wat = 101:102), 
-               "Input feed_drink_synch_master_animal cannot be NULL or empty")
+               "`feed_drink_synch_master_animal` cannot be NULL or empty")
 })
 
 test_that("total_animals_present errors for non-numeric bins", {
   toy_data <- create_toy_synch_data()
   
   expect_error(total_animals_present(toy_data, bins_feed = c("a", "b"), bins_wat = 101:102), 
-               "bins_feed and bins_wat must be numeric")
+               "`bins_feed` and `bins_wat` must be numeric")
   
   expect_error(total_animals_present(toy_data, bins_feed = 1:3, bins_wat = c("x", "y")), 
-               "bins_feed and bins_wat must be numeric")
+               "`bins_feed` and `bins_wat` must be numeric")
 })
 
 test_that("total_animals_present errors for empty bins", {
   toy_data <- create_toy_synch_data()
   
   expect_error(total_animals_present(toy_data, bins_feed = numeric(0), bins_wat = 101:102), 
-               "bins_feed and bins_wat cannot be empty")
+               "`bins_feed` and `bins_wat` cannot be empty")
   
   expect_error(total_animals_present(toy_data, bins_feed = 1:3, bins_wat = numeric(0)), 
-               "bins_feed and bins_wat cannot be empty")
+               "`bins_feed` and `bins_wat` cannot be empty")
 })
 
 test_that("total_animals_present errors for invalid data frame structure", {
@@ -157,7 +157,7 @@ test_that("total_animals_present errors for invalid data frame structure", {
   )
   
   expect_error(total_animals_present(invalid_data, bins_feed = 1:3, bins_wat = 101:102), 
-               "Each element in feed_drink_synch_master_animal must be a data frame")
+               "Each element in `feed_drink_synch_master_animal` must be a data frame")
 })
 
 test_that("total_animals_present errors for missing Time column", {
@@ -208,7 +208,7 @@ test_that("total_animals_present handles edge case with all animals present", {
   
   # This should error because bins_wat is empty
   expect_error(total_animals_present(all_animals_data, bins_feed = 1:2, bins_wat = integer(0)), 
-               "bins_feed and bins_wat cannot be empty")
+               "`bins_feed` and `bins_wat` cannot be empty")
   
   # Test with proper bins
   result <- total_animals_present(all_animals_data, bins_feed = 1, bins_wat = 101)
@@ -390,16 +390,16 @@ test_that("delete_inactive_time errors for NULL or empty input", {
                                     `1` = 1, check.names = FALSE))
   
   expect_error(delete_inactive_time(NULL, bin_data), 
-               "Input feed_drink_synch_master_animal cannot be NULL or empty")
+               "`feed_drink_synch_master_animal` cannot be NULL or empty")
   
   expect_error(delete_inactive_time(animal_data, NULL), 
-               "Input feed_drink_synch_master_bin cannot be NULL or empty")
+               "`feed_drink_synch_master_bin` cannot be NULL or empty")
   
   expect_error(delete_inactive_time(list(), bin_data), 
-               "Input feed_drink_synch_master_animal cannot be NULL or empty")
+               "`feed_drink_synch_master_animal` cannot be NULL or empty")
   
   expect_error(delete_inactive_time(animal_data, list()), 
-               "Input feed_drink_synch_master_bin cannot be NULL or empty")
+               "`feed_drink_synch_master_bin` cannot be NULL or empty")
 })
 
 test_that("delete_inactive_time errors for mismatched lengths", {
@@ -651,16 +651,16 @@ test_that("add_date errors for NULL or empty input", {
                                     `1` = 1, check.names = FALSE))
   
   expect_error(add_date(NULL, bin_data), 
-               "Input feed_drink_synch_master_animal cannot be NULL or empty")
+               "`feed_drink_synch_master_animal` cannot be NULL or empty")
   
   expect_error(add_date(animal_data, NULL), 
-               "Input feed_drink_synch_master_bin cannot be NULL or empty")
+               "`feed_drink_synch_master_bin` cannot be NULL or empty")
   
   expect_error(add_date(list(), bin_data), 
-               "Input feed_drink_synch_master_animal cannot be NULL or empty")
+               "`feed_drink_synch_master_animal` cannot be NULL or empty")
   
   expect_error(add_date(animal_data, list()), 
-               "Input feed_drink_synch_master_bin cannot be NULL or empty")
+               "`feed_drink_synch_master_bin` cannot be NULL or empty")
 })
 
 test_that("add_date errors for mismatched lengths", {
@@ -926,10 +926,10 @@ test_that("bin_update handles data without date column", {
 # Error handling tests for bin_update
 test_that("bin_update errors for NULL or empty input", {
   expect_error(bin_update(NULL, bins_feed = 1:3, bins_wat = 101:102), 
-               "Input feed_drink_synch_master_bin cannot be NULL or empty")
+               "`feed_drink_synch_master_bin` cannot be NULL or empty")
   
   expect_error(bin_update(list(), bins_feed = 1:3, bins_wat = 101:102), 
-               "Input feed_drink_synch_master_bin cannot be NULL or empty")
+               "`feed_drink_synch_master_bin` cannot be NULL or empty")
 })
 
 test_that("bin_update errors for non-numeric bins", {
@@ -937,10 +937,10 @@ test_that("bin_update errors for non-numeric bins", {
                                     `1` = 1, check.names = FALSE))
   
   expect_error(bin_update(bin_data, bins_feed = c("a", "b"), bins_wat = 101:102), 
-               "bins_feed and bins_wat must be numeric")
+               "`bins_feed` and `bins_wat` must be numeric")
   
   expect_error(bin_update(bin_data, bins_feed = 1:3, bins_wat = c("x", "y")), 
-               "bins_feed and bins_wat must be numeric")
+               "`bins_feed` and `bins_wat` must be numeric")
 })
 
 test_that("bin_update errors for empty bins", {
@@ -948,10 +948,10 @@ test_that("bin_update errors for empty bins", {
                                     `1` = 1, check.names = FALSE))
   
   expect_error(bin_update(bin_data, bins_feed = numeric(0), bins_wat = 101:102), 
-               "bins_feed and bins_wat cannot be empty")
+               "`bins_feed` and `bins_wat` cannot be empty")
   
   expect_error(bin_update(bin_data, bins_feed = 1:3, bins_wat = numeric(0)), 
-               "bins_feed and bins_wat cannot be empty")
+               "`bins_feed` and `bins_wat` cannot be empty")
 })
 
 test_that("bin_update errors for invalid data frame structure", {
@@ -1151,18 +1151,18 @@ test_that("feed_drink_matrix_process integrates all steps correctly", {
 # Error handling tests for feed_drink_matrix_process
 test_that("feed_drink_matrix_process errors for NULL or empty input", {
   expect_error(feed_drink_matrix_process(NULL), 
-               "Input all_comb cannot be NULL or empty")
+               "`all_comb` cannot be NULL or empty")
   
   expect_error(feed_drink_matrix_process(list()), 
-               "Input all_comb cannot be NULL or empty")
+               "`all_comb` cannot be NULL or empty")
 })
 
 test_that("feed_drink_matrix_process errors for non-list input", {
   expect_error(feed_drink_matrix_process("not a list"), 
-               "all_comb must be a list")
+               "`all_comb` must be a list")
   
   expect_error(feed_drink_matrix_process(data.frame(x = 1)), 
-               "Each element in all_comb must be a data frame")
+               "Each element in `all_comb` must be a data frame")
 })
 
 test_that("feed_drink_matrix_process errors for invalid data frame structure", {
@@ -1171,7 +1171,7 @@ test_that("feed_drink_matrix_process errors for invalid data frame structure", {
   )
   
   expect_error(feed_drink_matrix_process(toy_data), 
-               "Each element in all_comb must be a data frame")
+               "Each element in `all_comb` must be a data frame")
 })
 
 test_that("feed_drink_matrix_process errors for missing required columns", {
@@ -1200,7 +1200,7 @@ test_that("feed_drink_matrix_process errors for empty data frames", {
   
   # Empty data frames should cause an error since they can't create time sequences
   expect_error(feed_drink_matrix_process(toy_data, bins_feed = 1:30, bins_wat = 101:105),
-               "cur_data is empty")
+               "`cur_data` is empty")
 })
 
 test_that("feed_drink_matrix_process preserves animal names", {

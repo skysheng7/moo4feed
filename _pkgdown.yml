@@ -81,6 +81,7 @@ reference:
   - matrix_initialize
   - matrix_process
   - feed_drink_matrix_process
+  - synchronicity_matrix_process
 
 - subtitle: Replacement Behavior Analysis
   desc: >

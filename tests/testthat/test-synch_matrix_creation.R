@@ -48,7 +48,7 @@ test_that("prepare_time_feed_matrix works for normal input", {
 
 test_that("prepare_time_feed_matrix errors for bad input", {
   expect_error(prepare_time_feed_matrix(1:5, bins_feed = 1:3), "POSIXct")
-  expect_error(prepare_time_feed_matrix(lubridate::ymd_hms("2023-01-01 00:00:00"), bins_feed = c()), "bins_feed must be numeric")
+  expect_error(prepare_time_feed_matrix(lubridate::ymd_hms("2023-01-01 00:00:00"), bins_feed = c()), "`bins_feed` must be numeric")
 })
 
 test_that("create_time_sequence works with different column names", {
