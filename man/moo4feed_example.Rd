@@ -40,7 +40,7 @@ error if the requested file does not exist.
 moo4feed_example()
 
 # Retrieve the full path to one specific file
-file_path <- moo4feed_example("VR201102.DAT")
+file_path <- moo4feed_example("VR201101.DAT")
 file_path
 
 }

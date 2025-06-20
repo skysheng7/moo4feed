@@ -2,6 +2,15 @@ url: https://skysheng7.github.io/moo4feed/
 template:
   bootstrap: 5
 
+articles:
+- title: "Data Processing Workflow"
+  desc: "Step-by-step tutorials for processing animal feeding behavior data"
+  contents:
+  - data_cleaning
+  - meal_clustering
+  - bin_visit_analysis
+  - replacement_detection
+
 reference:
 - title: Getting Started
   desc: >
@@ -146,9 +155,5 @@ reference:
   - clean_feed
   - clean_water
   - clean_comb
-  - summary_df
-  - warning
-  - bin_visits
-  - replacements
   - moo4feed_example
 
