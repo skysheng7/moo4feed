@@ -1,17 +1,3 @@
-#' Synchronicity Matrix Creation Functions
-#'
-#' Functions for creating time sequences and empty matrices for animal feeding/drinking analysis.
-#'
-#' @section Functions:
-#' - create_time_sequence
-#' - prepare_time_animal_matrix
-#' - prepare_time_bin_matrix
-#' - prepare_time_feed_matrix
-#'
-#' @name synch_matrix_creation
-#' @noRd
-NULL
-
 #' Create a time sequence from start to end, by seconds
 #'
 #' @description
