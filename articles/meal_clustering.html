@@ -177,7 +177,7 @@ different feeding habits.</p>
 <span><span class="va">p_fixed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_meal_clusters.html">viz_meal_clusters</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">fixed_labeled</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_fixed</span><span class="op">)</span></span></code></pre></div>
-<p><img src="meal_clustering_files/figure-html/fixed-interval-demo-1.png" width="480"></p>
+<p><img src="meal_clustering_files/figure-html/fixed-interval-demo-1.png" width="384"></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Fixed interval (90 min) resulted in"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">fixed_labeled</span><span class="op">$</span><span class="va">meal_id</span><span class="op">)</span>, <span class="st">"meals\n"</span><span class="op">)</span></span>
@@ -231,7 +231,7 @@ belong to the same meal.</p>
 <span>                        upper_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>                        bins <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>                        colors <span class="op">=</span> <span class="fu">grDevices</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span><span class="fl">2</span>, <span class="st">"Set 3"</span><span class="op">)</span>,</span>
-<span>                        title_prefix <span class="op">=</span> <span class="st">"Distribution of time gap between visits &amp; \noptimal meal interval (eps)"</span>,</span>
+<span>                        title_prefix <span class="op">=</span> <span class="st">"Distribution of time gap between visits &amp; \noptimal meal interval (eps)\n"</span>,</span>
 <span>                        xlim <span class="op">=</span> <span class="fl">15</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p1</span><span class="op">)</span></span></code></pre></div>
@@ -319,7 +319,7 @@ distributions:</p>
 <span>                            use_log_transform <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                            xlim <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_gmm_no_log</span><span class="op">)</span></span></code></pre></div>
-<p><img src="meal_clustering_files/figure-html/gmm-comparison-1.png" width="576"></p>
+<p><img src="meal_clustering_files/figure-html/gmm-comparison-1.png" width="480"></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># with basic log transformation: log(x + 1) where x is the gap in minutes</span></span>
@@ -335,7 +335,7 @@ distributions:</p>
 <span>                        log_offset <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>                        xlim <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_gmm_log</span><span class="op">)</span></span></code></pre></div>
-<p><img src="meal_clustering_files/figure-html/gmm-comparison-2.png" width="576"></p>
+<p><img src="meal_clustering_files/figure-html/gmm-comparison-2.png" width="480"></p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># with customzied log transformation: log(20x + 1) where x is the gap in minutes</span></span>
@@ -351,7 +351,7 @@ distributions:</p>
 <span>                            log_offset <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>                            xlim <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_gmm_log_20</span><span class="op">)</span></span></code></pre></div>
-<p><img src="meal_clustering_files/figure-html/gmm-comparison-3.png" width="576"></p>
+<p><img src="meal_clustering_files/figure-html/gmm-comparison-3.png" width="480"></p>
 <p>It’s obvious that using log(20x + 1) yield a better fitted model for
 our data. The data-driven approaches allows you to visualize and set the
 threshold customized to YOUR data.</p>
@@ -611,7 +611,7 @@ reasonable clustering result.</p>
 <span>                                      method <span class="op">=</span> <span class="st">"vertical"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">combined_plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p><img src="meal_clustering_files/figure-html/individual-plots-1.png" width="480"></p>
+<p><img src="meal_clustering_files/figure-html/individual-plots-1.png" width="384"></p>
 <p>Compare multiple animals on the same date:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Combine multiple animals for one date</span></span>
@@ -621,7 +621,7 @@ reasonable clustering result.</p>
 <span>                                method <span class="op">=</span> <span class="st">"vertical"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">date_plots</span><span class="op">[[</span><span class="st">"1"</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
-<p><img src="meal_clustering_files/figure-html/date-plots-1.png" width="480"></p>
+<p><img src="meal_clustering_files/figure-html/date-plots-1.png" width="384"></p>
 </div>
 </div>
 <div class="section level2">
