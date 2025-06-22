@@ -82,6 +82,13 @@ reference:
   contents:
   - unique_bin_visits
 
+- subtitle: Non-nutritive Visit Analysis
+  desc: >
+    Functions for analyzing non-nutritive and no-feed visits per animal per day.
+  contents:
+  - calculate_non_nutritive_visits
+  - calculate_no_feed_visits
+
 - subtitle: Replacement Behavior Analysis
   desc: >
     Functions to identify replacement behavior across multiple days, and validate those events by checking whether the actor cow was already present at another bin.
