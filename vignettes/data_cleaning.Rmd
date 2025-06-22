@@ -347,7 +347,7 @@ qc_combined <- qc_results$combined   # Merged feed+water data
 
 Historically, dairy research has used rigid statistical cutoffs to remove outliers. The traditional approach removes all data points beyond 3 standard deviations from the mean:
 
-```{r traditional-outlier-method, fig.width=8, fig.height=5}
+```{r traditional-outlier-method, fig.width=5, fig.height=3}
 # Demonstrate traditional outlier removal on feed data
 demo_feed <- do.call(rbind, qc_feed)  # Combine all days into one dataframe
 

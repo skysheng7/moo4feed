@@ -83,7 +83,7 @@ Traditional studies often use arbitrary fixed meal intervals (60 or 90 minutes) 
 
 ### Demonstration: Fixed 90-Minute Interval
 
-```{r fixed-interval-demo, fig.width=5, fig.height=3}
+```{r fixed-interval-demo, fig.width=4, fig.height=2}
 # Apply fixed 90-minute interval clustering on the second day the first cow
 selected_animal <- unique(clean_feed[[2]]$cow)[1]
 selected_date <- names(clean_feed)[2]
@@ -148,7 +148,7 @@ p1 <- viz_eps_percentile(data = demo_data,
                         upper_bound = NULL,
                         bins = 100,
                         colors = grDevices::hcl.colors(2, "Set 3"),
-                        title_prefix = "Distribution of time gap between visits & \noptimal meal interval (eps)",
+                        title_prefix = "Distribution of time gap between visits & \noptimal meal interval (eps)\n",
                         xlim = 15)
 
 print(p1)
@@ -210,7 +210,7 @@ for (i in seq_along(log_params)) {
 
 Log transformation often improves GMM fitting for highly skewed gap distributions:
 
-```{r gmm-comparison, fig.width=6, fig.height=4}
+```{r gmm-comparison, fig.width=5, fig.height=3}
 # Compare GMM with and without log transformation
 p_gmm_no_log <- viz_eps_gmm(demo_data, 
                             lower_bound = NULL,
@@ -419,7 +419,7 @@ It's obvious that the data-driven clustering method yields a more reasonable clu
 
 Extract plots for specific animals on specific dates:
 
-```{r individual-plots, fig.width=5, fig.height=5}
+```{r individual-plots, fig.width=4, fig.height=4}
 # Get plots for a specific animal on specific day
 animal_plot <- extract_plots(meal_plots, animals = "7022", dates = "2020-10-31")
 
@@ -434,7 +434,7 @@ print(combined_plots[[1]])
 
 Compare multiple animals on the same date:
 
-```{r date-plots, fig.width=5, fig.height=7}
+```{r date-plots, fig.width=4, fig.height=6}
 # Combine multiple animals for one date
 date_plots <- combine_date_plots(meal_plots,
                                 date = "2020-10-31",

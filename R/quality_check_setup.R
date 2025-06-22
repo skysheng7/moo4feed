@@ -184,8 +184,7 @@ qc_warning_skeleton <- function(comb,
   feed_columns <- c(
     "long_dur_feeder", "large_intake_feed_visit",
     "low_daily_feed_intake_cows",
-    "high_daily_feed_intake_cows",
-    "feed_add_time_no_found"
+    "high_daily_feed_intake_cows"
   )
 
   wat_columns <- c(
