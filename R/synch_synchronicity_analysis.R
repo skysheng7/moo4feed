@@ -1,18 +1,3 @@
-#' Synchronicity Analysis Functions
-#'
-#' Functions for analyzing animal-to-animal synchronicity patterns in feeding and drinking behavior.
-#'
-#' @section Functions:
-#' - empty_animal_matrix
-#' - calculate_bout_duration
-#' - paired_synchronicity_analysis
-#' - neighbor_synchronicity_analysis
-#' - synchronicity_matrix_process
-#'
-#' @name synch_synchronicity_analysis
-#' @noRd
-NULL
-
 #' Create empty Animal × Animal matrix for synchronicity analysis
 #'
 #' @description
@@ -250,7 +235,7 @@ paired_synchronicity_analysis <- function(synch_master_animal,
     names(paired_average_dur)[i] <- date_name
     
     # Find animal columns (exclude Time and summary columns)
-    exclude_cols <- c("Time", "total_animal_num", "total_bin_occupied", "empty_bin_num", "date")
+    exclude_cols <- c("Time", "total_animal_num", "unoccupied_bin_num", "date")
     animal_cols <- setdiff(names(cur_master_sheet), exclude_cols)
     
     if (length(animal_cols) < 2) {
@@ -414,7 +399,7 @@ neighbor_synchronicity_analysis <- function(synch_master_animal,
     names(neighbor_average_dur)[i] <- date_name
     
     # Find animal columns (exclude Time and summary columns)
-    exclude_cols <- c("Time", "total_animal_num", "total_bin_occupied", "empty_bin_num", "date")
+    exclude_cols <- c("Time", "total_animal_num", "unoccupied_bin_num", "date")
     animal_cols <- setdiff(names(cur_master_bin_sheet), exclude_cols)
     
     if (length(animal_cols) < 2) {
@@ -564,7 +549,7 @@ synchronicity_matrix_process <- function(synch_master_animal,
     cur_data <- synch_master_animal[[i]]
     if (!is.null(cur_data) && nrow(cur_data) > 0) {
       # Count animal columns (exclude Time and summary columns)
-      exclude_cols <- c("Time", "total_animal_num", "total_bin_occupied", "empty_bin_num", "date")
+      exclude_cols <- c("Time", "total_animal_num", "unoccupied_bin_num", "date")
       animal_cols <- setdiff(names(cur_data), exclude_cols)
       animal_num <- length(animal_cols)
       break

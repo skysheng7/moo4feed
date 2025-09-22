@@ -1,12 +1,14 @@
-#' Create a time sequence from start to end, by seconds
+#' Create a time sequence from start to end, by seconds or minutes
 #'
 #' @description
-#' Creates a sequence of timestamps by seconds from the earliest start time 
-#' to the latest end time in the provided data.
+#' Creates a sequence of timestamps from the earliest start time 
+#' to the latest end time in the provided data. Default resolution is seconds,
+#' but can be changed to minutes for memory efficiency.
 #'
 #' @param cur_data A data frame containing feeding or drinking data
+#' @param resolution Character, either "sec" (default) or "min" for time resolution
 #' @inheritParams set_global_cols
-#' @return A POSIXct vector of time sequence by seconds
+#' @return A POSIXct vector of time sequence at specified resolution
 #' 
 #' @examples
 #' # Create toy data
@@ -15,15 +17,23 @@
 #'   end = lubridate::ymd_hms("2023-01-01 10:00:05")
 #' )
 #' 
-#' # Create time sequence
-#' time_seq <- create_time_sequence(toy_data, start_col = "start", end_col = "end")
-#' length(time_seq) # Should be 6 seconds
+#' # Create time sequence by seconds (default)
+#' time_seq_sec <- create_time_sequence(toy_data, start_col = "start", end_col = "end")
+#' length(time_seq_sec) 
+#' 
+#' # Create time sequence by minutes
+#' time_seq_min <- create_time_sequence(toy_data, start_col = "start", end_col = "end", resolution = "min")
+#' length(time_seq_min) 
 #' 
 #' @noRd
 create_time_sequence <- function(cur_data, 
                                 start_col = start_col2(),
-                                end_col = end_col2()) {
+                                end_col = end_col2(),
+                                resolution = c("sec", "min")) {
   if (!is.data.frame(cur_data)) stop("`cur_data` must be a data frame")
+  
+  # Validate and match resolution argument
+  resolution <- match.arg(trimws(tolower(resolution)), c("sec", "min"))
   
   required_cols <- c(start_col, end_col)
   missing_cols <- setdiff(required_cols, names(cur_data))
@@ -38,10 +48,18 @@ create_time_sequence <- function(cur_data,
   
   total_start <- min(cur_data[[start_col]], na.rm = TRUE)
   total_end <- max(cur_data[[end_col]], na.rm = TRUE)
-  if (is.na(total_start) || is.na(total_end)) stop("Start/End times cannot be NA")
-  if (total_end < total_start) stop("End time cannot be earlier than start time")
   
-  seq(total_start, total_end, by = "sec")
+  # Handle NA values and infinite values
+  if (is.na(total_start) || is.na(total_end) || is.infinite(total_start) || is.infinite(total_end)) {
+    stop("Start/End times cannot be NA or infinite", call. = FALSE)
+  }
+  
+  # Validate that end time is not earlier than start time
+  if (total_end < total_start) {
+    stop("End time cannot be earlier than start time", call. = FALSE)
+  }
+  
+  seq(total_start, total_end, by = resolution)
 }
 
 #' Create an empty time-animal matrix for synchronicity analysis
@@ -53,7 +71,7 @@ create_time_sequence <- function(cur_data,
 #' @param cur_data Data frame containing animal data
 #' @param dateTime_seq POSIXct vector of time sequence from create_time_sequence
 #' @inheritParams set_global_cols
-#' @return Data frame: first column 'Time', others are animal IDs, initialized to 0
+#' @return Data frame: first column 'Time', others are animal IDs, values inside are initialized to 0
 #' 
 #' @examples
 #' # Use package data with explicit column parameters  
@@ -74,7 +92,7 @@ prepare_time_animal_matrix <- function(cur_data,
     stop("Missing required column: ", id_col)
   }
   
-  if (!lubridate::is.POSIXct(dateTime_seq)) stop("`dateTime_seq` must be POSIXct")
+  if (!lubridate::is.POSIXct(dateTime_seq)) stop("`dateTime_seq` must be date time data type: POSIXct")
   if (length(dateTime_seq) == 0) stop("`dateTime_seq` cannot be empty")
   
   animal_list <- sort(unique(cur_data[[id_col]]))
@@ -86,34 +104,6 @@ prepare_time_animal_matrix <- function(cur_data,
   synch_master_animal[["Time"]] <- dateTime_seq
   
   synch_master_animal
-}
-
-#' Create an empty time-bin matrix for tracking bin occupancy
-#'
-#' @description
-#' Creates a matrix with the same structure as the time-animal matrix but 
-#' for tracking which bin each animal is at.
-#'
-#' @param animal_time_matrix Data frame as returned from prepare_time_animal_matrix
-#' @return Data frame with same structure as animal_time_matrix
-#' 
-#' @examples
-#' # Use package data with explicit column parameters
-#' sample_data <- all_fed[[1]][1:10,]
-#' 
-#' # Create matrices using explicit column parameters
-#' time_seq <- create_time_sequence(sample_data, start_col = "start", end_col = "end")
-#' animal_matrix <- prepare_time_animal_matrix(sample_data, time_seq, id_col = "cow")
-#' bin_matrix <- prepare_time_bin_matrix(animal_matrix)
-#' identical(dim(animal_matrix), dim(bin_matrix)) # Should be TRUE
-#' 
-#' @noRd
-prepare_time_bin_matrix <- function(animal_time_matrix) {
-  if (!is.data.frame(animal_time_matrix)) stop("`animal_time_matrix` must be a data frame")
-  if (!"Time" %in% names(animal_time_matrix)) stop("`animal_time_matrix` must have a 'Time' column")
-  if (ncol(animal_time_matrix) < 2) stop("`animal_time_matrix` must have at least one animal column")
-  
-  animal_time_matrix
 }
 
 #' Create an empty time-feed matrix for feed bin tracking
@@ -153,4 +143,32 @@ prepare_time_feed_matrix <- function(dateTime_seq,
   synch_master_feed[["Time"]] <- dateTime_seq
   
   synch_master_feed
-} 
+}
+
+#' Create an empty time-bin matrix (simple pass-through)
+#'
+#' @description
+#' Simple function that returns the input matrix unchanged. Used for consistency
+#' with old API structure.
+#'
+#' @param animal_time_matrix Data frame with Time column and animal columns
+#' @return Input matrix unchanged
+#' 
+#' @keywords internal
+#' @noRd
+prepare_time_bin_matrix <- function(animal_time_matrix) {
+  # Input validation
+  if (!is.data.frame(animal_time_matrix)) {
+    stop("`animal_time_matrix` must be a data frame", call. = FALSE)
+  }
+  
+  if (!"Time" %in% names(animal_time_matrix)) {
+    stop("`animal_time_matrix` must have a 'Time' column", call. = FALSE)
+  }
+  
+  if (ncol(animal_time_matrix) < 2) {
+    stop("`animal_time_matrix` must have at least one animal column", call. = FALSE)
+  }
+  
+  return(animal_time_matrix)
+}

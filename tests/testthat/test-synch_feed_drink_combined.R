@@ -33,21 +33,21 @@ test_that("total_animals_present works with normal input", {
   # Check day1 calculations
   day1_result <- result[[1]]
   expect_true("total_animal_num" %in% names(day1_result))
-  expect_true("total_bin_occupied" %in% names(day1_result))
-  expect_true("empty_bin_num" %in% names(day1_result))
+  expect_true("total_animal_num" %in% names(day1_result))
+  expect_true("unoccupied_bin_num" %in% names(day1_result))
   
   # Check values for day1
   expected_totals <- c(1, 1, 2)  # sum of animals at each time point
   expect_equal(day1_result$total_animal_num, expected_totals)
-  expect_equal(day1_result$total_bin_occupied, expected_totals)
-  expect_equal(day1_result$empty_bin_num, c(7, 7, 6))  # 8 total bins - animals present
+  # total_animal_num has been removed as it was redundant
+  expect_equal(day1_result$unoccupied_bin_num, c(7, 7, 6))  # 8 total bins - animals present
   
   # Check day2 calculations
   day2_result <- result[[2]]
   expected_totals_day2 <- c(2, 1)  # sum of animals at each time point
   expect_equal(day2_result$total_animal_num, expected_totals_day2)
-  expect_equal(day2_result$total_bin_occupied, expected_totals_day2)
-  expect_equal(day2_result$empty_bin_num, c(6, 7))  # 8 total bins - animals present
+  # total_animal_num has been removed as it was redundant
+  expect_equal(day2_result$unoccupied_bin_num, c(6, 7))  # 8 total bins - animals present
 })
 
 test_that("total_animals_present handles single animal correctly", {
@@ -62,8 +62,8 @@ test_that("total_animals_present handles single animal correctly", {
   result <- moo4feed:::total_animals_present(single_animal_data, bins_feed = 1:3, bins_wat = 101:102)
   
   expect_equal(result[[1]]$total_animal_num, 1)
-  expect_equal(result[[1]]$total_bin_occupied, 1)
-  expect_equal(result[[1]]$empty_bin_num, 4)  # 5 total bins - 1 occupied
+  expect_equal(result[[1]]$total_animal_num, 1)
+  expect_equal(result[[1]]$unoccupied_bin_num, 4)  # 5 total bins - 1 occupied
 })
 
 test_that("total_animals_present handles no animals present", {
@@ -80,8 +80,8 @@ test_that("total_animals_present handles no animals present", {
   result <- moo4feed:::total_animals_present(no_animals_data, bins_feed = 1:4, bins_wat = 101:103)
   
   expect_equal(result[[1]]$total_animal_num, c(0, 0))
-  expect_equal(result[[1]]$total_bin_occupied, c(0, 0))
-  expect_equal(result[[1]]$empty_bin_num, c(7, 7))  # all 7 bins empty
+  expect_equal(result[[1]]$total_animal_num, c(0, 0))
+  expect_equal(result[[1]]$unoccupied_bin_num, c(7, 7))  # all 7 bins empty
 })
 
 test_that("total_animals_present preserves original list names", {
@@ -189,11 +189,11 @@ test_that("total_animals_present works with different bin ranges", {
   
   # Test with large bin ranges
   result1 <- moo4feed:::total_animals_present(toy_data, bins_feed = 1:10, bins_wat = 101:110)
-  expect_equal(result1[[1]]$empty_bin_num[1], 19)  # 20 total bins - 1 occupied
+  expect_equal(result1[[1]]$unoccupied_bin_num[1], 19)  # 20 total bins - 1 occupied
   
   # Test with minimal bins
   result2 <- moo4feed:::total_animals_present(toy_data, bins_feed = 1, bins_wat = 101)
-  expect_equal(result2[[1]]$empty_bin_num[1], 1)  # 2 total bins - 1 occupied
+  expect_equal(result2[[1]]$unoccupied_bin_num[1], 1)  # 2 total bins - 1 occupied
 })
 
 test_that("total_animals_present handles edge case with all animals present", {
@@ -213,7 +213,7 @@ test_that("total_animals_present handles edge case with all animals present", {
   # Test with proper bins
   result <- moo4feed:::total_animals_present(all_animals_data, bins_feed = 1, bins_wat = 101)
   expect_equal(result[[1]]$total_animal_num, 2)
-  expect_equal(result[[1]]$empty_bin_num, 0)  # All bins occupied
+  expect_equal(result[[1]]$unoccupied_bin_num, 0)  # All bins occupied
 })
 
 # Tests for delete_inactive_time function
@@ -1031,8 +1031,8 @@ test_that("feed_drink_matrix_process works with normal input", {
   # Check that animal data has required columns
   animal_df <- result[[1]][[1]]
   expect_true("total_animal_num" %in% names(animal_df))
-  expect_true("total_bin_occupied" %in% names(animal_df))
-  expect_true("empty_bin_num" %in% names(animal_df))
+  expect_true("total_animal_num" %in% names(animal_df))
+  expect_true("unoccupied_bin_num" %in% names(animal_df))
   expect_true("date" %in% names(animal_df))
   
   # Check that bin data has updated bin numbers and date
@@ -1104,7 +1104,7 @@ test_that("feed_drink_matrix_process handles single animal", {
   
   # Check structure
   expect_equal(length(result), 2)
-  expect_equal(ncol(result[[1]][[1]]), 6)  # Time + cow1 + total_animal_num + total_bin_occupied + empty_bin_num + date
+  expect_equal(ncol(result[[1]][[1]]), 5)  # Time + cow1 + total_animal_num + unoccupied_bin_num + date
   
   # Check that total_animal_num is correct (1 when active, removed when 0)
   expect_true(all(result[[1]][[1]]$total_animal_num == 1))
@@ -1135,7 +1135,7 @@ test_that("feed_drink_matrix_process integrates all steps correctly", {
   
   # Check that animal counts are calculated
   expect_true("total_animal_num" %in% names(animal_df))
-  expect_true("total_bin_occupied" %in% names(animal_df))
+  expect_true("total_animal_num" %in% names(animal_df))
   
   # Check bin updates: 1->201, 2->202, 3->203, 101->207
   unique_bins <- unique(unlist(bin_df[, !names(bin_df) %in% c("Time", "date")]))
@@ -1216,7 +1216,7 @@ test_that("feed_drink_matrix_process preserves animal names", {
   result <- feed_drink_matrix_process(toy_data, bins_feed = 1:30, bins_wat = 101:105)
   
   # Check that animal names are preserved in column names
-  animal_cols <- setdiff(names(result[[1]][[1]]), c("Time", "total_animal_num", "total_bin_occupied", "empty_bin_num", "date"))
+  animal_cols <- setdiff(names(result[[1]][[1]]), c("Time", "total_animal_num", "unoccupied_bin_num", "date"))
   expect_true("123" %in% animal_cols)
   expect_true("456" %in% animal_cols)
 }) 

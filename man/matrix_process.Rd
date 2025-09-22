@@ -6,7 +6,8 @@
 \usage{
 matrix_process(
   data_list,
-  type = "feed",
+  type = c("feed", "drink", "feed_and_drink"),
+  resolution = c("sec", "min"),
   id_col = id_col2(),
   start_col = start_col2(),
   end_col = end_col2(),
@@ -18,9 +19,11 @@ matrix_process(
 )
 }
 \arguments{
-\item{data_list}{List of data frames to process}
+\item{data_list}{List of data frames to process or single data frame}
 
 \item{type}{Character, one of 'feed', 'drink', 'feed_and_drink'}
+
+\item{resolution}{Character, either "sec" (default) or "min" for time resolution}
 
 \item{id_col}{Animal ID column name (default current global value from \code{\link[=id_col2]{id_col2()}})}
 
@@ -39,11 +42,27 @@ matrix_process(
 \item{bins_wat}{Integer vector of water bins (default current global value from \code{\link[=bins_wat2]{bins_wat2()}})}
 }
 \value{
-List containing processed lists of data frames
+List containing processed matrices:
+\itemize{
+\item \strong{synch_master_animal2}: Time × Animal matrices showing when each animal is active (1/0)
+\item \strong{synch_master_bin2}: Time × Animal matrices showing which bin each animal is using
+\item \strong{synch_master_feed2}: Time × Bin matrices showing feed amounts at each bin (feed type only)
+}
+
+Each matrix includes derived columns:
+\itemize{
+\item \code{total_animal_num}: Total number of animals active at each time
+\item \code{unoccupied_bin_num}: Number of bins not occupied by any animals at each time
+\item \code{date}: Date of each time point
+\item \code{totalFeed}: Total feed across all bins (feed matrices only)
+}
 }
 \description{
-Processes synchronization matrices and adds derived columns like total number of animals,
-total bins occupied, and date information.
+Main function to process synchronization matrices from feeding and drinking data.
+Creates time-based matrices tracking animal activity, bin usage, and optionally
+feed amounts. Adds derived columns like total number of animals active,
+total bins occupied, and date information. Can handle both single
+data frame input or list of data frames.
 }
 \examples{
 # Create toy data with more realistic structure
@@ -58,8 +77,8 @@ toy_data <- list(
   )
 )
 
-# Process matrices with explicit parameters
-result <- matrix_process(toy_data, type = "feed",
+# Process matrices with explicit parameters and minute resolution
+result <- matrix_process(toy_data, type = "feed", resolution = "min",
                         id_col = "animal", start_col = "start", 
                         end_col = "end", bin_col = "bin",
                         start_weight_col = "start_weight", 

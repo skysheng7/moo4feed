@@ -44,7 +44,7 @@ counting animals present, removing inactive time, adding dates, and updating bin
 \details{
 This function performs the complete workflow:
 \enumerate{
-\item Initialize matrices using \code{matrix_initialize}
+\item Initialize matrices using internal matrix processing functions
 \item Count total animals present using \code{total_animals_present}
 \item Remove inactive time periods using \code{delete_inactive_time}
 \item Add date columns using \code{add_date}

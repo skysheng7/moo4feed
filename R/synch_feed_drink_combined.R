@@ -1,18 +1,3 @@
-#' Feed & Drink Combined Synchronicity Matrix Functions
-#'
-#' Functions for processing combined feeding and drinking synchronicity matrices.
-#'
-#' @section Functions:
-#' - total_animals_present
-#' - delete_inactive_time
-#' - add_date
-#' - bin_update
-#' - feed_drink_matrix_process
-#'
-#' @name synch_feed_drink_combined
-#' @noRd
-NULL
-
 #' Calculate total number of animals present at each time point
 #'
 #' @description
@@ -24,8 +9,7 @@ NULL
 #' @return List of data frames with added columns:
 #'   \itemize{
 #'     \item total_animal_num: Total number of animals present at each time
-#'     \item total_bin_occupied: Same as total_animal_num (each animal occupies one bin)
-#'     \item empty_bin_num: Number of empty bins at each time
+#'     \item unoccupied_bin_num: Number of unoccupied bins at each time
 #'   }
 #' 
 #' @noRd
@@ -72,11 +56,8 @@ total_animals_present <- function(feed_drink_synch_master_animal,
     animal_cols <- 2:ncol(cur_data)
     cur_data$total_animal_num <- rowSums(cur_data[, animal_cols, drop = FALSE], na.rm = TRUE)
     
-    # Each animal occupies one bin, so total_bin_occupied equals total_animal_num
-    cur_data$total_bin_occupied <- cur_data$total_animal_num
-    
     # Calculate empty bins
-    cur_data$empty_bin_num <- total_fed_wat_bin - cur_data$total_bin_occupied
+    cur_data$unoccupied_bin_num <- total_fed_wat_bin - cur_data$total_animal_num
     
     new_list[[y]] <- cur_data
     
@@ -381,7 +362,7 @@ bin_update <- function(feed_drink_synch_master_bin,
 #' @details
 #' This function performs the complete workflow:
 #' \enumerate{
-#'   \item Initialize matrices using \code{matrix_initialize}
+#'   \item Initialize matrices using internal matrix processing functions
 #'   \item Count total animals present using \code{total_animals_present}
 #'   \item Remove inactive time periods using \code{delete_inactive_time}
 #'   \item Add date columns using \code{add_date}
@@ -440,17 +421,20 @@ feed_drink_matrix_process <- function(all_comb,
   }
   
   # Step 1: Initialize matrices
-  initialized_matrix <- matrix_initialize(all_comb, 
-                                         type = "feed_and_drink",
-                                         id_col = id_col,
-                                         start_col = start_col,
-                                         end_col = end_col,
-                                         bin_col = bin_col,
-                                         bins_feed = bins_feed,
-                                         bins_wat = bins_wat)
+  initialized_matrix <- matrix_initialize_internal(all_comb, 
+                                                   type = "feed_and_drink",
+                                                   resolution = "sec",
+                                                   id_col = id_col,
+                                                   start_col = start_col,
+                                                   end_col = end_col,
+                                                   bin_col = bin_col,
+                                                   start_weight_col = start_weight_col2(),
+                                                   end_weight_col = end_weight_col2(),
+                                                   bins_feed = bins_feed,
+                                                   bins_wat = bins_wat)
   
-  feed_drink_synch_master_animal <- initialized_matrix[[1]]
-  feed_drink_synch_master_bin <- initialized_matrix[[2]]
+  feed_drink_synch_master_animal <- initialized_matrix$synch_master_animal
+  feed_drink_synch_master_bin <- initialized_matrix$synch_master_bin
   
   # Step 2: Count total animals present
   feed_drink_synch_master_animal <- total_animals_present(
