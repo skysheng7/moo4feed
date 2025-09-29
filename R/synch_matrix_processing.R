@@ -613,23 +613,14 @@ process_cur_synch <- function(cur_synch, bins_feed = bins_feed2()) {
   # Replace initial NA values with first non-NA value (vectorized approach)
   bin_data <- cur_synch[, bin_cols_indices, drop = FALSE]
   
-  if (nrow(bin_data) == 1) {
-    # replace NA with 0
-    cur_synch[is.na(cur_synch)] <- 0
-
-    # Add totalFeed column using vectorized rowSums
-    cur_synch$totalFeed <- rowSums(cur_synch[, bin_cols_indices, drop = FALSE], na.rm = TRUE)
-    return(cur_synch)  # Return original matrix if no bin columns
-  } else {
-    first_non_na <- vapply(bin_data, function(x) {
-      non_na_vals <- x[!is.na(x)]
-      if (length(non_na_vals) > 0) {
-        return(non_na_vals[1])
-      } else {
-        return(0)  # Default to 0 if all values are NA
-      }
-    }, FUN.VALUE = numeric(1))
-  }
+  first_non_na <- vapply(bin_data, function(x) {
+    non_na_vals <- x[!is.na(x)]
+    if (length(non_na_vals) > 0) {
+      return(non_na_vals[1])
+    } else {
+      return(0)  # Default to 0 if all values are NA
+    }
+  }, FUN.VALUE = numeric(1))
   
   # Update first row where needed
   first_row_na <- is.na(bin_data[1, ])
