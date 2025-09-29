@@ -166,7 +166,10 @@ set_global_cols(
   # Bin settings
   bins_feed = 1:30,           # feed bin IDs in your barn
   bins_wat = 1:5,             # water bin IDs in your barn
-  bin_offset = 100            # add this to water bin IDs to differentiate from feeder IDs
+  bin_offset = 100,           # add this to water bin IDs to differentiate from feeder IDs
+  
+  # Physical bin layout for spatial analysis (neighbor detection, synchronicity)
+  bin_layout = c(1, 2, 3, 4, 5, 6, 101, 102, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 103, 104, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 105)
 )
 ```
 
@@ -189,6 +192,11 @@ set_bin_col2("bin")            # feed-bin identifier
 set_bins_feed2(1:30)           # the ID of 30 feed bins present in the barn
 set_bins_wat2(1:5)             # the ID of 5 water bins present in the barn
 set_bin_offset2(100)           # add 100 to water bin ID to differentiate from feeder ID
+
+# Physical bin layout for spatial analysis (neighbor detection, synchronicity)
+# This specifies the actual physical order of bins as arranged in your facility
+# Use updated bin IDs (water bins 101-105, not 1-5) to avoid conflicts
+set_bin_layout2(c(1, 2, 3, 4, 5, 6, 101, 102, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 103, 104, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 105))
 ```
 
 You can verify any setting at any time with the corresponding getter functions:
@@ -197,6 +205,8 @@ You can verify any setting at any time with the corresponding getter functions:
 cat("Timezone:", tz2(), "\n")
 cat("ID column:", id_col2(), "\n")
 cat("Feed bins:", paste(bins_feed2(), collapse = ", "), "\n")
+cat("Water bins:", paste(bins_wat2(), collapse = ", "), "\n")
+cat("Bin layout:", paste(bin_layout2(), collapse = ", "), "\n")
 ```
 
 ------------------------------------------------------------------------

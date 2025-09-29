@@ -14,21 +14,43 @@
 #' @param data_list List of data frames to process or single data frame
 #' @param type Character, one of 'feed', 'drink', 'feed_and_drink'
 #' @param resolution Character, either "sec" (default) or "min" for time resolution
+#' @param reorder_by_layout Logical, whether to reorder matrix columns by physical bin layout (default FALSE)
 #' @inheritParams set_global_cols
-#' @return List containing processed matrices:
+#' @return List containing processed matrices (structure depends on input type and format):
+#'   
+#'   \strong{For feed type ("feed"):}
 #'   \itemize{
-#'     \item \strong{synch_master_animal2}: Time × Animal matrices showing when each animal is active (1/0)
-#'     \item \strong{synch_master_bin2}: Time × Animal matrices showing which bin each animal is using  
-#'     \item \strong{synch_master_feed2}: Time × Bin matrices showing feed amounts at each bin (feed type only)
+#'     \item \strong{synch_master_animal2}: Time × Animal activity matrix
+#'       \itemize{
+#'         \item Rows: Time points (filtered to active periods only)
+#'         \item Columns: Time + Animal IDs + derived columns
+#'         \item Values in each cell: 1 = animal present, 0 = animal not present
+#'         \item Derived columns: \code{total_animal_num}, \code{unoccupied_bin_num}, \code{date}
+#'       }
+#'     \item \strong{synch_master_bin2}: Time × Animal bin occupancy matrix
+#'       \itemize{
+#'         \item Rows: Time points (filtered to active periods only)
+#'         \item Columns: Time + Animal IDs + date column only
+#'         \item Values in each cell: Bin number animal is using (0 = not active)
+#'         \item Derived columns: \code{date} only
+#'       }
+#'     \item \strong{synch_master_feed2}: Time × Bin feed amount matrix
+#'       \itemize{
+#'         \item Rows: Time points (filtered to active periods only)
+#'         \item Columns: Time + Bin numbers + derived columns
+#'         \item Values in each cell: Feed weight at each bin
+#'         \item Derived columns: \code{totalFeed}, \code{date}
+#'       }
 #'   }
 #'   
-#'   Each matrix includes derived columns:
+#'   \strong{For drink/feed_and_drink types ("drink", "feed_and_drink"):}
 #'   \itemize{
-#'     \item \code{total_animal_num}: Total number of animals active at each time
-#'     \item \code{unoccupied_bin_num}: Number of bins not occupied by any animals at each time
-#'     \item \code{date}: Date of each time point
-#'     \item \code{totalFeed}: Total feed across all bins (feed matrices only)
+#'     \item \strong{synch_master_animal2}: Same as above but for drinking activity
+#'     \item \strong{synch_master_bin2}: Same as above but for water bin occupancy
 #'   }
+#'   
+#'   \strong{Note:} If input is a single data frame, returns individual matrices. 
+#'   If input is a list, returns lists of matrices (one per date).
 #' 
 #' @examples
 #' # Create toy data with more realistic structure
@@ -43,18 +65,22 @@
 #'   )
 #' )
 #' 
-#' # Process matrices with explicit parameters and minute resolution
-#' result <- matrix_process(toy_data, type = "feed", resolution = "min",
-#'                         id_col = "animal", start_col = "start", 
-#'                         end_col = "end", bin_col = "bin",
-#'                         start_weight_col = "start_weight", 
-#'                         end_weight_col = "end_weight", bins_feed = 1:3)
-#' names(result)
+#' 
+#' # Process with bin
+#' result_reordered <- matrix_process(toy_data, type = "feed", 
+#'                                   id_col = "animal", start_col = "start", 
+#'                                   end_col = "end", bin_col = "bin",
+#'                                   start_weight_col = "start_weight",
+#'                                   end_weight_col = "end_weight",
+#'                                   bins_feed = 1:2, 
+#'                                   reorder_by_layout = FALSE)
+#' names(result_reordered)
 #' 
 #' @export
 matrix_process <- function(data_list, 
                           type = c("feed", "drink", "feed_and_drink"),
                           resolution = c("sec", "min"),
+                          reorder_by_layout = FALSE,
                           id_col = id_col2(),
                           start_col = start_col2(),
                           end_col = end_col2(),
@@ -62,7 +88,8 @@ matrix_process <- function(data_list,
                           start_weight_col = start_weight_col2(),
                           end_weight_col = end_weight_col2(),
                           bins_feed = bins_feed2(),
-                          bins_wat = bins_wat2()) {
+                          bins_wat = bins_wat2(),
+                          bin_layout = bin_layout2()) {
   
   ## Validate inputs
   type <- match.arg(trimws(tolower(type)), c("feed", "drink", "feed_and_drink"))
@@ -96,38 +123,45 @@ matrix_process <- function(data_list,
     synch_master_bin2 <- processed_matrices$bin
     synch_master_feed2 <- processed_matrices$feed
     
-    # Return results for single df input differently
+    # Prepare result structure
     if (single_df_input) {
-      return(list(
+      result <- list(
         synch_master_animal2 = synch_master_animal2[[1]],
         synch_master_bin2 = synch_master_bin2[[1]],
         synch_master_feed2 = synch_master_feed2[[1]]
-      ))
+      )
     } else {
-      return(list(
+      result <- list(
         synch_master_animal2 = synch_master_animal2,
         synch_master_bin2 = synch_master_bin2,
         synch_master_feed2 = synch_master_feed2
-      ))
+      )
     }
   } else {
     processed_matrices <- process_matrices(synch_master_animal, synch_master_bin, NULL, type, bins_feed, bins_wat)
     synch_master_animal2 <- processed_matrices$animal
     synch_master_bin2 <- processed_matrices$bin
     
-    # Return results for single df input differently
+    # Prepare result structure
     if (single_df_input) {
-      return(list(
+      result <- list(
         synch_master_animal2 = synch_master_animal2[[1]],
         synch_master_bin2 = synch_master_bin2[[1]]
-      ))
+      )
     } else {
-      return(list(
+      result <- list(
         synch_master_animal2 = synch_master_animal2,
         synch_master_bin2 = synch_master_bin2
-      ))
+      )
     }
   }
+  
+  ## Apply bin reordering if requested
+  if (type == "feed_and_drink" && reorder_by_layout) {
+    result <- bin_reorder(result, bin_layout = bin_layout)
+  }
+  
+  return(result)
 }
 
 
@@ -458,7 +492,7 @@ filter_matrix_and_add_date <- function(matrix_data, active_records) {
 #' @noRd
 process_feed_matrix_data <- function(feed_matrix, bins_feed) {
   # Only process if we have data remaining after filtering
-  if ((nrow(feed_matrix) > 0) & (ncol(feed_matrix) > 1)) {
+  if ((nrow(feed_matrix) > 0) && (ncol(feed_matrix) > 1)) {
     # Fill NA values and compute total feed
     feed_matrix <- process_cur_synch(feed_matrix, bins_feed)
     feed_matrix$date <- lubridate::date(feed_matrix$Time)
@@ -616,4 +650,177 @@ process_cur_synch <- function(cur_synch, bins_feed = bins_feed2()) {
   cur_synch$totalFeed <- rowSums(cur_synch[, bin_cols_indices, drop = FALSE], na.rm = TRUE)
   
   return(cur_synch)
+}
+
+#' Reorder matrix columns by physical bin layout
+#'
+#' @description
+#' Reorders the columns in synchronicity matrices to match the physical spatial
+#' arrangement of bins. This is essential for neighbor analysis and spatial
+#' synchronicity studies where physical proximity matters.
+#'
+#' @param synch_matrices List containing processed synchronicity matrices from matrix_process()
+#' @param bin_layout Integer vector specifying physical order of bins (default from bin_layout2())
+#' @return List with the same structure as input but with reordered columns
+#' 
+#' @details
+#' This function reorders columns in both animal and bin matrices to reflect the
+#' physical layout of bins. The Time column always remains first, followed by
+#' animal/bin columns in the order specified by bin_layout, then any additional
+#' derived columns (like total_animal_num, date, etc.) at the end.
+#' 
+#' @noRd
+bin_reorder <- function(synch_matrices, 
+                       bin_layout = bin_layout2()) {
+  
+  # Input validation
+  if (is.null(synch_matrices) || length(synch_matrices) == 0) {
+    stop("`synch_matrices` cannot be NULL or empty", call. = FALSE)
+  }
+  
+  if (!is.list(synch_matrices)) {
+    stop("`synch_matrices` must be a list", call. = FALSE)
+  }
+  
+  if (!is.numeric(bin_layout) || length(bin_layout) == 0) {
+    stop("`bin_layout` must be a non-empty numeric vector", call. = FALSE)
+  }
+  
+  # Check if input has the expected structure from matrix_process
+  expected_names <- c("synch_master_animal2", "synch_master_bin2")
+  if (!all(expected_names %in% names(synch_matrices))) {
+    stop("Input must be the result from matrix_process() with expected components: ", 
+         paste(expected_names, collapse = ", "), call. = FALSE)
+  }
+  
+  # Create a copy to avoid modifying original data
+  result <- synch_matrices
+  
+  # Process animal matrices
+  result$synch_master_animal2 <- reorder_matrix_columns(
+    synch_matrices$synch_master_animal2, bin_layout, "animal"
+  )
+  
+  # Process bin matrices  
+  result$synch_master_bin2 <- reorder_matrix_columns(
+    synch_matrices$synch_master_bin2, bin_layout, "bin"
+  )
+  
+  # Process feed matrices if they exist
+  if ("synch_master_feed2" %in% names(synch_matrices)) {
+    result$synch_master_feed2 <- reorder_matrix_columns(
+      synch_matrices$synch_master_feed2, bin_layout, "feed"
+    )
+  }
+  
+  return(result)
+}
+
+#' Reorder columns in a single matrix or list of matrices (internal helper)
+#'
+#' @description
+#' Internal helper function to reorder columns in synchronicity matrices
+#' based on physical bin layout. Handles both single matrices and lists of matrices.
+#'
+#' @param matrix_data Single data frame or list of data frames
+#' @param bin_layout Integer vector specifying physical order of bins
+#' @param matrix_type Character indicating matrix type ("animal", "bin", or "feed")
+#' @return Reordered matrix or list of matrices
+#' 
+#' @keywords internal
+#' @noRd
+reorder_matrix_columns <- function(matrix_data, bin_layout, matrix_type) {
+  
+  # Handle single data frame input
+  if (is.data.frame(matrix_data)) {
+    return(reorder_single_matrix(matrix_data, bin_layout, matrix_type))
+  }
+  
+  # Handle list of data frames
+  if (is.list(matrix_data)) {
+    result_list <- list()
+    
+    for (i in seq_along(matrix_data)) {
+      if (is.data.frame(matrix_data[[i]])) {
+        result_list[[i]] <- reorder_single_matrix(matrix_data[[i]], bin_layout, matrix_type)
+        
+        # Preserve names
+        if (!is.null(names(matrix_data)[i])) {
+          names(result_list)[i] <- names(matrix_data)[i]
+        }
+      } else {
+        warning("Element ", i, " is not a data frame, skipping", call. = FALSE)
+        result_list[[i]] <- matrix_data[[i]]
+      }
+    }
+    
+    return(result_list)
+  }
+  
+  stop("matrix_data must be a data frame or list of data frames", call. = FALSE)
+}
+
+#' Reorder columns in a single matrix (internal helper)
+#'
+#' @description
+#' Internal helper to reorder columns in a single synchronicity matrix.
+#' Maintains Time column first, reorders animal/bin columns by physical layout,
+#' and keeps derived columns at the end.
+#'
+#' @keywords internal
+#' @noRd
+reorder_single_matrix <- function(single_matrix, bin_layout, matrix_type) {
+  
+  if (!is.data.frame(single_matrix)) {
+    stop("Input must be a data frame", call. = FALSE)
+  }
+  
+  if (!"Time" %in% names(single_matrix)) {
+    stop("Matrix must have a 'Time' column", call. = FALSE)
+  }
+  
+  if (ncol(single_matrix) < 2) {
+    # If only Time column exists, return as is
+    return(single_matrix)
+  }
+  
+  # Identify column types
+  time_col <- "Time"
+  derived_cols <- c("total_animal_num", "unoccupied_bin_num", "date", "totalFeed")
+  derived_present <- intersect(derived_cols, names(single_matrix))
+  
+  # Get animal/bin columns (exclude Time and derived columns)
+  data_cols <- setdiff(names(single_matrix), c(time_col, derived_present))
+  
+  if (length(data_cols) == 0) {
+    # No data columns to reorder
+    return(single_matrix)
+  }
+  
+  # For animal matrices: data_cols are animal IDs (numeric)
+  # For bin matrices: data_cols are animal IDs but values are bin numbers
+  # For feed matrices: data_cols are bin numbers
+  
+  if (matrix_type == "feed") {
+    # For feed matrices, columns represent bins, so reorder by bin_layout directly
+    available_bins <- intersect(as.character(bin_layout), data_cols)
+    unavailable_bins <- setdiff(data_cols, as.character(bin_layout))
+    
+    # Reorder: bins in layout order + any additional bins not in layout
+    reordered_data_cols <- c(available_bins, unavailable_bins)
+  } else {
+    # For animal and bin matrices, columns represent animals
+    # We can't reorder animals by bin layout, so keep original order
+    # This function is mainly useful for feed matrices
+    reordered_data_cols <- data_cols
+  }
+  
+  # Construct final column order: Time + reordered data columns + derived columns
+  final_col_order <- c(time_col, reordered_data_cols, derived_present)
+  
+  # Ensure all columns exist in the matrix
+  final_col_order <- intersect(final_col_order, names(single_matrix))
+  
+  # Return reordered matrix
+  return(single_matrix[, final_col_order, drop = FALSE])
 } 

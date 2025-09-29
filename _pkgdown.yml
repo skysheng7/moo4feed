@@ -127,6 +127,8 @@ reference:
   - set_bins_feed2
   - bins_wat2
   - set_bins_wat2
+  - bin_layout2
+  - set_bin_layout2
   - duration_col2
   - set_duration_col2
   - intake_col2
@@ -140,11 +142,7 @@ reference:
   desc: >
     Functions for analyzing synchronous feeding and drinking behavior between animals.
   contents:
-  - empty_synch_matrix
-  - matrix_initialize
   - matrix_process
-  - feed_drink_matrix_process
-  - synchronicity_matrix_process
 
 - title: Example Data
   desc: >

@@ -8,6 +8,7 @@ matrix_process(
   data_list,
   type = c("feed", "drink", "feed_and_drink"),
   resolution = c("sec", "min"),
+  reorder_by_layout = FALSE,
   id_col = id_col2(),
   start_col = start_col2(),
   end_col = end_col2(),
@@ -15,7 +16,8 @@ matrix_process(
   start_weight_col = start_weight_col2(),
   end_weight_col = end_weight_col2(),
   bins_feed = bins_feed2(),
-  bins_wat = bins_wat2()
+  bins_wat = bins_wat2(),
+  bin_layout = bin_layout2()
 )
 }
 \arguments{
@@ -24,6 +26,8 @@ matrix_process(
 \item{type}{Character, one of 'feed', 'drink', 'feed_and_drink'}
 
 \item{resolution}{Character, either "sec" (default) or "min" for time resolution}
+
+\item{reorder_by_layout}{Logical, whether to reorder matrix columns by physical bin layout (default FALSE)}
 
 \item{id_col}{Animal ID column name (default current global value from \code{\link[=id_col2]{id_col2()}})}
 
@@ -40,22 +44,45 @@ matrix_process(
 \item{bins_feed}{Integer vector of feed bins (default current global value from \code{\link[=bins_feed2]{bins_feed2()}})}
 
 \item{bins_wat}{Integer vector of water bins (default current global value from \code{\link[=bins_wat2]{bins_wat2()}})}
+
+\item{bin_layout}{Integer vector of physical bin layout (default current global value from \code{\link[=bin_layout2]{bin_layout2()}})}
 }
 \value{
-List containing processed matrices:
+List containing processed matrices (structure depends on input type and format):
+
+\strong{For feed type ("feed"):}
 \itemize{
-\item \strong{synch_master_animal2}: Time × Animal matrices showing when each animal is active (1/0)
-\item \strong{synch_master_bin2}: Time × Animal matrices showing which bin each animal is using
-\item \strong{synch_master_feed2}: Time × Bin matrices showing feed amounts at each bin (feed type only)
+\item \strong{synch_master_animal2}: Time × Animal activity matrix
+\itemize{
+\item Rows: Time points (filtered to active periods only)
+\item Columns: Time + Animal IDs + derived columns
+\item Values in each cell: 1 = animal present, 0 = animal not present
+\item Derived columns: \code{total_animal_num}, \code{unoccupied_bin_num}, \code{date}
+}
+\item \strong{synch_master_bin2}: Time × Animal bin occupancy matrix
+\itemize{
+\item Rows: Time points (filtered to active periods only)
+\item Columns: Time + Animal IDs + date column only
+\item Values in each cell: Bin number animal is using (0 = not active)
+\item Derived columns: \code{date} only
+}
+\item \strong{synch_master_feed2}: Time × Bin feed amount matrix
+\itemize{
+\item Rows: Time points (filtered to active periods only)
+\item Columns: Time + Bin numbers + derived columns
+\item Values in each cell: Feed weight at each bin
+\item Derived columns: \code{totalFeed}, \code{date}
+}
 }
 
-Each matrix includes derived columns:
+\strong{For drink/feed_and_drink types ("drink", "feed_and_drink"):}
 \itemize{
-\item \code{total_animal_num}: Total number of animals active at each time
-\item \code{unoccupied_bin_num}: Number of bins not occupied by any animals at each time
-\item \code{date}: Date of each time point
-\item \code{totalFeed}: Total feed across all bins (feed matrices only)
+\item \strong{synch_master_animal2}: Same as above but for drinking activity
+\item \strong{synch_master_bin2}: Same as above but for water bin occupancy
 }
+
+\strong{Note:} If input is a single data frame, returns individual matrices.
+If input is a list, returns lists of matrices (one per date).
 }
 \description{
 Main function to process synchronization matrices from feeding and drinking data.
@@ -77,12 +104,15 @@ toy_data <- list(
   )
 )
 
-# Process matrices with explicit parameters and minute resolution
-result <- matrix_process(toy_data, type = "feed", resolution = "min",
-                        id_col = "animal", start_col = "start", 
-                        end_col = "end", bin_col = "bin",
-                        start_weight_col = "start_weight", 
-                        end_weight_col = "end_weight", bins_feed = 1:3)
-names(result)
+
+# Process with bin
+result_reordered <- matrix_process(toy_data, type = "feed", 
+                                  id_col = "animal", start_col = "start", 
+                                  end_col = "end", bin_col = "bin",
+                                  start_weight_col = "start_weight",
+                                  end_weight_col = "end_weight",
+                                  bins_feed = 1:2, 
+                                  reorder_by_layout = FALSE)
+names(result_reordered)
 
 }

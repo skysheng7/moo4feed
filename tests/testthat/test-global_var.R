@@ -100,6 +100,103 @@ test_that("bins_wat2() / set_bins_wat2() work", {
   set_bins_wat2(orig)
 })
 
+test_that("bin_layout2() / set_bin_layout2() work", {
+  orig <- bin_layout2()
+  new  <- c(1, 101, 2, 102, 3)
+
+  out  <- set_bin_layout2(new)
+  expect_identical(out, orig)
+  expect_identical(bin_layout2(), new)
+
+  set_bin_layout2(orig)
+  expect_identical(bin_layout2(), orig)
+})
+
+# Comprehensive tests for bin_layout2 validation
+test_that("set_bin_layout2() validates input correctly", {
+  orig <- bin_layout2()
+  
+  # Test error for non-numeric input
+  expect_error(set_bin_layout2(c("a", "b", "c")), 
+               "`new_layout` must be a numeric vector")
+  
+  # Test error for empty input
+  expect_error(set_bin_layout2(numeric(0)), 
+               "`new_layout` cannot be empty")
+  
+  # Test error for duplicate bin IDs
+  expect_error(set_bin_layout2(c(1, 2, 1, 3)), 
+               "Duplicate bin IDs found in layout: 1")
+  
+  # Test error for multiple duplicates
+  expect_error(set_bin_layout2(c(1, 2, 1, 3, 2)), 
+               "Duplicate bin IDs found in layout:")
+  
+  # Restore original after tests
+  set_bin_layout2(orig)
+})
+
+test_that("set_bin_layout2() warns about overlapping feed/water bin IDs", {
+  orig_layout <- bin_layout2()
+  orig_feed <- bins_feed2()
+  orig_wat <- bins_wat2()
+  
+  # Set up conflicting bin IDs (same IDs for feed and water)
+  set_bins_feed2(1:5)
+  set_bins_wat2(1:3)  # Overlapping with feed bins
+  
+  # Should warn about overlapping IDs
+  expect_warning(set_bin_layout2(c(1, 2, 3)), 
+                 "appear in both feed and water bin lists")
+  
+  # Restore original values
+  set_bin_layout2(orig_layout)
+  set_bins_feed2(orig_feed)
+  set_bins_wat2(orig_wat)
+})
+
+test_that("set_bin_layout2() provides helpful messages about missing/extra bins", {
+  orig_layout <- bin_layout2()
+  orig_feed <- bins_feed2()
+  orig_wat <- bins_wat2()
+  
+  # Set up specific bin lists
+  set_bins_feed2(1:3)
+  set_bins_wat2(101:102)
+  
+  # Test with missing bins (should get message)
+  expect_message(set_bin_layout2(c(1, 2)), 
+                 "not included in the layout")
+  
+  # Test with extra bins (should get message)
+  expect_message(set_bin_layout2(c(1, 2, 3, 101, 102, 999)), 
+                 "not in your feed/water bin lists")
+  
+  # Restore original values
+  set_bin_layout2(orig_layout)
+  set_bins_feed2(orig_feed)
+  set_bins_wat2(orig_wat)
+})
+
+test_that("set_bin_layout2() handles valid layouts correctly", {
+  orig_layout <- bin_layout2()
+  orig_feed <- bins_feed2()
+  orig_wat <- bins_wat2()
+  
+  # Set up non-overlapping bin lists
+  set_bins_feed2(1:5)
+  set_bins_wat2(101:103)
+  
+  # Valid layout should work without warnings or errors
+  expect_silent(set_bin_layout2(c(1, 2, 101, 3, 4, 102, 5, 103)))
+  expect_equal(bin_layout2(), c(1, 2, 101, 3, 4, 102, 5, 103))
+  
+  # Restore original values
+  set_bin_layout2(orig_layout)
+  set_bins_feed2(orig_feed)
+  set_bins_wat2(orig_wat)
+})
+
 # duration_col2 / set_duration_col2 test
 test_that("duration_col2() / set_duration_col2() work", {
   orig <- duration_col2()
@@ -168,6 +265,7 @@ test_that("set_global_cols() correctly sets multiple global variables", {
   orig_bin_offset <- bin_offset2()
   orig_bins_feed <- bins_feed2()
   orig_bins_wat <- bins_wat2()
+  orig_bin_layout <- bin_layout2()
 
   # Set new values
   set_global_cols(
@@ -183,7 +281,8 @@ test_that("set_global_cols() correctly sets multiple global variables", {
     end_weight_col = "final_weight",
     bin_offset = 50,
     bins_feed = 1:20,
-    bins_wat = 1:3
+    bins_wat = 1:3,
+    bin_layout = c(1, 2, 101, 3, 4, 102)
   )
 
   # Check if new values are set correctly
@@ -200,6 +299,7 @@ test_that("set_global_cols() correctly sets multiple global variables", {
   expect_equal(bin_offset2(), 50)
   expect_equal(bins_feed2(), 1:20)
   expect_equal(bins_wat2(), 1:3)
+  expect_equal(bin_layout2(), c(1, 2, 101, 3, 4, 102))
 
   # Restore original values
   set_global_cols(
@@ -215,7 +315,8 @@ test_that("set_global_cols() correctly sets multiple global variables", {
     end_weight_col = orig_end_weight_col,
     bin_offset = orig_bin_offset,
     bins_feed = orig_bins_feed,
-    bins_wat = orig_bins_wat
+    bins_wat = orig_bins_wat,
+    bin_layout = orig_bin_layout
   )
 
   # Verify original values are restored
@@ -232,4 +333,5 @@ test_that("set_global_cols() correctly sets multiple global variables", {
   expect_equal(bin_offset2(), orig_bin_offset)
   expect_equal(bins_feed2(), orig_bins_feed)
   expect_equal(bins_wat2(), orig_bins_wat)
+  expect_equal(bin_layout2(), orig_bin_layout)
 })
