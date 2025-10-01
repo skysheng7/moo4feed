@@ -4,10 +4,7 @@
 \alias{set_bin_layout2}
 \title{Set the physical layout order of bins as global variable}
 \usage{
-set_bin_layout2(
-  new_layout =
-    "1-2-3-4-5-6-101-102-7-8-9-10-11-12-13-14-15-16-17-18-103-104-19-20-21-22-23-24-25-26-27-28-29-30-105"
-)
+set_bin_layout2(new_layout = "1-2-3\\n4-5-6")
 }
 \arguments{
 \item{new_layout}{A character string specifying the physical layout of bins.
