@@ -15,6 +15,7 @@
 <url><loc>https://skysheng7.github.io/moo4feed/reference/all_fed.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/all_wat.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/bin_col2.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/bin_layout2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/bin_offset2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/bins_feed2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/bins_wat2.html</loc></url>
@@ -49,6 +50,7 @@
 <url><loc>https://skysheng7.github.io/moo4feed/reference/knn_clean_water.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/knn_outlier_detection.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/lower_first.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/matrix_process.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/meal_interval.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/meal_label_visits.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/merge_cluster_results.html</loc></url>
@@ -64,6 +66,7 @@
 <url><loc>https://skysheng7.github.io/moo4feed/reference/record_replacement_days.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/rename_bins.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/set_bin_col2.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/set_bin_layout2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/set_bin_offset2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/set_bins_feed2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/set_bins_wat2.html</loc></url>
@@ -79,6 +82,8 @@
 <url><loc>https://skysheng7.github.io/moo4feed/reference/set_tz2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/start_col2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/start_weight_col2.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/synch_neighbor_analysis.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/synch_pair_analysis.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/trans_col2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/tz2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/unique_bin_visits.html</loc></url>

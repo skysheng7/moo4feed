@@ -54,7 +54,8 @@ Each parameter defaults to its current global value if unspecified.</p>
 <span>  end_weight_col <span class="op">=</span> <span class="fu"><a href="end_weight_col2.html">end_weight_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  bin_offset <span class="op">=</span> <span class="fu"><a href="bin_offset2.html">bin_offset2</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  bins_feed <span class="op">=</span> <span class="fu"><a href="bins_feed2.html">bins_feed2</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  bins_wat <span class="op">=</span> <span class="fu"><a href="bins_wat2.html">bins_wat2</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  bins_wat <span class="op">=</span> <span class="fu"><a href="bins_wat2.html">bins_wat2</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  bin_layout <span class="op">=</span> <span class="fu"><a href="bin_layout2.html">bin_layout2</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -113,6 +114,11 @@ Each parameter defaults to its current global value if unspecified.</p>
 <dt id="arg-bins-wat">bins_wat<a class="anchor" aria-label="anchor" href="#arg-bins-wat"></a></dt>
 <dd><p>Integer vector of water bins (default current global value from <code><a href="bins_wat2.html">bins_wat2()</a></code>)</p></dd>
 
+
+<dt id="arg-bin-layout">bin_layout<a class="anchor" aria-label="anchor" href="#arg-bin-layout"></a></dt>
+<dd><p>Character string of physical bin layout with rows separated by <code>\n</code>
+and bins within rows separated by "-" (default current global value from <code><a href="bin_layout2.html">bin_layout2()</a></code>)</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -122,6 +128,8 @@ Each parameter defaults to its current global value if unspecified.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">set_global_cols</span><span class="op">(</span>tz <span class="op">=</span> <span class="st">"UTC"</span>, id_col <span class="op">=</span> <span class="st">"animal_id"</span>, dur_col <span class="op">=</span> <span class="st">"visit_duration"</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Bin IDs 1, 2, 3 appear in both feed and water bin lists. Make sure you're using updated bin IDs (e.g., water bins should be 101+, not 1-5) to avoid conflicts.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Note: The following bins from your feed/water bin lists are not included in the layout: 15, 16, 17, 18, 19, 20</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
