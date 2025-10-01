@@ -7,14 +7,21 @@
 bin_layout2()
 }
 \value{
-An integer vector indicating the physical order of bins from left to right
-(or following the physical layout). Feed bins are numbered 1-30, water bins 101-105.
+A character string representing the physical bin layout.
 \strong{Note}: Water bins use updated IDs to avoid conflicts with feed bin numbering.
 }
 \description{
 Returns the physical arrangement order of feed and water bins as they are
 positioned in the facility. This is used for neighbor analysis and spatial
 synchronicity studies where the physical proximity of bins matters.
+}
+\details{
+The layout is specified as a string where:
+\itemize{
+\item Bins within the same row are separated by "-"
+\item Different rows are separated by \verb{\\n} (newline)
+\item Only bins in the same row are considered spatial neighbors
+}
 }
 \examples{
 bin_layout2()

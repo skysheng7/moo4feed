@@ -150,6 +150,8 @@ reference:
     Functions for analyzing synchronous feeding and drinking behavior between animals.
   contents:
   - matrix_process
+  - synch_pair_analysis
+  - synch_neighbor_analysis
 
 - title: Example Data
   desc: >

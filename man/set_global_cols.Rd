@@ -48,7 +48,8 @@ set_global_cols(
 
 \item{bins_wat}{Integer vector of water bins (default current global value from \code{\link[=bins_wat2]{bins_wat2()}})}
 
-\item{bin_layout}{Integer vector of physical bin layout (default current global value from \code{\link[=bin_layout2]{bin_layout2()}})}
+\item{bin_layout}{Character string of physical bin layout with rows separated by \verb{\\n}
+and bins within rows separated by "-" (default current global value from \code{\link[=bin_layout2]{bin_layout2()}})}
 }
 \value{
 Called for its side-effects

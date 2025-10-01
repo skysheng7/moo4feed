@@ -102,7 +102,7 @@ test_that("bins_wat2() / set_bins_wat2() work", {
 
 test_that("bin_layout2() / set_bin_layout2() work", {
   orig <- bin_layout2()
-  new  <- c(1, 101, 2, 102, 3)
+  new  <- "1-101-2-102-3"
 
   out  <- set_bin_layout2(new)
   expect_identical(out, orig)
@@ -116,20 +116,24 @@ test_that("bin_layout2() / set_bin_layout2() work", {
 test_that("set_bin_layout2() validates input correctly", {
   orig <- bin_layout2()
   
-  # Test error for non-numeric input
-  expect_error(set_bin_layout2(c("a", "b", "c")), 
-               "`new_layout` must be a numeric vector")
+  # Test error for non-character input
+  expect_error(set_bin_layout2(c(1, 2, 3)), 
+               "`new_layout` must be a character string")
   
   # Test error for empty input
-  expect_error(set_bin_layout2(numeric(0)), 
+  expect_error(set_bin_layout2(""), 
                "`new_layout` cannot be empty")
   
+  # Test error for invalid bin numbers (non-numeric)
+  expect_error(set_bin_layout2("a-b-c"), 
+               "Invalid bin numbers in layout")
+  
   # Test error for duplicate bin IDs
-  expect_error(set_bin_layout2(c(1, 2, 1, 3)), 
+  expect_error(set_bin_layout2("1-2-1-3"), 
                "Duplicate bin IDs found in layout: 1")
   
   # Test error for multiple duplicates
-  expect_error(set_bin_layout2(c(1, 2, 1, 3, 2)), 
+  expect_error(set_bin_layout2("1-2-1-3-2"), 
                "Duplicate bin IDs found in layout:")
   
   # Restore original after tests
@@ -146,7 +150,7 @@ test_that("set_bin_layout2() warns about overlapping feed/water bin IDs", {
   set_bins_wat2(1:3)  # Overlapping with feed bins
   
   # Should warn about overlapping IDs
-  expect_warning(set_bin_layout2(c(1, 2, 3)), 
+  expect_warning(set_bin_layout2("1-2-3"), 
                  "appear in both feed and water bin lists")
   
   # Restore original values
@@ -165,11 +169,11 @@ test_that("set_bin_layout2() provides helpful messages about missing/extra bins"
   set_bins_wat2(101:102)
   
   # Test with missing bins (should get message)
-  expect_message(set_bin_layout2(c(1, 2)), 
+  expect_message(set_bin_layout2("1-2"), 
                  "not included in the layout")
   
   # Test with extra bins (should get message)
-  expect_message(set_bin_layout2(c(1, 2, 3, 101, 102, 999)), 
+  expect_message(set_bin_layout2("1-2-3-101-102-999"), 
                  "not in your feed/water bin lists")
   
   # Restore original values
@@ -187,9 +191,53 @@ test_that("set_bin_layout2() handles valid layouts correctly", {
   set_bins_feed2(1:5)
   set_bins_wat2(101:103)
   
-  # Valid layout should work without warnings or errors
-  expect_silent(set_bin_layout2(c(1, 2, 101, 3, 4, 102, 5, 103)))
-  expect_equal(bin_layout2(), c(1, 2, 101, 3, 4, 102, 5, 103))
+  # Valid single-row layout should work without warnings or errors
+  expect_silent(set_bin_layout2("1-2-101-3-4-102-5-103"))
+  expect_equal(bin_layout2(), "1-2-101-3-4-102-5-103")
+  
+  # Valid multi-row layout should also work
+  expect_silent(set_bin_layout2("1-2-101\n3-4-102\n5-103"))
+  expect_equal(bin_layout2(), "1-2-101\n3-4-102\n5-103")
+  
+  # Restore original values
+  set_bin_layout2(orig_layout)
+  set_bins_feed2(orig_feed)
+  set_bins_wat2(orig_wat)
+})
+
+test_that("set_bin_layout2() handles multi-row layouts with different row lengths", {
+  orig_layout <- bin_layout2()
+  orig_feed <- bins_feed2()
+  orig_wat <- bins_wat2()
+  
+  # Set up bin lists
+  set_bins_feed2(1:10)
+  set_bins_wat2(101:103)
+  
+  # Multi-row layout with different row lengths (common in real barns)
+  # Row 1: 5 bins, Row 2: 6 bins, Row 3: 2 bins
+  layout_str <- "1-2-3-4-5\n6-7-8-9-10-101\n102-103"
+  expect_silent(set_bin_layout2(layout_str))
+  expect_equal(bin_layout2(), layout_str)
+  
+  # Restore original values
+  set_bin_layout2(orig_layout)
+  set_bins_feed2(orig_feed)
+  set_bins_wat2(orig_wat)
+})
+
+test_that("set_bin_layout2() handles layouts with extra whitespace", {
+  orig_layout <- bin_layout2()
+  orig_feed <- bins_feed2()
+  orig_wat <- bins_wat2()
+  
+  # Set up bin lists
+  set_bins_feed2(1:5)
+  set_bins_wat2(101:102)
+  
+  # Layout with extra spaces (should be trimmed)
+  layout_str <- " 1 - 2 - 3 \n 4 - 5 - 101 - 102 "
+  expect_silent(set_bin_layout2(layout_str))
   
   # Restore original values
   set_bin_layout2(orig_layout)
@@ -282,7 +330,7 @@ test_that("set_global_cols() correctly sets multiple global variables", {
     bin_offset = 50,
     bins_feed = 1:20,
     bins_wat = 1:3,
-    bin_layout = c(1, 2, 101, 3, 4, 102)
+    bin_layout = "1-2-101-3-4-102"
   )
 
   # Check if new values are set correctly
@@ -299,7 +347,7 @@ test_that("set_global_cols() correctly sets multiple global variables", {
   expect_equal(bin_offset2(), 50)
   expect_equal(bins_feed2(), 1:20)
   expect_equal(bins_wat2(), 1:3)
-  expect_equal(bin_layout2(), c(1, 2, 101, 3, 4, 102))
+  expect_equal(bin_layout2(), "1-2-101-3-4-102")
 
   # Restore original values
   set_global_cols(

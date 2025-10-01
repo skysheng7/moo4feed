@@ -8,7 +8,6 @@ matrix_process(
   data_list,
   type = c("feed", "drink", "feed_and_drink"),
   resolution = c("sec", "min"),
-  reorder_by_layout = FALSE,
   id_col = id_col2(),
   start_col = start_col2(),
   end_col = end_col2(),
@@ -16,8 +15,7 @@ matrix_process(
   start_weight_col = start_weight_col2(),
   end_weight_col = end_weight_col2(),
   bins_feed = bins_feed2(),
-  bins_wat = bins_wat2(),
-  bin_layout = bin_layout2()
+  bins_wat = bins_wat2()
 )
 }
 \arguments{
@@ -26,8 +24,6 @@ matrix_process(
 \item{type}{Character, one of 'feed', 'drink', 'feed_and_drink'}
 
 \item{resolution}{Character, either "sec" (default) or "min" for time resolution}
-
-\item{reorder_by_layout}{Logical, whether to reorder matrix columns by physical bin layout (default FALSE)}
 
 \item{id_col}{Animal ID column name (default current global value from \code{\link[=id_col2]{id_col2()}})}
 
@@ -44,8 +40,6 @@ matrix_process(
 \item{bins_feed}{Integer vector of feed bins (default current global value from \code{\link[=bins_feed2]{bins_feed2()}})}
 
 \item{bins_wat}{Integer vector of water bins (default current global value from \code{\link[=bins_wat2]{bins_wat2()}})}
-
-\item{bin_layout}{Integer vector of physical bin layout (default current global value from \code{\link[=bin_layout2]{bin_layout2()}})}
 }
 \value{
 List containing processed matrices (structure depends on input type and format):
@@ -106,13 +100,12 @@ toy_data <- list(
 
 
 # Process with bin
-result_reordered <- matrix_process(toy_data, type = "feed", 
+result <- matrix_process(toy_data, type = "feed", 
                                   id_col = "animal", start_col = "start", 
                                   end_col = "end", bin_col = "bin",
                                   start_weight_col = "start_weight",
                                   end_weight_col = "end_weight",
-                                  bins_feed = 1:2, 
-                                  reorder_by_layout = FALSE)
-names(result_reordered)
+                                  bins_feed = 1:2)
+names(result)
 
 }

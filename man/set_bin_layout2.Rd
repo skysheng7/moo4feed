@@ -5,14 +5,14 @@
 \title{Set the physical layout order of bins as global variable}
 \usage{
 set_bin_layout2(
-  new_layout = c(1, 2, 3, 4, 5, 6, 101, 102, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
-    103, 104, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 105)
+  new_layout =
+    "1-2-3-4-5-6-101-102-7-8-9-10-11-12-13-14-15-16-17-18-103-104-19-20-21-22-23-24-25-26-27-28-29-30-105"
 )
 }
 \arguments{
-\item{new_layout}{An integer vector specifying the physical order of bins.
-Should include all feed bins (from bins_feed2()) and water bins (from bins_wat2())
-in their actual physical arrangement order. \strong{Important}: Use the updated bin IDs
+\item{new_layout}{A character string specifying the physical layout of bins.
+Should include feed bins (from \code{bins_feed2()}) and water bins (from \code{bins_wat2()})
+in their actual physical arrangement. \strong{Important}: Use the updated bin IDs
 (e.g., water bins should be 101, 102, etc., not 1, 2) to avoid conflicts between
 feed and water bin numbering systems.}
 }
@@ -24,9 +24,22 @@ Define the physical arrangement order of feed and water bins as they are
 positioned in the facility. This is used for neighbor analysis and spatial
 synchronicity studies where the physical proximity of bins matters.
 }
+\details{
+The layout should be specified as a string where:
+\itemize{
+\item Bins within the same row are separated by "-"
+\item Different rows are separated by \verb{\\n} (newline)
+\item Only bins in the same row are considered spatial neighbors (left/right)
+\item Bins in different rows are never neighbors, even if they're vertically aligned
+}
+}
 \examples{
-# Set a custom physical layout using updated bin IDs
-set_bin_layout2(c(1, 2, 101, 3, 4, 102, 5, 6))
+# Single row layout
+set_bin_layout2("1-2-101-3-4-102-5-6")
+
+# Multiple row layout (3 rows)
+set_bin_layout2("1-2-3-4-5\n6-7-8-9-10-11\n12-13-14")
+
 # Check if bin_layout is set up correctly
 bin_layout2()
 

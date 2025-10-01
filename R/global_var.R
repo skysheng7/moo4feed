@@ -25,7 +25,7 @@ the$end_weight_col     <- "end_weight"
 the$bin_offset  <- 100
 the$bins_feed   <- 1:30
 the$bins_wat    <- 1:5
-the$bin_layout  <- c(1, 2, 3, 4, 5, 6, 101, 102, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 103, 104, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 105)
+the$bin_layout  <- "1-2-3-4-5-6-101-102-7-8-9-10-11-12-13-14-15-16-17-18-103-104-19-20-21-22-23-24-25-26-27-28-29-30-105"
 
 # -- tz -------------------------------------------------------------
 
@@ -338,9 +338,13 @@ set_bins_wat2 <- function(new_bins = 1:5) {
 #' Returns the physical arrangement order of feed and water bins as they are
 #' positioned in the facility. This is used for neighbor analysis and spatial
 #' synchronicity studies where the physical proximity of bins matters.
+#' 
+#' The layout is specified as a string where:
+#' - Bins within the same row are separated by "-"
+#' - Different rows are separated by `\n` (newline)
+#' - Only bins in the same row are considered spatial neighbors
 #'
-#' @return An integer vector indicating the physical order of bins from left to right
-#'   (or following the physical layout). Feed bins are numbered 1-30, water bins 101-105.
+#' @return A character string representing the physical bin layout.
 #'   **Note**: Water bins use updated IDs to avoid conflicts with feed bin numbering.
 #' @examples
 #' bin_layout2()
@@ -352,35 +356,69 @@ bin_layout2 <- function() the$bin_layout
 #' Define the physical arrangement order of feed and water bins as they are
 #' positioned in the facility. This is used for neighbor analysis and spatial
 #' synchronicity studies where the physical proximity of bins matters.
+#' 
+#' The layout should be specified as a string where:
+#' - Bins within the same row are separated by "-"
+#' - Different rows are separated by `\n` (newline)
+#' - Only bins in the same row are considered spatial neighbors (left/right)
+#' - Bins in different rows are never neighbors, even if they're vertically aligned
 #'
-#' @param new_layout An integer vector specifying the physical order of bins.
-#'   Should include all feed bins (from bins_feed2()) and water bins (from bins_wat2())
-#'   in their actual physical arrangement order. **Important**: Use the updated bin IDs
+#' @param new_layout A character string specifying the physical layout of bins.
+#'   Should include feed bins (from `bins_feed2()`) and water bins (from `bins_wat2()`)
+#'   in their actual physical arrangement. **Important**: Use the updated bin IDs
 #'   (e.g., water bins should be 101, 102, etc., not 1, 2) to avoid conflicts between
 #'   feed and water bin numbering systems.
 #'
 #' @return Called for its side-effects
 #' @examples
-#' # Set a custom physical layout using updated bin IDs
-#' set_bin_layout2(c(1, 2, 101, 3, 4, 102, 5, 6))
+#' # Single row layout
+#' set_bin_layout2("1-2-101-3-4-102-5-6")
+#' 
+#' # Multiple row layout (3 rows)
+#' set_bin_layout2("1-2-3-4-5\n6-7-8-9-10-11\n12-13-14")
+#' 
 #' # Check if bin_layout is set up correctly
 #' bin_layout2()
 #'
 #' @export
-set_bin_layout2 <- function(new_layout = c(1, 2, 3, 4, 5, 6, 101, 102, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 103, 104, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 105)) {
+set_bin_layout2 <- function(new_layout = "1-2-3-4-5-6-101-102-7-8-9-10-11-12-13-14-15-16-17-18-103-104-19-20-21-22-23-24-25-26-27-28-29-30-105") {
   
   # Input validation
-  if (!is.numeric(new_layout)) {
-    stop("`new_layout` must be a numeric vector", call. = FALSE)
+  if (!is.character(new_layout)) {
+    stop("`new_layout` must be a character string", call. = FALSE)
   }
   
-  if (length(new_layout) == 0) {
+  if (length(new_layout) == 0 || new_layout == "") {
     stop("`new_layout` cannot be empty", call. = FALSE)
   }
   
+  # Parse the layout to extract bin numbers
+  rows <- strsplit(new_layout, "\\n")[[1]]
+  rows <- trimws(rows)
+  rows <- rows[rows != ""]  # Remove empty rows
+  
+  if (length(rows) == 0) {
+    stop("`new_layout` must contain at least one row", call. = FALSE)
+  }
+  
+  # Extract all bin numbers from the layout
+  all_bins_in_layout <- numeric(0)
+  for (row in rows) {
+    bins <- strsplit(row, "-")[[1]]
+    bins <- trimws(bins)
+    bins <- bins[bins != ""]
+    bin_nums <- suppressWarnings(as.numeric(bins))
+    
+    if (any(is.na(bin_nums))) {
+      stop("Invalid bin numbers in layout. All bins must be numeric.", call. = FALSE)
+    }
+    
+    all_bins_in_layout <- c(all_bins_in_layout, bin_nums)
+  }
+  
   # Check for duplicate bin IDs
-  if (any(duplicated(new_layout))) {
-    duplicates <- new_layout[duplicated(new_layout)]
+  if (any(duplicated(all_bins_in_layout))) {
+    duplicates <- all_bins_in_layout[duplicated(all_bins_in_layout)]
     stop("Duplicate bin IDs found in layout: ", paste(unique(duplicates), collapse = ", "), 
          ". Each bin ID must appear only once in the physical layout.", call. = FALSE)
   }
@@ -390,8 +428,8 @@ set_bin_layout2 <- function(new_layout = c(1, 2, 3, 4, 5, 6, 101, 102, 7, 8, 9, 
   water_bins <- bins_wat2()
   
   # Warn if there are overlapping IDs between feed and water bins in the layout
-  feed_in_layout <- intersect(new_layout, feed_bins)
-  water_in_layout <- intersect(new_layout, water_bins)
+  feed_in_layout <- intersect(all_bins_in_layout, feed_bins)
+  water_in_layout <- intersect(all_bins_in_layout, water_bins)
   overlapping_ids <- intersect(feed_in_layout, water_in_layout)
   
   if (length(overlapping_ids) > 0) {
@@ -401,9 +439,9 @@ set_bin_layout2 <- function(new_layout = c(1, 2, 3, 4, 5, 6, 101, 102, 7, 8, 9, 
   }
   
   # Provide helpful message about missing bins
-  all_bins <- c(feed_bins, water_bins)
-  missing_bins <- setdiff(all_bins, new_layout)
-  extra_bins <- setdiff(new_layout, all_bins)
+  all_expected_bins <- c(feed_bins, water_bins)
+  missing_bins <- setdiff(all_expected_bins, all_bins_in_layout)
+  extra_bins <- setdiff(all_bins_in_layout, all_expected_bins)
   
   if (length(missing_bins) > 0) {
     message("Note: The following bins from your feed/water bin lists are not included in the layout: ", 
@@ -550,7 +588,8 @@ set_end_weight_col2 <- function(new_name = "end_weight") {
 #' @param bin_offset Numeric bin offset (default current global value from [bin_offset2()])
 #' @param bins_feed Integer vector of feed bins (default current global value from [bins_feed2()])
 #' @param bins_wat Integer vector of water bins (default current global value from [bins_wat2()])
-#' @param bin_layout Integer vector of physical bin layout (default current global value from [bin_layout2()])
+#' @param bin_layout Character string of physical bin layout with rows separated by `\n`
+#'   and bins within rows separated by "-" (default current global value from [bin_layout2()])
 #'
 #' @return Called for its side-effects
 #' @examples

@@ -12,3 +12,5 @@
 ^.cursorrules$
 ^\.cursor$
 ^Icon$
+^doc$
+^Meta$
