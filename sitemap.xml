@@ -1,5 +1,6 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://skysheng7.github.io/moo4feed/404.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/CLAUDE.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/CODE_OF_CONDUCT.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/CONTRIBUTING.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/LICENSE-text.html</loc></url>
@@ -9,7 +10,9 @@
 <url><loc>https://skysheng7.github.io/moo4feed/articles/data_cleaning.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/articles/index.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/articles/meal_clustering.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/articles/non_nutritive_visits.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/articles/replacement_detection.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/articles/synchronicity_analysis.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/authors.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/index.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/all_fed.html</loc></url>
