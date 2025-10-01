@@ -12,7 +12,8 @@ Authors@R:
            comment = c(ORCID = "0000-0002-1427-3152")),
       person("Kratika", "Rathi", email = "kratikar2011@gmail.com", role = c("ctb")),
       person("Nicole", "Lopez", email = "nicoleangelpty@gmail.com", role = c("ctb")),
-      person("Colombe", "Tolokin", email = "colombe.tolokin@outlook.com", role = c("ctb")))
+      person("Colombe", "Tolokin", email = "colombe.tolokin@outlook.com", role = c("ctb"),
+           comment = c(ORCID = "0009-0002-5355-4851")))
 Description: An end-to-end toolkit for turning raw electronic feeder or drinker logs into biologically meaningful metrics. Users submit visit-level feeding and drinking data, and the package automatically cleans the data; derives core variables such as meal length, intake, rate, and bout duration; generates other innovative features including exploratory and social behaviours, and environmental competitiveness. 
 License: MIT + file LICENSE
 Depends: R (>= 4.1.0)
@@ -31,7 +32,8 @@ Imports:
     patchwork,
     rlang,
     tibble,
-    tidyr
+    tidyr,
+    zoo
 Suggests: 
     covr,
     hexSticker,

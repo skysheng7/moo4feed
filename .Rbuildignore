@@ -11,3 +11,6 @@
 ^CONTRIBUTING\.md$
 ^.cursorrules$
 ^\.cursor$
+^Icon$
+^doc$
+^Meta$

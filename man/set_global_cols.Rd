@@ -17,7 +17,8 @@ set_global_cols(
   end_weight_col = end_weight_col2(),
   bin_offset = bin_offset2(),
   bins_feed = bins_feed2(),
-  bins_wat = bins_wat2()
+  bins_wat = bins_wat2(),
+  bin_layout = bin_layout2()
 )
 }
 \arguments{
@@ -46,6 +47,9 @@ set_global_cols(
 \item{bins_feed}{Integer vector of feed bins (default current global value from \code{\link[=bins_feed2]{bins_feed2()}})}
 
 \item{bins_wat}{Integer vector of water bins (default current global value from \code{\link[=bins_wat2]{bins_wat2()}})}
+
+\item{bin_layout}{Character string of physical bin layout with rows separated by \verb{\\n}
+and bins within rows separated by "-" (default current global value from \code{\link[=bin_layout2]{bin_layout2()}})}
 }
 \value{
 Called for its side-effects

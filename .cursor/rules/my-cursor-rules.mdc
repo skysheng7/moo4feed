@@ -64,6 +64,7 @@ You are an expert in R package development, with a focus on creating maintainabl
 - Validate function inputs early with clear error messages
 - Implement informative warning and message functions
 - Return consistent output structures (tibble/data.frame, lists, etc.)
+- **Parameter Validation Pattern**: For parameters with predefined choices, always use `match.arg(trimws(tolower(parameter_name)))` to ensure case-insensitive, whitespace-tolerant validation. This makes the API more user-friendly by accepting inputs like "SEC", "sec", " Min ", etc.
 
 ## Performance Considerations:
 - Use vectorized operations (native pipes: `|>` ) over loops when possible

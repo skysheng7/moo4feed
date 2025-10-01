@@ -134,6 +134,8 @@ reference:
   - set_bins_feed2
   - bins_wat2
   - set_bins_wat2
+  - bin_layout2
+  - set_bin_layout2
   - duration_col2
   - set_duration_col2
   - intake_col2
@@ -142,6 +144,14 @@ reference:
   - set_start_weight_col2
   - end_weight_col2
   - set_end_weight_col2
+
+- title: Synchronicity Analysis
+  desc: >
+    Functions for analyzing synchronous feeding and drinking behavior between animals.
+  contents:
+  - matrix_process
+  - synch_pair_analysis
+  - synch_neighbor_analysis
 
 - title: Example Data
   desc: >
