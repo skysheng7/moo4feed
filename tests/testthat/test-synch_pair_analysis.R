@@ -396,3 +396,154 @@ test_that("extract_pair_activity errors on missing animal", {
   )
 })
 
+# Additional edge case tests ===================================================
+
+test_that("synch_pair_analysis handles invalid synch_master_animal2 structure", {
+  bad_data <- list(
+    synch_master_animal2 = "not a data frame"
+  )
+
+  expect_error(
+    synch_pair_analysis(bad_data, type = "feed"),
+    "must be a data frame or list of data frames"
+  )
+})
+
+test_that("synch_pair_analysis handles empty data frames in list", {
+  # Create empty animal matrix
+  empty_animal_matrix <- data.frame(
+    Time = lubridate::ymd_hms(character(0))
+  )
+
+  matrix_data <- list(
+    synch_master_animal2 = empty_animal_matrix
+  )
+
+  expect_error(
+    synch_pair_analysis(matrix_data, type = "feed"),
+    "No animal columns found"
+  )
+})
+
+test_that("synch_pair_analysis handles all zeros in activity matrix", {
+  animal_matrix <- data.frame(
+    Time = lubridate::ymd_hms(c(
+      "2023-01-01 10:00:00",
+      "2023-01-01 10:00:01",
+      "2023-01-01 10:00:02"
+    ), tz = "UTC"),
+    `1` = c(0, 0, 0),
+    `2` = c(0, 0, 0),
+    check.names = FALSE
+  )
+
+  matrix_data <- list(
+    synch_master_animal2 = animal_matrix
+  )
+
+  result <- synch_pair_analysis(matrix_data, type = "feed")
+
+  # No co-occurrence when all activity is 0
+  expect_equal(result$bout["1", "2"], 0)
+  expect_equal(result$total_time["1", "2"], 0)
+})
+
+test_that("process_all_pairs_one_day handles derived columns correctly", {
+  animal_matrix <- data.frame(
+    Time = lubridate::ymd_hms(c(
+      "2023-01-01 10:00:00",
+      "2023-01-01 10:00:01"
+    ), tz = "UTC"),
+    `1` = c(1, 1),
+    `2` = c(1, 0),
+    total_animal_num = c(2, 1),
+    unoccupied_bin_num = c(1, 2),
+    date = as.Date("2023-01-01"),
+    check.names = FALSE
+  )
+
+  result <- process_all_pairs_one_day(animal_matrix, "sec", "animal")
+
+  # Should exclude derived columns from animal list
+  expect_equal(dim(result$bout), c(2, 2))
+  expect_equal(rownames(result$bout), c("1", "2"))
+})
+
+test_that("extract_pair_activity handles all active rows", {
+  animal_matrix <- data.frame(
+    Time = lubridate::ymd_hms(c(
+      "2023-01-01 10:00:00",
+      "2023-01-01 10:00:01",
+      "2023-01-01 10:00:02",
+      "2023-01-01 10:00:03"
+    ), tz = "UTC"),
+    `1` = c(1, 1, 1, 1),
+    `2` = c(1, 1, 1, 1),
+    check.names = FALSE
+  )
+
+  result <- extract_pair_activity(animal_matrix, "1", "2")
+
+  expect_equal(length(result), 4)
+  expect_equal(result, animal_matrix$Time)
+})
+
+test_that("synch_pair_analysis handles three animals correctly", {
+  toy_data <- data.frame(
+    animal = c(1, 2, 3),
+    start = lubridate::ymd_hms(c(
+      "2023-01-01 10:00:00",
+      "2023-01-01 10:00:00",
+      "2023-01-01 10:00:00"
+    ), tz = "UTC"),
+    end = lubridate::ymd_hms(c(
+      "2023-01-01 10:00:05",
+      "2023-01-01 10:00:05",
+      "2023-01-01 10:00:05"
+    ), tz = "UTC"),
+    bin = c(1, 2, 3),
+    start_weight = c(10.5, 8.3, 9.1),
+    end_weight = c(10.2, 8.1, 8.9)
+  )
+
+  matrices <- matrix_process(toy_data, type = "feed",
+                            id_col = "animal", start_col = "start",
+                            end_col = "end", bin_col = "bin",
+                            start_weight_col = "start_weight",
+                            end_weight_col = "end_weight",
+                            bins_feed = 1:3)
+
+  result <- synch_pair_analysis(matrices, type = "feed",
+                                id_col = "animal")
+
+  # Should have 3 unique pairs: (1,2), (1,3), (2,3)
+  # All should have co-occurrence since they all overlap
+  expect_true(result$bout["1", "2"] > 0)
+  expect_true(result$bout["1", "3"] > 0)
+  expect_true(result$bout["2", "3"] > 0)
+})
+
+test_that("synch_pair_analysis works with drink type", {
+  toy_data <- data.frame(
+    animal = c(1, 2),
+    start = lubridate::ymd_hms(c(
+      "2023-01-01 10:00:00", "2023-01-01 10:00:01"
+    ), tz = "UTC"),
+    end = lubridate::ymd_hms(c(
+      "2023-01-01 10:00:03", "2023-01-01 10:00:04"
+    ), tz = "UTC"),
+    bin = c(1, 2)
+  )
+
+  matrices <- matrix_process(toy_data, type = "drink",
+                            id_col = "animal", start_col = "start",
+                            end_col = "end", bin_col = "bin",
+                            bins_wat = 1:2)
+
+  result <- synch_pair_analysis(matrices, type = "drink",
+                                id_col = "animal")
+
+  expect_type(result, "list")
+  expect_named(result, c("bout", "total_time", "avg_duration"))
+})
+

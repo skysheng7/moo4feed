@@ -490,3 +490,218 @@ test_that("extract_neighbor_activity handles same animal at different bins", {
   expect_equal(length(result), 3)
 })
 
+# Additional edge case tests ===================================================
+
+test_that("synch_neighbor_analysis handles invalid bin_layout", {
+  toy_data <- data.frame(
+    animal = c(1, 2),
+    start = lubridate::ymd_hms(c(
+      "2023-01-01 10:00:00", "2023-01-01 10:00:01"
+    ), tz = "UTC"),
+    end = lubridate::ymd_hms(c(
+      "2023-01-01 10:00:03", "2023-01-01 10:00:04"
+    ), tz = "UTC"),
+    bin = c(1, 2),
+    start_weight = c(10.5, 8.3),
+    end_weight = c(10.2, 8.1)
+  )
+
+  matrices <- matrix_process(toy_data, type = "feed",
+                            id_col = "animal", start_col = "start",
+                            end_col = "end", bin_col = "bin",
+                            start_weight_col = "start_weight",
+                            end_weight_col = "end_weight",
+                            bins_feed = 1:2)
+
+  expect_error(
+    synch_neighbor_analysis(matrices, bin_layout = "", type = "feed"),
+    "bin_layout cannot be NULL or empty"
+  )
+
+  expect_error(
+    synch_neighbor_analysis(matrices, bin_layout = NULL, type = "feed"),
+    "bin_layout cannot be NULL or empty"
+  )
+})
+
+test_that("synch_neighbor_analysis handles bin_matrix with all zeros", {
+  # Create data with bins but no actual activity overlap
+  bin_matrix <- data.frame(
+    Time = lubridate::ymd_hms(c(
+      "2023-01-01 10:00:00",
+      "2023-01-01 10:00:01"
+    ), tz = "UTC"),
+    `1` = c(1, 0),
+    `2` = c(0, 2),
+    check.names = FALSE
+  )
+
+  matrix_data <- list(
+    synch_master_bin2 = bin_matrix
+  )
+
+  result <- synch_neighbor_analysis(
+    matrix_data,
+    bin_layout = "1-2",
+    type = "feed"
+  )
+
+  # No neighbor activity since they're never active at the same time
+  expect_equal(result$bout["1", "2"], 0)
+  expect_equal(result$total_time["1", "2"], 0)
+})
+
+test_that("synch_neighbor_analysis handles complex bin layout with gaps", {
+  toy_data <- data.frame(
+    animal = c(1, 2),
+    start = lubridate::ymd_hms(c(
+      "2023-01-01 10:00:00", "2023-01-01 10:00:00"
+    ), tz = "UTC"),
+    end = lubridate::ymd_hms(c(
+      "2023-01-01 10:00:05", "2023-01-01 10:00:05"
+    ), tz = "UTC"),
+    bin = c(1, 10),
+    start_weight = c(10.5, 8.3),
+    end_weight = c(10.2, 8.1)
+  )
+
+  matrices <- matrix_process(toy_data, type = "feed",
+                            id_col = "animal", start_col = "start",
+                            end_col = "end", bin_col = "bin",
+                            start_weight_col = "start_weight",
+                            end_weight_col = "end_weight",
+                            bins_feed = c(1, 10))
+
+  result <- synch_neighbor_analysis(
+    matrices,
+    bin_layout = "1-2-3\n8-9-10",
+    type = "feed"
+  )
+
+  # Bins 1 and 10 are not neighbors (different rows)
+  expect_equal(result$bout["1", "2"], 0)
+})
+
+test_that("process_all_neighbors_one_day handles date column in bin_matrix", {
+  bin_matrix <- data.frame(
+    Time = lubridate::ymd_hms(c(
+      "2023-01-01 10:00:00",
+      "2023-01-01 10:00:01"
+    ), tz = "UTC"),
+    `1` = c(1, 1),
+    `2` = c(2, 2),
+    date = as.Date("2023-01-01"),
+    check.names = FALSE
+  )
+
+  neighbor_lookup <- parse_bin_layout("1-2-3")
+  result <- process_all_neighbors_one_day(bin_matrix, neighbor_lookup, "sec", "animal")
+
+  # Should exclude date column from animal list
+  expect_equal(dim(result$bout), c(2, 2))
+  expect_equal(rownames(result$bout), c("1", "2"))
+})
+
+test_that("extract_neighbor_activity handles non-neighboring bins correctly", {
+  bin_matrix <- data.frame(
+    Time = lubridate::ymd_hms(c(
+      "2023-01-01 10:00:00",
+      "2023-01-01 10:00:01"
+    ), tz = "UTC"),
+    `1` = c(1, 1),
+    `2` = c(5, 5),  # Bin 5 is not neighbor of bin 1
+    check.names = FALSE
+  )
+
+  neighbor_lookup <- parse_bin_layout("1-2-3")
+  result <- extract_neighbor_activity(bin_matrix, "1", "2", neighbor_lookup)
+
+  expect_equal(length(result), 0)
+})
+
+test_that("synch_neighbor_analysis works with very simple layout", {
+  toy_data <- data.frame(
+    animal = c(1, 2),
+    start = lubridate::ymd_hms(c(
+      "2023-01-01 10:00:00", "2023-01-01 10:00:00"
+    ), tz = "UTC"),
+    end = lubridate::ymd_hms(c(
+      "2023-01-01 10:00:03", "2023-01-01 10:00:03"
+    ), tz = "UTC"),
+    bin = c(1, 2),
+    start_weight = c(10.5, 8.3),
+    end_weight = c(10.2, 8.1)
+  )
+
+  matrices <- matrix_process(toy_data, type = "feed",
+                            id_col = "animal", start_col = "start",
+                            end_col = "end", bin_col = "bin",
+                            start_weight_col = "start_weight",
+                            end_weight_col = "end_weight",
+                            bins_feed = 1:2)
+
+  result <- synch_neighbor_analysis(
+    matrices,
+    bin_layout = "1-2",
+    type = "feed"
+  )
+
+  # Both animals at neighboring bins for entire duration
+  expect_true(result$bout["1", "2"] > 0)
+  expect_true(result$total_time["1", "2"] > 0)
+})
+
+test_that("synch_neighbor_analysis handles animals moving between bins", {
+  # Create bin matrix where animal 1 moves from bin 1 to bin 2
+  bin_matrix <- data.frame(
+    Time = lubridate::ymd_hms(c(
+      "2023-01-01 10:00:00",
+      "2023-01-01 10:00:01",
+      "2023-01-01 10:00:02"
+    ), tz = "UTC"),
+    `1` = c(1, 2, 3),  # Animal 1 moves across bins
+    `2` = c(2, 3, 4),  # Animal 2 also moves
+    check.names = FALSE
+  )
+
+  matrix_data <- list(
+    synch_master_bin2 = bin_matrix
+  )
+
+  result <- synch_neighbor_analysis(
+    matrix_data,
+    bin_layout = "1-2-3-4",
+    type = "feed"
+  )
+
+  # Should detect neighbor patterns at each time point
+  expect_true(result$total_time["1", "2"] > 0)
+})
+
+test_that("synch_neighbor_analysis works with drink type", {
+  toy_data <- data.frame(
+    animal = c(1, 2),
+    start = lubridate::ymd_hms(c(
+      "2023-01-01 10:00:00", "2023-01-01 10:00:01"
+    ), tz = "UTC"),
+    end = lubridate::ymd_hms(c(
+      "2023-01-01 10:00:03", "2023-01-01 10:00:04"
+    ), tz = "UTC"),
+    bin = c(1, 2)
+  )
+
+  matrices <- matrix_process(toy_data, type = "drink",
+                            id_col = "animal", start_col = "start",
+                            end_col = "end", bin_col = "bin",
+                            bins_wat = 1:2)
+
+  result <- synch_neighbor_analysis(
+    matrices,
+    bin_layout = "1-2",
+    type = "drink"
+  )
+
+  expect_type(result, "list")
+  expect_named(result, c("bout", "total_time", "avg_duration"))
+})
+

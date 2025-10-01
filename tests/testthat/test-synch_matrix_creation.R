@@ -347,3 +347,106 @@ test_that("prepare_time_bin_matrix works with multiple columns", {
   expect_equal(ncol(result), 4)
   expect_identical(result, input_matrix)
 })
+
+# Additional edge case tests ===================================================
+
+test_that("create_time_sequence handles sub-second precision", {
+  toy_data <- data.frame(
+    start = lubridate::ymd_hms("2023-01-01 10:00:00.000"),
+    end = lubridate::ymd_hms("2023-01-01 10:00:00.500")
+  )
+
+  result <- create_time_sequence(toy_data, start_col = "start", end_col = "end")
+
+  # Should still create a sequence (even though sub-second)
+  expect_true(lubridate::is.POSIXct(result))
+  expect_true(length(result) >= 1)
+})
+
+test_that("create_time_sequence handles timezone-aware timestamps", {
+  toy_data <- data.frame(
+    start = lubridate::ymd_hms("2023-01-01 10:00:00", tz = "America/New_York"),
+    end = lubridate::ymd_hms("2023-01-01 10:00:05", tz = "America/New_York")
+  )
+
+  result <- create_time_sequence(toy_data, start_col = "start", end_col = "end")
+
+  expect_equal(lubridate::tz(result), "America/New_York")
+})
+
+test_that("prepare_time_animal_matrix handles duplicate animal IDs", {
+  toy_data <- data.frame(
+    cow = c(1, 1, 2, 2),
+    start = lubridate::ymd_hms("2023-01-01 10:00:00"),
+    end = lubridate::ymd_hms("2023-01-01 10:00:02")
+  )
+
+  time_seq <- create_time_sequence(toy_data, start_col = "start", end_col = "end")
+  result <- prepare_time_animal_matrix(toy_data, time_seq, id_col = "cow")
+
+  # Should handle duplicates by using unique values
+  expect_equal(ncol(result), 3)  # Time + 2 unique animals
+  expect_equal(colnames(result), c("Time", "1", "2"))
+})
+
+test_that("prepare_time_animal_matrix handles character animal IDs", {
+  toy_data <- data.frame(
+    cow = c("A", "B", "C"),
+    start = lubridate::ymd_hms("2023-01-01 10:00:00"),
+    end = lubridate::ymd_hms("2023-01-01 10:00:02")
+  )
+
+  time_seq <- create_time_sequence(toy_data, start_col = "start", end_col = "end")
+  result <- prepare_time_animal_matrix(toy_data, time_seq, id_col = "cow")
+
+  expect_equal(ncol(result), 4)  # Time + 3 animals
+  expect_equal(colnames(result), c("Time", "A", "B", "C"))
+})
+
+test_that("prepare_time_feed_matrix handles very large bin ranges", {
+  time_seq <- seq(lubridate::ymd_hms("2023-01-01 10:00:00"),
+                  lubridate::ymd_hms("2023-01-01 10:00:02"), by = "sec")
+  bins_feed <- c(1, 100)  # Large gap
+
+  result <- prepare_time_feed_matrix(time_seq, bins_feed = bins_feed)
+
+  # Should create all bins from 1 to 100
+  expect_equal(ncol(result), 101)  # Time + 100 bins
+})
+
+test_that("prepare_time_feed_matrix handles negative bin numbers", {
+  time_seq <- seq(lubridate::ymd_hms("2023-01-01 10:00:00"),
+                  lubridate::ymd_hms("2023-01-01 10:00:02"), by = "sec")
+  bins_feed <- c(-1, 0, 1)
+
+  result <- prepare_time_feed_matrix(time_seq, bins_feed = bins_feed)
+
+  expect_true(ncol(result) > 1)
+  expect_true("-1" %in% colnames(result))
+})
+
+test_that("prepare_time_animal_matrix handles very long time sequences", {
+  toy_data <- data.frame(
+    cow = c(1, 2),
+    start = lubridate::ymd_hms("2023-01-01 10:00:00"),
+    end = lubridate::ymd_hms("2023-01-01 11:00:00")  # 1 hour
+  )
+
+  time_seq <- create_time_sequence(toy_data, start_col = "start", end_col = "end")
+  result <- prepare_time_animal_matrix(toy_data, time_seq, id_col = "cow")
+
+  # Should handle 3601 rows (0 to 3600 seconds)
+  expect_equal(nrow(result), 3601)
+  expect_equal(ncol(result), 3)
+})
+
+test_that("create_time_sequence preserves timezone across sequence", {
+  toy_data <- data.frame(
+    start = lubridate::ymd_hms("2023-01-01 10:00:00", tz = "UTC"),
+    end = lubridate::ymd_hms("2023-01-01 10:00:05", tz = "UTC")
+  )
+
+  result <- create_time_sequence(toy_data, start_col = "start", end_col = "end")
+
+  expect_true(all(lubridate::tz(result) == "UTC"))
+})

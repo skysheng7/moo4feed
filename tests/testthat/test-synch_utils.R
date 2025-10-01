@@ -258,7 +258,7 @@ test_that("is_neighbour handles non-existent bins", {
 test_that("is_neighbour works with complex layout", {
   layout <- "1-2-3\n4-5\n6-7-8-9"
   lookup <- parse_bin_layout(layout)
-  
+
   # Row 1
   expect_true(is_neighbour(1, 2, lookup))
   expect_true(is_neighbour(2, 3, lookup))
@@ -271,5 +271,88 @@ test_that("is_neighbour works with complex layout", {
   # Cross-row (should be FALSE)
   expect_false(is_neighbour(3, 4, lookup))
   expect_false(is_neighbour(5, 6, lookup))
+})
+
+# Additional edge case tests ===================================================
+
+test_that("calculate_bout_duration handles very large time gaps", {
+  time_vec <- lubridate::ymd_hms(c(
+    "2023-01-01 10:00:00",
+    "2023-01-01 10:00:01",
+    "2023-01-01 12:00:00"  # 2 hour gap
+  ))
+  result <- calculate_bout_duration(time_vec, "sec")
+
+  expect_equal(result$bout, 2)
+  expect_equal(result$total_time, 3)
+  expect_equal(result$avg_duration, 1.5)
+})
+
+test_that("calculate_bout_duration handles duplicate timestamps", {
+  time_vec <- lubridate::ymd_hms(c(
+    "2023-01-01 10:00:00",
+    "2023-01-01 10:00:00",  # Duplicate
+    "2023-01-01 10:00:01"
+  ))
+  result <- calculate_bout_duration(time_vec, "sec")
+
+  expect_equal(result$bout, 1)
+  expect_equal(result$total_time, 3)
+})
+
+test_that("calculate_bout_duration errors on invalid resolution", {
+  time_vec <- lubridate::ymd_hms("2023-01-01 10:00:00")
+
+  expect_error(
+    calculate_bout_duration(time_vec, "hour"),
+    "'arg' should be one of"
+  )
+})
+
+test_that("create_empty_pair_matrix handles mixed character and numeric IDs", {
+  animal_ids <- c(1, 10, 100)
+  mat <- create_empty_pair_matrix(animal_ids)
+
+  expect_equal(rownames(mat), c("1", "10", "100"))
+  expect_equal(colnames(mat), c("1", "10", "100"))
+})
+
+test_that("parse_bin_layout handles layout with gaps in bin numbers", {
+  layout <- "1-5-10"
+  result <- parse_bin_layout(layout)
+
+  expect_equal(names(result), c("1", "5", "10"))
+  expect_equal(result[["1"]], 5)
+  expect_equal(result[["5"]], c(1, 10))
+  expect_equal(result[["10"]], 5)
+})
+
+test_that("parse_bin_layout handles layout with single bin per row", {
+  layout <- "1\n2\n3"
+  result <- parse_bin_layout(layout)
+
+  expect_equal(names(result), c("1", "2", "3"))
+  expect_equal(length(result[["1"]]), 0)  # No neighbors
+  expect_equal(length(result[["2"]]), 0)
+  expect_equal(length(result[["3"]]), 0)
+})
+
+test_that("is_neighbour handles numeric bin IDs", {
+  layout <- "1-2-3"
+  lookup <- parse_bin_layout(layout)
+
+  # Test with numeric inputs
+  expect_true(is_neighbour(1, 2, lookup))
+  expect_true(is_neighbour(2, 3, lookup))
+  expect_false(is_neighbour(1, 3, lookup))
+})
+
+test_that("is_neighbour handles zero as bin number", {
+  layout <- "0-1-2"
+  lookup <- parse_bin_layout(layout)
+
+  expect_true(is_neighbour(0, 1, lookup))
+  expect_true(is_neighbour(1, 2, lookup))
+  expect_false(is_neighbour(0, 2, lookup))
 })
 

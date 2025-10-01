@@ -732,3 +732,219 @@ test_that("matrix_process handles bins outside expected range with warning", {
     "Bin 99 is outside the expected range"
   )
 })
+
+# Additional edge case tests ===================================================
+
+test_that("matrix_process handles single-row data frame", {
+  toy_data <- data.frame(
+    animal = 1,
+    start = lubridate::ymd_hms("2023-01-01 10:00:00"),
+    end = lubridate::ymd_hms("2023-01-01 10:00:02"),
+    bin = 1,
+    start_weight = 10.5,
+    end_weight = 10.2
+  )
+
+  result <- matrix_process(
+    toy_data,
+    type = "feed",
+    id_col = "animal",
+    start_col = "start",
+    end_col = "end",
+    bin_col = "bin",
+    start_weight_col = "start_weight",
+    end_weight_col = "end_weight",
+    bins_feed = 1:2
+  )
+
+  expect_s3_class(result$synch_master_animal2, "data.frame")
+  expect_true(nrow(result$synch_master_animal2) > 0)
+})
+
+test_that("matrix_process handles data with no overlapping time periods", {
+  toy_data <- data.frame(
+    animal = c(1, 2),
+    start = lubridate::ymd_hms(c("2023-01-01 10:00:00", "2023-01-01 10:10:00")),
+    end = lubridate::ymd_hms(c("2023-01-01 10:00:05", "2023-01-01 10:10:05")),
+    bin = c(1, 2)
+  )
+
+  result <- matrix_process(
+    toy_data,
+    type = "drink",
+    id_col = "animal",
+    start_col = "start",
+    end_col = "end",
+    bin_col = "bin",
+    bins_wat = 1:2
+  )
+
+  # Both periods should be represented
+  expect_true(nrow(result$synch_master_animal2) >= 10)
+})
+
+test_that("matrix_process handles out-of-order timestamps", {
+  toy_data <- data.frame(
+    animal = c(2, 1),  # Out of animal order
+    start = lubridate::ymd_hms(c("2023-01-01 10:00:05", "2023-01-01 10:00:00")),  # Out of time order
+    end = lubridate::ymd_hms(c("2023-01-01 10:00:08", "2023-01-01 10:00:03")),
+    bin = c(2, 1)
+  )
+
+  result <- matrix_process(
+    toy_data,
+    type = "drink",
+    id_col = "animal",
+    start_col = "start",
+    end_col = "end",
+    bin_col = "bin",
+    bins_wat = 1:2
+  )
+
+  # Should sort internally and process correctly
+  expect_s3_class(result$synch_master_animal2, "data.frame")
+  expect_true(nrow(result$synch_master_animal2) > 0)
+})
+
+test_that("matrix_process handles empty bins_feed correctly", {
+  toy_data <- data.frame(
+    animal = c(1, 2),
+    start = lubridate::ymd_hms(c("2023-01-01 10:00:00", "2023-01-01 10:00:01")),
+    end = lubridate::ymd_hms(c("2023-01-01 10:00:02", "2023-01-01 10:00:03")),
+    bin = c(1, 2),
+    start_weight = c(10.5, 8.3),
+    end_weight = c(10.2, 8.1)
+  )
+
+  # Empty bins_feed should cause an error during processing
+  expect_error(
+    matrix_process(
+      toy_data,
+      type = "feed",
+      id_col = "animal",
+      start_col = "start",
+      end_col = "end",
+      bin_col = "bin",
+      start_weight_col = "start_weight",
+      end_weight_col = "end_weight",
+      bins_feed = numeric(0)
+    )
+  )
+})
+
+test_that("find_closest_time_index handles single-element time sequence", {
+  time_seq <- lubridate::ymd_hms("2023-01-01 10:00:00")
+  target <- lubridate::ymd_hms("2023-01-01 10:00:00")
+
+  result <- find_closest_time_index(time_seq, target, tolerance = 1)
+
+  expect_equal(result, 1)
+})
+
+test_that("filter_matrix_and_add_date handles all active records", {
+  time_seq <- seq(
+    lubridate::ymd_hms("2023-01-01 10:00:00"),
+    lubridate::ymd_hms("2023-01-01 10:00:05"),
+    by = "sec"
+  )
+
+  matrix_data <- data.frame(
+    Time = time_seq,
+    animal1 = rep(1, 6)
+  )
+
+  active_records <- 1:6
+  result <- filter_matrix_and_add_date(matrix_data, active_records)
+
+  expect_equal(nrow(result), 6)
+  expect_true("date" %in% colnames(result))
+})
+
+test_that("process_cur_synch handles single-row matrix", {
+  time_seq <- lubridate::ymd_hms("2023-01-01 10:00:00")
+
+  cur_synch <- data.frame(
+    Time = time_seq,
+    `1` = 10.5,
+    `2` = 8.0,
+    check.names = FALSE
+  )
+
+  result <- process_cur_synch(cur_synch, bins_feed = 1:2)
+
+  expect_true("totalFeed" %in% colnames(result))
+  expect_equal(result$totalFeed, 18.5)
+})
+
+test_that("process_feed_matrix_data handles matrix with single bin", {
+  time_seq <- seq(
+    lubridate::ymd_hms("2023-01-01 10:00:00"),
+    lubridate::ymd_hms("2023-01-01 10:00:02"),
+    by = "sec"
+  )
+
+  feed_matrix <- data.frame(
+    Time = time_seq,
+    `1` = c(10.5, 10.3, 10.1),
+    check.names = FALSE
+  )
+
+  result <- process_feed_matrix_data(feed_matrix, bins_feed = 1)
+
+  expect_true("totalFeed" %in% colnames(result))
+  expect_equal(result$totalFeed, c(10.5, 10.3, 10.1))
+})
+
+test_that("matrix_process handles exact same start and end time", {
+  toy_data <- data.frame(
+    animal = 1,
+    start = lubridate::ymd_hms("2023-01-01 10:00:00"),
+    end = lubridate::ymd_hms("2023-01-01 10:00:00"),  # Same as start
+    bin = 1
+  )
+
+  result <- matrix_process(
+    toy_data,
+    type = "drink",
+    id_col = "animal",
+    start_col = "start",
+    end_col = "end",
+    bin_col = "bin",
+    bins_wat = 1
+  )
+
+  expect_s3_class(result$synch_master_animal2, "data.frame")
+  expect_equal(nrow(result$synch_master_animal2), 1)
+})
+
+test_that("matrix_process correctly calculates unoccupied bins for feed_and_drink", {
+  toy_data <- data.frame(
+    animal = c(1, 2, 3),
+    start = lubridate::ymd_hms(c(
+      "2023-01-01 10:00:00",
+      "2023-01-01 10:00:00",
+      "2023-01-01 10:00:00"
+    )),
+    end = lubridate::ymd_hms(c(
+      "2023-01-01 10:00:02",
+      "2023-01-01 10:00:02",
+      "2023-01-01 10:00:02"
+    )),
+    bin = c(1, 2, 3)
+  )
+
+  result <- matrix_process(
+    toy_data,
+    type = "feed_and_drink",
+    id_col = "animal",
+    start_col = "start",
+    end_col = "end",
+    bin_col = "bin",
+    bins_feed = 1:2,
+    bins_wat = 3:4
+  )
+
+  # Total bins = 2 feed + 2 water = 4
+  # With 3 animals active, unoccupied should be 1
+  expect_true(all(result$synch_master_animal2$unoccupied_bin_num == 1))
+})

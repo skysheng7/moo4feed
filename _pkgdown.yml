@@ -10,6 +10,8 @@ articles:
   - meal_clustering
   - bin_visit_analysis
   - replacement_detection
+  - synchronicity_analysis
+  - non_nutritive_visits
 
 reference:
 - title: Getting Started
