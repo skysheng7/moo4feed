@@ -1,0 +1,53 @@
+# Detect Daylight Saving Time (DST) Change Dates
+
+Returns a data frame with the start ("spring") and end ("fall") dates of
+Daylight Saving Time for each year in the input range.
+
+## Usage
+
+``` r
+dst_switch_day(years = c(2020, 2021), tz = tz2())
+```
+
+## Arguments
+
+- years:
+
+  A numeric vector specifying the range of years to evaluate. Use the
+  format `c(start_year, end_year)`, e.g., `years = c(2020, 2021)`. Must
+  contain at least one numeric value.
+
+- tz:
+
+  A valid time zone name (default is "America/Vancouver"), used to
+  determine DST rules. Use
+  [`OlsonNames()`](https://rdrr.io/r/base/timezones.html) to see all
+  valid options.
+
+## Value
+
+A data frame with columns: year, spring (DST start for global north),
+fall (DST end for global south), spring_next_day (the second day after
+daylight saving changes in spring), fall_next_day (the second day after
+daylight saving changes in fall). If no DST transitions are found for
+the specified years and time zone, an empty data frame is returned with
+the expected column names.
+
+## Details
+
+If `years` is not numeric, has zero length, \<= 1907 (start year of
+daylight saving changes in history) or if `tz` is not a recognized time
+zone name, the function will throw an error. For regions without DST
+(e.g., `Etc/UTC`), the function returns an empty data frame and issues a
+warning.
+
+## Examples
+
+``` r
+dst_switch_day(years = c(2020, 2021), tz = "America/Vancouver")
+#> # A tibble: 2 × 5
+#>    year spring     fall       spring_next_day fall_next_day
+#>   <dbl> <date>     <date>     <date>          <date>       
+#> 1  2020 2020-03-08 2020-11-01 2020-03-09      2020-11-02   
+#> 2  2021 2021-03-14 2021-11-07 2021-03-15      2021-11-08   
+```
