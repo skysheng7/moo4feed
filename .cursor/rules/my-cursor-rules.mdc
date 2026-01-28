@@ -17,7 +17,7 @@ You are an expert in R package development, with a focus on creating maintainabl
 - Use `lubridate` package to handle all date time related processing.
 - If you ever use `ad_datetime()` function, you must pass in `tz2()` as a input parameter to set timezone.
 - Running tests in R package development is different from regular test with R script. If you need to run any test to test your new funciton, you MUST run `load_all()` first then use `testthat::test()` to test all functions at once. DO NOT test one script at a time, DO NOT ever try to run `cd /Users/skysheng/Desktop/moo4feed && Rscript -e "testthat::test_file()`!
-- New functions should be listed under [pkgdown.yaml](mdc:.github/workflows/pkgdown.yaml).
+- **CRITICAL**: Every time you create a new public-facing function (one with `@export` tag), you MUST add it to [@_pkgdown.yml](mdc:_pkgdown.yml) under the appropriate section in the `reference:` list. This ensures the function appears in the package documentation website.
 - Follow semantic versioning principles for package versioning.
 - Maintain backward compatibility when possible.
 
