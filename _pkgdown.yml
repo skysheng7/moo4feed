@@ -154,6 +154,8 @@ reference:
   - matrix_process
   - synch_pair_analysis
   - synch_neighbor_analysis
+  - synch_pairs_to_df
+  - synch_neighbor_compare
 
 - title: Example Data
   desc: >
