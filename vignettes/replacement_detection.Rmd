@@ -40,15 +40,6 @@ set_global_cols(
   tz = "America/Vancouver"  # Your timezone
 )
 
-# Verify configuration
-cat("✅ Global variables configured:\n")
-cat("ID column:", id_col2(), "\n")
-cat("Start time column:", start_col2(), "\n") 
-cat("End time column:", end_col2(), "\n")
-cat("Bin column:", bin_col2(), "\n")
-cat("Intake column:", intake_col2(), "\n")
-cat("Duration column:", duration_col2(), "\n")
-cat("Timezone:", tz2(), "\n")
 ```
 
 ## 2. Introduction to Replacement Detection

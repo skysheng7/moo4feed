@@ -2,7 +2,7 @@
 title: "5. Synchronicity Analysis"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{3. Synchronicity Analysis}
+  %\VignetteIndexEntry{5. Synchronicity Analysis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -43,57 +43,39 @@ set_global_cols(
   bin_layout = "1-2-3-4-5-6-101-102-7-8-9-10-11-12-13-14-15-16-17-18-103-104-19-20-21-22-23-24-25-26-27-28-29-30-105"
 )
 
-# Verify configuration
-cat("✅ Global variables configured:\n")
-cat("ID column:", id_col2(), "\n")
-cat("Start time column:", start_col2(), "\n")
-cat("End time column:", end_col2(), "\n")
-cat("Bin column:", bin_col2(), "\n")
-cat("Timezone:", tz2(), "\n")
-cat("Bin layout:", bin_layout2(), "\n")
 ```
 
 ## 2. Introduction to Synchronicity Analysis
 
 Synchronicity in animal behavior refers to animals performing the same activity at the same time. Understanding synchronicity helps researchers identify social bonds and competition patterns. We will analyze two types of synchronicity: pair-wise co-occurrence and spatial neighbor proximity.
 
-> 1. **Pair-wise co-occurrence**: How often do 2 animals feed or drink simultaneously, regardless of location (they can be right next to each other or be physically far apart)?
-> 2. **Spatial neighbor proximity**: How often do 2 animals feed or drink right next to each other (spatially close)?
+1. **Pair-wise co-occurrence**: How often do 2 animals feed or drink simultaneously, regardless of location (they can be right next to each other or be physically far apart)?
+2. **Spatial neighbor proximity**: How often do 2 animals feed or drink right next to each other (spatially close)?
 
 ## 3. Prerequisites
 
-This tutorial assumes you have completed data cleaning from **Tutorial 1: Data Cleaning**. You need cleaned feeding or drinking data.
+This tutorial assumes you have completed data cleaning from [**Tutorial 1: Data Cleaning**](data_cleaning.html). You need cleaned feeding or drinking data.
 
 ## 4. Data Preparation
 
 ```{r data-prep}
 # Load cleaned example data
-data(clean_feed)
-data(clean_water)
+data(clean_feed)   # For feed-only pair-wise analysis
+data(clean_water)  # For water-only pair-wise analysis
+data(clean_comb)   # Combined feed + water data for neighbor analysis
 
 # If using your own data from previous tutorials:
 # clean_feed <- your_cleaned_feed_data
 # clean_water <- your_cleaned_water_data
+# clean_comb <- combine_feed_water(clean_feed, clean_water)
 
 ```
 
 ## 5. Creating Time-Based Activity Matrices
 
-Before analyzing synchronicity, we need to transform visit-based data into time-based matrices. The `matrix_process()` function creates matrices where:
+Before analyzing synchronicity, we need to transform visit-based data into time-based matrices. 
 
-- **Rows** represent time points (by second or minute)
-- **Columns** represent individual animals
-- **Values** indicate activity status at each time point
-
-`matrix_process()` creates three types of matrices:
-
-1. **Animal activity matrix** (`synch_master_animal2`): Shows which animals are feeding or drinking (i.e., active) at each time point (1 = active, 0 = inactive)
-2. **Bin occupancy matrix** (`synch_master_bin2`): Shows which bin each animal is using at each time point (0 = not using any bin)
-3. **Feed weight matrix** (`synch_master_feed2`): For feed data only, shows feed weight at each bin over time
-
-The matrices are filtered to include only time points when at least one animal is feeding or drinking, to reduce output data file size.
-
-### Process Feed Data Matrices
+### Process Feed Data Matrices (for pair-wise analysis)
 
 ```{r process-feed-matrices}
 # Process feed data to create time-based matrices
@@ -113,7 +95,21 @@ feed_matrices <- matrix_process(
 )
 ```
 
-### Process Water Data Matrices
+The `matrix_process()` function creates matrices where:
+
+- **Rows** represent time points (by second or minute)
+- **Columns** represent individual animals
+- **Values** indicate activity status at each time point
+
+`matrix_process()` creates three types of matrices:
+
+1. **Animal activity matrix** (`synch_master_animal2`): Shows which animals are feeding or drinking (i.e., active) at each time point (1 = active, 0 = inactive)
+2. **Bin occupancy matrix** (`synch_master_bin2`): Shows which bin each animal is using at each time point (0 = not using any bin)
+3. **Feed weight matrix** (`synch_master_feed2`): For feed data only, shows feed weight at each bin over time
+
+The matrices are filtered to include only time points when at least one animal is feeding or drinking, to reduce output data file size.
+
+### Process Water Data Matrices (for pair-wise analysis)
 
 ```{r process-water-matrices}
 # Process water data similarly
@@ -128,6 +124,26 @@ water_matrices <- matrix_process(
   bins_wat = bins_wat2()
 )
 
+```
+
+### Process Combined Feed and Water Data (for neighbor analysis)
+
+For spatial neighbor analysis, we need to use combined feed and water data because water bins are often located between feed bins. Analyzing them separately would miss important spatial relationships.
+
+```{r process-combined-matrices}
+# Process combined feed and water data to create time-based matrices
+# The clean_comb dataset already contains both feed and water visits
+combined_matrices <- matrix_process(
+  data_list = clean_comb,
+  type = "feed_and_drink",  # Use combined type
+  resolution = "sec",
+  id_col = id_col2(),
+  start_col = start_col2(),
+  end_col = end_col2(),
+  bin_col = bin_col2(),
+  bins_feed = bins_feed2(),
+  bins_wat = bins_wat2()
+)
 ```
 
 
@@ -146,8 +162,7 @@ pair_feed_results <- synch_pair_analysis(
   id_col = id_col2()
 )
 
-# Examine the structure
-cat("Pair analysis results:\n")
+# The results are a list with three matrices:
 names(pair_feed_results)
 
 # Look at bout counts for the first day
@@ -179,37 +194,32 @@ The results contain three matrices for each day:
 ### Finding Most Synchronized Pairs
 
 ```{r find-synchronized-pairs}
-# Find pairs with the most time spent together (first day)
-# Convert upper triangle to data frame for easier analysis
-pair_df <- data.frame(
-  animal1 = character(),
-  animal2 = character(),
-  bouts = numeric(),
-  total_time = numeric(),
-  avg_duration = numeric()
+# Convert matrices to pair-level data frame for easier analysis
+# Use synch_pairs_to_df() to extract upper triangle and sort by total_time
+pair_df <- synch_pairs_to_df(
+  pair_feed_results,
+  min_time = 0,           # Include all pairs with any activity
+  sort_by = "total_time", # Sort by time spent together
+  decreasing = TRUE       # Most synchronized first
 )
-
-# Extract upper triangle values
-animal_ids <- rownames(time_matrix_day1)
-for (i in 1:(length(animal_ids) - 1)) {
-  for (j in (i + 1):length(animal_ids)) {
-    if (time_matrix_day1[i, j] > 0) {  # Only include pairs with activity
-      pair_df <- rbind(pair_df, data.frame(
-        animal1 = animal_ids[i],
-        animal2 = animal_ids[j],
-        bouts = bout_matrix_day1[i, j],
-        total_time = time_matrix_day1[i, j],
-        avg_duration = avg_matrix_day1[i, j]
-      ))
-    }
-  }
-}
-
-# Sort by total time together
-pair_df <- pair_df[order(-pair_df$total_time), ]
 
 cat("Top 10 most synchronized feeding pairs (first day):\n")
 print(head(pair_df, 10))
+```
+
+Animals that consistently spend high amounts of time feeding or drinking together may have social bonds. On the other hand, low synchronicity despite being in the same herd might indicate avoidance: 
+
+```{r avoidance}
+# Get least synchronized pairs (sort ascending)
+pair_df_least <- synch_pairs_to_df(
+  pair_feed_results,
+  min_time = 0,
+  sort_by = "total_time",
+  decreasing = FALSE      # Least synchronized first
+)
+
+cat("Top 10 least synchronized feeding pairs (first day):\n")
+print(head(pair_df_least, 10))
 ```
 
 ### Analyze Water Drinking Synchronicity
@@ -224,308 +234,312 @@ pair_water_results <- synch_pair_analysis(
 )
 ```
 
+### Analyze Combined Feed and Water Synchronicity
+
+We can also analyze pair-wise synchronicity using combined feed and water data, which shows how often 2 animals feed or drink at the same time, regardless of their spatial location.
+
+```{r pair-combined-analysis}
+# Analyze pair-wise co-occurrence for both feeding and drinking
+pair_combined_results <- synch_pair_analysis(
+  matrix_data = combined_matrices,
+  type = "feed_and_drink",
+  resolution = "sec",
+  id_col = id_col2()
+)
+
+# Extract matrices for the first day (for comparison later)
+cat("\nCombined bout matrix (first 5 animals, first day):\n")
+combined_bout_matrix <- pair_combined_results$bout[[1]]
+print(combined_bout_matrix[1:5, 1:5])
+
+cat("\nCombined total time together (seconds, first 5 animals, first day):\n")
+combined_time_matrix <- pair_combined_results$total_time[[1]]
+print(combined_time_matrix[1:5, 1:5])
+```
+
 ## 7. Spatial Neighbor Proximity Analysis
 
-Neighbor analysis examines how much time animals spend at spatially adjacent bins. This requires the bin layout configuration you set earlier.
+Simply feeding or drinking at the same time doesn't necessarily mean animals have social bonds, especially if they are very far apart at the opposite side of the barn. Neighbor analysis examines how often 2 animals spend at bins right next to each other. 
+
+**Important**: Water bins are often located between feed bins, so most often we need to analyze neighbor synchronicity using combined feed and water data to capture true spatial relationships.
 
 ### Understanding Bin Layout
 
 The bin layout string defines the spatial arrangement of bins:
-- Rows are separated by `\n` (newline)
-- Bins within a row are separated by `-`
-- Only bins in the same row are considered neighbors (left/right adjacency)
 
-Example: `"1-2-3-4-5-6-101-102-7-8-9-10"` means bins 1, 2, 3, 4, 5, 6, 101, 102, 7, 8, 9, 10 are in a single row.
-- Bin 1 is neighbor to bin 2 only
-- Bin 5 is neighbor to bins 4 and 6
+* Rows are separated by `\n` (newline)
+* Bins within a row are separated by `-`
+* Only bins in the same row are considered neighbors (left/right adjacency)
+
+Example: `"1-2-3-4-5-6-101-102-7-8-9-10"` means bins 1, 2, 3, 4, 5, 6, 101, 102, 7, 8, 9, 10 are in a single row. Here, bins 1-30 are feed bins, and bins 101-105 are water bins (with offset of 100).
+
+* Bin 1 is neighbor to bin 2 only
+* Bin 101 (water) is neighbor to bins 6 and 102 (water)
 
 ```{r show-bin-layout}
 cat("Current bin layout:\n")
 cat(bin_layout2(), "\n")
 ```
 
-### Analyze Feed Neighbor Synchronicity
+### Analyze Neighbor Synchronicity (Combined Feed and Water)
 
-```{r neighbor-feed-analysis}
-# Analyze spatial neighbor patterns for feeding
-neighbor_feed_results <- synch_neighbor_analysis(
-  matrix_data = feed_matrices,
+```{r neighbor-analysis}
+# Analyze spatial neighbor patterns using combined feed and water data
+neighbor_results <- synch_neighbor_analysis(
+  matrix_data = combined_matrices,
   bin_layout = bin_layout2(),
-  type = "feed",
+  type = "feed_and_drink",
   resolution = "sec",
   id_col = id_col2()
 )
 
-# Examine the structure
-cat("Neighbor analysis results:\n")
-names(neighbor_feed_results)
+# The results are a list with three matrices:
+names(neighbor_results)
 
 # Look at bout counts for neighbors (first day)
 cat("\nNeighbor bout matrix (first 5 animals, first day):\n")
-neighbor_bout_matrix <- neighbor_feed_results$bout[[1]]
+neighbor_bout_matrix <- neighbor_results$bout[[1]]
 print(neighbor_bout_matrix[1:5, 1:5])
 
 # Look at total time as neighbors
 cat("\nTotal time as neighbors (seconds, first 5 animals, first day):\n")
-neighbor_time_matrix <- neighbor_feed_results$total_time[[1]]
+neighbor_time_matrix <- neighbor_results$total_time[[1]]
 print(neighbor_time_matrix[1:5, 1:5])
 ```
 
 ### Comparing Co-Occurrence vs. Neighbor Patterns
 
 ```{r compare-patterns}
-# Compare the same pair in both analyses
-example_animal1 <- rownames(time_matrix_day1)[1]
-example_animal2 <- rownames(time_matrix_day1)[2]
+# Compare the same pair in both analyses (using combined feed+water data)
+example_animal1 <- rownames(combined_time_matrix)[1]
+example_animal2 <- rownames(combined_time_matrix)[2]
 
 cat(sprintf("Comparison for animals %s and %s (first day):\n
-Co-occurrence (feeding at same time, any bins): %d bouts, %d seconds total, %.1f seconds avg
-Neighbor proximity (feeding at adjacent bins): %d bouts, %d seconds total, %.1f seconds avg\n",
+Co-occurrence (feeding OR drinking at same time, any bins): %d bouts, %d seconds total, %.1f seconds per bout on average
+Neighbor proximity (feeding OR drinking at adjacent bins): %d bouts, %d seconds total, %.1f seconds per bout on average\n",
   example_animal1, example_animal2,
-  bout_matrix_day1[example_animal1, example_animal2],
-  time_matrix_day1[example_animal1, example_animal2],
-  avg_matrix_day1[example_animal1, example_animal2],
+  combined_bout_matrix[example_animal1, example_animal2],
+  combined_time_matrix[example_animal1, example_animal2],
+  pair_combined_results$avg_duration[[1]][example_animal1, example_animal2],
   neighbor_bout_matrix[example_animal1, example_animal2],
   neighbor_time_matrix[example_animal1, example_animal2],
-  neighbor_feed_results$avg_duration[[1]][example_animal1, example_animal2]
+  neighbor_results$avg_duration[[1]][example_animal1, example_animal2]
 ))
 ```
 
 ### Finding Pairs That Prefer Neighboring Bins
 
 ```{r neighbor-preference}
-# Find pairs with high neighbor time relative to total co-occurrence time
-neighbor_df <- data.frame(
-  animal1 = character(),
-  animal2 = character(),
-  cooccurrence_time = numeric(),
-  neighbor_time = numeric(),
-  neighbor_ratio = numeric()
+# Compare neighbor time to total co-occurrence time (both feed and water)
+# This calculates the proportion of total co-occurrence time spent as neighbors
+neighbor_df <- synch_neighbor_compare(
+  pair_results = pair_combined_results,
+  neighbor_results = neighbor_results,
+  min_cooccurrence = 0,        # Include all pairs with any co-occurrence
+  sort_by = "neighbor_ratio",  # Sort by neighbor preference
+  decreasing = TRUE            # Highest preference first
 )
 
-# Extract pairs with both types of activity
-for (i in 1:(length(animal_ids) - 1)) {
-  for (j in (i + 1):length(animal_ids)) {
-    co_time <- time_matrix_day1[i, j]
-    nb_time <- neighbor_time_matrix[i, j]
-
-    if (co_time > 0) {  # Only pairs with some co-occurrence
-      neighbor_df <- rbind(neighbor_df, data.frame(
-        animal1 = animal_ids[i],
-        animal2 = animal_ids[j],
-        cooccurrence_time = co_time,
-        neighbor_time = nb_time,
-        neighbor_ratio = nb_time / co_time  # Proportion of time as neighbors
-      ))
-    }
-  }
-}
-
-# Sort by neighbor ratio
-neighbor_df <- neighbor_df[order(-neighbor_df$neighbor_ratio), ]
-
-cat("Top 10 pairs with highest neighbor preference (first day):\n(Higher ratio = more time at neighboring bins when feeding together)\n")
+cat("Top 10 pairs with highest neighbor preference (first day):\n(Higher ratio = more time at neighboring bins when feeding or drinking together)\n")
 print(head(neighbor_df, 10))
 ```
 
 
-## 8. Identifying Social Bonds
-
-Animals that consistently spend high amounts of time feeding together may have social bonds:
-
-```{r social-bonds}
-# Calculate average co-occurrence time across all days
-avg_time_matrix <- pair_feed_results$total_time[[1]] * 0  # Initialize with zeros
-
-for (day_matrix in pair_feed_results$total_time) {
-  avg_time_matrix <- avg_time_matrix + day_matrix
-}
-
-# Divide by number of days
-avg_time_matrix <- avg_time_matrix / length(pair_feed_results$total_time)
-
-# Find consistently synchronized pairs
-cat("Pairs with consistently high synchronicity (average > 100 seconds/day):\n")
-for (i in 1:(nrow(avg_time_matrix) - 1)) {
-  for (j in (i + 1):ncol(avg_time_matrix)) {
-    if (avg_time_matrix[i, j] > 100) {
-      cat(rownames(avg_time_matrix)[i], "-",
-          colnames(avg_time_matrix)[j], ":",
-          round(avg_time_matrix[i, j], 1), "seconds/day\n")
-    }
-  }
-}
-```
-
-## 9. Detecting Avoidance
-
-Low synchronicity despite being in the same herd might indicate avoidance:
-
-```{r detect-competition}
-# Find pairs with very low co-occurrence (potential avoidance)
-cat("Pairs with minimal co-occurrence (< 10 seconds total across all days):\n")
-low_sync_count <- 0
-
-if (length(pair_feed_results$total_time) > 1) {
-  total_time_matrix <- pair_feed_results$total_time[[1]] * 0
-
-  for (day_matrix in pair_feed_results$total_time) {
-    total_time_matrix <- total_time_matrix + day_matrix
-  }
-
-  for (i in 1:(nrow(total_time_matrix) - 1)) {
-    for (j in (i + 1):ncol(total_time_matrix)) {
-      if (total_time_matrix[i, j] < 10 && total_time_matrix[i, j] >= 0) {
-        low_sync_count <- low_sync_count + 1
-      }
-    }
-  }
-
-  cat("Total pairs with low synchronicity:", low_sync_count, "\n")
-}
-```
-
-## 10. Code Cheatsheet
+## 8. Code Cheatsheet
 
 ```{r cheatsheet, eval=FALSE}
-# Copy and modify these code blocks for your own analysis!
-
-# ---- SETUP: Global Variables (REQUIRED FIRST!) ----
+# === 1. Load packages ===
 library(moo4feed)
+library(ggplot2)
 library(dplyr)
 
-# Set up your column names and bin configuration
+# === 2. Configure global variables (REQUIRED FIRST!) ===
+# Set up column names and bin configuration to match your data structure
 set_global_cols(
-  id_col = "cow",           # Your animal ID column
-  start_col = "start",      # Visit start time column
-  end_col = "end",          # Visit end time column
-  bin_col = "bin",          # Bin/feeder ID column
+  # Time zone
+  tz = "America/Vancouver",        # Your timezone
+  
+  # Column names in your cleaned data
+  id_col = "cow",                  # Animal ID column name
+  start_col = "start",             # Visit start time column
+  end_col = "end",                 # Visit end time column
+  bin_col = "bin",                 # Bin/feeder ID column
   start_weight_col = "start_weight",  # Start weight column (feed only)
   end_weight_col = "end_weight",      # End weight column (feed only)
-  tz = "America/Vancouver", # Your timezone
-  bins_feed = 1:30,         # Your feed bin IDs
-  bins_wat = 1:5,           # Your water bin IDs
-  # Define your barn's bin layout (rows separated by \n, bins by -)
-  bin_layout = "1-2-3-4-5-6-101-102-7-8-9-10-11-12"
+  
+  # Bin settings
+  bins_feed = 1:30,                # All feed bin IDs in your barn
+  bins_wat = 1:5,                  # All water bin IDs in your barn
+  bin_offset = 100,                # Add this to water bin IDs to avoid conflicts
+  
+  # Physical bin layout for spatial neighbor analysis
+  # Rows separated by "\n", bins within rows separated by "-"
+  # Only bins in the same row are considered spatial neighbors (left/right adjacency)
+  bin_layout = "1-2-3-4-5-6-101-102-7-8-9-10-11-12-13-14-15-16-17-18-103-104-19-20-21-22-23-24-25-26-27-28-29-30-105"
 )
 
-# ---- STEP 1: Create Time-Based Matrices ----
-# For feed data
+# === 3. Load cleaned data ===
+# Use data from Tutorial 1: Data Cleaning
+# For demo data:
+data(clean_feed)   # For feed-only pair-wise analysis
+data(clean_water)  # For water-only pair-wise analysis
+data(clean_comb)   # Combined feed + water data for neighbor analysis
+
+# For your own data:
+# clean_feed <- your_cleaned_feed_data    # From data cleaning tutorial
+# clean_water <- your_cleaned_water_data  # From data cleaning tutorial
+# clean_comb <- combine_feed_water(clean_feed, clean_water)  # Combine them
+
+# === 4. Create time-based activity matrices ===
+# Process feed data to create time-based matrices (for pair-wise analysis)
 feed_matrices <- matrix_process(
-  data_list = your_clean_feed,   # Your cleaned feed data
-  type = "feed",
-  resolution = "sec",              # Try: "min" for faster processing
-  id_col = id_col2(),
-  start_col = start_col2(),
-  end_col = end_col2(),
-  bin_col = bin_col2(),
-  start_weight_col = start_weight_col2(),
-  end_weight_col = end_weight_col2(),
-  bins_feed = bins_feed2()
+  data_list = clean_feed,          # Your cleaned feed data
+  type = "feed",                   # Data type: "feed" or "drink"
+  resolution = "sec",              # Time resolution: "sec" (detailed) or "min" (faster)
+  id_col = id_col2(),              # Animal ID column (from global vars)
+  start_col = start_col2(),        # Visit start time column (from global vars)
+  end_col = end_col2(),            # Visit end time column (from global vars)
+  bin_col = bin_col2(),            # Bin ID column (from global vars)
+  start_weight_col = start_weight_col2(),  # Start weight column (from global vars)
+  end_weight_col = end_weight_col2(),      # End weight column (from global vars)
+  bins_feed = bins_feed2()         # Valid feed bin IDs (from global vars)
 )
 
-# For water data
+# Process water data to create time-based matrices (for pair-wise analysis)
 water_matrices <- matrix_process(
-  data_list = your_clean_water,   # Your cleaned water data
-  type = "drink",
-  resolution = "sec",
+  data_list = clean_water,         # Your cleaned water data
+  type = "drink",                  # Data type for water/drinking
+  resolution = "sec",              # Must match resolution used for feed_matrices
   id_col = id_col2(),
   start_col = start_col2(),
   end_col = end_col2(),
   bin_col = bin_col2(),
+  bins_wat = bins_wat2()           # Valid water bin IDs (from global vars)
+)
+
+# IMPORTANT: Process combined feed and water data for neighbor analysis
+# Water bins are often between feed bins, so analyze them together for spatial relationships
+# Use clean_comb dataset (already combined) or create your own with combine_feed_water()
+combined_matrices <- matrix_process(
+  data_list = clean_comb,          # Combined feed and water data
+  type = "feed_and_drink",         # Combined type
+  resolution = "sec",              # Must match resolution used above
+  id_col = id_col2(),
+  start_col = start_col2(),
+  end_col = end_col2(),
+  bin_col = bin_col2(),
+  bins_feed = bins_feed2(),
   bins_wat = bins_wat2()
 )
 
-# ---- STEP 2: Pair-wise Co-Occurrence Analysis ----
-# Analyze feeding synchronicity
+# === 5. Pair-wise co-occurrence analysis ===
+# Analyze feeding synchronicity (animals feeding at same time, any bins)
 pair_feed_results <- synch_pair_analysis(
-  matrix_data = feed_matrices,
-  type = "feed",
-  resolution = "sec",              # Must match matrix_process resolution
-  id_col = id_col2()
+  matrix_data = feed_matrices,     # Output from matrix_process()
+  type = "feed",                   # Data type: "feed" or "drink"
+  resolution = "sec",              # Must match matrix_process() resolution
+  id_col = id_col2()               # Animal ID column (from global vars)
 )
 
-# Analyze drinking synchronicity
+# Analyze drinking synchronicity (animals drinking at same time, any bins)
 pair_water_results <- synch_pair_analysis(
-  matrix_data = water_matrices,
-  type = "drink",
-  resolution = "sec",
+  matrix_data = water_matrices,    # Output from matrix_process()
+  type = "drink",                  # Data type for water/drinking
+  resolution = "sec",              # Must match matrix_process() resolution
   id_col = id_col2()
 )
 
-# Access results (one matrix per day if multi-day input)
-bout_counts <- pair_feed_results$bout           # Number of bouts together
-total_times <- pair_feed_results$total_time    # Total time together
-avg_durations <- pair_feed_results$avg_duration # Average bout duration
-
-# For single day: bout_counts is a matrix
-# For multi-day: bout_counts[[1]] is first day's matrix
-
-# ---- STEP 3: Spatial Neighbor Analysis ----
-# Analyze neighbor patterns for feeding
-neighbor_feed_results <- synch_neighbor_analysis(
-  matrix_data = feed_matrices,
-  bin_layout = bin_layout2(),      # Use your configured layout
-  type = "feed",
-  resolution = "sec",
+# IMPORTANT: Analyze combined feed+water synchronicity for comparison with neighbor analysis
+pair_combined_results <- synch_pair_analysis(
+  matrix_data = combined_matrices, # Output from matrix_process() with combined data
+  type = "feed_and_drink",         # Combined type
+  resolution = "sec",              # Must match matrix_process() resolution
   id_col = id_col2()
 )
 
-# Analyze neighbor patterns for drinking
-neighbor_water_results <- synch_neighbor_analysis(
-  matrix_data = water_matrices,
-  bin_layout = bin_layout2(),
-  type = "drink",
-  resolution = "sec",
-  id_col = id_col2()
-)
+# Access pair analysis results (matrices or lists of matrices for multi-day)
+# For single day: each element is a matrix
+# For multi-day: each element is a list with one matrix per day
+bout_counts <- pair_feed_results$bout           # Number of distinct bouts together
+total_times <- pair_feed_results$total_time    # Total time together (seconds or minutes)
+avg_durations <- pair_feed_results$avg_duration # Average duration per bout
 
-# Access neighbor results
-neighbor_bouts <- neighbor_feed_results$bout
-neighbor_times <- neighbor_feed_results$total_time
-neighbor_avg <- neighbor_feed_results$avg_duration
-
-# ---- STEP 4: Extract and Analyze Specific Pairs ----
-# Get results for first day
-day1_matrix <- pair_feed_results$total_time[[1]]
-
-# Find value for a specific pair (e.g., animals "5120" and "6084")
-pair_time <- day1_matrix["5120", "6084"]  # Time they spent together
-
-# Find all pairs with high synchronicity
-threshold <- 100  # seconds
-high_sync_pairs <- which(day1_matrix > threshold, arr.ind = TRUE)
-high_sync_pairs <- high_sync_pairs[high_sync_pairs[,1] < high_sync_pairs[,2], ]  # Upper triangle only
-
-# ---- STEP 5: Compare Across Days ----
-# Sum synchronicity across all days for each pair
-if (length(pair_feed_results$total_time) > 1) {
-  total_matrix <- pair_feed_results$total_time[[1]] * 0  # Initialize
-
-  for (day_matrix in pair_feed_results$total_time) {
-    total_matrix <- total_matrix + day_matrix
-  }
-
-  # Average across days
-  avg_matrix <- total_matrix / length(pair_feed_results$total_time)
+# Example: Access first day's bout matrix
+if (is.list(pair_feed_results$bout)) {
+  day1_bouts <- pair_feed_results$bout[[1]]    # Multi-day data
+} else {
+  day1_bouts <- pair_feed_results$bout         # Single-day data
 }
 
-# ---- BONUS: Quick Summary Statistics ----
-# Total synchronicity in the herd (first day)
-day1_total <- sum(day1_matrix[upper.tri(day1_matrix)])
-cat("Total co-occurrence time:", day1_total, "seconds\n")
+# === 6. Spatial neighbor proximity analysis ===
+# IMPORTANT: Use combined matrices for neighbor analysis!
+# Water bins are often between feed bins, so we analyze them together
+neighbor_results <- synch_neighbor_analysis(
+  matrix_data = combined_matrices, # Output from matrix_process() with combined data
+  bin_layout = bin_layout2(),      # Physical bin arrangement (from global vars)
+  type = "feed_and_drink",         # Combined type
+  resolution = "sec",              # Must match matrix_process() resolution
+  id_col = id_col2()               # Animal ID column (from global vars)
+)
 
-# Number of active pairs (first day)
-n_active_pairs <- sum(day1_matrix[upper.tri(day1_matrix)] > 0)
-cat("Number of pairs with co-occurrence:", n_active_pairs, "\n")
+# Access neighbor analysis results
+neighbor_bouts <- neighbor_results$bout         # Bouts at neighboring bins
+neighbor_times <- neighbor_results$total_time  # Time at neighboring bins
+neighbor_avg <- neighbor_results$avg_duration  # Average neighbor bout duration
 
-# Average synchronicity per active pair
-avg_sync <- day1_total / n_active_pairs
-cat("Average time per active pair:", round(avg_sync, 1), "seconds\n")
+# === 7. Convert matrices to tidy data frames ===
+# Convert pair analysis results to data frame for easier analysis
+pair_df <- synch_pairs_to_df(
+  synch_results = pair_feed_results,  # Output from synch_pair_analysis()
+  min_time = 0,                       # Minimum time threshold (0 = include all)
+  sort_by = "total_time",             # Column to sort by: "total_time", "bouts", "avg_duration"
+  decreasing = TRUE                   # TRUE = descending, FALSE = ascending
+)
+
+# Convert neighbor analysis results to data frame
+neighbor_df <- synch_pairs_to_df(
+  synch_results = neighbor_results,  # Output from synch_neighbor_analysis()
+  min_time = 0,                      # Minimum neighbor time threshold
+  sort_by = "total_time",            # Sort by time at neighboring bins
+  decreasing = TRUE
+)
+
+# === 8. Find most/least synchronized pairs ===
+# Get top 10 most synchronized feeding pairs
+top_pairs <- head(pair_df, 10)
+print(top_pairs)
+
+# Get top 10 least synchronized feeding pairs
+least_pairs <- synch_pairs_to_df(
+  pair_feed_results,
+  min_time = 0,
+  sort_by = "total_time",
+  decreasing = FALSE               # Least synchronized first
+)
+print(head(least_pairs, 10))
+
+# Filter pairs with high synchronicity (e.g., >100 seconds together)
+high_sync_pairs <- pair_df[pair_df$total_time > 100, ]
+
+# === 9. Compare neighbor preference to total co-occurrence ===
+# IMPORTANT: Compare combined feed+water co-occurrence with neighbor proximity
+# This ensures we're comparing the same activity types (both feed and water)
+neighbor_compare <- synch_neighbor_compare(
+  pair_results = pair_combined_results, # Combined co-occurrence results
+  neighbor_results = neighbor_results,  # Neighbor results (combined feed+water)
+  min_cooccurrence = 0,                # Minimum co-occurrence time threshold (0 = all pairs)
+  sort_by = "neighbor_ratio",          # Sort by neighbor preference ratio
+  decreasing = TRUE                    # Highest preference first
+)
+
+# neighbor_compare contains:
+# - cooccurrence_time: Total time active together (feed OR water) anywhere
+# - neighbor_time: Time at neighboring bins (feed OR water)
+# - neighbor_ratio: neighbor_time / cooccurrence_time (0 to 1)
+
+# Find pairs that prefer neighboring bins (high ratio)
+high_neighbor_preference <- neighbor_compare[neighbor_compare$neighbor_ratio > 0.5, ]
+
 ```
 
 ---
-
-**🦦 Ollie's Final Words**: *"Synchronicity analysis opens a window into the social world of your animals! Remember that feeding together doesn't always mean friendship—it could also be feeding pattern overlap. Combine synchronicity data with other behavioral measures for a complete picture of social dynamics!"*
-
-**Next Steps**: Use synchronicity results to identify animals for detailed behavioral observation, detect changes in social structure over time, or validate social network models.
