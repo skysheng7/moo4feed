@@ -9,11 +9,18 @@
 #' @param data A named list of daily data frames (one per day),
 #' each containing visit-level data.
 #' @param cfg A configuration list created by [qc_config()].
+#' @param sort Numeric. How to sort results by visit frequency:
+#'
+#' * `0` (default) - no sorting
+#' * `1` - ascending (lowest to highest)
+#' * `-1` - descending (highest to lowest)
+#'
 #' @inheritParams set_global_cols
 #' @inheritParams qc_config
 #'
 #' @return A named list of data frames, one per day, each containing columns
-#' for animal ID and the count of non-nutritive visits.
+#' for animal ID and the count of non-nutritive visits. If `sort` is specified,
+#' results are sorted by the visit count column.
 #'
 #' @examples
 #' toy_data <- list(
@@ -24,17 +31,34 @@
 #'   )
 #' )
 #' cfg <- qc_config(calibration_error = 0.5)
+#'
+#' # No sorting (default)
 #' result <- calculate_non_nutritive_visits(toy_data, cfg = cfg)
 #' result[[1]]
+#'
+#' # Sort descending (highest to lowest)
+#' result_desc <- calculate_non_nutritive_visits(toy_data, cfg = cfg, sort = -1)
+#' result_desc[[1]]
+#'
+#' # Sort ascending (lowest to highest)
+#' result_asc <- calculate_non_nutritive_visits(toy_data, cfg = cfg, sort = 1)
+#' result_asc[[1]]
 #'
 #' @export
 calculate_non_nutritive_visits <- function(
     data,
     cfg = qc_config(),
+    sort = 0,
     id_col = id_col2(),
     intake_col = intake_col2(),
     start_weight_col = start_weight_col2()) {
   calibration_error <- cfg$calibration_error
+  
+  # Validate sort parameter
+  if (!is.numeric(sort) || length(sort) != 1 || !sort %in% c(-1, 0, 1)) {
+    stop("`sort` must be 0, 1, or -1", call. = FALSE)
+  }
+  
   # Input validation
   if (!is.list(data) || length(data) == 0 || !all(sapply(data, is.data.frame))) {
     stop("`data` must be a non-empty list of data frames.")
@@ -43,12 +67,21 @@ calculate_non_nutritive_visits <- function(
 
   result <- lapply(data, function(df) {
     .validate_daily_data(df, id_col, intake_col, start_weight_col)
-    dplyr::as_tibble(df) |>
+    out <- dplyr::as_tibble(df) |>
       dplyr::filter(
         .data[[intake_col]] <= calibration_error,
         .data[[start_weight_col]] > calibration_error
       ) |>
       dplyr::count(.data[[id_col]], name = "number_of_non_nutritive_visits")
+    
+    # Apply sorting if requested
+    if (sort == 1) {
+      out <- out[order(out$number_of_non_nutritive_visits), ]
+    } else if (sort == -1) {
+      out <- out[order(out$number_of_non_nutritive_visits, decreasing = TRUE), ]
+    }
+    
+    return(out)
   })
   names(result) <- names(data)
   return(result)
@@ -63,11 +96,18 @@ calculate_non_nutritive_visits <- function(
 #'
 #' @param data A named list of daily data frames (one per day), each containing visit-level data.
 #' @param cfg A configuration list created by [qc_config()].
+#' @param sort Numeric. How to sort results by visit frequency:
+#'
+#' * `0` (default) - no sorting
+#' * `1` - ascending (lowest to highest)
+#' * `-1` - descending (highest to lowest)
+#'
 #' @inheritParams set_global_cols
 #' @inheritParams qc_config
 #'
 #' @return A named list of data frames, one per day, each containing columns
-#' for animal ID and the count of visits with no feed available.
+#' for animal ID and the count of visits with no feed available. If `sort`
+#' is specified, results are sorted by the visit count column.
 #'
 #' @examples
 #' toy_data <- list(
@@ -78,17 +118,30 @@ calculate_non_nutritive_visits <- function(
 #'   )
 #' )
 #' cfg <- qc_config(calibration_error = 0.5)
+#'
+#' # No sorting (default)
 #' result <- calculate_no_feed_visits(toy_data, cfg = cfg)
 #' result[[1]]
+#'
+#' # Sort descending (highest to lowest)
+#' result_desc <- calculate_no_feed_visits(toy_data, cfg = cfg, sort = -1)
+#' result_desc[[1]]
 #'
 #' @export
 calculate_no_feed_visits <- function(
     data,
     cfg = qc_config(),
+    sort = 0,
     id_col = id_col2(),
     intake_col = intake_col2(),
     start_weight_col = start_weight_col2()) {
   calibration_error <- cfg$calibration_error
+  
+  # Validate sort parameter
+  if (!is.numeric(sort) || length(sort) != 1 || !sort %in% c(-1, 0, 1)) {
+    stop("`sort` must be 0, 1, or -1", call. = FALSE)
+  }
+  
   # Input validation
   if (!is.list(data) || length(data) == 0 || !all(sapply(data, is.data.frame))) {
     stop("`data` must be a non-empty list of data frames.")
@@ -97,12 +150,21 @@ calculate_no_feed_visits <- function(
 
   result <- lapply(data, function(df) {
     .validate_daily_data(df, id_col, intake_col, start_weight_col)
-    dplyr::as_tibble(df) |>
+    out <- dplyr::as_tibble(df) |>
       dplyr::filter(
         .data[[intake_col]] <= calibration_error,
         .data[[start_weight_col]] <= calibration_error
       ) |>
       dplyr::count(.data[[id_col]], name = "number_of_visits_when_no_feed")
+    
+    # Apply sorting if requested
+    if (sort == 1) {
+      out <- out[order(out$number_of_visits_when_no_feed), ]
+    } else if (sort == -1) {
+      out <- out[order(out$number_of_visits_when_no_feed, decreasing = TRUE), ]
+    }
+    
+    return(out)
   })
   names(result) <- names(data)
   return(result)

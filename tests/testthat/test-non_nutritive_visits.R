@@ -382,3 +382,145 @@ test_that("calculate_no_feed_visits output is always a data.frame or tibble", {
   result <- calculate_no_feed_visits(data, cfg = cfg)
   expect_true(is.data.frame(result[[1]]) || tibble::is_tibble(result[[1]]))
 })
+
+# -----------------------------------------------------------------------------#
+#                  Tests for sorting functionality                             #
+# -----------------------------------------------------------------------------#
+
+test_that("calculate_non_nutritive_visits sorts in ascending order (sort = 1)", {
+  data <- list(
+    "2023-01-01" = data.frame(
+      cow = c("A", "A", "A", "B", "B", "C"),
+      intake = c(0, 0, 0, 0, 0, 0),
+      start_weight = c(10, 11, 12, 10, 11, 10)
+    )
+  )
+  cfg <- qc_config(calibration_error = 0.5)
+  result <- calculate_non_nutritive_visits(data, cfg = cfg, sort = 1)
+  
+  # Check that result is sorted in ascending order
+  counts <- result[[1]]$number_of_non_nutritive_visits
+  expect_equal(counts, c(1, 2, 3))
+})
+
+test_that("calculate_non_nutritive_visits sorts in descending order (sort = -1)", {
+  data <- list(
+    "2023-01-01" = data.frame(
+      cow = c("A", "A", "A", "B", "B", "C"),
+      intake = c(0, 0, 0, 0, 0, 0),
+      start_weight = c(10, 11, 12, 10, 11, 10)
+    )
+  )
+  cfg <- qc_config(calibration_error = 0.5)
+  result <- calculate_non_nutritive_visits(data, cfg = cfg, sort = -1)
+  
+  # Check that result is sorted in descending order
+  counts <- result[[1]]$number_of_non_nutritive_visits
+  expect_equal(counts, c(3, 2, 1))
+})
+
+test_that("calculate_non_nutritive_visits default is no sorting (sort = 0)", {
+  data <- list(
+    "2023-01-01" = data.frame(
+      cow = c("A", "A", "A", "B", "B", "C"),
+      intake = c(0, 0, 0, 0, 0, 0),
+      start_weight = c(10, 11, 12, 10, 11, 10)
+    )
+  )
+  cfg <- qc_config(calibration_error = 0.5)
+  result <- calculate_non_nutritive_visits(data, cfg = cfg)
+  
+  # Result should not be sorted (order depends on grouping)
+  expect_true(is.data.frame(result[[1]]))
+  expect_equal(nrow(result[[1]]), 3)
+})
+
+test_that("calculate_no_feed_visits sorts in ascending order (sort = 1)", {
+  data <- list(
+    "2023-01-01" = data.frame(
+      cow = c("A", "A", "A", "B", "B", "C"),
+      intake = c(0, 0, 0, 0, 0, 0),
+      start_weight = c(0.1, 0.2, 0.3, 0.1, 0.2, 0.1)
+    )
+  )
+  cfg <- qc_config(calibration_error = 0.5)
+  result <- calculate_no_feed_visits(data, cfg = cfg, sort = 1)
+  
+  # Check that result is sorted in ascending order
+  counts <- result[[1]]$number_of_visits_when_no_feed
+  expect_equal(counts, c(1, 2, 3))
+})
+
+test_that("calculate_no_feed_visits sorts in descending order (sort = -1)", {
+  data <- list(
+    "2023-01-01" = data.frame(
+      cow = c("A", "A", "A", "B", "B", "C"),
+      intake = c(0, 0, 0, 0, 0, 0),
+      start_weight = c(0.1, 0.2, 0.3, 0.1, 0.2, 0.1)
+    )
+  )
+  cfg <- qc_config(calibration_error = 0.5)
+  result <- calculate_no_feed_visits(data, cfg = cfg, sort = -1)
+  
+  # Check that result is sorted in descending order
+  counts <- result[[1]]$number_of_visits_when_no_feed
+  expect_equal(counts, c(3, 2, 1))
+})
+
+test_that("calculate_no_feed_visits default is no sorting (sort = 0)", {
+  data <- list(
+    "2023-01-01" = data.frame(
+      cow = c("A", "A", "A", "B", "B", "C"),
+      intake = c(0, 0, 0, 0, 0, 0),
+      start_weight = c(0.1, 0.2, 0.3, 0.1, 0.2, 0.1)
+    )
+  )
+  cfg <- qc_config(calibration_error = 0.5)
+  result <- calculate_no_feed_visits(data, cfg = cfg)
+  
+  # Result should not be sorted (order depends on grouping)
+  expect_true(is.data.frame(result[[1]]))
+  expect_equal(nrow(result[[1]]), 3)
+})
+
+test_that("calculate_non_nutritive_visits errors on invalid sort value", {
+  data <- list(
+    "2023-01-01" = data.frame(
+      cow = c("A", "B"),
+      intake = c(0, 0),
+      start_weight = c(10, 11)
+    )
+  )
+  cfg <- qc_config(calibration_error = 0.5)
+  
+  expect_error(
+    calculate_non_nutritive_visits(data, cfg = cfg, sort = 2),
+    "`sort` must be 0, 1, or -1"
+  )
+  
+  expect_error(
+    calculate_non_nutritive_visits(data, cfg = cfg, sort = "invalid"),
+    "`sort` must be 0, 1, or -1"
+  )
+})
+
+test_that("calculate_no_feed_visits errors on invalid sort value", {
+  data <- list(
+    "2023-01-01" = data.frame(
+      cow = c("A", "B"),
+      intake = c(0, 0),
+      start_weight = c(0.1, 0.2)
+    )
+  )
+  cfg <- qc_config(calibration_error = 0.5)
+  
+  expect_error(
+    calculate_no_feed_visits(data, cfg = cfg, sort = -2),
+    "`sort` must be 0, 1, or -1"
+  )
+  
+  expect_error(
+    calculate_no_feed_visits(data, cfg = cfg, sort = TRUE),
+    "`sort` must be 0, 1, or -1"
+  )
+})

@@ -7,6 +7,7 @@
 calculate_non_nutritive_visits(
   data,
   cfg = qc_config(),
+  sort = 0,
   id_col = id_col2(),
   intake_col = intake_col2(),
   start_weight_col = start_weight_col2()
@@ -18,6 +19,13 @@ each containing visit-level data.}
 
 \item{cfg}{A configuration list created by \code{\link[=qc_config]{qc_config()}}.}
 
+\item{sort}{Numeric. How to sort results by visit frequency:
+\itemize{
+\item \code{0} (default) - no sorting
+\item \code{1} - ascending (lowest to highest)
+\item \code{-1} - descending (highest to lowest)
+}}
+
 \item{id_col}{Animal ID column name (default current global value from \code{\link[=id_col2]{id_col2()}})}
 
 \item{intake_col}{Intake column name (default current global value from \code{\link[=intake_col2]{intake_col2()}})}
@@ -26,7 +34,8 @@ each containing visit-level data.}
 }
 \value{
 A named list of data frames, one per day, each containing columns
-for animal ID and the count of non-nutritive visits.
+for animal ID and the count of non-nutritive visits. If \code{sort} is specified,
+results are sorted by the visit count column.
 }
 \description{
 Calculates the number of non-nutritive visits for each animal on each day.
@@ -43,7 +52,17 @@ toy_data <- list(
   )
 )
 cfg <- qc_config(calibration_error = 0.5)
+
+# No sorting (default)
 result <- calculate_non_nutritive_visits(toy_data, cfg = cfg)
 result[[1]]
+
+# Sort descending (highest to lowest)
+result_desc <- calculate_non_nutritive_visits(toy_data, cfg = cfg, sort = -1)
+result_desc[[1]]
+
+# Sort ascending (lowest to highest)
+result_asc <- calculate_non_nutritive_visits(toy_data, cfg = cfg, sort = 1)
+result_asc[[1]]
 
 }

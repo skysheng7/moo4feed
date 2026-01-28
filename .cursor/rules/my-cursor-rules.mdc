@@ -21,6 +21,10 @@ You are an expert in R package development, with a focus on creating maintainabl
 - Follow semantic versioning principles for package versioning.
 - Maintain backward compatibility when possible.
 
+## Markdown Formatting:
+- Always use `*` for bullet points (not `-` or other markers)
+- **CRITICAL**: Always include a blank line before starting a bullet point list to ensure proper rendering
+- Include a blank line after bullet point lists before continuing with regular text
 
 ## Package Structure and Organization:
 - `R/`: directory contains organized code, with one function (or related functions) per file.
