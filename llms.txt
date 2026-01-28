@@ -357,6 +357,10 @@ between animals.
   : Analyze pair-wise co-occurrence patterns
 - [`synch_neighbor_analysis()`](https://skysheng7.github.io/moo4feed/reference/synch_neighbor_analysis.md)
   : Analyze pair-wise spatial neighbor patterns
+- [`synch_pairs_to_df()`](https://skysheng7.github.io/moo4feed/reference/synch_pairs_to_df.md)
+  : Convert synchronicity matrices to pair-level data frame
+- [`synch_neighbor_compare()`](https://skysheng7.github.io/moo4feed/reference/synch_neighbor_compare.md)
+  : Compare neighbor time to total co-occurrence time
 
 ## Example Data
 

@@ -11,6 +11,7 @@ anything.
 calculate_non_nutritive_visits(
   data,
   cfg = qc_config(),
+  sort = 0,
   id_col = id_col2(),
   intake_col = intake_col2(),
   start_weight_col = start_weight_col2()
@@ -28,6 +29,16 @@ calculate_non_nutritive_visits(
 
   A configuration list created by
   [`qc_config()`](https://skysheng7.github.io/moo4feed/reference/qc_config.md).
+
+- sort:
+
+  Numeric. How to sort results by visit frequency:
+
+  - `0` (default) - no sorting
+
+  - `1` - ascending (lowest to highest)
+
+  - `-1` - descending (highest to lowest)
 
 - id_col:
 
@@ -47,7 +58,8 @@ calculate_non_nutritive_visits(
 ## Value
 
 A named list of data frames, one per day, each containing columns for
-animal ID and the count of non-nutritive visits.
+animal ID and the count of non-nutritive visits. If `sort` is specified,
+results are sorted by the visit count column.
 
 ## Examples
 
@@ -60,6 +72,8 @@ toy_data <- list(
   )
 )
 cfg <- qc_config(calibration_error = 0.5)
+
+# No sorting (default)
 result <- calculate_non_nutritive_visits(toy_data, cfg = cfg)
 result[[1]]
 #> # A tibble: 3 × 2
@@ -68,4 +82,24 @@ result[[1]]
 #> 1 1                                  2
 #> 2 2                                  1
 #> 3 3                                  1
+
+# Sort descending (highest to lowest)
+result_desc <- calculate_non_nutritive_visits(toy_data, cfg = cfg, sort = -1)
+result_desc[[1]]
+#> # A tibble: 3 × 2
+#>   cow   number_of_non_nutritive_visits
+#>   <chr>                          <int>
+#> 1 1                                  2
+#> 2 2                                  1
+#> 3 3                                  1
+
+# Sort ascending (lowest to highest)
+result_asc <- calculate_non_nutritive_visits(toy_data, cfg = cfg, sort = 1)
+result_asc[[1]]
+#> # A tibble: 3 × 2
+#>   cow   number_of_non_nutritive_visits
+#>   <chr>                          <int>
+#> 1 2                                  1
+#> 2 3                                  1
+#> 3 1                                  2
 ```

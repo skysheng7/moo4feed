@@ -22,24 +22,6 @@ set_global_cols(
   dur_col = "duration",     # Visit duration column
   tz = "America/Vancouver"  # Your timezone
 )
-
-# Verify configuration
-cat("✅ Global variables configured:\n")
-#> ✅ Global variables configured:
-cat("ID column:", id_col2(), "\n")
-#> ID column: cow
-cat("Start time column:", start_col2(), "\n") 
-#> Start time column: start
-cat("End time column:", end_col2(), "\n")
-#> End time column: end
-cat("Bin column:", bin_col2(), "\n")
-#> Bin column: bin
-cat("Intake column:", intake_col2(), "\n")
-#> Intake column: intake
-cat("Duration column:", duration_col2(), "\n")
-#> Duration column: duration
-cat("Timezone:", tz2(), "\n")
-#> Timezone: America/Vancouver
 ```
 
 ## 2. Introduction to Meal Clustering
