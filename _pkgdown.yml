@@ -91,6 +91,13 @@ reference:
   - calculate_non_nutritive_visits
   - calculate_no_feed_visits
 
+- subtitle: Feed Addition Detection
+  desc: >
+    Detect when feed bins are refilled and track feed availability.
+  contents:
+  - detect_feed_additions
+  - calculate_feed_availability
+
 - subtitle: Replacement Behavior Analysis
   desc: >
     Functions to identify replacement behavior across multiple days, and validate those events by checking whether the actor cow was already present at another bin.
@@ -111,6 +118,14 @@ reference:
   - combine_animal_plots
   - combine_date_plots
   - extract_plots
+
+- subtitle: Within-Meal Behavior Analysis
+  desc: >
+    Analyze behavior patterns within identified meals including visit types and actor/reactor roles.
+  contents:
+  - meal_non_nutritive_summary
+  - meal_replacement_roles
+  - meal_replacement_roles_summary
 
 - title: Configuration and Customization
 - subtitle: Global Variables
