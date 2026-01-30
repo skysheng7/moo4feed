@@ -27,6 +27,10 @@ devtools::install_github("skysheng7/moo4feed")
 devtools::install_github("skysheng7/moo4feed", dependencies = TRUE, build_vignettes = TRUE)
 ```
 
+## Development
+
+This package was developed using AI-assisted tools including Cursor and Claude Code. System prompts and development configurations can be found in the `.cursor` and `.claude` directories.
+
 ## Documentation
 
 Full documentation and examples are available at the [package website](https://skysheng7.github.io/moo4feed/).
