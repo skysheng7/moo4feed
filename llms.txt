@@ -205,6 +205,15 @@ day.
 - [`calculate_no_feed_visits()`](https://skysheng7.github.io/moo4feed/reference/calculate_no_feed_visits.md)
   : Calculate visits with no feed available per animal per day
 
+### Feed Addition Detection
+
+Detect when feed bins are refilled and track feed availability.
+
+- [`detect_feed_additions()`](https://skysheng7.github.io/moo4feed/reference/detect_feed_additions.md)
+  : Detect Feed Addition Times
+- [`calculate_feed_availability()`](https://skysheng7.github.io/moo4feed/reference/calculate_feed_availability.md)
+  : Calculate Percentage of Feed Remaining at Each Visit
+
 ### Replacement Behavior Analysis
 
 Functions to identify replacement behavior across multiple days, and
@@ -240,6 +249,18 @@ Cluster feeding visits into meals.
   : Combine multiple animals for one date with pagination
 - [`extract_plots()`](https://skysheng7.github.io/moo4feed/reference/extract_plots.md)
   : Extract subset of plots by animal and/or date
+
+### Within-Meal Behavior Analysis
+
+Analyze behavior patterns within identified meals including visit types
+and actor/reactor roles.
+
+- [`meal_non_nutritive_summary()`](https://skysheng7.github.io/moo4feed/reference/meal_non_nutritive_summary.md)
+  : Analyze Non-Nutritive and Empty Bin Visits Within Meals
+- [`meal_replacement_roles()`](https://skysheng7.github.io/moo4feed/reference/meal_replacement_roles.md)
+  : Analyze Within-Meal Actor/Reactor Roles
+- [`meal_replacement_roles_summary()`](https://skysheng7.github.io/moo4feed/reference/meal_replacement_roles_summary.md)
+  : Summarize Actor/Reactor Roles Per Animal Per Day
 
 ## Configuration and Customization
 

@@ -141,7 +141,7 @@ for using the eps parameter in meal clustering
 ``` r
 # Calculate optimal eps using default method (GMM)
 meal_interval(all_fed[[1]])
-#> [1] 25.64307
+#> [1] 5
 
 # Use only percentile method with 80th percentile
 meal_interval(all_fed[[1]], method = "percentile", percentile = 0.8)
@@ -149,7 +149,7 @@ meal_interval(all_fed[[1]], method = "percentile", percentile = 0.8)
 
 # Use only Gaussian mixture modeling
 meal_interval(all_fed[[1]], method = "gmm")
-#> [1] 25.64314
+#> [1] 5
 
 # Work with list of dataframes
 meal_interval(all_fed, method = "both", percentile = 0.93)

@@ -169,7 +169,7 @@ approaches and returns the minimum value to be more conservative in meal definit
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Calculate optimal eps using default method (GMM)</span></span></span>
 <span class="r-in"><span><span class="fu">meal_interval</span><span class="op">(</span><span class="va">all_fed</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 25.64307</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 5</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Use only percentile method with 80th percentile</span></span></span>
 <span class="r-in"><span><span class="fu">meal_interval</span><span class="op">(</span><span class="va">all_fed</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, method <span class="op">=</span> <span class="st">"percentile"</span>, percentile <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span></span>
@@ -177,7 +177,7 @@ approaches and returns the minimum value to be more conservative in meal definit
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Use only Gaussian mixture modeling</span></span></span>
 <span class="r-in"><span><span class="fu">meal_interval</span><span class="op">(</span><span class="va">all_fed</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, method <span class="op">=</span> <span class="st">"gmm"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 25.64314</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 5</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Work with list of dataframes</span></span></span>
 <span class="r-in"><span><span class="fu">meal_interval</span><span class="op">(</span><span class="va">all_fed</span>, method <span class="op">=</span> <span class="st">"both"</span>, percentile <span class="op">=</span> <span class="fl">0.93</span><span class="op">)</span></span></span>

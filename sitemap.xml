@@ -21,6 +21,7 @@
 <url><loc>https://skysheng7.github.io/moo4feed/reference/bin_offset2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/bins_feed2.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/bins_wat2.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/calculate_feed_availability.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/calculate_no_feed_visits.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/calculate_non_nutritive_visits.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/cap_first.html</loc></url>
@@ -34,6 +35,7 @@
 <url><loc>https://skysheng7.github.io/moo4feed/reference/compare_files.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/daylight_saving_adjust.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/delete_rows.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/detect_feed_additions.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/dst_switch_day.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/dst_switch_hm.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/duration_col2.html</loc></url>
@@ -55,6 +57,9 @@
 <url><loc>https://skysheng7.github.io/moo4feed/reference/matrix_process.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/meal_interval.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/meal_label_visits.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/meal_non_nutritive_summary.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/meal_replacement_roles.html</loc></url>
+<url><loc>https://skysheng7.github.io/moo4feed/reference/meal_replacement_roles_summary.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/merge_cluster_results.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/merge_list_df.html</loc></url>
 <url><loc>https://skysheng7.github.io/moo4feed/reference/moo4feed_example.html</loc></url>
