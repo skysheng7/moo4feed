@@ -1,0 +1,466 @@
+---
+title: "8. Meal-Level Behavior Analysis"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{8. Meal-Level Behavior Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 6,
+  fig.height = 4,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+```{r setup}
+library(moo4feed)
+library(ggplot2)
+library(dplyr)
+```
+
+## 1. Set Your Global Variables First!
+
+Before analyzing meal-level behavior patterns, configure global variables to match your data structure:
+
+```{r global-setup}
+# Configure global variables for your data structure
+set_global_cols(
+  id_col = "cow",           # Animal ID column name
+  start_col = "start",      # Visit start time column
+  end_col = "end",          # Visit end time column
+  bin_col = "bin",          # Bin/feeder ID column
+  intake_col = "intake",    # Feed intake amount column
+  dur_col = "duration",     # Visit duration column
+  tz = "America/Vancouver"  # Your timezone
+)
+
+```
+
+## 2. Introduction to Meal-Level Behavior Analysis
+
+While individual visits provide granular data, analyzing behavior **within meals** offers deeper insights into feeding patterns. A meal consists of multiple related visits clustered together in time, and examining what happens during a meal can reveal important behavioral patterns.
+
+This tutorial demonstrates how to:
+
+> 1. **Analyze non-nutritive visits within meals** - Identify exploratory behavior during feeding
+> 2. **Examine actor/reactor roles within meals** - Understand social dynamics during meals
+> 3. **Summarize meal-level behavior patterns** - Aggregate findings per animal per day
+
+## 3. Prerequisites
+
+This tutorial requires:
+
+1. Completion of [**Tutorial 1: Data Cleaning**](data_cleaning.html)
+2. Completion of [**Tutorial 2: Meal Clustering**](meal_clustering.html) - your data must have meal labels
+3. For actor/reactor analysis: [**Tutorial 4: Replacement Detection**](replacement_detection.html)
+
+## 4. Data Preparation
+
+First, we need to prepare meal-labeled data:
+
+```{r data-prep}
+# Load cleaned example data
+data(clean_feed)
+data(clean_comb)
+
+# If you're using your own data from previous tutorials, use this instead:
+# clean_feed <- your_cleaned_feed_data
+# clean_comb <- your_cleaned_comb_data
+
+# Label visits with meal assignments
+# (See Tutorial 2: Meal Clustering for details on parameter selection)
+labeled_visits <- meal_label_visits(
+  data = clean_feed,
+  eps = NULL,                # Auto-determine optimal interval
+  min_pts = 2,               # Minimum visits to form a meal
+  method = "gmm",            # Use GMM for interval detection
+  eps_scope = "all_animals",
+  lower_bound = NULL,
+  upper_bound = NULL,
+  use_log_transform = TRUE,
+  log_multiplier = 20,
+  log_offset = 1
+)
+
+# Quick peek at meal-labeled data
+cat("Meal-labeled data structure (first day):\n")
+head(labeled_visits[[1]][, c("cow", "bin", "start", "intake", "meal_id", "meal_start")])
+
+cat("\nTotal meals identified on first day:", max(labeled_visits[[1]]$meal_id), "\n")
+```
+
+## 5. Non-Nutritive Visits Within Meals
+
+Non-nutritive visits (visits where animals don't consume feed despite it being available) and empty bin visits (visits to bins with no feed) can occur during meals. Analyzing these patterns within meal contexts provides insights into exploratory behavior.
+
+### Understanding Visit Types Within Meals
+
+The `meal_non_nutritive_summary()` function classifies each visit within a meal as:
+
+- **Nutritive**: Animal consumed feed (intake > calibration error)
+- **Non-nutritive**: Feed available but animal didn't eat (exploratory)
+- **Empty bin**: No feed available in the bin
+
+### Analyze Non-Nutritive Patterns
+
+```{r non-nutritive-analysis}
+# Create quality control configuration
+my_qc_config <- qc_config(
+  calibration_error = 0.5    # Equipment measurement threshold (kg)
+)
+
+# Analyze non-nutritive and empty bin visits within meals
+meal_visits <- meal_non_nutritive_summary(
+  data = labeled_visits,
+  cfg = my_qc_config
+)
+
+# Examine the results from first day
+cat("Meal visit analysis (first day):\n")
+head(meal_visits[[1]])
+```
+
+The summary provides per animal per day:
+
+- **`mean_non_nutritive_per_meal`**: Average non-nutritive visits per meal
+- **`median_non_nutritive_per_meal`**: Median non-nutritive visits per meal
+- **`sd_non_nutritive_per_meal`**: Standard deviation
+- **`mean_empty_bin_per_meal`**: Average empty bin visits per meal
+- **`median_empty_bin_per_meal`**: Median empty bin visits per meal
+- **`sd_empty_bin_per_meal`**: Standard deviation
+- **`total_non_nutritive_visits`**: Total count of non-nutritive visits
+- **`total_empty_bin_visits`**: Total count of empty bin visits
+- **`total_meals`**: Number of meals analyzed
+
+### Identify Animals with High Exploratory Behavior
+
+```{r high-exploratory}
+# Combine all days
+all_meal_visits <- do.call(rbind, meal_visits)
+
+# Find animals with highest non-nutritive visits per meal
+high_exploratory <- all_meal_visits |>
+  dplyr::group_by(cow) |>
+  dplyr::summarise(
+    avg_non_nutritive = mean(mean_non_nutritive_per_meal, na.rm = TRUE),
+    avg_empty_bin = mean(mean_empty_bin_per_meal, na.rm = TRUE),
+    total_meals = sum(total_meals),
+    .groups = "drop"
+  ) |>
+  dplyr::arrange(desc(avg_non_nutritive))
+
+cat("Animals with most non-nutritive visits per meal:\n")
+head(high_exploratory, 5)
+
+cat("\nAnimals with most empty bin visits per meal:\n")
+high_exploratory |>
+  dplyr::arrange(desc(avg_empty_bin)) |>
+  head(5)
+```
+
+### Visualize Non-Nutritive Patterns
+
+```{r viz-non-nutritive, fig.width=6, fig.height=4}
+# Distribution of non-nutritive visits per meal
+ggplot(all_meal_visits, aes(x = mean_non_nutritive_per_meal)) +
+  geom_histogram(bins = 20, fill = "coral", alpha = 0.7) +
+  labs(
+    title = "Distribution of Non-Nutritive Visits Per Meal",
+    x = "Average Non-Nutritive Visits Per Meal",
+    y = "Number of Animal-Days"
+  ) +
+  theme_minimal()
+```
+
+## 6. Actor/Reactor Roles Within Meals
+
+When we combine meal data with replacement events, we can analyze the social roles animals play **during their meals**. An animal might enter a visit as an "actor" (replacing another animal) or leave as a "reactor" (being replaced by another animal).
+
+### Understanding Actor/Reactor Roles
+
+- **Actor**: The animal entered this visit by replacing another animal at the bin
+- **Reactor**: The animal was replaced by another animal when leaving this visit
+- **Actor-Reactor**: Both events occurred during the same visit (rare but possible)
+
+### Prepare Replacement Data
+
+```{r replacement-prep}
+# Detect replacement events
+# (See Tutorial 4: Replacement Detection for details)
+replacements <- record_replacement_days(
+  comb = clean_comb,
+  cfg = qc_config(replacement_threshold = 26)
+)
+
+cat("Replacement events per day:\n")
+sapply(replacements, nrow)
+```
+
+### Analyze Actor/Reactor Roles Within Meals
+
+We need meal-labeled data that matches the combined feed/water data used for replacement detection:
+
+```{r role-analysis}
+# Label the combined data with meals
+labeled_comb <- meal_label_visits(
+  data = clean_comb,
+  eps = NULL,
+  min_pts = 2,
+  method = "gmm",
+  eps_scope = "all_animals",
+  lower_bound = NULL,
+  upper_bound = NULL,
+  use_log_transform = TRUE,
+  log_multiplier = 20,
+  log_offset = 1
+)
+
+# Analyze actor/reactor roles within meals
+meal_roles <- meal_replacement_roles(
+  visit_data = labeled_comb,
+  replacement_data = replacements,
+  time_tolerance = 1           # Seconds tolerance for matching
+)
+
+# Examine the meal-level results
+cat("Actor/reactor roles per meal (first day):\n")
+head(meal_roles[[1]])
+```
+
+The results show for each animal's meal:
+
+- **`total_visits_in_meal`**: Total visits in the meal
+- **`actor_visits`**: Visits where animal entered as actor
+- **`reactor_visits`**: Visits where animal left as reactor
+- **`actor_reactor_visits`**: Visits with both roles
+- **`pct_actor`**: Percentage of visits as actor
+- **`pct_reactor`**: Percentage of visits as reactor
+- **`pct_actor_reactor`**: Percentage with both roles
+
+### Summarize Roles Per Animal Per Day
+
+```{r role-summary}
+# Get daily summary statistics across all meals
+daily_roles <- meal_replacement_roles_summary(meal_roles)
+
+cat("Daily role summary (first day):\n")
+print(daily_roles[[1]])
+```
+
+The daily summary provides:
+
+- **`mean_pct_actor`**: Average percentage of actor visits across meals
+- **`median_pct_actor`**: Median percentage
+- **`sd_pct_actor`**: Standard deviation
+- Similarly for reactor and actor-reactor roles
+- **`total_meals`**: Number of meals analyzed
+
+### Identify Dominant and Subordinate Animals
+
+```{r dominance-analysis}
+# Combine all daily summaries
+all_daily_roles <- do.call(rbind, daily_roles)
+
+# Find animals with highest actor percentages (potentially dominant)
+dominant_animals <- all_daily_roles |>
+  dplyr::group_by(cow) |>
+  dplyr::summarise(
+    avg_pct_actor = mean(mean_pct_actor, na.rm = TRUE),
+    avg_pct_reactor = mean(mean_pct_reactor, na.rm = TRUE),
+    total_meals = sum(total_meals),
+    .groups = "drop"
+  ) |>
+  dplyr::mutate(
+    dominance_ratio = avg_pct_actor / (avg_pct_reactor + 0.01)  # Avoid division by zero
+  ) |>
+  dplyr::arrange(desc(dominance_ratio))
+
+cat("Animals with highest actor-to-reactor ratio (potentially dominant):\n")
+head(dominant_animals, 5)
+
+cat("\nAnimals with lowest actor-to-reactor ratio (potentially subordinate):\n")
+tail(dominant_animals, 5)
+```
+
+### Visualize Role Patterns
+
+```{r viz-roles, fig.width=7, fig.height=4}
+# Scatter plot: Actor vs Reactor percentages
+ggplot(dominant_animals, aes(x = avg_pct_reactor, y = avg_pct_actor)) +
+  geom_point(aes(size = total_meals), alpha = 0.6, color = "steelblue") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray50") +
+  labs(
+    title = "Actor vs Reactor Role Percentages",
+    subtitle = "Points above the line indicate more dominant behavior",
+    x = "Average % Visits as Reactor",
+    y = "Average % Visits as Actor",
+    size = "Total Meals"
+  ) +
+  theme_minimal()
+```
+
+## 7. Combining Meal-Level Insights
+
+By combining non-nutritive visit analysis with actor/reactor roles, we can build a comprehensive picture of each animal's meal behavior:
+
+```{r combined-analysis}
+# Merge the summaries for a combined view
+combined_behavior <- dominant_animals |>
+  dplyr::left_join(
+    high_exploratory |> dplyr::select(cow, avg_non_nutritive, avg_empty_bin),
+    by = "cow"
+  )
+
+cat("Combined meal behavior profile:\n")
+head(combined_behavior)
+```
+
+## 8. Summary
+
+This tutorial demonstrated meal-level behavior analysis:
+
+- **Non-nutritive visits within meals**: Identified exploratory behavior patterns
+- **Actor/reactor roles**: Analyzed social dynamics during meals
+- **Daily summaries**: Aggregated behavior metrics per animal per day
+- **Behavioral profiles**: Combined multiple metrics to characterize animals
+
+These metrics can help identify animals that may be:
+- **Highly exploratory**: Many non-nutritive visits per meal
+- **Competitively disadvantaged**: Many empty bin visits, high reactor percentage
+- **Socially dominant**: High actor-to-reactor ratio
+
+## 9. Code Cheatsheet
+
+```{r cheatsheet, eval=FALSE}
+#' Copy and modify these code blocks for your own analysis!
+
+# ---- SETUP: Global Variables (REQUIRED FIRST!) ----
+library(moo4feed)
+library(ggplot2)
+library(dplyr)
+
+# Set up your column names and timezone (modify these!)
+set_global_cols(
+  id_col = "cow",           # Your animal ID column
+  start_col = "start",      # Visit start time column
+  end_col = "end",          # Visit end time column
+  bin_col = "bin",          # Bin/feeder ID column
+  intake_col = "intake",    # Feed intake amount column
+  dur_col = "duration",     # Visit duration column
+  tz = "America/Vancouver"  # Your timezone
+)
+
+# ---- STEP 1: Prepare Meal-Labeled Data ----
+# Load your cleaned data
+data(clean_feed)
+data(clean_comb)
+
+# Label visits with meals (see Tutorial 2 for details)
+labeled_visits <- meal_label_visits(
+  data = clean_feed,
+  eps = NULL,                # Auto-determine
+  min_pts = 2,
+  method = "gmm",
+  eps_scope = "all_animals",
+  use_log_transform = TRUE,
+  log_multiplier = 20,
+  log_offset = 1
+)
+
+# ---- STEP 2: Analyze Non-Nutritive Visits Within Meals ----
+my_qc_config <- qc_config(calibration_error = 0.5)
+
+meal_visits <- meal_non_nutritive_summary(
+  data = labeled_visits,
+  cfg = my_qc_config
+)
+
+# View results
+head(meal_visits[[1]])
+
+# Combine all days
+all_meal_visits <- do.call(rbind, meal_visits)
+
+# Find animals with high exploratory behavior
+high_exploratory <- all_meal_visits |>
+  dplyr::group_by(cow) |>
+  dplyr::summarise(
+    avg_non_nutritive = mean(mean_non_nutritive_per_meal, na.rm = TRUE),
+    avg_empty_bin = mean(mean_empty_bin_per_meal, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  dplyr::arrange(desc(avg_non_nutritive))
+
+print(high_exploratory)
+
+# ---- STEP 3: Analyze Actor/Reactor Roles Within Meals ----
+# First, detect replacement events (see Tutorial 4)
+replacements <- record_replacement_days(
+  comb = clean_comb,
+  cfg = qc_config(replacement_threshold = 26)
+)
+
+# Label combined data with meals
+labeled_comb <- meal_label_visits(
+  data = clean_comb,
+  eps = NULL,
+  min_pts = 2,
+  method = "gmm",
+  eps_scope = "all_animals"
+)
+
+# Analyze roles within meals
+meal_roles <- meal_replacement_roles(
+  visit_data = labeled_comb,
+  replacement_data = replacements,
+  time_tolerance = 1
+)
+
+# View meal-level results
+head(meal_roles[[1]])
+
+# ---- STEP 4: Get Daily Role Summaries ----
+daily_roles <- meal_replacement_roles_summary(meal_roles)
+
+# View daily summaries
+print(daily_roles[[1]])
+
+# Combine all days
+all_daily_roles <- do.call(rbind, daily_roles)
+
+# Find dominant/subordinate animals
+dominance_summary <- all_daily_roles |>
+  dplyr::group_by(cow) |>
+  dplyr::summarise(
+    avg_pct_actor = mean(mean_pct_actor, na.rm = TRUE),
+    avg_pct_reactor = mean(mean_pct_reactor, na.rm = TRUE),
+    total_meals = sum(total_meals),
+    .groups = "drop"
+  ) |>
+  dplyr::mutate(
+    dominance_ratio = avg_pct_actor / (avg_pct_reactor + 0.01)
+  ) |>
+  dplyr::arrange(desc(dominance_ratio))
+
+print(dominance_summary)
+
+# ---- STEP 5: Visualize Results ----
+# Distribution of non-nutritive visits
+ggplot(all_meal_visits, aes(x = mean_non_nutritive_per_meal)) +
+  geom_histogram(bins = 20, fill = "coral", alpha = 0.7) +
+  theme_minimal()
+
+# Actor vs Reactor scatter plot
+ggplot(dominance_summary, aes(x = avg_pct_reactor, y = avg_pct_actor)) +
+  geom_point(aes(size = total_meals), alpha = 0.6) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  theme_minimal()
+```
+
+---

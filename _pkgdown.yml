@@ -12,6 +12,8 @@ articles:
   - replacement_detection
   - synchronicity_analysis
   - non_nutritive_visits
+  - feed_availability_analysis
+  - meal_behavior_analysis
 
 reference:
 - title: Getting Started
