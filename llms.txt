@@ -432,3 +432,7 @@ Step-by-step tutorials for processing animal feeding behavior data
   Analysis](https://skysheng7.github.io/moo4feed/articles/synchronicity_analysis.md):
 - [6. Non-Nutritive Visit
   Analysis](https://skysheng7.github.io/moo4feed/articles/non_nutritive_visits.md):
+- [7. Feed Availability
+  Analysis](https://skysheng7.github.io/moo4feed/articles/feed_availability_analysis.md):
+- [8. Meal-Level Behavior
+  Analysis](https://skysheng7.github.io/moo4feed/articles/meal_behavior_analysis.md):

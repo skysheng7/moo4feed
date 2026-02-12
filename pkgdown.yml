@@ -4,11 +4,13 @@ pkgdown_sha: ~
 articles:
   bin_visit_analysis: bin_visit_analysis.html
   data_cleaning: data_cleaning.html
+  feed_availability_analysis: feed_availability_analysis.html
+  meal_behavior_analysis: meal_behavior_analysis.html
   meal_clustering: meal_clustering.html
   non_nutritive_visits: non_nutritive_visits.html
   replacement_detection: replacement_detection.html
   synchronicity_analysis: synchronicity_analysis.html
-last_built: 2026-01-30T07:25Z
+last_built: 2026-02-12T22:53Z
 urls:
   reference: https://skysheng7.github.io/moo4feed/reference
   article: https://skysheng7.github.io/moo4feed/articles
