@@ -14,7 +14,6 @@ to match your data structure:
 ``` r
 # Configure global variables for your data structure
 set_global_cols(
-
   id_col = "cow",           # Animal ID column name
   start_col = "start",      # Visit start time column
   end_col = "end",          # Visit end time column
@@ -30,14 +29,15 @@ set_global_cols(
 ## 2. Introduction to Feed Availability Analysis
 
 Understanding when feed is added to bins and how much feed is available
-when animals visit helps researchers and farm managers:
+when animals visit each bin can help researchers and farmers better
+track feed management on daily basis, and identify animals that may be
+disadvantaged.
 
 - **Monitor feed management**: Identify when bins are refilled
-  throughout the day
-- **Assess feed competition**: Animals visiting when bins are nearly
-  empty may be disadvantaged
-- **Optimize feeding schedules**: Understand the relationship between
-  feed delivery timing and animal visits
+  throughout the day, the frequency of feed additions, and the amount of
+  feed added to each bin.
+- **Identify disadvantaged animals**: Animals visiting when bins are
+  nearly empty may be disadvantaged
 
 ### What We’ll Learn
 

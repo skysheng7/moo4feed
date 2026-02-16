@@ -70,7 +70,6 @@ variables to match your data structure:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Configure global variables for your data structure</span></span>
 <span><span class="fu"><a href="../reference/set_global_cols.html">set_global_cols</a></span><span class="op">(</span></span>
-<span></span>
 <span>  id_col <span class="op">=</span> <span class="st">"cow"</span>,           <span class="co"># Animal ID column name</span></span>
 <span>  start_col <span class="op">=</span> <span class="st">"start"</span>,      <span class="co"># Visit start time column</span></span>
 <span>  end_col <span class="op">=</span> <span class="st">"end"</span>,          <span class="co"># Visit end time column</span></span>
@@ -86,17 +85,17 @@ variables to match your data structure:</p>
 <h2 id="introduction-to-feed-availability-analysis">2. Introduction to Feed Availability Analysis<a class="anchor" aria-label="anchor" href="#introduction-to-feed-availability-analysis"></a>
 </h2>
 <p>Understanding when feed is added to bins and how much feed is
-available when animals visit helps researchers and farm managers:</p>
+available when animals visit each bin can help researchers and farmers
+better track feed management on daily basis, and identify animals that
+may be disadvantaged.</p>
 <ul>
 <li>
 <strong>Monitor feed management</strong>: Identify when bins are
-refilled throughout the day</li>
+refilled throughout the day, the frequency of feed additions, and the
+amount of feed added to each bin.</li>
 <li>
-<strong>Assess feed competition</strong>: Animals visiting when bins
-are nearly empty may be disadvantaged</li>
-<li>
-<strong>Optimize feeding schedules</strong>: Understand the
-relationship between feed delivery timing and animal visits</li>
+<strong>Identify disadvantaged animals</strong>: Animals visiting
+when bins are nearly empty may be disadvantaged</li>
 </ul>
 <div class="section level3">
 <h3 id="what-well-learn">What We’ll Learn<a class="anchor" aria-label="anchor" href="#what-well-learn"></a>
