@@ -1,0 +1,451 @@
+---
+title: "7. Feed Availability Analysis"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{7. Feed Availability Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 6,
+  fig.height = 4,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+```{r setup}
+library(moo4feed)
+library(ggplot2)
+library(dplyr)
+```
+
+## 1. Set Your Global Variables First!
+
+Before analyzing feed availability patterns, configure global variables to match your data structure:
+
+```{r global-setup}
+# Configure global variables for your data structure
+set_global_cols(
+  id_col = "cow",           # Animal ID column name
+  start_col = "start",      # Visit start time column
+  end_col = "end",          # Visit end time column
+  bin_col = "bin",          # Bin/feeder ID column
+  intake_col = "intake",    # Feed intake amount column
+  dur_col = "duration",     # Visit duration column
+  start_weight_col = "start_weight",  # Bin weight at visit start
+  end_weight_col = "end_weight",      # Bin weight at visit end
+  tz = "America/Vancouver"  # Your timezone
+)
+
+```
+
+## 2. Introduction to Feed Availability Analysis
+
+Understanding when feed is added to bins and how much feed is available when animals visit each bin can help researchers and farmers better track feed management on daily basis, and identify animals that may be disadvantaged (e.g., those who consistently eat the "left-over" feed).
+
+- **Monitor feed addition**: Identify when bins are refilled throughout the day, the frequency of feed additions, and the amount of feed added to each bin.
+- **Identify disadvantaged animals**: Animals visiting when bins are nearly empty may be disadvantaged
+
+## 3. Prerequisites
+
+This tutorial assumes completion of previous data processing steps in [**Tutorial 1: Data Cleaning**](data_cleaning.html).
+
+Your data must include **start_weight** and **end_weight** columns representing the bin weight at the beginning and end of each visit.
+
+## 4. Data Preparation
+
+```{r data-prep}
+# Load cleaned example data
+data(clean_feed)
+
+# If you're using your own data from previous tutorials, use this instead:
+# clean_feed <- your_cleaned_feed_data     # From your cleaning results
+
+# Quick peek at our data structure
+head(clean_feed[[1]], 3)  # First day, first 3 rows
+
+cat("\nTotal days of feed data:", length(clean_feed), "\n")
+```
+
+## 5. Detecting Feed Addition Events
+
+Feed additions are detected by identifying significant weight increases between consecutive visits at the same bin. When the bin weight at the start of a visit is much higher than the bin weight at the end of the previous visit, feed was probably added in between.
+
+### Understanding Feed Addition Detection
+
+The `detect_feed_additions()` function performs aggregation in two stages:
+
+**Stage 1: Within-bin aggregation (always performed)**
+When a farmer adds feed to the same bin multiple times in quick succession (within `max_bin_time_gap` seconds), these additions are automatically grouped into a single feed event per bin.
+
+**Stage 2: Across-bin aggregation (optional)**
+If `aggregate_all_bin = TRUE`, the function groups feed additions to different bins happening in a short time window together, summarize them as one feed addition event on farm level. When farmers come to add feed, they typically refill multiple bins within a short time window. This aggregation captures each feeding event by determining when the farmer started adding feed, when they finished, and calculates the average feed added per bin during that event.
+
+### Detect Per-Bin Feed Additions
+
+For calculating feed availability at each visit, we need per-bin additions (not aggregated across bins):
+
+```{r detect-additions}
+# Detect feed additions for each bin separately
+feed_additions <- detect_feed_additions(
+  data = clean_feed,
+  min_weight_increase = 5,      # Minimum kg increase to count as addition
+
+  max_bin_time_gap = 3600,      # Group rapid additions within 1 hour
+  aggregate_all_bin = FALSE     # Keep per-bin additions (required for availability calc)
+)
+
+# Examine the first day's feed additions
+head(feed_additions[[1]])
+```
+
+Each feed addition event contains:
+
+- **`date`**: Date of the feed addition
+- **`bin`**: Bin identifier where feed was added
+- **`time`**: Timestamp of the first detected addition in this event
+- **`weight_increase`**: Total amount of feed added (kg)
+- **`bin_weight_after_fill`**: Total bin weight after the final addition (kg)
+
+### Detect Aggregated Feed Events (Optional)
+
+To identify coordinated feeding events where multiple bins are refilled together:
+
+```{r detect-aggregated}
+# Detect multi-bin feed events
+feed_events <- detect_feed_additions(
+  data = clean_feed,
+  min_weight_increase = 5,
+  max_bin_time_gap = 3600,
+  min_bins_for_group = 3,       # At least 3 bins filled to count as event
+  aggregate_all_bin = TRUE      # Aggregate across bins
+)
+
+# Examine the aggregated events
+cat("Aggregated feed events on first day:\n")
+head(feed_events[[1]])
+
+cat("\nMulti-bin feed events per day:\n")
+sapply(feed_events, nrow)
+```
+
+Aggregated events contain:
+
+- **`event_id`**: Unique identifier for the feed event on that day
+- **`event_start`**: When farmers started adding feed to the bins
+- **`event_end`**: When farmers finished adding feed to the bins
+- **`bins_filled`**: Number of bins refilled in the event
+- **`avg_weight_increase`**: Average feed added across bins (kg)
+
+## 6. Calculating Feed Availability at Each Visit
+
+Once we have per-bin feed additions, we can calculate the percentage of feed remaining when each animal visits. This helps identify animals that consistently visit when bins are nearly empty.
+
+### Calculate Feed Availability
+
+```{r calc-availability}
+# Calculate feed availability for each visit
+availability <- calculate_feed_availability(
+  visit_data = clean_feed,
+  feed_addition_data = feed_additions  # Must use aggregate_all_bin = FALSE
+)
+
+# The function returns a list with two elements:
+# 1. visits - visit-level data with feed percentages
+# 2. daily_summary - summary statistics per animal per day
+```
+
+### Visit-Level Results
+
+```{r visit-results}
+# Examine visit-level data from first day
+visits_with_availability <- availability$visits[[1]]
+
+tail(visits_with_availability[, c("cow", "bin", "start", "start_weight",
+                                   "feed_addition_time", "bin_weight_after_fill",
+                                   "pct_feed_remaining")])
+```
+
+New columns added to visit data:
+
+* **`feed_addition_time`**: When feed was last added to this bin
+* **`feed_added_weight`**: Weight of feed added to this bin (kg)
+* **`bin_weight_after_fill`**: Bin weight after feed was added (kg)
+* **`pct_feed_remaining`**: Percentage of feed remaining at visit start
+
+**Important**: For multi-day data, visits occurring early in a day (before any feed addition on that day) are automatically matched to feed additions from the previous calendar day. This works even if days are out of order or have gaps in the data. The function uses actual dates (from the `date` column or list names) to determine which day is "previous", not list position.
+
+### Daily Summary Statistics
+
+```{r daily-summary}
+# Examine daily summary from first day
+daily_summary <- availability$daily_summary[[1]]
+
+head(daily_summary)
+```
+
+The daily summary provides per animal:
+
+- **`mean_pct_feed_remaining`**: Average percentage across visits
+- **`median_pct_feed_remaining`**: Median percentage across visits
+- **`sd_pct_feed_remaining`**: Standard deviation of percentage
+- **`total_visits_analyzed`**: Number of visits with valid feed data
+
+## 7. Analyzing Feed Availability Patterns
+
+### Identify Potentially Disadvantaged Animals
+
+Animals consistently visiting when little feed remains may be competitively disadvantaged. We calculated statistics using visit-level data to get accurate measures across all visits recorded in multiple days.Using median is recommended because the distribution of feed availability is often skewed, making median a more robust measure of central tendency than mean.
+
+```{r disadvantaged-animals}
+# Combine all visits across days
+all_visits <- do.call(rbind, availability$visits)
+
+# Filter to visits with valid feed percentage
+valid_visits <- all_visits |>
+  dplyr::filter(!is.na(pct_feed_remaining))
+
+# Calculate overall statistics per animal using visit-level data
+low_availability <- valid_visits |>
+  dplyr::group_by(cow) |>
+  dplyr::summarise(
+    overall_mean_pct = mean(pct_feed_remaining, na.rm = TRUE),
+    overall_median_pct = median(pct_feed_remaining, na.rm = TRUE),
+    total_visits = dplyr::n(),
+    .groups = "drop"
+  ) |>
+  dplyr::arrange(overall_median_pct)
+
+# Animals visiting when little feed remains (lowest median feed availability)
+head(low_availability, 5)
+
+# Animals visiting when most feed remains (highest median feed availability)
+tail(low_availability, 5)
+```
+
+### Visualize Feed Availability Distribution
+
+```{r viz-availability, fig.width=6, fig.height=4}
+# Distribution of feed availability across all visits
+all_visits <- do.call(rbind, availability$visits)
+
+# Filter to visits with valid feed percentage
+valid_visits <- all_visits |>
+  dplyr::filter(!is.na(pct_feed_remaining))
+
+# Create histogram
+ggplot(valid_visits, aes(x = pct_feed_remaining)) +
+  geom_histogram(bins = 30, fill = "steelblue", alpha = 0.7) +
+  labs(
+    title = "Distribution of Feed Availability at Visits",
+    x = "Percentage of Feed Remaining (%)",
+    y = "Number of Visits"
+  ) +
+  theme_minimal()
+```
+
+### Compare Feed Availability by Animal (Top 10)
+
+```{r viz-by-animal, fig.width=7, fig.height=4}
+# Violin plot of feed availability by animal (top 10 animals by visit count)
+top_animals <- valid_visits |>
+  dplyr::count(cow, sort = TRUE) |>
+  head(10) |>
+  dplyr::pull(cow)
+
+valid_visits |>
+  dplyr::filter(cow %in% top_animals) |>
+  ggplot(aes(x = reorder(cow, pct_feed_remaining, FUN = median),
+             y = pct_feed_remaining)) +
+  geom_violin(fill = "lightgreen", alpha = 0.7) +
+  labs(
+    title = "Feed Availability by Animal (Top 10 Animals)",
+    x = "Animal ID",
+    y = "Percentage of Feed Remaining (%)"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+### Compare Feed Availability Across All Animals
+
+```{r viz-all-animals, fig.width=10, fig.height=5}
+# Violin plot for all animals (limited to 50 animals with most visits)
+top_50_animals <- valid_visits |>
+  dplyr::count(cow, sort = TRUE) |>
+  head(50) |>
+  dplyr::pull(cow)
+
+valid_visits |>
+  dplyr::filter(cow %in% top_50_animals) |>
+  ggplot(aes(x = reorder(cow, pct_feed_remaining, FUN = median),
+             y = pct_feed_remaining)) +
+  geom_violin(fill = "steelblue", alpha = 0.6) +
+  labs(
+    title = "Feed Availability Across All Animals (Top 50 by Visit Count)",
+    x = "Animal ID",
+    y = "Percentage of Feed Remaining (%)"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 7))
+```
+
+## 8. Summary
+
+This tutorial demonstrated feed availability analysis:
+
+- **Feed addition detection**: Identified when bins are refilled based on weight increases
+- **Per-visit availability**: Calculated the percentage of feed remaining at each visit
+- **Daily summaries**: Aggregated feed availability statistics per animal per day
+- **Pattern identification**: Found animals that may be competitively disadvantaged
+
+## 9. Code Cheatsheet
+
+```{r cheatsheet, eval=FALSE}
+#' Copy and modify these code blocks for your own analysis!
+
+# ---- SETUP: Global Variables (REQUIRED FIRST!) ----
+library(moo4feed)
+library(ggplot2)
+library(dplyr)
+
+# Set up your column names and timezone (modify these!)
+set_global_cols(
+  id_col = "cow",                     # Your animal ID column
+  start_col = "start",                # Visit start time column
+  end_col = "end",                    # Visit end time column
+  bin_col = "bin",                    # Bin/feeder ID column
+  intake_col = "intake",              # Feed intake amount column
+  dur_col = "duration",               # Visit duration column
+  start_weight_col = "start_weight",  # Bin weight at visit start
+  end_weight_col = "end_weight",      # Bin weight at visit end
+  tz = "America/Vancouver"            # Your timezone
+)
+
+# ---- STEP 1: Load Your Data ----
+# Use the example data:
+data(clean_feed)
+
+# Or use your own cleaned data from Tutorial 1:
+# clean_feed <- your_cleaned_feed_data
+
+# ---- STEP 2: Detect Feed Additions (Per-Bin) ----
+# This is required for calculating feed availability
+feed_additions <- detect_feed_additions(
+  data = clean_feed,
+  min_weight_increase = 5,      # Minimum kg to count as addition
+  max_bin_time_gap = 3600,      # Group additions within 1 hour (seconds)
+  aggregate_all_bin = FALSE     # Keep per-bin (REQUIRED for availability)
+)
+
+# Check results
+head(feed_additions[[1]])
+
+# ---- STEP 3: Detect Aggregated Feed Events (Optional) ----
+# Use this to identify coordinated multi-bin feeding events
+feed_events <- detect_feed_additions(
+  data = clean_feed,
+  min_weight_increase = 5,
+  max_bin_time_gap = 3600,
+  min_bins_for_group = 3,       # At least 3 bins to count as event
+  aggregate_all_bin = TRUE      # Aggregate across bins
+)
+
+# Check results
+head(feed_events[[1]])
+
+# ---- STEP 4: Calculate Feed Availability ----
+availability <- calculate_feed_availability(
+  visit_data = clean_feed,
+  feed_addition_data = feed_additions  # From Step 2 (aggregate_all_bin = FALSE)
+)
+
+# Access visit-level data with feed percentages
+visits_with_pct <- availability$visits
+
+# Access daily summaries per animal
+daily_summaries <- availability$daily_summary
+
+# View first day results
+head(visits_with_pct[[1]])
+print(daily_summaries[[1]])
+
+# ---- STEP 5: Analyze Patterns ----
+# Combine all visits across days
+all_visits <- do.call(rbind, availability$visits)
+
+# Filter to valid visits
+valid_visits <- all_visits |>
+  dplyr::filter(!is.na(pct_feed_remaining))
+
+# Find animals with lowest feed availability using visit-level data
+low_availability <- valid_visits |>
+  dplyr::group_by(cow) |>
+  dplyr::summarise(
+    overall_mean_pct = mean(pct_feed_remaining, na.rm = TRUE),
+    overall_median_pct = median(pct_feed_remaining, na.rm = TRUE),
+    total_visits = dplyr::n(),
+    .groups = "drop"
+  ) |>
+  dplyr::arrange(overall_median_pct)
+
+print(low_availability)
+
+# ---- STEP 6: Visualize Results ----
+# Distribution of feed availability
+
+# Histogram of feed availability
+ggplot(all_visits, aes(x = pct_feed_remaining)) +
+  geom_histogram(bins = 30, fill = "steelblue", alpha = 0.7) +
+  labs(
+    title = "Distribution of Feed Availability at Visits",
+    x = "Percentage of Feed Remaining (%)",
+    y = "Number of Visits"
+  ) +
+  theme_minimal()
+
+# Violin plot for top 10 animals by visit count
+top_animals <- valid_visits |>
+  dplyr::count(cow, sort = TRUE) |>
+  head(10) |>
+  dplyr::pull(cow)
+
+valid_visits |>
+  dplyr::filter(cow %in% top_animals) |>
+  ggplot(aes(x = reorder(cow, pct_feed_remaining, FUN = median),
+             y = pct_feed_remaining)) +
+  geom_violin(fill = "lightgreen", alpha = 0.7) +
+  labs(
+    title = "Feed Availability by Animal (Top 10)",
+    x = "Animal ID",
+    y = "Percentage of Feed Remaining (%)"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Violin plot for all animals (limited to top 50 by visit count)
+top_50_animals <- valid_visits |>
+  dplyr::count(cow, sort = TRUE) |>
+  head(50) |>
+  dplyr::pull(cow)
+
+valid_visits |>
+  dplyr::filter(cow %in% top_50_animals) |>
+  ggplot(aes(x = reorder(cow, pct_feed_remaining, FUN = median),
+             y = pct_feed_remaining)) +
+  geom_violin(fill = "steelblue", alpha = 0.6) +
+  labs(
+    title = "Feed Availability Across All Animals (Top 50)",
+    x = "Animal ID",
+    y = "Percentage of Feed Remaining (%)"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 7))
+```
+
+---
