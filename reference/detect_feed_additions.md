@@ -122,6 +122,12 @@ data frames) with columns:
 
 - `avg_weight_increase` - Average feed added across bins (kg)
 
+- `min_weight_increase` - Minimum feed added to any bin in the event
+  (kg)
+
+- `max_weight_increase` - Maximum feed added to any bin in the event
+  (kg)
+
 ## Note
 
 **Multiple rapid additions to the same bin**: When a farmer adds feed to

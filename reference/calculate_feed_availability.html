@@ -117,7 +117,18 @@ to the same bin (within <code>max_bin_time_gap</code>) are automatically aggrega
 a single event. The <code>bin_weight_after_fill</code> from that aggregation represents
 the bin weight after the final addition, which is exactly what this function
 needs for accurate percentage calculations.</p>
-<p>Visits that occur before any feed addition to that bin will have NA values.</p>
+<p><strong>Multi-day behavior</strong>: When processing a list of daily data, visits early in a
+day (before any feed addition on that day) are matched to feed additions from the
+previous calendar day. The function calculates the previous day by subtracting one
+day from the current date (extracted from the <code>date</code> column in visits or parsed
+from the list name). This works correctly even if:</p><ul><li><p>Days are provided out of chronological order in the list</p></li>
+<li><p>There are gaps in the data (missing days)</p></li>
+<li><p>Day names use different date formats</p></li>
+</ul><p>If the previous calendar day is not found in the data, or if dates cannot be parsed,
+visits before the first feed addition will have NA values. The first day in the list
+only uses its own feed additions.</p>
+<p>Visits that occur before any feed addition to that bin (including previous day
+for multi-day lists) will have NA values.</p>
     </div>
 
     <div class="section level2">

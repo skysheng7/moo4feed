@@ -101,8 +101,25 @@ automatically aggregated into a single event. The
 after the final addition, which is exactly what this function needs for
 accurate percentage calculations.
 
-Visits that occur before any feed addition to that bin will have NA
-values.
+**Multi-day behavior**: When processing a list of daily data, visits
+early in a day (before any feed addition on that day) are matched to
+feed additions from the previous calendar day. The function calculates
+the previous day by subtracting one day from the current date (extracted
+from the `date` column in visits or parsed from the list name). This
+works correctly even if:
+
+- Days are provided out of chronological order in the list
+
+- There are gaps in the data (missing days)
+
+- Day names use different date formats
+
+If the previous calendar day is not found in the data, or if dates
+cannot be parsed, visits before the first feed addition will have NA
+values. The first day in the list only uses its own feed additions.
+
+Visits that occur before any feed addition to that bin (including
+previous day for multi-day lists) will have NA values.
 
 ## Examples
 

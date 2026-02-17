@@ -87,34 +87,17 @@ variables to match your data structure:</p>
 <p>Understanding when feed is added to bins and how much feed is
 available when animals visit each bin can help researchers and farmers
 better track feed management on daily basis, and identify animals that
-may be disadvantaged.</p>
+may be disadvantaged (e.g., those who consistently eat the “left-over”
+feed).</p>
 <ul>
 <li>
-<strong>Monitor feed management</strong>: Identify when bins are
+<strong>Monitor feed addition</strong>: Identify when bins are
 refilled throughout the day, the frequency of feed additions, and the
 amount of feed added to each bin.</li>
 <li>
 <strong>Identify disadvantaged animals</strong>: Animals visiting
 when bins are nearly empty may be disadvantaged</li>
 </ul>
-<div class="section level3">
-<h3 id="what-well-learn">What We’ll Learn<a class="anchor" aria-label="anchor" href="#what-well-learn"></a>
-</h3>
-<p>This tutorial demonstrates how to:</p>
-<blockquote>
-<ol style="list-style-type: decimal">
-<li>
-<strong>Detect feed addition events</strong> - Identify when bins
-are refilled based on weight increases</li>
-<li>
-<strong>Calculate feed availability</strong> - Determine the
-percentage of feed remaining at each visit</li>
-<li>
-<strong>Summarize feeding conditions</strong> - Analyze how feed
-availability varies across animals</li>
-</ol>
-</blockquote>
-</div>
 </div>
 <div class="section level2">
 <h2 id="prerequisites">3. Prerequisites<a class="anchor" aria-label="anchor" href="#prerequisites"></a>
@@ -137,8 +120,6 @@ beginning and end of each visit.</p>
 <span><span class="co"># clean_feed &lt;- your_cleaned_feed_data     # From your cleaning results</span></span>
 <span></span>
 <span><span class="co"># Quick peek at our data structure</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Feed data structure:\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Feed data structure:</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">clean_feed</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="fl">3</span><span class="op">)</span>  <span class="co"># First day, first 3 rows</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 11</span></span></span>
 <span><span class="co">#&gt;   transponder   cow   bin start               end                 duration</span></span>
@@ -159,7 +140,7 @@ beginning and end of each visit.</p>
 <p>Feed additions are detected by identifying significant weight
 increases between consecutive visits at the same bin. When the bin
 weight at the start of a visit is much higher than the bin weight at the
-end of the previous visit, feed must have been added in between.</p>
+end of the previous visit, feed was probably added in between.</p>
 <div class="section level3">
 <h3 id="understanding-feed-addition-detection">Understanding Feed Addition Detection<a class="anchor" aria-label="anchor" href="#understanding-feed-addition-detection"></a>
 </h3>
@@ -171,9 +152,13 @@ succession (within <code>max_bin_time_gap</code> seconds), these
 additions are automatically grouped into a single feed event per
 bin.</p>
 <p><strong>Stage 2: Across-bin aggregation (optional)</strong> If
-<code>aggregate_all_bin = TRUE</code>, individual bin additions are
-grouped into multi-bin feed events when multiple bins are refilled
-within a time window.</p>
+<code>aggregate_all_bin = TRUE</code>, the function groups feed
+additions to different bins happening in a short time window together,
+summarize them as one feed addition event on farm level. When farmers
+come to add feed, they typically refill multiple bins within a short
+time window. This aggregation captures each feeding event by determining
+when the farmer started adding feed, when they finished, and calculates
+the average feed added per bin during that event.</p>
 </div>
 <div class="section level3">
 <h3 id="detect-per-bin-feed-additions">Detect Per-Bin Feed Additions<a class="anchor" aria-label="anchor" href="#detect-per-bin-feed-additions"></a>
@@ -191,8 +176,6 @@ additions (not aggregated across bins):</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Examine the first day's feed additions</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Feed additions detected on first day:\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Feed additions detected on first day:</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">feed_additions</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt;         date                time weight_increase bin_weight_after_fill bin</span></span>
 <span><span class="co">#&gt; 1 2020-10-31 2020-10-31 06:04:40            34.6                  40.0  21</span></span>
@@ -200,14 +183,7 @@ additions (not aggregated across bins):</p>
 <span><span class="co">#&gt; 3 2020-10-31 2020-10-31 06:04:53            31.5                  35.0   2</span></span>
 <span><span class="co">#&gt; 4 2020-10-31 2020-10-31 06:05:00            30.4                  35.1   7</span></span>
 <span><span class="co">#&gt; 5 2020-10-31 2020-10-31 06:05:16            33.3                  40.2   3</span></span>
-<span><span class="co">#&gt; 6 2020-10-31 2020-10-31 06:05:20            49.1                  54.0  23</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\nFeed additions per day:\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Feed additions per day:</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">feed_additions</span>, <span class="va">nrow</span><span class="op">)</span></span>
-<span><span class="co">#&gt; 2020-10-31 2020-11-01 </span></span>
-<span><span class="co">#&gt;         60         58</span></span></code></pre></div>
+<span><span class="co">#&gt; 6 2020-10-31 2020-10-31 06:05:20            49.1                  54.0  23</span></span></code></pre></div>
 <p>Each feed addition event contains:</p>
 <ul>
 <li>
@@ -248,9 +224,9 @@ refilled together:</p>
 <span><span class="co">#&gt;         date event_id         event_start           event_end bins_filled</span></span>
 <span><span class="co">#&gt; 1 2020-10-31        1 2020-10-31 06:04:40 2020-10-31 06:26:34          30</span></span>
 <span><span class="co">#&gt; 2 2020-10-31        3 2020-10-31 15:46:59 2020-10-31 16:13:30          29</span></span>
-<span><span class="co">#&gt;   avg_weight_increase</span></span>
-<span><span class="co">#&gt; 1            35.48333</span></span>
-<span><span class="co">#&gt; 2            54.24828</span></span>
+<span><span class="co">#&gt;   avg_weight_increase min_weight_increase max_weight_increase</span></span>
+<span><span class="co">#&gt; 1            35.48333                11.6                85.5</span></span>
+<span><span class="co">#&gt; 2            54.24828                18.1                87.7</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\nMulti-bin feed events per day:\n"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -262,13 +238,13 @@ refilled together:</p>
 <ul>
 <li>
 <strong><code>event_id</code></strong>: Unique identifier for the
-feed event</li>
+feed event on that day</li>
 <li>
-<strong><code>event_start</code></strong>: Earliest addition time in
-the event</li>
+<strong><code>event_start</code></strong>: When farmers started
+adding feed to the bins</li>
 <li>
-<strong><code>event_end</code></strong>: Latest addition time in the
-event</li>
+<strong><code>event_end</code></strong>: When farmers finished
+adding feed to the bins</li>
 <li>
 <strong><code>bins_filled</code></strong>: Number of bins refilled
 in the event</li>
@@ -305,20 +281,18 @@ that consistently visit when bins are nearly empty.</p>
 <code class="sourceCode R"><span><span class="co"># Examine visit-level data from first day</span></span>
 <span><span class="va">visits_with_availability</span> <span class="op">&lt;-</span> <span class="va">availability</span><span class="op">$</span><span class="va">visits</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Visit data with feed availability (first day):\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Visit data with feed availability (first day):</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">visits_with_availability</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cow"</span>, <span class="st">"bin"</span>, <span class="st">"start"</span>, <span class="st">"start_weight"</span>,</span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">visits_with_availability</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cow"</span>, <span class="st">"bin"</span>, <span class="st">"start"</span>, <span class="st">"start_weight"</span>,</span>
 <span>                                   <span class="st">"feed_addition_time"</span>, <span class="st">"bin_weight_after_fill"</span>,</span>
 <span>                                   <span class="st">"pct_feed_remaining"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 7</span></span></span>
 <span><span class="co">#&gt;     cow   bin start               start_weight feed_addition_time </span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>                     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>             </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>  <span style="text-decoration: underline;">6</span>020     1 2020-10-31 <span style="color: #949494;">00:26:12</span>          3.8 <span style="color: #BB0000;">NA</span>                 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>  <span style="text-decoration: underline;">4</span>044     1 2020-10-31 <span style="color: #949494;">01:17:43</span>          3.5 <span style="color: #BB0000;">NA</span>                 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>  <span style="text-decoration: underline;">4</span>072     1 2020-10-31 <span style="color: #949494;">01:37:30</span>          2.6 <span style="color: #BB0000;">NA</span>                 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>  <span style="text-decoration: underline;">5</span>124     1 2020-10-31 <span style="color: #949494;">06:05:49</span>         51.1 2020-10-31 <span style="color: #949494;">06:05:49</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>  <span style="text-decoration: underline;">6</span>020     1 2020-10-31 <span style="color: #949494;">06:08:02</span>         50.7 2020-10-31 <span style="color: #949494;">06:05:49</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>  <span style="text-decoration: underline;">6</span>069     1 2020-10-31 <span style="color: #949494;">06:09:55</span>         50.1 2020-10-31 <span style="color: #949494;">06:05:49</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>  <span style="text-decoration: underline;">6</span>005    30 2020-10-31 <span style="color: #949494;">22:29:25</span>         22.4 2020-10-31 <span style="color: #949494;">15:54:27</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>  <span style="text-decoration: underline;">6</span>005    30 2020-10-31 <span style="color: #949494;">22:58:00</span>         22.1 2020-10-31 <span style="color: #949494;">15:54:27</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>  <span style="text-decoration: underline;">6</span>069    30 2020-10-31 <span style="color: #949494;">22:59:30</span>         21.8 2020-10-31 <span style="color: #949494;">15:54:27</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>  <span style="text-decoration: underline;">6</span>028    30 2020-10-31 <span style="color: #949494;">23:00:29</span>         21.6 2020-10-31 <span style="color: #949494;">15:54:27</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>  <span style="text-decoration: underline;">6</span>069    30 2020-10-31 <span style="color: #949494;">23:14:07</span>         21.2 2020-10-31 <span style="color: #949494;">15:54:27</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>  <span style="text-decoration: underline;">6</span>069    30 2020-10-31 <span style="color: #949494;">23:17:52</span>         20.5 2020-10-31 <span style="color: #949494;">15:54:27</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: bin_weight_after_fill &lt;dbl&gt;, pct_feed_remaining &lt;dbl&gt;</span></span></span></code></pre></div>
 <p>New columns added to visit data:</p>
 <ul>
@@ -335,6 +309,12 @@ after feed was added (kg)</li>
 <strong><code>pct_feed_remaining</code></strong>: Percentage of feed
 remaining at visit start</li>
 </ul>
+<p><strong>Important</strong>: For multi-day data, visits occurring
+early in a day (before any feed addition on that day) are automatically
+matched to feed additions from the previous calendar day. This works
+even if days are out of order or have gaps in the data. The function
+uses actual dates (from the <code>date</code> column or list names) to
+determine which day is “previous”, not list position.</p>
 </div>
 <div class="section level3">
 <h3 id="daily-summary-statistics">Daily Summary Statistics<a class="anchor" aria-label="anchor" href="#daily-summary-statistics"></a>
@@ -343,105 +323,21 @@ remaining at visit start</li>
 <code class="sourceCode R"><span><span class="co"># Examine daily summary from first day</span></span>
 <span><span class="va">daily_summary</span> <span class="op">&lt;-</span> <span class="va">availability</span><span class="op">$</span><span class="va">daily_summary</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Daily feed availability summary (first day):\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Daily feed availability summary (first day):</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">daily_summary</span><span class="op">)</span></span>
-<span><span class="co">#&gt;          date  cow mean_pct_feed_remaining median_pct_feed_remaining</span></span>
-<span><span class="co">#&gt; 1  2020-10-31 2074                59.70264                  53.96419</span></span>
-<span><span class="co">#&gt; 2  2020-10-31 3150                62.22631                  67.39741</span></span>
-<span><span class="co">#&gt; 3  2020-10-31 4001                68.03947                  73.08782</span></span>
-<span><span class="co">#&gt; 4  2020-10-31 4044                56.13479                  52.74473</span></span>
-<span><span class="co">#&gt; 5  2020-10-31 4070                44.92761                  37.19187</span></span>
-<span><span class="co">#&gt; 6  2020-10-31 4072                48.04099                  51.27479</span></span>
-<span><span class="co">#&gt; 7  2020-10-31 4080                63.09911                  68.87136</span></span>
-<span><span class="co">#&gt; 8  2020-10-31 5028                60.78203                  59.76409</span></span>
-<span><span class="co">#&gt; 9  2020-10-31 5041                57.02087                  59.54471</span></span>
-<span><span class="co">#&gt; 10 2020-10-31 5042                67.86248                  66.59316</span></span>
-<span><span class="co">#&gt; 11 2020-10-31 5058                57.86662                  56.14495</span></span>
-<span><span class="co">#&gt; 12 2020-10-31 5061                62.95931                  66.66667</span></span>
-<span><span class="co">#&gt; 13 2020-10-31 5067                48.39032                  49.34334</span></span>
-<span><span class="co">#&gt; 14 2020-10-31 5100                48.51567                  45.58824</span></span>
-<span><span class="co">#&gt; 15 2020-10-31 5114                66.52040                  61.71367</span></span>
-<span><span class="co">#&gt; 16 2020-10-31 5120                68.29555                  68.00000</span></span>
-<span><span class="co">#&gt; 17 2020-10-31 5123                54.79362                  53.77550</span></span>
-<span><span class="co">#&gt; 18 2020-10-31 5124                45.58264                  35.25557</span></span>
-<span><span class="co">#&gt; 19 2020-10-31 5135                52.79437                  50.58824</span></span>
-<span><span class="co">#&gt; 20 2020-10-31 5137                55.22316                  62.12375</span></span>
-<span><span class="co">#&gt; 21 2020-10-31 5139                62.07438                  57.59689</span></span>
-<span><span class="co">#&gt; 22 2020-10-31 5145                59.39041                  54.60823</span></span>
-<span><span class="co">#&gt; 23 2020-10-31 6005                60.36736                  70.20003</span></span>
-<span><span class="co">#&gt; 24 2020-10-31 6020                52.37488                  47.73333</span></span>
-<span><span class="co">#&gt; 25 2020-10-31 6027                48.87948                  46.25965</span></span>
-<span><span class="co">#&gt; 26 2020-10-31 6028                57.33349                  51.74098</span></span>
-<span><span class="co">#&gt; 27 2020-10-31 6030                51.48407                  57.45297</span></span>
-<span><span class="co">#&gt; 28 2020-10-31 6033                67.03657                  64.68452</span></span>
-<span><span class="co">#&gt; 29 2020-10-31 6042                42.32230                  21.15385</span></span>
-<span><span class="co">#&gt; 30 2020-10-31 6050                54.71779                  45.02413</span></span>
-<span><span class="co">#&gt; 31 2020-10-31 6055                51.10938                  49.06782</span></span>
-<span><span class="co">#&gt; 32 2020-10-31 6069                53.50303                  45.76923</span></span>
-<span><span class="co">#&gt; 33 2020-10-31 6084                47.67986                  50.24876</span></span>
-<span><span class="co">#&gt; 34 2020-10-31 6090                61.26137                  59.74541</span></span>
-<span><span class="co">#&gt; 35 2020-10-31 6121                52.37876                  41.57808</span></span>
-<span><span class="co">#&gt; 36 2020-10-31 6126                56.00286                  60.62429</span></span>
-<span><span class="co">#&gt; 37 2020-10-31 6129                66.57368                  67.26652</span></span>
-<span><span class="co">#&gt; 38 2020-10-31 7010                61.66005                  57.62653</span></span>
-<span><span class="co">#&gt; 39 2020-10-31 7018                45.43502                  40.41667</span></span>
-<span><span class="co">#&gt; 40 2020-10-31 7019                62.37043                  60.06737</span></span>
-<span><span class="co">#&gt; 41 2020-10-31 7022                54.38005                  62.11765</span></span>
-<span><span class="co">#&gt; 42 2020-10-31 7023                58.92741                  61.82085</span></span>
-<span><span class="co">#&gt; 43 2020-10-31 7024                59.27357                  64.83593</span></span>
-<span><span class="co">#&gt; 44 2020-10-31 7027                52.26362                  49.81007</span></span>
-<span><span class="co">#&gt; 45 2020-10-31 7030                55.72576                  51.53096</span></span>
-<span><span class="co">#&gt; 46 2020-10-31 7033                58.77407                  63.11637</span></span>
-<span><span class="co">#&gt; 47 2020-10-31 7043                70.72020                  73.95683</span></span>
-<span><span class="co">#&gt;    sd_pct_feed_remaining total_visits_analyzed</span></span>
-<span><span class="co">#&gt; 1               28.59389                    45</span></span>
-<span><span class="co">#&gt; 2               26.29525                    52</span></span>
-<span><span class="co">#&gt; 3               18.72861                    49</span></span>
-<span><span class="co">#&gt; 4               24.65588                    58</span></span>
-<span><span class="co">#&gt; 5               29.56021                    54</span></span>
-<span><span class="co">#&gt; 6               26.01743                    71</span></span>
-<span><span class="co">#&gt; 7               27.59500                    74</span></span>
-<span><span class="co">#&gt; 8               19.37911                    41</span></span>
-<span><span class="co">#&gt; 9               24.58661                    86</span></span>
-<span><span class="co">#&gt; 10              15.68005                   114</span></span>
-<span><span class="co">#&gt; 11              28.22823                    64</span></span>
-<span><span class="co">#&gt; 12              21.14296                    47</span></span>
-<span><span class="co">#&gt; 13              31.37286                    69</span></span>
-<span><span class="co">#&gt; 14              23.67638                    75</span></span>
-<span><span class="co">#&gt; 15              20.92599                    29</span></span>
-<span><span class="co">#&gt; 16              18.98159                    57</span></span>
-<span><span class="co">#&gt; 17              29.98161                    64</span></span>
-<span><span class="co">#&gt; 18              34.79831                    83</span></span>
-<span><span class="co">#&gt; 19              28.80174                    51</span></span>
-<span><span class="co">#&gt; 20              29.48564                    54</span></span>
-<span><span class="co">#&gt; 21              23.33456                    42</span></span>
-<span><span class="co">#&gt; 22              21.54808                    66</span></span>
-<span><span class="co">#&gt; 23              30.24233                    78</span></span>
-<span><span class="co">#&gt; 24              25.29912                    59</span></span>
-<span><span class="co">#&gt; 25              21.73737                    76</span></span>
-<span><span class="co">#&gt; 26              23.09591                    90</span></span>
-<span><span class="co">#&gt; 27              31.66523                    79</span></span>
-<span><span class="co">#&gt; 28              20.81142                    68</span></span>
-<span><span class="co">#&gt; 29              35.47483                    51</span></span>
-<span><span class="co">#&gt; 30              26.44361                    64</span></span>
-<span><span class="co">#&gt; 31              18.62885                    80</span></span>
-<span><span class="co">#&gt; 32              30.60316                    77</span></span>
-<span><span class="co">#&gt; 33              26.40060                    71</span></span>
-<span><span class="co">#&gt; 34              22.30088                    74</span></span>
-<span><span class="co">#&gt; 35              26.63942                    44</span></span>
-<span><span class="co">#&gt; 36              29.19119                    58</span></span>
-<span><span class="co">#&gt; 37              15.22923                    38</span></span>
-<span><span class="co">#&gt; 38              22.77105                    36</span></span>
-<span><span class="co">#&gt; 39              24.15284                    67</span></span>
-<span><span class="co">#&gt; 40              17.49352                    76</span></span>
-<span><span class="co">#&gt; 41              25.36602                    67</span></span>
-<span><span class="co">#&gt; 42              26.75882                    75</span></span>
-<span><span class="co">#&gt; 43              20.23474                    56</span></span>
-<span><span class="co">#&gt; 44              28.30130                   140</span></span>
-<span><span class="co">#&gt; 45              20.74939                   140</span></span>
-<span><span class="co">#&gt; 46              21.26778                    71</span></span>
-<span><span class="co">#&gt; 47              22.58502                    51</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">daily_summary</span><span class="op">)</span></span>
+<span><span class="co">#&gt;         date  cow mean_pct_feed_remaining median_pct_feed_remaining</span></span>
+<span><span class="co">#&gt; 1 2020-10-31 2074                59.70264                  53.96419</span></span>
+<span><span class="co">#&gt; 2 2020-10-31 3150                62.22631                  67.39741</span></span>
+<span><span class="co">#&gt; 3 2020-10-31 4001                68.03947                  73.08782</span></span>
+<span><span class="co">#&gt; 4 2020-10-31 4044                56.13479                  52.74473</span></span>
+<span><span class="co">#&gt; 5 2020-10-31 4070                44.92761                  37.19187</span></span>
+<span><span class="co">#&gt; 6 2020-10-31 4072                48.04099                  51.27479</span></span>
+<span><span class="co">#&gt;   sd_pct_feed_remaining total_visits_analyzed</span></span>
+<span><span class="co">#&gt; 1              28.59389                    45</span></span>
+<span><span class="co">#&gt; 2              26.29525                    52</span></span>
+<span><span class="co">#&gt; 3              18.72861                    49</span></span>
+<span><span class="co">#&gt; 4              24.65588                    58</span></span>
+<span><span class="co">#&gt; 5              29.56021                    54</span></span>
+<span><span class="co">#&gt; 6              26.01743                    71</span></span></code></pre></div>
 <p>The daily summary provides per animal:</p>
 <ul>
 <li>
@@ -466,46 +362,51 @@ visits with valid feed data</li>
 <h3 id="identify-potentially-disadvantaged-animals">Identify Potentially Disadvantaged Animals<a class="anchor" aria-label="anchor" href="#identify-potentially-disadvantaged-animals"></a>
 </h3>
 <p>Animals consistently visiting when little feed remains may be
-competitively disadvantaged:</p>
+competitively disadvantaged. We calculated statistics using visit-level
+data to get accurate measures across all visits recorded in multiple
+days.Using median is recommended because the distribution of feed
+availability is often skewed, making median a more robust measure of
+central tendency than mean.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Combine all daily summaries</span></span>
-<span><span class="va">all_summaries</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">availability</span><span class="op">$</span><span class="va">daily_summary</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Combine all visits across days</span></span>
+<span><span class="va">all_visits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">availability</span><span class="op">$</span><span class="va">visits</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Find animals with lowest average feed availability</span></span>
-<span><span class="va">low_availability</span> <span class="op">&lt;-</span> <span class="va">all_summaries</span> <span class="op">|&gt;</span></span>
+<span><span class="co"># Filter to visits with valid feed percentage</span></span>
+<span><span class="va">valid_visits</span> <span class="op">&lt;-</span> <span class="va">all_visits</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">pct_feed_remaining</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Calculate overall statistics per animal using visit-level data</span></span>
+<span><span class="va">low_availability</span> <span class="op">&lt;-</span> <span class="va">valid_visits</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">cow</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span></span>
-<span>    overall_mean_pct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">mean_pct_feed_remaining</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>    overall_median_pct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">median_pct_feed_remaining</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>    days_analyzed <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    overall_mean_pct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">pct_feed_remaining</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    overall_median_pct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">pct_feed_remaining</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    total_visits <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    .groups <span class="op">=</span> <span class="st">"drop"</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">overall_mean_pct</span><span class="op">)</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">overall_median_pct</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Animals with lowest average feed availability:\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Animals with lowest average feed availability:</span></span>
+<span><span class="co"># Animals visiting when little feed remains (lowest median feed availability)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">low_availability</span>, <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 4</span></span></span>
-<span><span class="co">#&gt;     cow overall_mean_pct overall_median_pct days_analyzed</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>  <span style="text-decoration: underline;">6</span>055             41.4               43.3             2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>  <span style="text-decoration: underline;">7</span>018             44.4               40.6             2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>  <span style="text-decoration: underline;">6</span>042             45.0               28.6             2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>  <span style="text-decoration: underline;">5</span>100             45.2               42.5             2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>  <span style="text-decoration: underline;">6</span>084             45.6               42.4             2</span></span>
+<span><span class="co">#&gt;     cow overall_mean_pct overall_median_pct total_visits</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>  <span style="text-decoration: underline;">6</span>042             41.1               27.1           97</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>  <span style="text-decoration: underline;">6</span>121             47.4               39.9          112</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>  <span style="text-decoration: underline;">5</span>067             45.3               40.0          149</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>  <span style="text-decoration: underline;">6</span>055             38.6               40.1          201</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>  <span style="text-decoration: underline;">7</span>018             44.0               40.3          155</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\nAnimals with highest average feed availability:\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Animals with highest average feed availability:</span></span>
+<span><span class="co"># Animals visiting when most feed remains (highest median feed availability)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">low_availability</span>, <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 4</span></span></span>
-<span><span class="co">#&gt;     cow overall_mean_pct overall_median_pct days_analyzed</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>  <span style="text-decoration: underline;">3</span>150             62.5               66.5             2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>  <span style="text-decoration: underline;">7</span>043             64.7               69.3             2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>  <span style="text-decoration: underline;">5</span>042             64.9               64.8             2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>  <span style="text-decoration: underline;">4</span>001             66.5               69.9             2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>  <span style="text-decoration: underline;">6</span>033             68.7               66.9             2</span></span></code></pre></div>
+<span><span class="co">#&gt;     cow overall_mean_pct overall_median_pct total_visits</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>  <span style="text-decoration: underline;">6</span>033             62.9               64.1          146</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>  <span style="text-decoration: underline;">6</span>129             58.2               64.5           77</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>  <span style="text-decoration: underline;">5</span>123             56.9               67.9          148</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>  <span style="text-decoration: underline;">7</span>043             62.8               68.0          107</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>  <span style="text-decoration: underline;">4</span>001             66.4               71.3           90</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="visualize-feed-availability-distribution">Visualize Feed Availability Distribution<a class="anchor" aria-label="anchor" href="#visualize-feed-availability-distribution"></a>
@@ -530,10 +431,10 @@ competitively disadvantaged:</p>
 <p><img src="feed_availability_analysis_files/figure-html/viz-availability-1.png" class="r-plt" alt="" width="576"></p>
 </div>
 <div class="section level3">
-<h3 id="compare-feed-availability-by-animal">Compare Feed Availability by Animal<a class="anchor" aria-label="anchor" href="#compare-feed-availability-by-animal"></a>
+<h3 id="compare-feed-availability-by-animal-top-10">Compare Feed Availability by Animal (Top 10)<a class="anchor" aria-label="anchor" href="#compare-feed-availability-by-animal-top-10"></a>
 </h3>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Boxplot of feed availability by animal (top 10 animals by visit count)</span></span>
+<code class="sourceCode R"><span><span class="co"># Violin plot of feed availability by animal (top 10 animals by visit count)</span></span>
 <span><span class="va">top_animals</span> <span class="op">&lt;-</span> <span class="va">valid_visits</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">cow</span>, sort <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -543,15 +444,39 @@ competitively disadvantaged:</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">cow</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">top_animals</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">cow</span>, <span class="va">pct_feed_remaining</span>, FUN <span class="op">=</span> <span class="va">median</span><span class="op">)</span>,</span>
 <span>             y <span class="op">=</span> <span class="va">pct_feed_remaining</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html" class="external-link">geom_boxplot</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"lightgreen"</span>, alpha <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_violin.html" class="external-link">geom_violin</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"lightgreen"</span>, alpha <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="st">"Feed Availability by Animal"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Feed Availability by Animal (Top 10 Animals)"</span>,</span>
 <span>    x <span class="op">=</span> <span class="st">"Animal ID"</span>,</span>
 <span>    y <span class="op">=</span> <span class="st">"Percentage of Feed Remaining (%)"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">45</span>, hjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="feed_availability_analysis_files/figure-html/viz-by-animal-1.png" class="r-plt" alt="" width="672"></p>
+</div>
+<div class="section level3">
+<h3 id="compare-feed-availability-across-all-animals">Compare Feed Availability Across All Animals<a class="anchor" aria-label="anchor" href="#compare-feed-availability-across-all-animals"></a>
+</h3>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Violin plot for all animals (limited to 50 animals with most visits)</span></span>
+<span><span class="va">top_50_animals</span> <span class="op">&lt;-</span> <span class="va">valid_visits</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">cow</span>, sort <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">50</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">cow</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">valid_visits</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">cow</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">top_50_animals</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">cow</span>, <span class="va">pct_feed_remaining</span>, FUN <span class="op">=</span> <span class="va">median</span><span class="op">)</span>,</span>
+<span>             y <span class="op">=</span> <span class="va">pct_feed_remaining</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_violin.html" class="external-link">geom_violin</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"steelblue"</span>, alpha <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Feed Availability Across All Animals (Top 50 by Visit Count)"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Animal ID"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Percentage of Feed Remaining (%)"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">90</span>, hjust <span class="op">=</span> <span class="fl">1</span>, size <span class="op">=</span> <span class="fl">7</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="feed_availability_analysis_files/figure-html/viz-all-animals-1.png" class="r-plt" alt="" width="960"></p>
 </div>
 </div>
 <div class="section level2">
@@ -576,7 +501,7 @@ competitively disadvantaged</li>
 <div class="section level2">
 <h2 id="code-cheatsheet">9. Code Cheatsheet<a class="anchor" aria-label="anchor" href="#code-cheatsheet"></a>
 </h2>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' Copy and modify these code blocks for your own analysis!</span></span>
 <span></span>
 <span><span class="co"># ---- SETUP: Global Variables (REQUIRED FIRST!) ----</span></span>
@@ -646,24 +571,28 @@ competitively disadvantaged</li>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">daily_summaries</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># ---- STEP 5: Analyze Patterns ----</span></span>
-<span><span class="co"># Combine all summaries</span></span>
-<span><span class="va">all_summaries</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">availability</span><span class="op">$</span><span class="va">daily_summary</span><span class="op">)</span></span>
+<span><span class="co"># Combine all visits across days</span></span>
+<span><span class="va">all_visits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">availability</span><span class="op">$</span><span class="va">visits</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Find animals with lowest feed availability</span></span>
-<span><span class="va">low_availability</span> <span class="op">&lt;-</span> <span class="va">all_summaries</span> <span class="op">|&gt;</span></span>
+<span><span class="co"># Filter to valid visits</span></span>
+<span><span class="va">valid_visits</span> <span class="op">&lt;-</span> <span class="va">all_visits</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">pct_feed_remaining</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Find animals with lowest feed availability using visit-level data</span></span>
+<span><span class="va">low_availability</span> <span class="op">&lt;-</span> <span class="va">valid_visits</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">cow</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span></span>
-<span>    overall_mean_pct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">mean_pct_feed_remaining</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>    days_analyzed <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    overall_mean_pct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">pct_feed_remaining</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    overall_median_pct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">pct_feed_remaining</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    total_visits <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    .groups <span class="op">=</span> <span class="st">"drop"</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">overall_mean_pct</span><span class="op">)</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">overall_median_pct</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">low_availability</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># ---- STEP 6: Visualize Results ----</span></span>
-<span><span class="co"># Combine all visits</span></span>
-<span><span class="va">all_visits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">availability</span><span class="op">$</span><span class="va">visits</span><span class="op">)</span></span>
+<span><span class="co"># Distribution of feed availability</span></span>
 <span></span>
 <span><span class="co"># Histogram of feed availability</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">all_visits</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">pct_feed_remaining</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -673,7 +602,45 @@ competitively disadvantaged</li>
 <span>    x <span class="op">=</span> <span class="st">"Percentage of Feed Remaining (%)"</span>,</span>
 <span>    y <span class="op">=</span> <span class="st">"Number of Visits"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Violin plot for top 10 animals by visit count</span></span>
+<span><span class="va">top_animals</span> <span class="op">&lt;-</span> <span class="va">valid_visits</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">cow</span>, sort <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">cow</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">valid_visits</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">cow</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">top_animals</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">cow</span>, <span class="va">pct_feed_remaining</span>, FUN <span class="op">=</span> <span class="va">median</span><span class="op">)</span>,</span>
+<span>             y <span class="op">=</span> <span class="va">pct_feed_remaining</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_violin.html" class="external-link">geom_violin</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"lightgreen"</span>, alpha <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Feed Availability by Animal (Top 10)"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Animal ID"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Percentage of Feed Remaining (%)"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">45</span>, hjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Violin plot for all animals (limited to top 50 by visit count)</span></span>
+<span><span class="va">top_50_animals</span> <span class="op">&lt;-</span> <span class="va">valid_visits</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">cow</span>, sort <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">50</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">cow</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">valid_visits</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">cow</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">top_50_animals</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">cow</span>, <span class="va">pct_feed_remaining</span>, FUN <span class="op">=</span> <span class="va">median</span><span class="op">)</span>,</span>
+<span>             y <span class="op">=</span> <span class="va">pct_feed_remaining</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_violin.html" class="external-link">geom_violin</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"steelblue"</span>, alpha <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Feed Availability Across All Animals (Top 50)"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Animal ID"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Percentage of Feed Remaining (%)"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">90</span>, hjust <span class="op">=</span> <span class="fl">1</span>, size <span class="op">=</span> <span class="fl">7</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <hr>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

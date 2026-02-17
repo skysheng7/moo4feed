@@ -31,24 +31,13 @@ set_global_cols(
 Understanding when feed is added to bins and how much feed is available
 when animals visit each bin can help researchers and farmers better
 track feed management on daily basis, and identify animals that may be
-disadvantaged.
+disadvantaged (e.g., those who consistently eat the “left-over” feed).
 
-- **Monitor feed management**: Identify when bins are refilled
-  throughout the day, the frequency of feed additions, and the amount of
-  feed added to each bin.
+- **Monitor feed addition**: Identify when bins are refilled throughout
+  the day, the frequency of feed additions, and the amount of feed added
+  to each bin.
 - **Identify disadvantaged animals**: Animals visiting when bins are
   nearly empty may be disadvantaged
-
-### What We’ll Learn
-
-This tutorial demonstrates how to:
-
-> 1.  **Detect feed addition events** - Identify when bins are refilled
->     based on weight increases
-> 2.  **Calculate feed availability** - Determine the percentage of feed
->     remaining at each visit
-> 3.  **Summarize feeding conditions** - Analyze how feed availability
->     varies across animals
 
 ## 3. Prerequisites
 
@@ -69,8 +58,6 @@ data(clean_feed)
 # clean_feed <- your_cleaned_feed_data     # From your cleaning results
 
 # Quick peek at our data structure
-cat("Feed data structure:\n")
-#> Feed data structure:
 head(clean_feed[[1]], 3)  # First day, first 3 rows
 #> # A tibble: 3 × 11
 #>   transponder   cow   bin start               end                 duration
@@ -91,7 +78,7 @@ cat("\nTotal days of feed data:", length(clean_feed), "\n")
 Feed additions are detected by identifying significant weight increases
 between consecutive visits at the same bin. When the bin weight at the
 start of a visit is much higher than the bin weight at the end of the
-previous visit, feed must have been added in between.
+previous visit, feed was probably added in between.
 
 ### Understanding Feed Addition Detection
 
@@ -105,9 +92,13 @@ adds feed to the same bin multiple times in quick succession (within
 into a single feed event per bin.
 
 **Stage 2: Across-bin aggregation (optional)** If
-`aggregate_all_bin = TRUE`, individual bin additions are grouped into
-multi-bin feed events when multiple bins are refilled within a time
-window.
+`aggregate_all_bin = TRUE`, the function groups feed additions to
+different bins happening in a short time window together, summarize them
+as one feed addition event on farm level. When farmers come to add feed,
+they typically refill multiple bins within a short time window. This
+aggregation captures each feeding event by determining when the farmer
+started adding feed, when they finished, and calculates the average feed
+added per bin during that event.
 
 ### Detect Per-Bin Feed Additions
 
@@ -125,8 +116,6 @@ feed_additions <- detect_feed_additions(
 )
 
 # Examine the first day's feed additions
-cat("Feed additions detected on first day:\n")
-#> Feed additions detected on first day:
 head(feed_additions[[1]])
 #>         date                time weight_increase bin_weight_after_fill bin
 #> 1 2020-10-31 2020-10-31 06:04:40            34.6                  40.0  21
@@ -135,13 +124,6 @@ head(feed_additions[[1]])
 #> 4 2020-10-31 2020-10-31 06:05:00            30.4                  35.1   7
 #> 5 2020-10-31 2020-10-31 06:05:16            33.3                  40.2   3
 #> 6 2020-10-31 2020-10-31 06:05:20            49.1                  54.0  23
-
-cat("\nFeed additions per day:\n")
-#> 
-#> Feed additions per day:
-sapply(feed_additions, nrow)
-#> 2020-10-31 2020-11-01 
-#>         60         58
 ```
 
 Each feed addition event contains:
@@ -175,9 +157,9 @@ head(feed_events[[1]])
 #>         date event_id         event_start           event_end bins_filled
 #> 1 2020-10-31        1 2020-10-31 06:04:40 2020-10-31 06:26:34          30
 #> 2 2020-10-31        3 2020-10-31 15:46:59 2020-10-31 16:13:30          29
-#>   avg_weight_increase
-#> 1            35.48333
-#> 2            54.24828
+#>   avg_weight_increase min_weight_increase max_weight_increase
+#> 1            35.48333                11.6                85.5
+#> 2            54.24828                18.1                87.7
 
 cat("\nMulti-bin feed events per day:\n")
 #> 
@@ -189,9 +171,9 @@ sapply(feed_events, nrow)
 
 Aggregated events contain:
 
-- **`event_id`**: Unique identifier for the feed event
-- **`event_start`**: Earliest addition time in the event
-- **`event_end`**: Latest addition time in the event
+- **`event_id`**: Unique identifier for the feed event on that day
+- **`event_start`**: When farmers started adding feed to the bins
+- **`event_end`**: When farmers finished adding feed to the bins
 - **`bins_filled`**: Number of bins refilled in the event
 - **`avg_weight_increase`**: Average feed added across bins (kg)
 
@@ -221,20 +203,18 @@ availability <- calculate_feed_availability(
 # Examine visit-level data from first day
 visits_with_availability <- availability$visits[[1]]
 
-cat("Visit data with feed availability (first day):\n")
-#> Visit data with feed availability (first day):
-head(visits_with_availability[, c("cow", "bin", "start", "start_weight",
+tail(visits_with_availability[, c("cow", "bin", "start", "start_weight",
                                    "feed_addition_time", "bin_weight_after_fill",
                                    "pct_feed_remaining")])
 #> # A tibble: 6 × 7
 #>     cow   bin start               start_weight feed_addition_time 
 #>   <int> <dbl> <dttm>                     <dbl> <dttm>             
-#> 1  6020     1 2020-10-31 00:26:12          3.8 NA                 
-#> 2  4044     1 2020-10-31 01:17:43          3.5 NA                 
-#> 3  4072     1 2020-10-31 01:37:30          2.6 NA                 
-#> 4  5124     1 2020-10-31 06:05:49         51.1 2020-10-31 06:05:49
-#> 5  6020     1 2020-10-31 06:08:02         50.7 2020-10-31 06:05:49
-#> 6  6069     1 2020-10-31 06:09:55         50.1 2020-10-31 06:05:49
+#> 1  6005    30 2020-10-31 22:29:25         22.4 2020-10-31 15:54:27
+#> 2  6005    30 2020-10-31 22:58:00         22.1 2020-10-31 15:54:27
+#> 3  6069    30 2020-10-31 22:59:30         21.8 2020-10-31 15:54:27
+#> 4  6028    30 2020-10-31 23:00:29         21.6 2020-10-31 15:54:27
+#> 5  6069    30 2020-10-31 23:14:07         21.2 2020-10-31 15:54:27
+#> 6  6069    30 2020-10-31 23:17:52         20.5 2020-10-31 15:54:27
 #> # ℹ 2 more variables: bin_weight_after_fill <dbl>, pct_feed_remaining <dbl>
 ```
 
@@ -245,111 +225,34 @@ New columns added to visit data:
 - **`bin_weight_after_fill`**: Bin weight after feed was added (kg)
 - **`pct_feed_remaining`**: Percentage of feed remaining at visit start
 
+**Important**: For multi-day data, visits occurring early in a day
+(before any feed addition on that day) are automatically matched to feed
+additions from the previous calendar day. This works even if days are
+out of order or have gaps in the data. The function uses actual dates
+(from the `date` column or list names) to determine which day is
+“previous”, not list position.
+
 ### Daily Summary Statistics
 
 ``` r
 # Examine daily summary from first day
 daily_summary <- availability$daily_summary[[1]]
 
-cat("Daily feed availability summary (first day):\n")
-#> Daily feed availability summary (first day):
-print(daily_summary)
-#>          date  cow mean_pct_feed_remaining median_pct_feed_remaining
-#> 1  2020-10-31 2074                59.70264                  53.96419
-#> 2  2020-10-31 3150                62.22631                  67.39741
-#> 3  2020-10-31 4001                68.03947                  73.08782
-#> 4  2020-10-31 4044                56.13479                  52.74473
-#> 5  2020-10-31 4070                44.92761                  37.19187
-#> 6  2020-10-31 4072                48.04099                  51.27479
-#> 7  2020-10-31 4080                63.09911                  68.87136
-#> 8  2020-10-31 5028                60.78203                  59.76409
-#> 9  2020-10-31 5041                57.02087                  59.54471
-#> 10 2020-10-31 5042                67.86248                  66.59316
-#> 11 2020-10-31 5058                57.86662                  56.14495
-#> 12 2020-10-31 5061                62.95931                  66.66667
-#> 13 2020-10-31 5067                48.39032                  49.34334
-#> 14 2020-10-31 5100                48.51567                  45.58824
-#> 15 2020-10-31 5114                66.52040                  61.71367
-#> 16 2020-10-31 5120                68.29555                  68.00000
-#> 17 2020-10-31 5123                54.79362                  53.77550
-#> 18 2020-10-31 5124                45.58264                  35.25557
-#> 19 2020-10-31 5135                52.79437                  50.58824
-#> 20 2020-10-31 5137                55.22316                  62.12375
-#> 21 2020-10-31 5139                62.07438                  57.59689
-#> 22 2020-10-31 5145                59.39041                  54.60823
-#> 23 2020-10-31 6005                60.36736                  70.20003
-#> 24 2020-10-31 6020                52.37488                  47.73333
-#> 25 2020-10-31 6027                48.87948                  46.25965
-#> 26 2020-10-31 6028                57.33349                  51.74098
-#> 27 2020-10-31 6030                51.48407                  57.45297
-#> 28 2020-10-31 6033                67.03657                  64.68452
-#> 29 2020-10-31 6042                42.32230                  21.15385
-#> 30 2020-10-31 6050                54.71779                  45.02413
-#> 31 2020-10-31 6055                51.10938                  49.06782
-#> 32 2020-10-31 6069                53.50303                  45.76923
-#> 33 2020-10-31 6084                47.67986                  50.24876
-#> 34 2020-10-31 6090                61.26137                  59.74541
-#> 35 2020-10-31 6121                52.37876                  41.57808
-#> 36 2020-10-31 6126                56.00286                  60.62429
-#> 37 2020-10-31 6129                66.57368                  67.26652
-#> 38 2020-10-31 7010                61.66005                  57.62653
-#> 39 2020-10-31 7018                45.43502                  40.41667
-#> 40 2020-10-31 7019                62.37043                  60.06737
-#> 41 2020-10-31 7022                54.38005                  62.11765
-#> 42 2020-10-31 7023                58.92741                  61.82085
-#> 43 2020-10-31 7024                59.27357                  64.83593
-#> 44 2020-10-31 7027                52.26362                  49.81007
-#> 45 2020-10-31 7030                55.72576                  51.53096
-#> 46 2020-10-31 7033                58.77407                  63.11637
-#> 47 2020-10-31 7043                70.72020                  73.95683
-#>    sd_pct_feed_remaining total_visits_analyzed
-#> 1               28.59389                    45
-#> 2               26.29525                    52
-#> 3               18.72861                    49
-#> 4               24.65588                    58
-#> 5               29.56021                    54
-#> 6               26.01743                    71
-#> 7               27.59500                    74
-#> 8               19.37911                    41
-#> 9               24.58661                    86
-#> 10              15.68005                   114
-#> 11              28.22823                    64
-#> 12              21.14296                    47
-#> 13              31.37286                    69
-#> 14              23.67638                    75
-#> 15              20.92599                    29
-#> 16              18.98159                    57
-#> 17              29.98161                    64
-#> 18              34.79831                    83
-#> 19              28.80174                    51
-#> 20              29.48564                    54
-#> 21              23.33456                    42
-#> 22              21.54808                    66
-#> 23              30.24233                    78
-#> 24              25.29912                    59
-#> 25              21.73737                    76
-#> 26              23.09591                    90
-#> 27              31.66523                    79
-#> 28              20.81142                    68
-#> 29              35.47483                    51
-#> 30              26.44361                    64
-#> 31              18.62885                    80
-#> 32              30.60316                    77
-#> 33              26.40060                    71
-#> 34              22.30088                    74
-#> 35              26.63942                    44
-#> 36              29.19119                    58
-#> 37              15.22923                    38
-#> 38              22.77105                    36
-#> 39              24.15284                    67
-#> 40              17.49352                    76
-#> 41              25.36602                    67
-#> 42              26.75882                    75
-#> 43              20.23474                    56
-#> 44              28.30130                   140
-#> 45              20.74939                   140
-#> 46              21.26778                    71
-#> 47              22.58502                    51
+head(daily_summary)
+#>         date  cow mean_pct_feed_remaining median_pct_feed_remaining
+#> 1 2020-10-31 2074                59.70264                  53.96419
+#> 2 2020-10-31 3150                62.22631                  67.39741
+#> 3 2020-10-31 4001                68.03947                  73.08782
+#> 4 2020-10-31 4044                56.13479                  52.74473
+#> 5 2020-10-31 4070                44.92761                  37.19187
+#> 6 2020-10-31 4072                48.04099                  51.27479
+#>   sd_pct_feed_remaining total_visits_analyzed
+#> 1              28.59389                    45
+#> 2              26.29525                    52
+#> 3              18.72861                    49
+#> 4              24.65588                    58
+#> 5              29.56021                    54
+#> 6              26.01743                    71
 ```
 
 The daily summary provides per animal:
@@ -364,47 +267,52 @@ The daily summary provides per animal:
 ### Identify Potentially Disadvantaged Animals
 
 Animals consistently visiting when little feed remains may be
-competitively disadvantaged:
+competitively disadvantaged. We calculated statistics using visit-level
+data to get accurate measures across all visits recorded in multiple
+days.Using median is recommended because the distribution of feed
+availability is often skewed, making median a more robust measure of
+central tendency than mean.
 
 ``` r
-# Combine all daily summaries
-all_summaries <- do.call(rbind, availability$daily_summary)
+# Combine all visits across days
+all_visits <- do.call(rbind, availability$visits)
 
-# Find animals with lowest average feed availability
-low_availability <- all_summaries |>
+# Filter to visits with valid feed percentage
+valid_visits <- all_visits |>
+  dplyr::filter(!is.na(pct_feed_remaining))
+
+# Calculate overall statistics per animal using visit-level data
+low_availability <- valid_visits |>
   dplyr::group_by(cow) |>
   dplyr::summarise(
-    overall_mean_pct = mean(mean_pct_feed_remaining, na.rm = TRUE),
-    overall_median_pct = median(median_pct_feed_remaining, na.rm = TRUE),
-    days_analyzed = dplyr::n(),
+    overall_mean_pct = mean(pct_feed_remaining, na.rm = TRUE),
+    overall_median_pct = median(pct_feed_remaining, na.rm = TRUE),
+    total_visits = dplyr::n(),
     .groups = "drop"
   ) |>
-  dplyr::arrange(overall_mean_pct)
+  dplyr::arrange(overall_median_pct)
 
-cat("Animals with lowest average feed availability:\n")
-#> Animals with lowest average feed availability:
+# Animals visiting when little feed remains (lowest median feed availability)
 head(low_availability, 5)
 #> # A tibble: 5 × 4
-#>     cow overall_mean_pct overall_median_pct days_analyzed
-#>   <int>            <dbl>              <dbl>         <int>
-#> 1  6055             41.4               43.3             2
-#> 2  7018             44.4               40.6             2
-#> 3  6042             45.0               28.6             2
-#> 4  5100             45.2               42.5             2
-#> 5  6084             45.6               42.4             2
+#>     cow overall_mean_pct overall_median_pct total_visits
+#>   <int>            <dbl>              <dbl>        <int>
+#> 1  6042             41.1               27.1           97
+#> 2  6121             47.4               39.9          112
+#> 3  5067             45.3               40.0          149
+#> 4  6055             38.6               40.1          201
+#> 5  7018             44.0               40.3          155
 
-cat("\nAnimals with highest average feed availability:\n")
-#> 
-#> Animals with highest average feed availability:
+# Animals visiting when most feed remains (highest median feed availability)
 tail(low_availability, 5)
 #> # A tibble: 5 × 4
-#>     cow overall_mean_pct overall_median_pct days_analyzed
-#>   <int>            <dbl>              <dbl>         <int>
-#> 1  3150             62.5               66.5             2
-#> 2  7043             64.7               69.3             2
-#> 3  5042             64.9               64.8             2
-#> 4  4001             66.5               69.9             2
-#> 5  6033             68.7               66.9             2
+#>     cow overall_mean_pct overall_median_pct total_visits
+#>   <int>            <dbl>              <dbl>        <int>
+#> 1  6033             62.9               64.1          146
+#> 2  6129             58.2               64.5           77
+#> 3  5123             56.9               67.9          148
+#> 4  7043             62.8               68.0          107
+#> 5  4001             66.4               71.3           90
 ```
 
 ### Visualize Feed Availability Distribution
@@ -430,10 +338,10 @@ ggplot(valid_visits, aes(x = pct_feed_remaining)) +
 
 ![](feed_availability_analysis_files/figure-html/viz-availability-1.png)
 
-### Compare Feed Availability by Animal
+### Compare Feed Availability by Animal (Top 10)
 
 ``` r
-# Boxplot of feed availability by animal (top 10 animals by visit count)
+# Violin plot of feed availability by animal (top 10 animals by visit count)
 top_animals <- valid_visits |>
   dplyr::count(cow, sort = TRUE) |>
   head(10) |>
@@ -443,9 +351,9 @@ valid_visits |>
   dplyr::filter(cow %in% top_animals) |>
   ggplot(aes(x = reorder(cow, pct_feed_remaining, FUN = median),
              y = pct_feed_remaining)) +
-  geom_boxplot(fill = "lightgreen", alpha = 0.7) +
+  geom_violin(fill = "lightgreen", alpha = 0.7) +
   labs(
-    title = "Feed Availability by Animal",
+    title = "Feed Availability by Animal (Top 10 Animals)",
     x = "Animal ID",
     y = "Percentage of Feed Remaining (%)"
   ) +
@@ -454,6 +362,31 @@ valid_visits |>
 ```
 
 ![](feed_availability_analysis_files/figure-html/viz-by-animal-1.png)
+
+### Compare Feed Availability Across All Animals
+
+``` r
+# Violin plot for all animals (limited to 50 animals with most visits)
+top_50_animals <- valid_visits |>
+  dplyr::count(cow, sort = TRUE) |>
+  head(50) |>
+  dplyr::pull(cow)
+
+valid_visits |>
+  dplyr::filter(cow %in% top_50_animals) |>
+  ggplot(aes(x = reorder(cow, pct_feed_remaining, FUN = median),
+             y = pct_feed_remaining)) +
+  geom_violin(fill = "steelblue", alpha = 0.6) +
+  labs(
+    title = "Feed Availability Across All Animals (Top 50 by Visit Count)",
+    x = "Animal ID",
+    y = "Percentage of Feed Remaining (%)"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 7))
+```
+
+![](feed_availability_analysis_files/figure-html/viz-all-animals-1.png)
 
 ## 8. Summary
 
@@ -540,24 +473,28 @@ head(visits_with_pct[[1]])
 print(daily_summaries[[1]])
 
 # ---- STEP 5: Analyze Patterns ----
-# Combine all summaries
-all_summaries <- do.call(rbind, availability$daily_summary)
+# Combine all visits across days
+all_visits <- do.call(rbind, availability$visits)
 
-# Find animals with lowest feed availability
-low_availability <- all_summaries |>
+# Filter to valid visits
+valid_visits <- all_visits |>
+  dplyr::filter(!is.na(pct_feed_remaining))
+
+# Find animals with lowest feed availability using visit-level data
+low_availability <- valid_visits |>
   dplyr::group_by(cow) |>
   dplyr::summarise(
-    overall_mean_pct = mean(mean_pct_feed_remaining, na.rm = TRUE),
-    days_analyzed = dplyr::n(),
+    overall_mean_pct = mean(pct_feed_remaining, na.rm = TRUE),
+    overall_median_pct = median(pct_feed_remaining, na.rm = TRUE),
+    total_visits = dplyr::n(),
     .groups = "drop"
   ) |>
-  dplyr::arrange(overall_mean_pct)
+  dplyr::arrange(overall_median_pct)
 
 print(low_availability)
 
 # ---- STEP 6: Visualize Results ----
-# Combine all visits
-all_visits <- do.call(rbind, availability$visits)
+# Distribution of feed availability
 
 # Histogram of feed availability
 ggplot(all_visits, aes(x = pct_feed_remaining)) +
@@ -568,6 +505,44 @@ ggplot(all_visits, aes(x = pct_feed_remaining)) +
     y = "Number of Visits"
   ) +
   theme_minimal()
+
+# Violin plot for top 10 animals by visit count
+top_animals <- valid_visits |>
+  dplyr::count(cow, sort = TRUE) |>
+  head(10) |>
+  dplyr::pull(cow)
+
+valid_visits |>
+  dplyr::filter(cow %in% top_animals) |>
+  ggplot(aes(x = reorder(cow, pct_feed_remaining, FUN = median),
+             y = pct_feed_remaining)) +
+  geom_violin(fill = "lightgreen", alpha = 0.7) +
+  labs(
+    title = "Feed Availability by Animal (Top 10)",
+    x = "Animal ID",
+    y = "Percentage of Feed Remaining (%)"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Violin plot for all animals (limited to top 50 by visit count)
+top_50_animals <- valid_visits |>
+  dplyr::count(cow, sort = TRUE) |>
+  head(50) |>
+  dplyr::pull(cow)
+
+valid_visits |>
+  dplyr::filter(cow %in% top_50_animals) |>
+  ggplot(aes(x = reorder(cow, pct_feed_remaining, FUN = median),
+             y = pct_feed_remaining)) +
+  geom_violin(fill = "steelblue", alpha = 0.6) +
+  labs(
+    title = "Feed Availability Across All Animals (Top 50)",
+    x = "Animal ID",
+    y = "Percentage of Feed Remaining (%)"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 7))
 ```
 
 ------------------------------------------------------------------------

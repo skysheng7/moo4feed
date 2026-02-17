@@ -26,18 +26,15 @@ set_global_cols(
 
 ## 2. Introduction to Meal-Level Behavior Analysis
 
-While individual visits provide granular data, analyzing behavior
-**within meals** offers deeper insights into feeding patterns. A meal
-consists of multiple related visits clustered together in time, and
-examining what happens during a meal can reveal important behavioral
-patterns.
-
-This tutorial demonstrates how to:
+A meal groups multiple feeding visits that happened consecutively in
+time. Analyzing feeding behaviours on meal-level instaed of visit-level
+is more biologically meaningful. This tutorial demonstrates how to:
 
 > 1.  **Analyze non-nutritive visits within meals** - Identify
->     exploratory behavior during feeding
-> 2.  **Examine actor/reactor roles within meals** - Understand social
->     dynamics during meals
+>     exploratory behavior during each meal
+> 2.  **Examine actor/reactor roles within meals** - Understand the
+>     frequency of them being an actor/reactor for agonistic
+>     interactions during meals
 > 3.  **Summarize meal-level behavior patterns** - Aggregate findings
 >     per animal per day
 
