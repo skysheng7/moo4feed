@@ -119,9 +119,10 @@ meal_visits <- meal_non_nutritive_summary(
   cfg = my_qc_config
 )
 
-# Examine the results from first day
-cat("Meal visit analysis (first day):\n")
-head(meal_visits[[1]])
+# Examine the results from first day, sort by total non-nutritive visits descending
+meal_visits[[1]] |>
+  dplyr::arrange(desc(total_non_nutritive_visits)) |>
+  head()
 ```
 
 The summary provides per animal per day:
