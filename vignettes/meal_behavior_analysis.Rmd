@@ -189,7 +189,7 @@ When we combine meal data with replacement events, we can analyze the social rol
 
 - **Actor**: The animal entered this visit by replacing another animal at the bin
 - **Reactor**: The animal was replaced by another animal when leaving this visit
-- **Actor-Reactor**: Both events occurred during the same visit (rare but possible)
+- **Actor-Reactor**: Both events occurred during the same visit (rare but possible). They entered as actor and left as reactor within the same visit.
 
 ### Prepare Replacement Data
 
@@ -201,7 +201,7 @@ replacements <- record_replacement_days(
   cfg = qc_config(replacement_threshold = 26)
 )
 
-cat("Replacement events per day:\n")
+# Replacement events per day:
 sapply(replacements, nrow)
 ```
 
@@ -232,19 +232,21 @@ meal_roles <- meal_replacement_roles(
 )
 
 # Examine the meal-level results
-cat("Actor/reactor roles per meal (first day):\n")
-head(meal_roles[[1]])
+# Actor/reactor roles per meal (first day)
+meal_roles[[1]] |>
+  dplyr::arrange(desc(pct_reactor)) |>
+  head()
 ```
 
 The results show for each animal's meal:
 
-- **`total_visits_in_meal`**: Total visits in the meal
-- **`actor_visits`**: Visits where animal entered as actor
-- **`reactor_visits`**: Visits where animal left as reactor
-- **`actor_reactor_visits`**: Visits with both roles
-- **`pct_actor`**: Percentage of visits as actor
-- **`pct_reactor`**: Percentage of visits as reactor
-- **`pct_actor_reactor`**: Percentage with both roles
+- **`total_visits_in_meal`**: Total feeding visits in that meal
+- **`actor_visits`**: Total number of visits where animal entered as actor in that meal
+- **`reactor_visits`**: Total number of visits where animal left as reactor in that meal
+- **`actor_reactor_visits`**: Total number of visits when they entered as actor and left as reactor in that meal
+- **`pct_actor`**: Percentage of visits as actor in that meal
+- **`pct_reactor`**: Percentage of visits as reactor in that meal
+- **`pct_actor_reactor`**: Percentage of visits when they entered as actor and left as reactor in that meal
 
 ### Summarize Roles Per Animal Per Day
 
@@ -252,92 +254,35 @@ The results show for each animal's meal:
 # Get daily summary statistics across all meals
 daily_roles <- meal_replacement_roles_summary(meal_roles)
 
-cat("Daily role summary (first day):\n")
-print(daily_roles[[1]])
+# Daily role summary (first day)
+daily_roles[[1]] |>
+  dplyr::arrange(desc(mean_pct_actor)) |>
+  head()
 ```
 
 The daily summary provides:
 
-- **`mean_pct_actor`**: Average percentage of actor visits across meals
-- **`median_pct_actor`**: Median percentage
-- **`sd_pct_actor`**: Standard deviation
-- Similarly for reactor and actor-reactor roles
+- **`date`**: Date of the summary
+- **`cow`**: Animal identifier
+- **`mean_pct_actor`**: Average percentage of visits as an actor across all meals
+- **`median_pct_actor`**: Median percentage of visits as an actor across all meals
+- **`sd_pct_actor`**: Standard deviation of percentage of visits as an actor across all meals
+- **`mean_pct_reactor`**: Average percentage of visits as a reactor across all meals
+- **`median_pct_reactor`**: Median percentage of visits as a reactor across all meals
+- **`sd_pct_reactor`**: Standard deviation of percentage of visits as a reactor across all meals
+- **`mean_pct_actor_reactor`**: Average percentage of visits with both actor and reactor roles across all meals
+- **`median_pct_actor_reactor`**: Median percentage of visits with both actor and reactor roles across all meals
+- **`sd_pct_actor_reactor`**: Standard deviation of percentage of visits with both actor and reactor roles across all meals
 - **`total_meals`**: Number of meals analyzed
 
-### Identify Dominant and Subordinate Animals
-
-```{r dominance-analysis}
-# Combine all daily summaries
-all_daily_roles <- do.call(rbind, daily_roles)
-
-# Find animals with highest actor percentages (potentially dominant)
-dominant_animals <- all_daily_roles |>
-  dplyr::group_by(cow) |>
-  dplyr::summarise(
-    avg_pct_actor = mean(mean_pct_actor, na.rm = TRUE),
-    avg_pct_reactor = mean(mean_pct_reactor, na.rm = TRUE),
-    total_meals = sum(total_meals),
-    .groups = "drop"
-  ) |>
-  dplyr::mutate(
-    dominance_ratio = avg_pct_actor / (avg_pct_reactor + 0.01)  # Avoid division by zero
-  ) |>
-  dplyr::arrange(desc(dominance_ratio))
-
-cat("Animals with highest actor-to-reactor ratio (potentially dominant):\n")
-head(dominant_animals, 5)
-
-cat("\nAnimals with lowest actor-to-reactor ratio (potentially subordinate):\n")
-tail(dominant_animals, 5)
-```
-
-### Visualize Role Patterns
-
-```{r viz-roles, fig.width=7, fig.height=4}
-# Scatter plot: Actor vs Reactor percentages
-ggplot(dominant_animals, aes(x = avg_pct_reactor, y = avg_pct_actor)) +
-  geom_point(aes(size = total_meals), alpha = 0.6, color = "steelblue") +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray50") +
-  labs(
-    title = "Actor vs Reactor Role Percentages",
-    subtitle = "Points above the line indicate more dominant behavior",
-    x = "Average % Visits as Reactor",
-    y = "Average % Visits as Actor",
-    size = "Total Meals"
-  ) +
-  theme_minimal()
-```
-
-## 7. Combining Meal-Level Insights
-
-By combining non-nutritive visit analysis with actor/reactor roles, we can build a comprehensive picture of each animal's meal behavior:
-
-```{r combined-analysis}
-# Merge the summaries for a combined view
-combined_behavior <- dominant_animals |>
-  dplyr::left_join(
-    high_exploratory |> dplyr::select(cow, avg_non_nutritive, avg_empty_bin),
-    by = "cow"
-  )
-
-cat("Combined meal behavior profile:\n")
-head(combined_behavior)
-```
 
 ## 8. Summary
 
 This tutorial demonstrated meal-level behavior analysis:
 
 - **Non-nutritive visits within meals**: Identified exploratory behavior patterns
-- **Actor/reactor roles**: Analyzed social dynamics during meals
-- **Daily summaries**: Aggregated behavior metrics per animal per day
-- **Behavioral profiles**: Combined multiple metrics to characterize animals
-
-These metrics can help identify animals that may be:
-
-- **Highly exploratory**: Many non-nutritive visits per meal
-- **Competitively disadvantaged**: Many empty bin visits, high reactor percentage
-- **Socially dominant**: High actor-to-reactor ratio
+- **Actor/reactor roles**: Analyzed the percentage of visits as an actor or reactor across all meals
+- **Daily summaries**: Aggregated behavior patterns per animal per day
 
 ## 9. Code Cheatsheet
 
