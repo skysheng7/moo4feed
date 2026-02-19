@@ -63,7 +63,7 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
-<h2 id="set-your-global-variables-first">1. Set Your Global Variables First!<a class="anchor" aria-label="anchor" href="#set-your-global-variables-first"></a>
+<h2 id="set-your-global-variables-first">1. Set Your Global Variables First<a class="anchor" aria-label="anchor" href="#set-your-global-variables-first"></a>
 </h2>
 <p>Before analyzing meal-level behavior patterns, configure global
 variables to match your data structure:</p>
@@ -144,22 +144,18 @@ Detection</strong></a>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Quick peek at meal-labeled data</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Meal-labeled data structure (first day):\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Meal-labeled data structure (first day):</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">labeled_visits</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cow"</span>, <span class="st">"bin"</span>, <span class="st">"start"</span>, <span class="st">"intake"</span>, <span class="st">"meal_id"</span>, <span class="st">"meal_start"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">labeled_visits</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cow"</span>, <span class="st">"bin"</span>, <span class="st">"start"</span>, <span class="st">"intake"</span>, <span class="st">"meal_id"</span>, <span class="st">"meal_start"</span><span class="op">)</span><span class="op">]</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">cow</span>, <span class="va">meal_id</span>, <span class="va">start</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
 <span><span class="co">#&gt;     cow   bin start               intake meal_id meal_start         </span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>             </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>  <span style="text-decoration: underline;">6</span>020     1 2020-10-31 <span style="color: #949494;">00:26:12</span>  0.200       1 2020-10-31 <span style="color: #949494;">00:14:05</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>  <span style="text-decoration: underline;">4</span>044     1 2020-10-31 <span style="color: #949494;">01:17:43</span>  0.9         1 2020-10-31 <span style="color: #949494;">01:13:00</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>  <span style="text-decoration: underline;">4</span>072     1 2020-10-31 <span style="color: #949494;">01:37:30</span>  0.100       1 2020-10-31 <span style="color: #949494;">01:08:35</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>  <span style="text-decoration: underline;">5</span>124     1 2020-10-31 <span style="color: #949494;">06:05:49</span>  0.400       1 2020-10-31 <span style="color: #949494;">06:04:40</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>  <span style="text-decoration: underline;">6</span>020     1 2020-10-31 <span style="color: #949494;">06:08:02</span>  0.600       2 2020-10-31 <span style="color: #949494;">06:05:24</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>  <span style="text-decoration: underline;">6</span>069     1 2020-10-31 <span style="color: #949494;">06:09:55</span>  0.800       1 2020-10-31 <span style="color: #949494;">06:05:16</span></span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\nTotal meals identified on first day:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">labeled_visits</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">meal_id</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Total meals identified on first day: 9</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>  <span style="text-decoration: underline;">2</span>074    20 2020-10-31 <span style="color: #949494;">06:06:52</span>  2           1 2020-10-31 <span style="color: #949494;">06:06:52</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>  <span style="text-decoration: underline;">2</span>074    20 2020-10-31 <span style="color: #949494;">06:11:58</span>  2.10        1 2020-10-31 <span style="color: #949494;">06:06:52</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>  <span style="text-decoration: underline;">2</span>074    16 2020-10-31 <span style="color: #949494;">06:22:18</span>  0           1 2020-10-31 <span style="color: #949494;">06:06:52</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>  <span style="text-decoration: underline;">2</span>074    11 2020-10-31 <span style="color: #949494;">06:23:15</span>  0.600       1 2020-10-31 <span style="color: #949494;">06:06:52</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>  <span style="text-decoration: underline;">2</span>074    11 2020-10-31 <span style="color: #949494;">06:25:05</span>  3.80        1 2020-10-31 <span style="color: #949494;">06:06:52</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>  <span style="text-decoration: underline;">2</span>074     9 2020-10-31 <span style="color: #949494;">06:35:40</span>  1.40        1 2020-10-31 <span style="color: #949494;">06:06:52</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="non-nutritive-visits-within-meals">5. Non-Nutritive Visits Within Meals<a class="anchor" aria-label="anchor" href="#non-nutritive-visits-within-meals"></a>
@@ -712,11 +708,17 @@ animal per day</li>
 <strong>Behavioral profiles</strong>: Combined multiple metrics to
 characterize animals</li>
 </ul>
-<p>These metrics can help identify animals that may be: - <strong>Highly
-exploratory</strong>: Many non-nutritive visits per meal -
+<p>These metrics can help identify animals that may be:</p>
+<ul>
+<li>
+<strong>Highly exploratory</strong>: Many non-nutritive visits per
+meal</li>
+<li>
 <strong>Competitively disadvantaged</strong>: Many empty bin visits,
-high reactor percentage - <strong>Socially dominant</strong>: High
-actor-to-reactor ratio</p>
+high reactor percentage</li>
+<li>
+<strong>Socially dominant</strong>: High actor-to-reactor ratio</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="code-cheatsheet">9. Code Cheatsheet<a class="anchor" aria-label="anchor" href="#code-cheatsheet"></a>

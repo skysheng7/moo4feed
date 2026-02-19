@@ -6,7 +6,7 @@ library(ggplot2)
 library(dplyr)
 ```
 
-## 1. Set Your Global Variables First!
+## 1. Set Your Global Variables First
 
 Before analyzing meal-level behavior patterns, configure global
 variables to match your data structure:
@@ -79,22 +79,18 @@ labeled_visits <- meal_label_visits(
 )
 
 # Quick peek at meal-labeled data
-cat("Meal-labeled data structure (first day):\n")
-#> Meal-labeled data structure (first day):
-head(labeled_visits[[1]][, c("cow", "bin", "start", "intake", "meal_id", "meal_start")])
+labeled_visits[[1]][, c("cow", "bin", "start", "intake", "meal_id", "meal_start")] |>
+  dplyr::arrange(cow, meal_id, start) |>
+  head()
 #> # A tibble: 6 × 6
 #>     cow   bin start               intake meal_id meal_start         
 #>   <int> <dbl> <dttm>               <dbl>   <int> <dttm>             
-#> 1  6020     1 2020-10-31 00:26:12  0.200       1 2020-10-31 00:14:05
-#> 2  4044     1 2020-10-31 01:17:43  0.9         1 2020-10-31 01:13:00
-#> 3  4072     1 2020-10-31 01:37:30  0.100       1 2020-10-31 01:08:35
-#> 4  5124     1 2020-10-31 06:05:49  0.400       1 2020-10-31 06:04:40
-#> 5  6020     1 2020-10-31 06:08:02  0.600       2 2020-10-31 06:05:24
-#> 6  6069     1 2020-10-31 06:09:55  0.800       1 2020-10-31 06:05:16
-
-cat("\nTotal meals identified on first day:", max(labeled_visits[[1]]$meal_id), "\n")
-#> 
-#> Total meals identified on first day: 9
+#> 1  2074    20 2020-10-31 06:06:52  2           1 2020-10-31 06:06:52
+#> 2  2074    20 2020-10-31 06:11:58  2.10        1 2020-10-31 06:06:52
+#> 3  2074    16 2020-10-31 06:22:18  0           1 2020-10-31 06:06:52
+#> 4  2074    11 2020-10-31 06:23:15  0.600       1 2020-10-31 06:06:52
+#> 5  2074    11 2020-10-31 06:25:05  3.80        1 2020-10-31 06:06:52
+#> 6  2074     9 2020-10-31 06:35:40  1.40        1 2020-10-31 06:06:52
 ```
 
 ## 5. Non-Nutritive Visits Within Meals
@@ -594,10 +590,12 @@ This tutorial demonstrated meal-level behavior analysis:
 - **Behavioral profiles**: Combined multiple metrics to characterize
   animals
 
-These metrics can help identify animals that may be: - **Highly
-exploratory**: Many non-nutritive visits per meal - **Competitively
-disadvantaged**: Many empty bin visits, high reactor percentage -
-**Socially dominant**: High actor-to-reactor ratio
+These metrics can help identify animals that may be:
+
+- **Highly exploratory**: Many non-nutritive visits per meal
+- **Competitively disadvantaged**: Many empty bin visits, high reactor
+  percentage
+- **Socially dominant**: High actor-to-reactor ratio
 
 ## 9. Code Cheatsheet
 
