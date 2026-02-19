@@ -30,13 +30,13 @@ A meal groups multiple feeding visits that happened consecutively in
 time. Analyzing feeding behaviours on meal-level instaed of visit-level
 is more biologically meaningful. This tutorial demonstrates how to:
 
-> 1.  **Analyze non-nutritive visits within meals** - Identify
->     exploratory behavior during each meal
-> 2.  **Examine actor/reactor roles within meals** - Understand the
->     frequency of them being an actor/reactor for agonistic
->     interactions during meals
-> 3.  **Summarize meal-level behavior patterns** - Aggregate findings
->     per animal per day
+1.  **Analyze non-nutritive visits within meals** - Identify exploratory
+    behavior during each meal
+2.  **Examine actor/reactor roles within meals** - Understand the
+    frequency of each animal being an actor/reactor for agonistic
+    interactions during meals
+3.  **Summarize meal-level behavior patterns** - Aggregate meal-level
+    behavior patterns per animal per day
 
 ## 3. Prerequisites
 

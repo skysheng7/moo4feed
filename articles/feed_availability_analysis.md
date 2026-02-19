@@ -6,7 +6,7 @@ library(ggplot2)
 library(dplyr)
 ```
 
-## 1. Set Your Global Variables First!
+## 1. Set Your Global Variables First
 
 Before analyzing feed availability patterns, configure global variables
 to match your data structure:
@@ -104,31 +104,7 @@ morning:
 Instead of recording three separate entries, the function combines them
 into one: **45 kg added to Bin 1 at 6:00am**.
 
-**Option 2: Across-bin aggregation (optional)**
-
-When `aggregate_all_bin = TRUE`, feed additions across *different* bins
-within a short time window are grouped into a single farm-level feeding
-event. This captures the full picture of a feeding session — when it
-started, when it ended, and the average amount added per bin.
-
-For example, during a morning feeding session, a farmer might add:
-
-| Time   | Bin   | Amount |
-|--------|-------|--------|
-| 6:00am | Bin 1 | 50 kg  |
-| 6:05am | Bin 2 | 60 kg  |
-| 6:10am | Bin 3 | 45 kg  |
-
-Instead of three separate bin-level records, the function returns one
-event: **155 kg added across all bins at 6:00am**.
-
-Use this option when you care about total feed added per session, rather
-than the breakdown per bin.
-
-### Detect Per-Bin Feed Additions
-
-For calculating feed availability at each visit, we need per-bin
-additions (not aggregated across bins):
+Example code below:
 
 ``` r
 # Detect feed additions for each bin separately
@@ -160,10 +136,28 @@ Each feed addition event contains:
 - **`bin_weight_after_fill`**: Total bin weight after the final addition
   (kg)
 
-### Detect Aggregated Feed Events (Optional)
+**Option 2: Across-bin aggregation (optional)**
 
-To identify coordinated feeding events where multiple bins are refilled
-together:
+When `aggregate_all_bin = TRUE`, feed additions across *different* bins
+within a short time window are grouped into a single farm-level feeding
+event. This captures the full picture of a feeding session — when it
+started, when it ended, and the average amount added per bin.
+
+For example, during a morning feeding session, a farmer might add:
+
+| Time   | Bin   | Amount |
+|--------|-------|--------|
+| 6:00am | Bin 1 | 50 kg  |
+| 6:05am | Bin 2 | 60 kg  |
+| 6:10am | Bin 3 | 45 kg  |
+
+Instead of three separate bin-level records, the function returns one
+event: **155 kg added across all bins at 6:00am**.
+
+Use this option when you care about total feed added per session, rather
+than the breakdown per bin.
+
+Example code below:
 
 ``` r
 # Detect multi-bin feed events
@@ -225,30 +219,34 @@ availability <- calculate_feed_availability(
 ### Visit-Level Results
 
 ``` r
-# Examine visit-level data from first day
+# Examine visit-level data from first day (all columns in a scrollable table)
 visits_with_availability <- availability$visits[[1]]
 
-tail(visits_with_availability[, c("cow", "bin", "start", "start_weight",
-                                   "feed_addition_time", "bin_weight_after_fill",
-                                   "pct_feed_remaining")])
-#> # A tibble: 6 × 7
-#>     cow   bin start               start_weight feed_addition_time 
-#>   <int> <dbl> <dttm>                     <dbl> <dttm>             
-#> 1  6005    30 2020-10-31 22:29:25         22.4 2020-10-31 15:54:27
-#> 2  6005    30 2020-10-31 22:58:00         22.1 2020-10-31 15:54:27
-#> 3  6069    30 2020-10-31 22:59:30         21.8 2020-10-31 15:54:27
-#> 4  6028    30 2020-10-31 23:00:29         21.6 2020-10-31 15:54:27
-#> 5  6069    30 2020-10-31 23:14:07         21.2 2020-10-31 15:54:27
-#> 6  6069    30 2020-10-31 23:17:52         20.5 2020-10-31 15:54:27
-#> # ℹ 2 more variables: bin_weight_after_fill <dbl>, pct_feed_remaining <dbl>
+tbl <- tail(visits_with_availability[, c("cow", "bin", "start", "start_weight",
+                                          "feed_addition_time", "bin_weight_after_fill",
+                                          "pct_feed_remaining")])
+html_table <- knitr::kable(tbl, format = "html")
+cat('<div style="overflow-x: auto;">', html_table, '</div>')
 ```
+
+|  cow | bin | start               | start_weight | feed_addition_time  | bin_weight_after_fill | pct_feed_remaining |
+|-----:|----:|:--------------------|-------------:|:--------------------|----------------------:|-------------------:|
+| 6005 |  30 | 2020-10-31 22:29:25 |         22.4 | 2020-10-31 15:54:27 |                  58.3 |           38.42196 |
+| 6005 |  30 | 2020-10-31 22:58:00 |         22.1 | 2020-10-31 15:54:27 |                  58.3 |           37.90738 |
+| 6069 |  30 | 2020-10-31 22:59:30 |         21.8 | 2020-10-31 15:54:27 |                  58.3 |           37.39280 |
+| 6028 |  30 | 2020-10-31 23:00:29 |         21.6 | 2020-10-31 15:54:27 |                  58.3 |           37.04974 |
+| 6069 |  30 | 2020-10-31 23:14:07 |         21.2 | 2020-10-31 15:54:27 |                  58.3 |           36.36364 |
+| 6069 |  30 | 2020-10-31 23:17:52 |         20.5 | 2020-10-31 15:54:27 |                  58.3 |           35.16295 |
 
 New columns added to visit data:
 
 - **`feed_addition_time`**: When feed was last added to this bin
 - **`feed_added_weight`**: Weight of feed added to this bin (kg)
-- **`bin_weight_after_fill`**: Bin weight after feed was added (kg)
-- **`pct_feed_remaining`**: Percentage of feed remaining at visit start
+- **`bin_weight_after_fill`**: Bin weight after feed was added (kg).
+  Note this is likely to be different from the `feed_added_weight`
+  because it includes any residual feed that was already in the bin.
+- **`pct_feed_remaining`**: Percentage of feed remaining (`start_weight`
+  / `bin_weight_after_fill`) when visit started
 
 **Important**: For multi-day data, visits occurring early in a day
 (before any feed addition on that day) are automatically matched to feed
@@ -282,9 +280,12 @@ head(daily_summary)
 
 The daily summary provides per animal:
 
-- **`mean_pct_feed_remaining`**: Average percentage across visits
-- **`median_pct_feed_remaining`**: Median percentage across visits
-- **`sd_pct_feed_remaining`**: Standard deviation of percentage
+- **`mean_pct_feed_remaining`**: Average percentage of feed remaining
+  across visits
+- **`median_pct_feed_remaining`**: Median percentage of feed remaining
+  across visits
+- **`sd_pct_feed_remaining`**: Standard deviation of percentage of feed
+  remaining across visits
 - **`total_visits_analyzed`**: Number of visits with valid feed data
 
 ## 7. Analyzing Feed Availability Patterns
@@ -377,6 +378,7 @@ valid_visits |>
   ggplot(aes(x = reorder(cow, pct_feed_remaining, FUN = median),
              y = pct_feed_remaining)) +
   geom_violin(fill = "lightgreen", alpha = 0.7) +
+  geom_boxplot(width = 0.1, fill = "white", alpha = 0.5) +
   labs(
     title = "Feed Availability by Animal (Top 10 Animals)",
     x = "Animal ID",
@@ -402,6 +404,7 @@ valid_visits |>
   ggplot(aes(x = reorder(cow, pct_feed_remaining, FUN = median),
              y = pct_feed_remaining)) +
   geom_violin(fill = "steelblue", alpha = 0.6) +
+  geom_boxplot(width = 0.1, fill = "white", alpha = 0.5) +
   labs(
     title = "Feed Availability Across All Animals (Top 50 by Visit Count)",
     x = "Animal ID",
@@ -542,6 +545,7 @@ valid_visits |>
   ggplot(aes(x = reorder(cow, pct_feed_remaining, FUN = median),
              y = pct_feed_remaining)) +
   geom_violin(fill = "lightgreen", alpha = 0.7) +
+  geom_boxplot(width = 0.1, fill = "white", alpha = 0.5) +
   labs(
     title = "Feed Availability by Animal (Top 10)",
     x = "Animal ID",
@@ -561,6 +565,7 @@ valid_visits |>
   ggplot(aes(x = reorder(cow, pct_feed_remaining, FUN = median),
              y = pct_feed_remaining)) +
   geom_violin(fill = "steelblue", alpha = 0.6) +
+  geom_boxplot(width = 0.1, fill = "white", alpha = 0.5) +
   labs(
     title = "Feed Availability Across All Animals (Top 50)",
     x = "Animal ID",
