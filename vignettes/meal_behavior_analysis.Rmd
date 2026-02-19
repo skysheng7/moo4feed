@@ -24,7 +24,7 @@ library(ggplot2)
 library(dplyr)
 ```
 
-## 1. Set Your Global Variables First!
+## 1. Set Your Global Variables First
 
 Before analyzing meal-level behavior patterns, configure global variables to match your data structure:
 
@@ -87,10 +87,10 @@ labeled_visits <- meal_label_visits(
 )
 
 # Quick peek at meal-labeled data
-cat("Meal-labeled data structure (first day):\n")
-head(labeled_visits[[1]][, c("cow", "bin", "start", "intake", "meal_id", "meal_start")])
+labeled_visits[[1]][, c("cow", "bin", "start", "intake", "meal_id", "meal_start")] |>
+  dplyr::arrange(cow, meal_id, start) |>
+  head()
 
-cat("\nTotal meals identified on first day:", max(labeled_visits[[1]]$meal_id), "\n")
 ```
 
 ## 5. Non-Nutritive Visits Within Meals
@@ -329,6 +329,7 @@ This tutorial demonstrated meal-level behavior analysis:
 - **Behavioral profiles**: Combined multiple metrics to characterize animals
 
 These metrics can help identify animals that may be:
+
 - **Highly exploratory**: Many non-nutritive visits per meal
 - **Competitively disadvantaged**: Many empty bin visits, high reactor percentage
 - **Socially dominant**: High actor-to-reactor ratio
