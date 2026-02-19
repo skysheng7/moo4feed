@@ -124,38 +124,38 @@ meal_visits <- meal_non_nutritive_summary(
   cfg = my_qc_config
 )
 
-# Examine the results from first day
-cat("Meal visit analysis (first day):\n")
-#> Meal visit analysis (first day):
-head(meal_visits[[1]])
+# Examine the results from first day, sort by total non-nutritive visits descending
+meal_visits[[1]] |>
+  dplyr::arrange(desc(total_non_nutritive_visits)) |>
+  head()
 #>         date  cow mean_non_nutritive_per_meal median_non_nutritive_per_meal
-#> 1 2020-10-31 2074                    3.800000                           2.0
-#> 2 2020-10-31 3150                    2.571429                           2.0
-#> 3 2020-10-31 4001                    2.833333                           2.5
-#> 4 2020-10-31 4044                    6.000000                           6.0
-#> 5 2020-10-31 4070                    2.571429                           0.0
-#> 6 2020-10-31 4072                    5.375000                           5.5
+#> 1 2020-10-31 7027                   16.625000                          11.5
+#> 2 2020-10-31 7030                   26.250000                          28.5
+#> 3 2020-10-31 5042                   16.200000                          11.0
+#> 4 2020-10-31 5041                    9.142857                           7.0
+#> 5 2020-10-31 6055                    9.166667                           8.0
+#> 6 2020-10-31 4080                    6.000000                           5.0
 #>   sd_non_nutritive_per_meal mean_empty_bin_per_meal median_empty_bin_per_meal
-#> 1                  2.949576               0.0000000                         0
-#> 2                  2.439750               0.0000000                         0
-#> 3                  2.316607               0.0000000                         0
-#> 4                  3.000000               0.0000000                         0
-#> 5                  3.359422               0.4285714                         0
-#> 6                  2.924649               0.1250000                         0
+#> 1                 13.886659               0.0000000                         0
+#> 2                 16.152915               0.0000000                         0
+#> 3                 12.716131               0.0000000                         0
+#> 4                  6.362090               0.1428571                         0
+#> 5                  7.054549               0.0000000                         0
+#> 6                  3.640055               0.1111111                         0
 #>   sd_empty_bin_per_meal total_non_nutritive_visits total_empty_bin_visits
-#> 1             0.0000000                         19                      0
-#> 2             0.0000000                         18                      0
-#> 3             0.0000000                         17                      0
-#> 4             0.0000000                         30                      0
-#> 5             1.1338934                         18                      3
-#> 6             0.3535534                         43                      1
+#> 1             0.0000000                        133                      0
+#> 2             0.0000000                        105                      0
+#> 3             0.0000000                         81                      0
+#> 4             0.3779645                         64                      1
+#> 5             0.0000000                         55                      0
+#> 6             0.3333333                         54                      1
 #>   total_meals
-#> 1           5
-#> 2           7
-#> 3           6
-#> 4           5
-#> 5           7
-#> 6           8
+#> 1           8
+#> 2           4
+#> 3           5
+#> 4           7
+#> 5           6
+#> 6           9
 ```
 
 The summary provides per animal per day:

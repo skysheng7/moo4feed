@@ -193,38 +193,38 @@ calibration error)</li>
 <span>  cfg <span class="op">=</span> <span class="va">my_qc_config</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Examine the results from first day</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Meal visit analysis (first day):\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Meal visit analysis (first day):</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">meal_visits</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co"># Examine the results from first day, sort by total non-nutritive visits descending</span></span>
+<span><span class="va">meal_visits</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">total_non_nutritive_visits</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt;         date  cow mean_non_nutritive_per_meal median_non_nutritive_per_meal</span></span>
-<span><span class="co">#&gt; 1 2020-10-31 2074                    3.800000                           2.0</span></span>
-<span><span class="co">#&gt; 2 2020-10-31 3150                    2.571429                           2.0</span></span>
-<span><span class="co">#&gt; 3 2020-10-31 4001                    2.833333                           2.5</span></span>
-<span><span class="co">#&gt; 4 2020-10-31 4044                    6.000000                           6.0</span></span>
-<span><span class="co">#&gt; 5 2020-10-31 4070                    2.571429                           0.0</span></span>
-<span><span class="co">#&gt; 6 2020-10-31 4072                    5.375000                           5.5</span></span>
+<span><span class="co">#&gt; 1 2020-10-31 7027                   16.625000                          11.5</span></span>
+<span><span class="co">#&gt; 2 2020-10-31 7030                   26.250000                          28.5</span></span>
+<span><span class="co">#&gt; 3 2020-10-31 5042                   16.200000                          11.0</span></span>
+<span><span class="co">#&gt; 4 2020-10-31 5041                    9.142857                           7.0</span></span>
+<span><span class="co">#&gt; 5 2020-10-31 6055                    9.166667                           8.0</span></span>
+<span><span class="co">#&gt; 6 2020-10-31 4080                    6.000000                           5.0</span></span>
 <span><span class="co">#&gt;   sd_non_nutritive_per_meal mean_empty_bin_per_meal median_empty_bin_per_meal</span></span>
-<span><span class="co">#&gt; 1                  2.949576               0.0000000                         0</span></span>
-<span><span class="co">#&gt; 2                  2.439750               0.0000000                         0</span></span>
-<span><span class="co">#&gt; 3                  2.316607               0.0000000                         0</span></span>
-<span><span class="co">#&gt; 4                  3.000000               0.0000000                         0</span></span>
-<span><span class="co">#&gt; 5                  3.359422               0.4285714                         0</span></span>
-<span><span class="co">#&gt; 6                  2.924649               0.1250000                         0</span></span>
+<span><span class="co">#&gt; 1                 13.886659               0.0000000                         0</span></span>
+<span><span class="co">#&gt; 2                 16.152915               0.0000000                         0</span></span>
+<span><span class="co">#&gt; 3                 12.716131               0.0000000                         0</span></span>
+<span><span class="co">#&gt; 4                  6.362090               0.1428571                         0</span></span>
+<span><span class="co">#&gt; 5                  7.054549               0.0000000                         0</span></span>
+<span><span class="co">#&gt; 6                  3.640055               0.1111111                         0</span></span>
 <span><span class="co">#&gt;   sd_empty_bin_per_meal total_non_nutritive_visits total_empty_bin_visits</span></span>
-<span><span class="co">#&gt; 1             0.0000000                         19                      0</span></span>
-<span><span class="co">#&gt; 2             0.0000000                         18                      0</span></span>
-<span><span class="co">#&gt; 3             0.0000000                         17                      0</span></span>
-<span><span class="co">#&gt; 4             0.0000000                         30                      0</span></span>
-<span><span class="co">#&gt; 5             1.1338934                         18                      3</span></span>
-<span><span class="co">#&gt; 6             0.3535534                         43                      1</span></span>
+<span><span class="co">#&gt; 1             0.0000000                        133                      0</span></span>
+<span><span class="co">#&gt; 2             0.0000000                        105                      0</span></span>
+<span><span class="co">#&gt; 3             0.0000000                         81                      0</span></span>
+<span><span class="co">#&gt; 4             0.3779645                         64                      1</span></span>
+<span><span class="co">#&gt; 5             0.0000000                         55                      0</span></span>
+<span><span class="co">#&gt; 6             0.3333333                         54                      1</span></span>
 <span><span class="co">#&gt;   total_meals</span></span>
-<span><span class="co">#&gt; 1           5</span></span>
-<span><span class="co">#&gt; 2           7</span></span>
-<span><span class="co">#&gt; 3           6</span></span>
-<span><span class="co">#&gt; 4           5</span></span>
-<span><span class="co">#&gt; 5           7</span></span>
-<span><span class="co">#&gt; 6           8</span></span></code></pre></div>
+<span><span class="co">#&gt; 1           8</span></span>
+<span><span class="co">#&gt; 2           4</span></span>
+<span><span class="co">#&gt; 3           5</span></span>
+<span><span class="co">#&gt; 4           7</span></span>
+<span><span class="co">#&gt; 5           6</span></span>
+<span><span class="co">#&gt; 6           9</span></span></code></pre></div>
 <p>The summary provides per animal per day:</p>
 <ul>
 <li>
