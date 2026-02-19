@@ -78,13 +78,37 @@ Feed additions are detected by identifying significant weight increases between 
 
 ### Understanding Feed Addition Detection
 
-The `detect_feed_additions()` function performs aggregation in two stages:
+The `detect_feed_additions()` function gives you 2 options to processes feed data:
 
-**Stage 1: Within-bin aggregation (always performed)**
-When a farmer adds feed to the same bin multiple times in quick succession (within `max_bin_time_gap` seconds), these additions are automatically grouped into a single feed event per bin.
+**Option 1: Within-bin aggregation (always applied)**
 
-**Stage 2: Across-bin aggregation (optional)**
-If `aggregate_all_bin = TRUE`, the function groups feed additions to different bins happening in a short time window together, summarize them as one feed addition event on farm level. When farmers come to add feed, they typically refill multiple bins within a short time window. This aggregation captures each feeding event by determining when the farmer started adding feed, when they finished, and calculates the average feed added per bin during that event.
+When a farmer adds feed to the same bin multiple times in quick succession (within `max_bin_time_gap` seconds), those additions are combined into a single feed event for that bin.
+
+For example, a farmer might add feed to Bin 1 three times in the same morning:
+
+| Time   | Bin   | Amount |
+|--------|-------|--------|
+| 6:00am | Bin 1 | 10 kg  |
+| 6:01am | Bin 1 | 20 kg  |
+| 6:03am | Bin 1 | 15 kg  |
+
+Instead of recording three separate entries, the function combines them into one: **45 kg added to Bin 1 at 6:00am**.
+
+**Option 2: Across-bin aggregation (optional)**
+
+When `aggregate_all_bin = TRUE`, feed additions across *different* bins within a short time window are grouped into a single farm-level feeding event. This captures the full picture of a feeding session — when it started, when it ended, and the average amount added per bin.
+
+For example, during a morning feeding session, a farmer might add:
+
+| Time   | Bin   | Amount |
+|--------|-------|--------|
+| 6:00am | Bin 1 | 50 kg  |
+| 6:05am | Bin 2 | 60 kg  |
+| 6:10am | Bin 3 | 45 kg  |
+
+Instead of three separate bin-level records, the function returns one event: **155 kg added across all bins at 6:00am**.
+
+Use this option when you care about total feed added per session, rather than the breakdown per bin.
 
 ### Detect Per-Bin Feed Additions
 
