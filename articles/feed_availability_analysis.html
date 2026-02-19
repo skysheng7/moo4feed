@@ -144,21 +144,77 @@ end of the previous visit, feed was probably added in between.</p>
 <div class="section level3">
 <h3 id="understanding-feed-addition-detection">Understanding Feed Addition Detection<a class="anchor" aria-label="anchor" href="#understanding-feed-addition-detection"></a>
 </h3>
-<p>The <code><a href="../reference/detect_feed_additions.html">detect_feed_additions()</a></code> function performs
-aggregation in two stages:</p>
-<p><strong>Stage 1: Within-bin aggregation (always performed)</strong>
-When a farmer adds feed to the same bin multiple times in quick
-succession (within <code>max_bin_time_gap</code> seconds), these
-additions are automatically grouped into a single feed event per
-bin.</p>
-<p><strong>Stage 2: Across-bin aggregation (optional)</strong> If
-<code>aggregate_all_bin = TRUE</code>, the function groups feed
-additions to different bins happening in a short time window together,
-summarize them as one feed addition event on farm level. When farmers
-come to add feed, they typically refill multiple bins within a short
-time window. This aggregation captures each feeding event by determining
-when the farmer started adding feed, when they finished, and calculates
-the average feed added per bin during that event.</p>
+<p>The <code><a href="../reference/detect_feed_additions.html">detect_feed_additions()</a></code> function gives you 2 options
+to processes feed data:</p>
+<p><strong>Option 1: Within-bin aggregation (always
+applied)</strong></p>
+<p>When a farmer adds feed to the same bin multiple times in quick
+succession (within <code>max_bin_time_gap</code> seconds), those
+additions are combined into a single feed event for that bin.</p>
+<p>For example, a farmer might add feed to Bin 1 three times in the same
+morning:</p>
+<table class="table">
+<thead><tr class="header">
+<th>Time</th>
+<th>Bin</th>
+<th>Amount</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>6:00am</td>
+<td>Bin 1</td>
+<td>10 kg</td>
+</tr>
+<tr class="even">
+<td>6:01am</td>
+<td>Bin 1</td>
+<td>20 kg</td>
+</tr>
+<tr class="odd">
+<td>6:03am</td>
+<td>Bin 1</td>
+<td>15 kg</td>
+</tr>
+</tbody>
+</table>
+<p>Instead of recording three separate entries, the function combines
+them into one: <strong>45 kg added to Bin 1 at 6:00am</strong>.</p>
+<p><strong>Option 2: Across-bin aggregation (optional)</strong></p>
+<p>When <code>aggregate_all_bin = TRUE</code>, feed additions across
+<em>different</em> bins within a short time window are grouped into a
+single farm-level feeding event. This captures the full picture of a
+feeding session — when it started, when it ended, and the average amount
+added per bin.</p>
+<p>For example, during a morning feeding session, a farmer might
+add:</p>
+<table class="table">
+<thead><tr class="header">
+<th>Time</th>
+<th>Bin</th>
+<th>Amount</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>6:00am</td>
+<td>Bin 1</td>
+<td>50 kg</td>
+</tr>
+<tr class="even">
+<td>6:05am</td>
+<td>Bin 2</td>
+<td>60 kg</td>
+</tr>
+<tr class="odd">
+<td>6:10am</td>
+<td>Bin 3</td>
+<td>45 kg</td>
+</tr>
+</tbody>
+</table>
+<p>Instead of three separate bin-level records, the function returns one
+event: <strong>155 kg added across all bins at 6:00am</strong>.</p>
+<p>Use this option when you care about total feed added per session,
+rather than the breakdown per bin.</p>
 </div>
 <div class="section level3">
 <h3 id="detect-per-bin-feed-additions">Detect Per-Bin Feed Additions<a class="anchor" aria-label="anchor" href="#detect-per-bin-feed-additions"></a>
