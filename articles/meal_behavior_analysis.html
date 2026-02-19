@@ -225,6 +225,34 @@ calibration error)</li>
 <span><span class="co">#&gt; 4           7</span></span>
 <span><span class="co">#&gt; 5           6</span></span>
 <span><span class="co">#&gt; 6           9</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="visualize-non-nutritive-patterns">Visualize Non-Nutritive Patterns<a class="anchor" aria-label="anchor" href="#visualize-non-nutritive-patterns"></a>
+</h3>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Use first day's data as an example</span></span>
+<span><span class="va">first_day_data</span> <span class="op">&lt;-</span> <span class="va">meal_visits</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">total_non_nutritive_visits</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">50</span><span class="op">)</span>  <span class="co"># Limit to top 50 animals</span></span>
+<span></span>
+<span><span class="co"># Create bar plot</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">first_day_data</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">cow</span>, <span class="va">total_non_nutritive_visits</span><span class="op">)</span>, </span>
+<span>                           y <span class="op">=</span> <span class="va">mean_non_nutritive_per_meal</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_bar</a></span><span class="op">(</span>stat <span class="op">=</span> <span class="st">"identity"</span>, fill <span class="op">=</span> <span class="st">"steelblue"</span>, alpha <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>  <span class="co"># Horizontal bars for better readability</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Average Non-Nutritive Visits Per Meal by Animal"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Top 50 animals sorted by total non-nutritive visits (first day example)"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Animal ID"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Average Non-Nutritive Visits Per Meal"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
+<span>    axis.text.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">8</span><span class="op">)</span>,</span>
+<span>    plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">14</span>, face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>,</span>
+<span>    plot.subtitle <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">11</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p><img src="meal_behavior_analysis_files/figure-html/viz-non-nutritive-bar-1.png" class="r-plt" alt="" width="960"></p>
 <p>The summary provides per animal per day:</p>
 <ul>
 <li>
@@ -257,61 +285,19 @@ analyzed</li>
 </ul>
 </div>
 <div class="section level3">
-<h3 id="identify-animals-with-high-exploratory-behavior">Identify Animals with High Exploratory Behavior<a class="anchor" aria-label="anchor" href="#identify-animals-with-high-exploratory-behavior"></a>
-</h3>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Combine all days</span></span>
-<span><span class="va">all_meal_visits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">meal_visits</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Find animals with highest non-nutritive visits per meal</span></span>
-<span><span class="va">high_exploratory</span> <span class="op">&lt;-</span> <span class="va">all_meal_visits</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">cow</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span></span>
-<span>    avg_non_nutritive <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">mean_non_nutritive_per_meal</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>    avg_empty_bin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">mean_empty_bin_per_meal</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>    total_meals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">total_meals</span><span class="op">)</span>,</span>
-<span>    .groups <span class="op">=</span> <span class="st">"drop"</span></span>
-<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">avg_non_nutritive</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Animals with most non-nutritive visits per meal:\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Animals with most non-nutritive visits per meal:</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">high_exploratory</span>, <span class="fl">5</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 4</span></span></span>
-<span><span class="co">#&gt;     cow avg_non_nutritive avg_empty_bin total_meals</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>  <span style="text-decoration: underline;">7</span>030              20.5        0               11</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>  <span style="text-decoration: underline;">5</span>042              16.3        0               10</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>  <span style="text-decoration: underline;">7</span>027              14.1        0.055<span style="text-decoration: underline;">6</span>          17</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>  <span style="text-decoration: underline;">6</span>027              13.5        0.125            9</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>  <span style="text-decoration: underline;">6</span>055              11.7        0.5             12</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\nAnimals with most empty bin visits per meal:\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Animals with most empty bin visits per meal:</span></span>
-<span><span class="va">high_exploratory</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">avg_empty_bin</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 4</span></span></span>
-<span><span class="co">#&gt;     cow avg_non_nutritive avg_empty_bin total_meals</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>  <span style="text-decoration: underline;">5</span>137              6.04         1.46           10</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>  <span style="text-decoration: underline;">5</span>067              3.77         1.37           15</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>  <span style="text-decoration: underline;">5</span>124              7.64         1.11           14</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>  <span style="text-decoration: underline;">6</span>005              5.33         0.833          12</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>  <span style="text-decoration: underline;">5</span>028              3.25         0.75           10</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="visualize-non-nutritive-patterns">Visualize Non-Nutritive Patterns<a class="anchor" aria-label="anchor" href="#visualize-non-nutritive-patterns"></a>
+<h3 id="visualize-non-nutritive-patterns-1">Visualize Non-Nutritive Patterns<a class="anchor" aria-label="anchor" href="#visualize-non-nutritive-patterns-1"></a>
 </h3>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Distribution of non-nutritive visits per meal</span></span>
+<code class="sourceCode R"><span><span class="co"># Combine all days all animals</span></span>
+<span><span class="va">all_meal_visits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">meal_visits</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Distribution of non-nutritive visits per meal across all animals</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">all_meal_visits</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">mean_non_nutritive_per_meal</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span>bins <span class="op">=</span> <span class="fl">20</span>, fill <span class="op">=</span> <span class="st">"coral"</span>, alpha <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
 <span>    title <span class="op">=</span> <span class="st">"Distribution of Non-Nutritive Visits Per Meal"</span>,</span>
 <span>    x <span class="op">=</span> <span class="st">"Average Non-Nutritive Visits Per Meal"</span>,</span>
-<span>    y <span class="op">=</span> <span class="st">"Number of Animal-Days"</span></span>
+<span>    y <span class="op">=</span> <span class="st">"Frequency"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="meal_behavior_analysis_files/figure-html/viz-non-nutritive-1.png" class="r-plt" alt="" width="576"></p>
@@ -336,7 +322,8 @@ another animal at the bin</li>
 when leaving this visit</li>
 <li>
 <strong>Actor-Reactor</strong>: Both events occurred during the same
-visit (rare but possible)</li>
+visit (rare but possible). They entered as actor and left as reactor
+within the same visit.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -350,8 +337,7 @@ visit (rare but possible)</li>
 <span>  cfg <span class="op">=</span> <span class="fu"><a href="../reference/qc_config.html">qc_config</a></span><span class="op">(</span>replacement_threshold <span class="op">=</span> <span class="fl">26</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Replacement events per day:\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Replacement events per day:</span></span>
+<span><span class="co"># Replacement events per day:</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">replacements</span>, <span class="va">nrow</span><span class="op">)</span></span>
 <span><span class="co">#&gt; 2020-10-31 2020-11-01 </span></span>
 <span><span class="co">#&gt;        655        709</span></span></code></pre></div>
@@ -384,46 +370,47 @@ used for replacement detection:</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Examine the meal-level results</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Actor/reactor roles per meal (first day):\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Actor/reactor roles per meal (first day):</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">meal_roles</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co"># Actor/reactor roles per meal (first day)</span></span>
+<span><span class="va">meal_roles</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">pct_reactor</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt;         date  cow meal_id total_visits_in_meal actor_visits reactor_visits</span></span>
-<span><span class="co">#&gt; 1 2020-10-31 2074       1                    8            0              2</span></span>
-<span><span class="co">#&gt; 2 2020-10-31 2074       2                   18            0              2</span></span>
-<span><span class="co">#&gt; 3 2020-10-31 2074       3                    7            0              4</span></span>
-<span><span class="co">#&gt; 4 2020-10-31 2074       4                   12            0              2</span></span>
-<span><span class="co">#&gt; 5 2020-10-31 2074       5                    4            0              0</span></span>
-<span><span class="co">#&gt; 6 2020-10-31 2074       6                    4            0              1</span></span>
+<span><span class="co">#&gt; 1 2020-10-31 5028       1                    3            0              2</span></span>
+<span><span class="co">#&gt; 2 2020-10-31 5137       4                   12            0              8</span></span>
+<span><span class="co">#&gt; 3 2020-10-31 5123       3                   11            0              7</span></span>
+<span><span class="co">#&gt; 4 2020-10-31 5145       4                    8            0              5</span></span>
+<span><span class="co">#&gt; 5 2020-10-31 6069       1                    8            0              5</span></span>
+<span><span class="co">#&gt; 6 2020-10-31 3150       5                    5            0              3</span></span>
 <span><span class="co">#&gt;   actor_reactor_visits pct_actor pct_reactor pct_actor_reactor</span></span>
-<span><span class="co">#&gt; 1                    0         0    25.00000                 0</span></span>
-<span><span class="co">#&gt; 2                    0         0    11.11111                 0</span></span>
-<span><span class="co">#&gt; 3                    0         0    57.14286                 0</span></span>
-<span><span class="co">#&gt; 4                    0         0    16.66667                 0</span></span>
-<span><span class="co">#&gt; 5                    0         0     0.00000                 0</span></span>
-<span><span class="co">#&gt; 6                    0         0    25.00000                 0</span></span></code></pre></div>
+<span><span class="co">#&gt; 1                    0         0    66.66667                 0</span></span>
+<span><span class="co">#&gt; 2                    0         0    66.66667                 0</span></span>
+<span><span class="co">#&gt; 3                    0         0    63.63636                 0</span></span>
+<span><span class="co">#&gt; 4                    0         0    62.50000                 0</span></span>
+<span><span class="co">#&gt; 5                    0         0    62.50000                 0</span></span>
+<span><span class="co">#&gt; 6                    0         0    60.00000                 0</span></span></code></pre></div>
 <p>The results show for each animal’s meal:</p>
 <ul>
 <li>
-<strong><code>total_visits_in_meal</code></strong>: Total visits in
-the meal</li>
+<strong><code>total_visits_in_meal</code></strong>: Total feeding
+visits in that meal</li>
 <li>
-<strong><code>actor_visits</code></strong>: Visits where animal
-entered as actor</li>
+<strong><code>actor_visits</code></strong>: Total number of visits
+where animal entered as actor in that meal</li>
 <li>
-<strong><code>reactor_visits</code></strong>: Visits where animal
-left as reactor</li>
+<strong><code>reactor_visits</code></strong>: Total number of visits
+where animal left as reactor in that meal</li>
 <li>
-<strong><code>actor_reactor_visits</code></strong>: Visits with both
-roles</li>
+<strong><code>actor_reactor_visits</code></strong>: Total number of
+visits when they entered as actor and left as reactor in that meal</li>
 <li>
 <strong><code>pct_actor</code></strong>: Percentage of visits as
-actor</li>
+actor in that meal</li>
 <li>
 <strong><code>pct_reactor</code></strong>: Percentage of visits as
-reactor</li>
+reactor in that meal</li>
 <li>
-<strong><code>pct_actor_reactor</code></strong>: Percentage with
-both roles</li>
+<strong><code>pct_actor_reactor</code></strong>: Percentage of
+visits when they entered as actor and left as reactor in that meal</li>
 </ul>
 </div>
 <div class="section level3">
@@ -433,260 +420,72 @@ both roles</li>
 <code class="sourceCode R"><span><span class="co"># Get daily summary statistics across all meals</span></span>
 <span><span class="va">daily_roles</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/meal_replacement_roles_summary.html">meal_replacement_roles_summary</a></span><span class="op">(</span><span class="va">meal_roles</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Daily role summary (first day):\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Daily role summary (first day):</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">daily_roles</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt;          date  cow mean_pct_actor median_pct_actor sd_pct_actor</span></span>
-<span><span class="co">#&gt; 1  2020-10-31 2074              0                0            0</span></span>
-<span><span class="co">#&gt; 2  2020-10-31 3150              0                0            0</span></span>
-<span><span class="co">#&gt; 3  2020-10-31 4001              0                0            0</span></span>
-<span><span class="co">#&gt; 4  2020-10-31 4044              0                0            0</span></span>
-<span><span class="co">#&gt; 5  2020-10-31 4070              0                0            0</span></span>
-<span><span class="co">#&gt; 6  2020-10-31 4072              0                0            0</span></span>
-<span><span class="co">#&gt; 7  2020-10-31 4080              0                0            0</span></span>
-<span><span class="co">#&gt; 8  2020-10-31 5028              0                0            0</span></span>
-<span><span class="co">#&gt; 9  2020-10-31 5041              0                0            0</span></span>
-<span><span class="co">#&gt; 10 2020-10-31 5042              0                0            0</span></span>
-<span><span class="co">#&gt; 11 2020-10-31 5058              0                0            0</span></span>
-<span><span class="co">#&gt; 12 2020-10-31 5061              0                0            0</span></span>
-<span><span class="co">#&gt; 13 2020-10-31 5067              0                0            0</span></span>
-<span><span class="co">#&gt; 14 2020-10-31 5100              0                0            0</span></span>
-<span><span class="co">#&gt; 15 2020-10-31 5114              0                0            0</span></span>
-<span><span class="co">#&gt; 16 2020-10-31 5120              0                0            0</span></span>
-<span><span class="co">#&gt; 17 2020-10-31 5123              0                0            0</span></span>
-<span><span class="co">#&gt; 18 2020-10-31 5124              0                0            0</span></span>
-<span><span class="co">#&gt; 19 2020-10-31 5135              0                0            0</span></span>
-<span><span class="co">#&gt; 20 2020-10-31 5137              0                0            0</span></span>
-<span><span class="co">#&gt; 21 2020-10-31 5139              0                0            0</span></span>
-<span><span class="co">#&gt; 22 2020-10-31 5145              0                0            0</span></span>
-<span><span class="co">#&gt; 23 2020-10-31 6005              0                0            0</span></span>
-<span><span class="co">#&gt; 24 2020-10-31 6020              0                0            0</span></span>
-<span><span class="co">#&gt; 25 2020-10-31 6027              0                0            0</span></span>
-<span><span class="co">#&gt; 26 2020-10-31 6028              0                0            0</span></span>
-<span><span class="co">#&gt; 27 2020-10-31 6030              0                0            0</span></span>
-<span><span class="co">#&gt; 28 2020-10-31 6033              0                0            0</span></span>
-<span><span class="co">#&gt; 29 2020-10-31 6042              0                0            0</span></span>
-<span><span class="co">#&gt; 30 2020-10-31 6050              0                0            0</span></span>
-<span><span class="co">#&gt; 31 2020-10-31 6055              0                0            0</span></span>
-<span><span class="co">#&gt; 32 2020-10-31 6069              0                0            0</span></span>
-<span><span class="co">#&gt; 33 2020-10-31 6084              0                0            0</span></span>
-<span><span class="co">#&gt; 34 2020-10-31 6090              0                0            0</span></span>
-<span><span class="co">#&gt; 35 2020-10-31 6121              0                0            0</span></span>
-<span><span class="co">#&gt; 36 2020-10-31 6126              0                0            0</span></span>
-<span><span class="co">#&gt; 37 2020-10-31 6129              0                0            0</span></span>
-<span><span class="co">#&gt; 38 2020-10-31 7010              0                0            0</span></span>
-<span><span class="co">#&gt; 39 2020-10-31 7018              0                0            0</span></span>
-<span><span class="co">#&gt; 40 2020-10-31 7019              0                0            0</span></span>
-<span><span class="co">#&gt; 41 2020-10-31 7022              0                0            0</span></span>
-<span><span class="co">#&gt; 42 2020-10-31 7023              0                0            0</span></span>
-<span><span class="co">#&gt; 43 2020-10-31 7024              0                0            0</span></span>
-<span><span class="co">#&gt; 44 2020-10-31 7027              0                0            0</span></span>
-<span><span class="co">#&gt; 45 2020-10-31 7030              0                0            0</span></span>
-<span><span class="co">#&gt; 46 2020-10-31 7033              0                0            0</span></span>
-<span><span class="co">#&gt; 47 2020-10-31 7043              0                0            0</span></span>
-<span><span class="co">#&gt;    mean_pct_reactor median_pct_reactor sd_pct_reactor mean_pct_actor_reactor</span></span>
-<span><span class="co">#&gt; 1         22.486772          20.833333      19.404180                      0</span></span>
-<span><span class="co">#&gt; 2         19.702381          20.000000      21.970818                      0</span></span>
-<span><span class="co">#&gt; 3          5.769231           0.000000      14.131672                      0</span></span>
-<span><span class="co">#&gt; 4         15.107660           8.333333      15.859523                      0</span></span>
-<span><span class="co">#&gt; 5         14.345212           8.333333      17.196570                      0</span></span>
-<span><span class="co">#&gt; 6         19.057861          21.637427      10.009381                      0</span></span>
-<span><span class="co">#&gt; 7         12.892416          14.285714       9.754975                      0</span></span>
-<span><span class="co">#&gt; 8         35.833333          30.000000      21.666667                      0</span></span>
-<span><span class="co">#&gt; 9          6.584416           0.000000       9.558268                      0</span></span>
-<span><span class="co">#&gt; 10        12.813524           7.692308      11.583569                      0</span></span>
-<span><span class="co">#&gt; 11        12.142857          15.000000      12.791573                      0</span></span>
-<span><span class="co">#&gt; 12         9.833377           0.000000      15.105378                      0</span></span>
-<span><span class="co">#&gt; 13         4.388375           0.000000       5.648305                      0</span></span>
-<span><span class="co">#&gt; 14         9.865591          11.111111       9.152691                      0</span></span>
-<span><span class="co">#&gt; 15        21.369048          23.809524      20.259792                      0</span></span>
-<span><span class="co">#&gt; 16         4.790823           0.000000       8.540175                      0</span></span>
-<span><span class="co">#&gt; 17        21.142589          15.773810      22.267125                      0</span></span>
-<span><span class="co">#&gt; 18        21.333333          16.666667      16.890168                      0</span></span>
-<span><span class="co">#&gt; 19         9.545455           9.090909      11.047107                      0</span></span>
-<span><span class="co">#&gt; 20        22.600733          14.285714      24.850230                      0</span></span>
-<span><span class="co">#&gt; 21        15.714286           7.142857      20.603150                      0</span></span>
-<span><span class="co">#&gt; 22        21.211450          12.903226      22.428807                      0</span></span>
-<span><span class="co">#&gt; 23        18.024734          20.714286       9.238658                      0</span></span>
-<span><span class="co">#&gt; 24        22.995805          20.000000      18.183889                      0</span></span>
-<span><span class="co">#&gt; 25         6.922043           4.166667       9.172341                      0</span></span>
-<span><span class="co">#&gt; 26        23.577264          11.111111      22.854105                      0</span></span>
-<span><span class="co">#&gt; 27        11.011905           2.380952      17.354023                      0</span></span>
-<span><span class="co">#&gt; 28        16.467846          18.181818       8.056472                      0</span></span>
-<span><span class="co">#&gt; 29        18.904762           9.523810      18.149668                      0</span></span>
-<span><span class="co">#&gt; 30        15.654135          20.000000      15.742178                      0</span></span>
-<span><span class="co">#&gt; 31        12.005046           7.916667      14.384608                      0</span></span>
-<span><span class="co">#&gt; 32        16.980373           5.405405      24.937729                      0</span></span>
-<span><span class="co">#&gt; 33        20.988132          15.789474      10.862766                      0</span></span>
-<span><span class="co">#&gt; 34        19.671026          17.647059      17.187854                      0</span></span>
-<span><span class="co">#&gt; 35        11.332315           7.142857      11.505065                      0</span></span>
-<span><span class="co">#&gt; 36        12.966721          10.795455      12.825538                      0</span></span>
-<span><span class="co">#&gt; 37        20.444444          20.000000      18.734665                      0</span></span>
-<span><span class="co">#&gt; 38        15.470178          10.101010      17.570823                      0</span></span>
-<span><span class="co">#&gt; 39        26.589556          22.619048      20.134313                      0</span></span>
-<span><span class="co">#&gt; 40         9.023920           7.812500       9.984882                      0</span></span>
-<span><span class="co">#&gt; 41        25.227273          20.454545      25.296981                      0</span></span>
-<span><span class="co">#&gt; 42        14.813105           9.523810      15.840853                      0</span></span>
-<span><span class="co">#&gt; 43        13.926644          15.109890      11.000924                      0</span></span>
-<span><span class="co">#&gt; 44        13.658677          10.204082      15.906108                      0</span></span>
-<span><span class="co">#&gt; 45        16.019187          16.413374      16.171367                      0</span></span>
-<span><span class="co">#&gt; 46        14.783249          15.151515      11.450989                      0</span></span>
-<span><span class="co">#&gt; 47        31.483516          28.571429      17.835574                      0</span></span>
-<span><span class="co">#&gt;    median_pct_actor_reactor sd_pct_actor_reactor total_meals</span></span>
-<span><span class="co">#&gt; 1                         0                    0           6</span></span>
-<span><span class="co">#&gt; 2                         0                    0           9</span></span>
-<span><span class="co">#&gt; 3                         0                    0           6</span></span>
-<span><span class="co">#&gt; 4                         0                    0           5</span></span>
-<span><span class="co">#&gt; 5                         0                    0           7</span></span>
-<span><span class="co">#&gt; 6                         0                    0           8</span></span>
-<span><span class="co">#&gt; 7                         0                    0           9</span></span>
-<span><span class="co">#&gt; 8                         0                    0           4</span></span>
-<span><span class="co">#&gt; 9                         0                    0           7</span></span>
-<span><span class="co">#&gt; 10                        0                    0           5</span></span>
-<span><span class="co">#&gt; 11                        0                    0           7</span></span>
-<span><span class="co">#&gt; 12                        0                    0           9</span></span>
-<span><span class="co">#&gt; 13                        0                    0           7</span></span>
-<span><span class="co">#&gt; 14                        0                    0           7</span></span>
-<span><span class="co">#&gt; 15                        0                    0           8</span></span>
-<span><span class="co">#&gt; 16                        0                    0           6</span></span>
-<span><span class="co">#&gt; 17                        0                    0           6</span></span>
-<span><span class="co">#&gt; 18                        0                    0           5</span></span>
-<span><span class="co">#&gt; 19                        0                    0           4</span></span>
-<span><span class="co">#&gt; 20                        0                    0           5</span></span>
-<span><span class="co">#&gt; 21                        0                    0           6</span></span>
-<span><span class="co">#&gt; 22                        0                    0           7</span></span>
-<span><span class="co">#&gt; 23                        0                    0           6</span></span>
-<span><span class="co">#&gt; 24                        0                    0           7</span></span>
-<span><span class="co">#&gt; 25                        0                    0           4</span></span>
-<span><span class="co">#&gt; 26                        0                    0           5</span></span>
-<span><span class="co">#&gt; 27                        0                    0           8</span></span>
-<span><span class="co">#&gt; 28                        0                    0           3</span></span>
-<span><span class="co">#&gt; 29                        0                    0           5</span></span>
-<span><span class="co">#&gt; 30                        0                    0           5</span></span>
-<span><span class="co">#&gt; 31                        0                    0           6</span></span>
-<span><span class="co">#&gt; 32                        0                    0           6</span></span>
-<span><span class="co">#&gt; 33                        0                    0           7</span></span>
-<span><span class="co">#&gt; 34                        0                    0           7</span></span>
-<span><span class="co">#&gt; 35                        0                    0           5</span></span>
-<span><span class="co">#&gt; 36                        0                    0           8</span></span>
-<span><span class="co">#&gt; 37                        0                    0           5</span></span>
-<span><span class="co">#&gt; 38                        0                    0           6</span></span>
-<span><span class="co">#&gt; 39                        0                    0           6</span></span>
-<span><span class="co">#&gt; 40                        0                    0           6</span></span>
-<span><span class="co">#&gt; 41                        0                    0           4</span></span>
-<span><span class="co">#&gt; 42                        0                    0           7</span></span>
-<span><span class="co">#&gt; 43                        0                    0           6</span></span>
-<span><span class="co">#&gt; 44                        0                    0           9</span></span>
-<span><span class="co">#&gt; 45                        0                    0           4</span></span>
-<span><span class="co">#&gt; 46                        0                    0           8</span></span>
-<span><span class="co">#&gt; 47                        0                    0           5</span></span></code></pre></div>
+<span><span class="co"># Daily role summary (first day)</span></span>
+<span><span class="va">daily_roles</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">mean_pct_actor</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt;         date  cow mean_pct_actor median_pct_actor sd_pct_actor mean_pct_reactor</span></span>
+<span><span class="co">#&gt; 1 2020-10-31 2074              0                0            0        22.486772</span></span>
+<span><span class="co">#&gt; 2 2020-10-31 3150              0                0            0        19.702381</span></span>
+<span><span class="co">#&gt; 3 2020-10-31 4001              0                0            0         5.769231</span></span>
+<span><span class="co">#&gt; 4 2020-10-31 4044              0                0            0        15.107660</span></span>
+<span><span class="co">#&gt; 5 2020-10-31 4070              0                0            0        14.345212</span></span>
+<span><span class="co">#&gt; 6 2020-10-31 4072              0                0            0        19.057861</span></span>
+<span><span class="co">#&gt;   median_pct_reactor sd_pct_reactor mean_pct_actor_reactor</span></span>
+<span><span class="co">#&gt; 1          20.833333       19.40418                      0</span></span>
+<span><span class="co">#&gt; 2          20.000000       21.97082                      0</span></span>
+<span><span class="co">#&gt; 3           0.000000       14.13167                      0</span></span>
+<span><span class="co">#&gt; 4           8.333333       15.85952                      0</span></span>
+<span><span class="co">#&gt; 5           8.333333       17.19657                      0</span></span>
+<span><span class="co">#&gt; 6          21.637427       10.00938                      0</span></span>
+<span><span class="co">#&gt;   median_pct_actor_reactor sd_pct_actor_reactor total_meals</span></span>
+<span><span class="co">#&gt; 1                        0                    0           6</span></span>
+<span><span class="co">#&gt; 2                        0                    0           9</span></span>
+<span><span class="co">#&gt; 3                        0                    0           6</span></span>
+<span><span class="co">#&gt; 4                        0                    0           5</span></span>
+<span><span class="co">#&gt; 5                        0                    0           7</span></span>
+<span><span class="co">#&gt; 6                        0                    0           8</span></span></code></pre></div>
 <p>The daily summary provides:</p>
 <ul>
 <li>
+<strong><code>date</code></strong>: Date of the summary</li>
+<li>
+<strong><code>cow</code></strong>: Animal identifier</li>
+<li>
 <strong><code>mean_pct_actor</code></strong>: Average percentage of
-actor visits across meals</li>
+visits as an actor across all meals</li>
 <li>
-<strong><code>median_pct_actor</code></strong>: Median
-percentage</li>
+<strong><code>median_pct_actor</code></strong>: Median percentage of
+visits as an actor across all meals</li>
 <li>
-<strong><code>sd_pct_actor</code></strong>: Standard deviation</li>
-<li>Similarly for reactor and actor-reactor roles</li>
+<strong><code>sd_pct_actor</code></strong>: Standard deviation of
+percentage of visits as an actor across all meals</li>
+<li>
+<strong><code>mean_pct_reactor</code></strong>: Average percentage
+of visits as a reactor across all meals</li>
+<li>
+<strong><code>median_pct_reactor</code></strong>: Median percentage
+of visits as a reactor across all meals</li>
+<li>
+<strong><code>sd_pct_reactor</code></strong>: Standard deviation of
+percentage of visits as a reactor across all meals</li>
+<li>
+<strong><code>mean_pct_actor_reactor</code></strong>: Average
+percentage of visits with both actor and reactor roles across all
+meals</li>
+<li>
+<strong><code>median_pct_actor_reactor</code></strong>: Median
+percentage of visits with both actor and reactor roles across all
+meals</li>
+<li>
+<strong><code>sd_pct_actor_reactor</code></strong>: Standard
+deviation of percentage of visits with both actor and reactor roles
+across all meals</li>
 <li>
 <strong><code>total_meals</code></strong>: Number of meals
 analyzed</li>
 </ul>
 </div>
-<div class="section level3">
-<h3 id="identify-dominant-and-subordinate-animals">Identify Dominant and Subordinate Animals<a class="anchor" aria-label="anchor" href="#identify-dominant-and-subordinate-animals"></a>
-</h3>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Combine all daily summaries</span></span>
-<span><span class="va">all_daily_roles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">daily_roles</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Find animals with highest actor percentages (potentially dominant)</span></span>
-<span><span class="va">dominant_animals</span> <span class="op">&lt;-</span> <span class="va">all_daily_roles</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">cow</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span></span>
-<span>    avg_pct_actor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">mean_pct_actor</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>    avg_pct_reactor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">mean_pct_reactor</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>    total_meals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">total_meals</span><span class="op">)</span>,</span>
-<span>    .groups <span class="op">=</span> <span class="st">"drop"</span></span>
-<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>    dominance_ratio <span class="op">=</span> <span class="va">avg_pct_actor</span> <span class="op">/</span> <span class="op">(</span><span class="va">avg_pct_reactor</span> <span class="op">+</span> <span class="fl">0.01</span><span class="op">)</span>  <span class="co"># Avoid division by zero</span></span>
-<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">dominance_ratio</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Animals with highest actor-to-reactor ratio (potentially dominant):\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Animals with highest actor-to-reactor ratio (potentially dominant):</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dominant_animals</span>, <span class="fl">5</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 5</span></span></span>
-<span><span class="co">#&gt;     cow avg_pct_actor avg_pct_reactor total_meals dominance_ratio</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>  <span style="text-decoration: underline;">2</span>074             0           19.0           11               0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>  <span style="text-decoration: underline;">3</span>150             0           21.3           18               0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>  <span style="text-decoration: underline;">4</span>001             0            3.81           9               0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>  <span style="text-decoration: underline;">4</span>044             0           15.3           10               0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>  <span style="text-decoration: underline;">4</span>070             0           19.0           10               0</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\nAnimals with lowest actor-to-reactor ratio (potentially subordinate):\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Animals with lowest actor-to-reactor ratio (potentially subordinate):</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">dominant_animals</span>, <span class="fl">5</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 5</span></span></span>
-<span><span class="co">#&gt;     cow avg_pct_actor avg_pct_reactor total_meals dominance_ratio</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>  <span style="text-decoration: underline;">7</span>024             0            20.7          15               0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>  <span style="text-decoration: underline;">7</span>027             0            14.5          18               0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>  <span style="text-decoration: underline;">7</span>030             0            13.4          11               0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>  <span style="text-decoration: underline;">7</span>033             0            18.4          14               0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>  <span style="text-decoration: underline;">7</span>043             0            29.8          11               0</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="visualize-role-patterns">Visualize Role Patterns<a class="anchor" aria-label="anchor" href="#visualize-role-patterns"></a>
-</h3>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Scatter plot: Actor vs Reactor percentages</span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">dominant_animals</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">avg_pct_reactor</span>, y <span class="op">=</span> <span class="va">avg_pct_actor</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>size <span class="op">=</span> <span class="va">total_meals</span><span class="op">)</span>, alpha <span class="op">=</span> <span class="fl">0.6</span>, color <span class="op">=</span> <span class="st">"steelblue"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_abline</a></span><span class="op">(</span>slope <span class="op">=</span> <span class="fl">1</span>, intercept <span class="op">=</span> <span class="fl">0</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span>, color <span class="op">=</span> <span class="st">"gray50"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="st">"Actor vs Reactor Role Percentages"</span>,</span>
-<span>    subtitle <span class="op">=</span> <span class="st">"Points above the line indicate more dominant behavior"</span>,</span>
-<span>    x <span class="op">=</span> <span class="st">"Average % Visits as Reactor"</span>,</span>
-<span>    y <span class="op">=</span> <span class="st">"Average % Visits as Actor"</span>,</span>
-<span>    size <span class="op">=</span> <span class="st">"Total Meals"</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="meal_behavior_analysis_files/figure-html/viz-roles-1.png" class="r-plt" alt="" width="672"></p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="combining-meal-level-insights">7. Combining Meal-Level Insights<a class="anchor" aria-label="anchor" href="#combining-meal-level-insights"></a>
-</h2>
-<p>By combining non-nutritive visit analysis with actor/reactor roles,
-we can build a comprehensive picture of each animal’s meal behavior:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Merge the summaries for a combined view</span></span>
-<span><span class="va">combined_behavior</span> <span class="op">&lt;-</span> <span class="va">dominant_animals</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span></span>
-<span>    <span class="va">high_exploratory</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">cow</span>, <span class="va">avg_non_nutritive</span>, <span class="va">avg_empty_bin</span><span class="op">)</span>,</span>
-<span>    by <span class="op">=</span> <span class="st">"cow"</span></span>
-<span>  <span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Combined meal behavior profile:\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Combined meal behavior profile:</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">combined_behavior</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 7</span></span></span>
-<span><span class="co">#&gt;     cow avg_pct_actor avg_pct_reactor total_meals dominance_ratio</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>  <span style="text-decoration: underline;">2</span>074             0           19.0           11               0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>  <span style="text-decoration: underline;">3</span>150             0           21.3           18               0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>  <span style="text-decoration: underline;">4</span>001             0            3.81           9               0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>  <span style="text-decoration: underline;">4</span>044             0           15.3           10               0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>  <span style="text-decoration: underline;">4</span>070             0           19.0           10               0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>  <span style="text-decoration: underline;">4</span>072             0           17.5           15               0</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: avg_non_nutritive &lt;dbl&gt;, avg_empty_bin &lt;dbl&gt;</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="summary">8. Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
@@ -697,31 +496,17 @@ we can build a comprehensive picture of each animal’s meal behavior:</p>
 <strong>Non-nutritive visits within meals</strong>: Identified
 exploratory behavior patterns</li>
 <li>
-<strong>Actor/reactor roles</strong>: Analyzed social dynamics
-during meals</li>
+<strong>Actor/reactor roles</strong>: Analyzed the percentage of
+visits as an actor or reactor across all meals</li>
 <li>
-<strong>Daily summaries</strong>: Aggregated behavior metrics per
+<strong>Daily summaries</strong>: Aggregated behavior patterns per
 animal per day</li>
-<li>
-<strong>Behavioral profiles</strong>: Combined multiple metrics to
-characterize animals</li>
-</ul>
-<p>These metrics can help identify animals that may be:</p>
-<ul>
-<li>
-<strong>Highly exploratory</strong>: Many non-nutritive visits per
-meal</li>
-<li>
-<strong>Competitively disadvantaged</strong>: Many empty bin visits,
-high reactor percentage</li>
-<li>
-<strong>Socially dominant</strong>: High actor-to-reactor ratio</li>
 </ul>
 </div>
 <div class="section level2">
 <h2 id="code-cheatsheet">9. Code Cheatsheet<a class="anchor" aria-label="anchor" href="#code-cheatsheet"></a>
 </h2>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' Copy and modify these code blocks for your own analysis!</span></span>
 <span></span>
 <span><span class="co"># ---- SETUP: Global Variables (REQUIRED FIRST!) ----</span></span>
