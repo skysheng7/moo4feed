@@ -6,7 +6,7 @@ library(ggplot2)
 library(dplyr)
 ```
 
-## 1. 🚨 Important: Set Your Global Variables First!
+## 1. 🚨 Important: Set Your Global Variables First
 
 Before analyzing replacement behavior, configure global variables to
 match your data structure:
@@ -206,19 +206,65 @@ print(hourly_replacements)
 #> # ℹ 13 more rows
 ```
 
+### Visualize Replacement Patterns
+
+``` r
+# Visualize replacement events by hour
+ggplot(hourly_replacements, aes(x = hour, y = replacement_count)) +
+  geom_line(color = "steelblue", linewidth = 1.2) +
+  geom_point(color = "steelblue", size = 3) +
+  scale_x_continuous(breaks = 0:23) +
+  labs(
+    title = "Replacement Events by Hour of Day",
+    subtitle = "Shows when displacement behavior most frequently occurs",
+    x = "Hour of Day (0-23)",
+    y = "Total Replacement Events"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    panel.grid.minor.x = element_blank()
+  )
+```
+
+![](replacement_detection_files/figure-html/viz-replacement-timing-1.png)
+
+``` r
+# Visualize top 50 most active displacing animals
+top_50_actors <- head(all_replacements |>
+  dplyr::count(actor_cow, sort = TRUE, name = "times_replaced_others"), 50)
+
+ggplot(top_50_actors, aes(x = reorder(actor_cow, times_replaced_others), y = times_replaced_others)) +
+  geom_bar(stat = "identity", fill = "indianred", alpha = 0.7) +
+  coord_flip() +
+  labs(
+    title = "Frequency of Initiating Replacements",
+    subtitle = "Animals that most frequently pushed others away from bins",
+    x = "Animal ID",
+    y = "Number of Replacements Initiated"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.y = element_text(size = 8),
+    plot.title = element_text(size = 14, face = "bold")
+  )
+```
+
+![](replacement_detection_files/figure-html/viz-top-actors-1.png)
+
 ## 7. Summary
 
 This tutorial demonstrated replacement detection for understanding
 social dynamics:
 
-✅ **Event detection**: Identified and validated replacement events
-using time thresholds
+- **Event detection**: Identified and validated replacement events using
+  time thresholds
 
-✅ **Pattern analysis**: Analyzed which cows are most active in
-displacement behavior
+- **Pattern analysis**: Analyzed which cows are most active in
+  displacement behavior
 
-✅ **Timing insights**: Examined when most replacement events occur
-throughout the day
+- **Timing insights**: Examined when most replacement events occur
+  throughout the day
 
 ## 8. Code Cheatsheet
 
@@ -227,6 +273,7 @@ throughout the day
 
 # ---- SETUP: Global Variables (REQUIRED FIRST!) ----
 library(moo4feed)
+library(ggplot2)
 library(dplyr)
 
 # Set up your column names and timezone (modify these!)
@@ -241,56 +288,89 @@ set_global_cols(
 )
 
 # ---- STEP 1: Load Your Data ----
-# Use your own cleaned data from previous tutorials:
-# clean_feed <- your_cleaned_feed_data
-# clean_water <- your_cleaned_water_data
+# Load your cleaned data
+data(clean_comb)
+
+# Or use your own cleaned data from previous tutorials:
 # clean_comb <- your_cleaned_comb_data
 
 # ---- STEP 2: Detect Replacement Events ----
 # Process replacement events for all days
 replacements <- record_replacement_days(
-  comb = your_clean_comb,         # Your cleaned feed/water or both feed + water data
-  cfg = qc_config(replacement_threshold = 26),     # Time gap (seconds) to classify replacement behavior
-  id_col = id_col2(),             # Animal ID column (default from global vars)
-  bin_col = bin_col2(),           # Bin/feeder ID column (default from global vars)
-  start_col = start_col2(),       # Visit start time column (default from global vars)
-  end_col = end_col2()            # Visit end time column (default from global vars)
+  comb = clean_comb,                    # Your cleaned feed/water or both feed + water data
+  cfg = qc_config(replacement_threshold = 26)  # Time gap (seconds) to classify replacement behavior
 )
 
-# Check results
-cat("Total replacement events found:\n")
-sapply(replacements, nrow)
-
-# Look at first few events from first day
+# Examine the first few replacement events
 head(replacements[[1]])
+
+# Summary of replacement events
+cat("Replacement events per day:\n")
+sapply(replacements, nrow)
 
 # ---- STEP 3: Analyze Replacement Patterns ----
 # Combine all days for analysis
 all_replacements <- do.call(rbind, replacements)
 
-# Find most active displacing animals
+# Animals that most frequently replace others (actors)
 top_actors <- all_replacements |>
-  dplyr::count(actor_cow, sort = TRUE, name = "times_displaced_others") |>
-  head(10)
+  dplyr::count(actor_cow, sort = TRUE, name = "times_replaced_others") |>
+  head(5)
 
-# Find most frequently displaced animals  
+cat("Top cows that most frequently displace others:\n")
+print(top_actors)
+
+# Animals that are most frequently replaced (reactors)
 top_reactors <- all_replacements |>
-  dplyr::count(reactor_cow, sort = TRUE, name = "times_displaced") |>
-  head(10)
+  dplyr::count(reactor_cow, sort = TRUE, name = "times_replaced") |>
+  head(5)
 
-# Analyze timing patterns
+cat("\nTop cows that are most frequently displaced:\n")
+print(top_reactors)
+
+# Analyze replacement timing throughout the day
 all_replacements$hour <- lubridate::hour(all_replacements$time)
+
 hourly_replacements <- all_replacements |>
   dplyr::count(hour, name = "replacement_count")
 
-# ---- STEP 4: Quick Analysis ----
-# Check replacement results
-cat("Replacement events per day:\n")
-sapply(replacements, nrow)
+cat("\nReplacement events by hour of day:\n")
+print(hourly_replacements)
 
-cat("Most active displacing animals:\n")
-print(top_actors)
+# ---- STEP 4: Visualize Results ----
+# Replacement events by hour
+ggplot(hourly_replacements, aes(x = hour, y = replacement_count)) +
+  geom_line(color = "steelblue", linewidth = 1.2) +
+  geom_point(color = "steelblue", size = 3) +
+  scale_x_continuous(breaks = 0:23) +
+  labs(
+    title = "Replacement Events by Hour of Day",
+    subtitle = "Shows when displacement behavior most frequently occurs",
+    x = "Hour of Day (0-23)",
+    y = "Total Replacement Events"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    panel.grid.minor.x = element_blank()
+  )
 
-cat("Most frequently displaced animals:\n")
-print(top_reactors)
+# Most active displacing animals bar plot
+top_50_actors <- head(all_replacements |>
+  dplyr::count(actor_cow, sort = TRUE, name = "times_replaced_others"), 50)
+
+ggplot(top_50_actors, aes(x = reorder(actor_cow, times_replaced_others), y = times_replaced_others)) +
+  geom_bar(stat = "identity", fill = "indianred", alpha = 0.7) +
+  coord_flip() +
+  labs(
+    title = "Frequency of Initiating Replacements",
+    subtitle = "Animals that most frequently pushed others away from bins",
+    x = "Animal ID",
+    y = "Number of Replacements Initiated"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.y = element_text(size = 8),
+    plot.title = element_text(size = 14, face = "bold")
+  )
 ```
