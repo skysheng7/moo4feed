@@ -515,7 +515,7 @@ print(low_availability)
 # Distribution of feed availability
 
 # Histogram of feed availability
-ggplot(all_visits, aes(x = pct_feed_remaining)) +
+ggplot(valid_visits, aes(x = pct_feed_remaining)) +
   geom_histogram(bins = 30, fill = "steelblue", alpha = 0.7) +
   labs(
     title = "Distribution of Feed Availability at Visits",

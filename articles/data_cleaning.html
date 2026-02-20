@@ -779,10 +779,12 @@ demonstrated in subsequent tutorials.</p>
 <h3 id="code-cheatsheet">12. Code cheatsheet 📋<a class="anchor" aria-label="anchor" href="#code-cheatsheet"></a>
 </h3>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># === 1. Load packages ===</span></span>
+<code class="sourceCode R"><span><span class="co">#' Copy and modify these code blocks for your own analysis!</span></span>
+<span></span>
+<span><span class="co"># ---- SETUP: Load Packages ----</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/skysheng7/moo4feed" class="external-link">moo4feed</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># === 2. Set paths to data files ===</span></span>
+<span><span class="co"># ---- STEP 1: Set Paths to Data Files ----</span></span>
 <span><span class="co"># For your own data:</span></span>
 <span><span class="co"># extdata_path &lt;- "/path/to/my/raw/files"</span></span>
 <span></span>
@@ -793,7 +795,7 @@ demonstrated in subsequent tutorials.</p>
 <span><span class="co"># extdata_path_f &lt;- "/path/to/feeder/files"</span></span>
 <span><span class="co"># extdata_path_w &lt;- "/path/to/drinker/files"</span></span>
 <span></span>
-<span><span class="co"># === 3. Find data files ===</span></span>
+<span><span class="co"># ---- STEP 2: Find Data Files ----</span></span>
 <span><span class="co"># Find all feeder files (VR*.DAT)</span></span>
 <span><span class="va">fileNames.f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span></span>
 <span>  path       <span class="op">=</span> <span class="va">extdata_path</span>,</span>
@@ -810,10 +812,10 @@ demonstrated in subsequent tutorials.</p>
 <span>  full.names <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># === 4. Handle daylight saving time ===</span></span>
+<span><span class="co"># ---- STEP 3: Handle Daylight Saving Time ----</span></span>
 <span><span class="va">dst_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_dst_switch_info.html">get_dst_switch_info</a></span><span class="op">(</span>years <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2020</span>, <span class="fl">2021</span><span class="op">)</span>, tz <span class="op">=</span> <span class="st">"America/Chicago"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># === 5. Match files by date ===</span></span>
+<span><span class="co"># ---- STEP 4: Match Files by Date ----</span></span>
 <span><span class="va">date_compare</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compare_files.html">compare_files</a></span><span class="op">(</span><span class="va">fileNames.f</span>, <span class="va">fileNames.w</span><span class="op">)</span></span>
 <span><span class="va">fileNames.f</span> <span class="op">&lt;-</span> <span class="va">date_compare</span><span class="op">$</span><span class="va">feed</span></span>
 <span><span class="va">fileNames.w</span> <span class="op">&lt;-</span> <span class="va">date_compare</span><span class="op">$</span><span class="va">water</span></span>
@@ -821,7 +823,7 @@ demonstrated in subsequent tutorials.</p>
 <span><span class="co"># Get the overall date range</span></span>
 <span><span class="va">date_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_date_range.html">get_date_range</a></span><span class="op">(</span><span class="va">fileNames.f</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># === 6. Configure global settings ===</span></span>
+<span><span class="co"># ---- STEP 5: Configure Global Settings ----</span></span>
 <span><span class="co"># Option 1: All at once</span></span>
 <span><span class="fu"><a href="../reference/set_global_cols.html">set_global_cols</a></span><span class="op">(</span></span>
 <span>  <span class="co"># Time zone</span></span>
@@ -855,7 +857,7 @@ demonstrated in subsequent tutorials.</p>
 <span><span class="co"># set_bins_wat2(1:5)</span></span>
 <span><span class="co"># set_bin_offset2(100)</span></span>
 <span></span>
-<span><span class="co"># === 7. Process feeder data ===</span></span>
+<span><span class="co"># ---- STEP 6: Process Feeder Data ----</span></span>
 <span><span class="co"># Define column names for feeder files</span></span>
 <span><span class="va">col_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"transponder"</span>, <span class="st">"cow"</span>, <span class="st">"bin"</span>, <span class="st">"start"</span>, <span class="st">"end"</span>, <span class="st">"duration"</span>, </span>
 <span>              <span class="st">"start_weight"</span>, <span class="st">"end_weight"</span>, <span class="st">"comment"</span>, <span class="st">"intake"</span>, <span class="st">"intake2"</span>, </span>
@@ -879,7 +881,7 @@ demonstrated in subsequent tutorials.</p>
 <span>    adjust_dst  <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># === 8. Process water data ===</span></span>
+<span><span class="co"># ---- STEP 7: Process Water Data ----</span></span>
 <span><span class="co"># Column names for water files</span></span>
 <span><span class="va">col_names_wat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="st">"transponder"</span>, <span class="st">"cow"</span>, <span class="st">"bin"</span>, <span class="st">"start"</span>, <span class="st">"end"</span>,</span>
@@ -906,7 +908,7 @@ demonstrated in subsequent tutorials.</p>
 <span>  adjust_dst   <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># === 9. Quality check configuration ===</span></span>
+<span><span class="co"># ---- STEP 8: Quality Check Configuration ----</span></span>
 <span><span class="va">my_qc_config</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qc_config.html">qc_config</a></span><span class="op">(</span></span>
 <span>  <span class="co"># Feed thresholds</span></span>
 <span>  high_dur_feed <span class="op">=</span> <span class="fl">2000</span>,</span>
@@ -929,7 +931,7 @@ demonstrated in subsequent tutorials.</p>
 <span>  calibration_error <span class="op">=</span> <span class="fl">0.5</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># === 10. Run quality check ===</span></span>
+<span><span class="co"># ---- STEP 9: Run Quality Check ----</span></span>
 <span><span class="va">qc_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qc.html">qc</a></span><span class="op">(</span></span>
 <span>  feed <span class="op">=</span> <span class="va">all_fed</span>,</span>
 <span>  water <span class="op">=</span> <span class="va">all_wat</span>,</span>
@@ -953,12 +955,12 @@ demonstrated in subsequent tutorials.</p>
 <span><span class="co"># Store warnings</span></span>
 <span><span class="va">warning</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">warnings</span></span>
 <span></span>
-<span><span class="co"># === 11. Extract cleaned data ===</span></span>
+<span><span class="co"># ---- STEP 10: Extract Cleaned Data ----</span></span>
 <span><span class="va">qc_feed</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">feed</span></span>
 <span><span class="va">qc_water</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">water</span></span>
 <span><span class="va">qc_combined</span> <span class="op">&lt;-</span> <span class="va">qc_results</span><span class="op">$</span><span class="va">combined</span></span>
 <span></span>
-<span><span class="co"># === 12. KNN outlier detection ===</span></span>
+<span><span class="co"># ---- STEP 11: KNN Outlier Detection ----</span></span>
 <span><span class="co"># Detect outliers in feed data</span></span>
 <span><span class="va">feed_with_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knn_clean_feed.html">knn_clean_feed</a></span><span class="op">(</span></span>
 <span>  <span class="va">qc_feed</span>,</span>
@@ -1052,8 +1054,8 @@ demonstrated in subsequent tutorials.</p>
 <span><span class="va">cleaned_water_no_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knn_clean_water.html">knn_clean_water</a></span><span class="op">(</span></span>
 <span>  <span class="va">qc_water</span>,</span>
 <span>  k <span class="op">=</span> <span class="fl">50</span>,</span>
-<span>  threshold_percentile <span class="op">=</span> <span class="fl">99</span>,</span>
-<span>  custom_scaling <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>rate <span class="op">=</span> <span class="fl">2000</span>, intake <span class="op">=</span> <span class="fl">7</span>, duration <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span>,</span>
+<span>  threshold_percentile <span class="op">=</span> <span class="fl">99.8</span>,</span>
+<span>  custom_scaling <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>rate <span class="op">=</span> <span class="fl">2000</span>, intake <span class="op">=</span> <span class="fl">1</span>, duration <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span>,</span>
 <span>  intake_col <span class="op">=</span> <span class="fu"><a href="../reference/intake_col2.html">intake_col2</a></span><span class="op">(</span><span class="op">)</span>,       <span class="co"># Intake amount column (default from global vars)</span></span>
 <span>  duration_col <span class="op">=</span> <span class="fu"><a href="../reference/duration_col2.html">duration_col2</a></span><span class="op">(</span><span class="op">)</span>,   <span class="co"># Visit duration column (default from global vars)</span></span>
 <span>  date_col <span class="op">=</span> <span class="st">"date"</span>,                <span class="co"># Date column name</span></span>
@@ -1065,7 +1067,7 @@ demonstrated in subsequent tutorials.</p>
 <span><span class="va">clean_water</span> <span class="op">&lt;-</span> <span class="va">cleaned_water_no_outliers</span></span>
 <span><span class="va">clean_comb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combine_feed_water.html">combine_feed_water</a></span><span class="op">(</span><span class="va">clean_feed</span>, <span class="va">clean_water</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># === 13. Create daily summaries ===</span></span>
+<span><span class="co"># ---- STEP 12: Create Daily Summaries ----</span></span>
 <span><span class="va">daily_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/feed_water_summary.html">feed_water_summary</a></span><span class="op">(</span></span>
 <span>  feed <span class="op">=</span> <span class="va">qc_feed</span>,</span>
 <span>  water <span class="op">=</span> <span class="va">qc_water</span>,</span>

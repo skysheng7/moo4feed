@@ -706,10 +706,12 @@ demonstrated in subsequent tutorials.
 ### 12. Code cheatsheet 📋
 
 ``` r
-# === 1. Load packages ===
+#' Copy and modify these code blocks for your own analysis!
+
+# ---- SETUP: Load Packages ----
 library(moo4feed)
 
-# === 2. Set paths to data files ===
+# ---- STEP 1: Set Paths to Data Files ----
 # For your own data:
 # extdata_path <- "/path/to/my/raw/files"
 
@@ -720,7 +722,7 @@ extdata_path <- system.file("extdata", package = "moo4feed")
 # extdata_path_f <- "/path/to/feeder/files"
 # extdata_path_w <- "/path/to/drinker/files"
 
-# === 3. Find data files ===
+# ---- STEP 2: Find Data Files ----
 # Find all feeder files (VR*.DAT)
 fileNames.f <- list.files(
   path       = extdata_path,
@@ -737,10 +739,10 @@ fileNames.w <- list.files(
   full.names = TRUE
 ) |> sort()
 
-# === 4. Handle daylight saving time ===
+# ---- STEP 3: Handle Daylight Saving Time ----
 dst_df <- get_dst_switch_info(years = c(2020, 2021), tz = "America/Chicago")
 
-# === 5. Match files by date ===
+# ---- STEP 4: Match Files by Date ----
 date_compare <- compare_files(fileNames.f, fileNames.w)
 fileNames.f <- date_compare$feed
 fileNames.w <- date_compare$water
@@ -748,7 +750,7 @@ fileNames.w <- date_compare$water
 # Get the overall date range
 date_result <- get_date_range(fileNames.f)
 
-# === 6. Configure global settings ===
+# ---- STEP 5: Configure Global Settings ----
 # Option 1: All at once
 set_global_cols(
   # Time zone
@@ -782,7 +784,7 @@ set_global_cols(
 # set_bins_wat2(1:5)
 # set_bin_offset2(100)
 
-# === 7. Process feeder data ===
+# ---- STEP 6: Process Feeder Data ----
 # Define column names for feeder files
 col_names <- c("transponder", "cow", "bin", "start", "end", "duration", 
               "start_weight", "end_weight", "comment", "intake", "intake2", 
@@ -806,7 +808,7 @@ all_fed <- process_all_feed(
     adjust_dst  = TRUE
 )
 
-# === 8. Process water data ===
+# ---- STEP 7: Process Water Data ----
 # Column names for water files
 col_names_wat <- c(
   "transponder", "cow", "bin", "start", "end",
@@ -833,7 +835,7 @@ all_wat <- process_all_water(
   adjust_dst   = TRUE
 )
 
-# === 9. Quality check configuration ===
+# ---- STEP 8: Quality Check Configuration ----
 my_qc_config <- qc_config(
   # Feed thresholds
   high_dur_feed = 2000,
@@ -856,7 +858,7 @@ my_qc_config <- qc_config(
   calibration_error = 0.5
 )
 
-# === 10. Run quality check ===
+# ---- STEP 9: Run Quality Check ----
 qc_results <- qc(
   feed = all_fed,
   water = all_wat,
@@ -880,12 +882,12 @@ qc_results <- qc(
 # Store warnings
 warning <- qc_results$warnings
 
-# === 11. Extract cleaned data ===
+# ---- STEP 10: Extract Cleaned Data ----
 qc_feed <- qc_results$feed
 qc_water <- qc_results$water
 qc_combined <- qc_results$combined
 
-# === 12. KNN outlier detection ===
+# ---- STEP 11: KNN Outlier Detection ----
 # Detect outliers in feed data
 feed_with_outliers <- knn_clean_feed(
   qc_feed,
@@ -979,8 +981,8 @@ cleaned_feed_no_outliers <- knn_clean_feed(
 cleaned_water_no_outliers <- knn_clean_water(
   qc_water,
   k = 50,
-  threshold_percentile = 99,
-  custom_scaling = list(rate = 2000, intake = 7, duration = 0.01),
+  threshold_percentile = 99.8,
+  custom_scaling = list(rate = 2000, intake = 1, duration = 0.01),
   intake_col = intake_col2(),       # Intake amount column (default from global vars)
   duration_col = duration_col2(),   # Visit duration column (default from global vars)
   date_col = "date",                # Date column name
@@ -992,7 +994,7 @@ clean_feed <- cleaned_feed_no_outliers
 clean_water <- cleaned_water_no_outliers
 clean_comb <- combine_feed_water(clean_feed, clean_water)
 
-# === 13. Create daily summaries ===
+# ---- STEP 12: Create Daily Summaries ----
 daily_summary <- feed_water_summary(
   feed = qc_feed,
   water = qc_water,

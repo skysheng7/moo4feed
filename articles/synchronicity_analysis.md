@@ -6,7 +6,7 @@ library(ggplot2)
 library(dplyr)
 ```
 
-## 1. 🚨 Important: Set Your Global Variables First!
+## 1. 🚨 Important: Set Your Global Variables First
 
 Before analyzing synchronicity patterns, configure global variables to
 match your data structure:
@@ -463,15 +463,146 @@ print(head(neighbor_df, 10))
 #> 10    5135    6121 2020-10-31              5988          2700      0.4509018
 ```
 
+### Visualize Time Spent Together as a Heatmap
+
+``` r
+# Create a symmetric dataset for the heatmap to show all pairs
+# pair_df only contains the upper triangle, so we mirror it
+heatmap_data <- rbind(
+  pair_df,
+  pair_df |> mutate(temp = animal1, animal1 = animal2, animal2 = temp) |> select(-temp)
+)
+
+# Convert to symmetric matrix for clustering
+all_animals <- unique(c(heatmap_data$animal1, heatmap_data$animal2))
+time_matrix <- matrix(0, nrow = length(all_animals), ncol = length(all_animals),
+                      dimnames = list(all_animals, all_animals))
+
+# Fill the matrix
+for (i in seq_len(nrow(heatmap_data))) {
+  time_matrix[as.character(heatmap_data$animal1[i]), 
+              as.character(heatmap_data$animal2[i])] <- heatmap_data$total_time[i]
+}
+
+# Convert similarity to distance for clustering (higher similarity = lower distance)
+# Use max value + 1 as baseline to invert the relationship
+max_val <- max(time_matrix, na.rm = TRUE)
+dist_matrix <- max_val + 1 - time_matrix
+diag(dist_matrix) <- 0  # Set diagonal to 0
+
+# Perform hierarchical clustering
+dist_obj <- as.dist(dist_matrix)
+hc <- hclust(dist_obj, method = "ward.D2")
+animal_order <- hc$labels[hc$order]
+
+# Build a complete grid (including diagonal and zero-time pairs) for plotting
+plot_grid <- expand.grid(
+  animal1 = animal_order,
+  animal2 = animal_order,
+  stringsAsFactors = FALSE
+)
+plot_grid$total_time <- time_matrix[cbind(plot_grid$animal1, plot_grid$animal2)]
+plot_grid$animal1 <- factor(plot_grid$animal1, levels = animal_order)
+plot_grid$animal2 <- factor(plot_grid$animal2, levels = animal_order)
+
+# Visualize the total time spent together as a heatmap using viridis palette
+ggplot(plot_grid, aes(x = animal1, y = animal2, fill = total_time)) +
+  geom_tile() +
+  scale_fill_viridis_c(option = "viridis", name = "Total Time\n(seconds)", direction = -1) +
+  labs(
+    title = "Pair-wise Synchronicity Heatmap",
+    subtitle = "Total time spent feeding together (clustered by similarity, first day)",
+    x = "Animal ID",
+    y = "Animal ID"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)
+  )
+```
+
+![](synchronicity_analysis_files/figure-html/viz-sync-heatmap-1.png)
+
+### Visualize Time Spent Feeding as Neighbors as a Heatmap
+
+``` r
+# Convert neighbor results to data frame
+neighbor_df_viz <- synch_pairs_to_df(
+  synch_results = neighbor_results,
+  min_time = 0,
+  sort_by = "total_time",
+  decreasing = TRUE
+)
+
+# Create a symmetric dataset for the heatmap to show all pairs
+neighbor_heatmap_data <- rbind(
+  neighbor_df_viz,
+  neighbor_df_viz |> mutate(temp = animal1, animal1 = animal2, animal2 = temp) |> select(-temp)
+)
+
+# Convert to symmetric matrix for clustering
+all_animals_neighbor <- unique(c(neighbor_heatmap_data$animal1, neighbor_heatmap_data$animal2))
+neighbor_time_matrix <- matrix(0, nrow = length(all_animals_neighbor), 
+                                ncol = length(all_animals_neighbor),
+                                dimnames = list(all_animals_neighbor, all_animals_neighbor))
+
+# Fill the matrix
+for (i in seq_len(nrow(neighbor_heatmap_data))) {
+  neighbor_time_matrix[as.character(neighbor_heatmap_data$animal1[i]), 
+                       as.character(neighbor_heatmap_data$animal2[i])] <- 
+    neighbor_heatmap_data$total_time[i]
+}
+
+# Convert similarity to distance for clustering
+max_val_neighbor <- max(neighbor_time_matrix, na.rm = TRUE)
+neighbor_dist_matrix <- max_val_neighbor + 1 - neighbor_time_matrix
+diag(neighbor_dist_matrix) <- 0
+
+# Perform hierarchical clustering
+neighbor_dist_obj <- as.dist(neighbor_dist_matrix)
+neighbor_hc <- hclust(neighbor_dist_obj, method = "ward.D2")
+neighbor_animal_order <- neighbor_hc$labels[neighbor_hc$order]
+
+# Build a complete grid (including diagonal and zero-time pairs) for plotting
+neighbor_plot_grid <- expand.grid(
+  animal1 = neighbor_animal_order,
+  animal2 = neighbor_animal_order,
+  stringsAsFactors = FALSE
+)
+neighbor_plot_grid$total_time <- neighbor_time_matrix[cbind(neighbor_plot_grid$animal1, neighbor_plot_grid$animal2)]
+neighbor_plot_grid$animal1 <- factor(neighbor_plot_grid$animal1, levels = neighbor_animal_order)
+neighbor_plot_grid$animal2 <- factor(neighbor_plot_grid$animal2, levels = neighbor_animal_order)
+
+# Visualize the total time spent feeding as neighbors as a heatmap
+ggplot(neighbor_plot_grid, aes(x = animal1, y = animal2, fill = total_time)) +
+  geom_tile() +
+  scale_fill_viridis_c(option = "viridis", name = "Total Time\n(seconds)", direction = -1) +
+  labs(
+    title = "Neighbor Synchronicity Heatmap",
+    subtitle = "Total time spent feeding or drinking as neighbors (clustered by similarity, first day)",
+    x = "Animal ID",
+    y = "Animal ID"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)
+  )
+```
+
+![](synchronicity_analysis_files/figure-html/viz-neighbor-heatmap-1.png)
+
 ## 8. Code Cheatsheet
 
 ``` r
-# === 1. Load packages ===
+#' Copy and modify these code blocks for your own analysis!
+
+# ---- SETUP: Global Variables (REQUIRED FIRST!) ----
 library(moo4feed)
 library(ggplot2)
 library(dplyr)
 
-# === 2. Configure global variables (REQUIRED FIRST!) ===
 # Set up column names and bin configuration to match your data structure
 set_global_cols(
   # Time zone
@@ -496,7 +627,7 @@ set_global_cols(
   bin_layout = "1-2-3-4-5-6-101-102-7-8-9-10-11-12-13-14-15-16-17-18-103-104-19-20-21-22-23-24-25-26-27-28-29-30-105"
 )
 
-# === 3. Load cleaned data ===
+# ---- STEP 1: Load Cleaned Data ----
 # Use data from Tutorial 1: Data Cleaning
 # For demo data:
 data(clean_feed)   # For feed-only pair-wise analysis
@@ -508,7 +639,7 @@ data(clean_comb)   # Combined feed + water data for neighbor analysis
 # clean_water <- your_cleaned_water_data  # From data cleaning tutorial
 # clean_comb <- combine_feed_water(clean_feed, clean_water)  # Combine them
 
-# === 4. Create time-based activity matrices ===
+# ---- STEP 2: Create Time-Based Activity Matrices ----
 # Process feed data to create time-based matrices (for pair-wise analysis)
 feed_matrices <- matrix_process(
   data_list = clean_feed,          # Your cleaned feed data
@@ -550,7 +681,7 @@ combined_matrices <- matrix_process(
   bins_wat = bins_wat2()
 )
 
-# === 5. Pair-wise co-occurrence analysis ===
+# ---- STEP 3: Pair-wise Co-Occurrence Analysis ----
 # Analyze feeding synchronicity (animals feeding at same time, any bins)
 pair_feed_results <- synch_pair_analysis(
   matrix_data = feed_matrices,     # Output from matrix_process()
@@ -558,6 +689,9 @@ pair_feed_results <- synch_pair_analysis(
   resolution = "sec",              # Must match matrix_process() resolution
   id_col = id_col2()               # Animal ID column (from global vars)
 )
+
+# Results contain three matrices/lists:
+names(pair_feed_results)  # bout, total_time, avg_duration
 
 # Analyze drinking synchronicity (animals drinking at same time, any bins)
 pair_water_results <- synch_pair_analysis(
@@ -575,6 +709,10 @@ pair_combined_results <- synch_pair_analysis(
   id_col = id_col2()
 )
 
+# Example: inspect first day matrices from combined pair analysis
+combined_bout_matrix <- pair_combined_results$bout[[1]]
+combined_time_matrix <- pair_combined_results$total_time[[1]]
+
 # Access pair analysis results (matrices or lists of matrices for multi-day)
 # For single day: each element is a matrix
 # For multi-day: each element is a list with one matrix per day
@@ -589,7 +727,11 @@ if (is.list(pair_feed_results$bout)) {
   day1_bouts <- pair_feed_results$bout         # Single-day data
 }
 
-# === 6. Spatial neighbor proximity analysis ===
+# ---- STEP 4: Spatial Neighbor Proximity Analysis ----
+# Check bin layout
+cat("Current bin layout:\n")
+cat(bin_layout2(), "\n")
+
 # IMPORTANT: Use combined matrices for neighbor analysis!
 # Water bins are often between feed bins, so we analyze them together
 neighbor_results <- synch_neighbor_analysis(
@@ -600,12 +742,36 @@ neighbor_results <- synch_neighbor_analysis(
   id_col = id_col2()               # Animal ID column (from global vars)
 )
 
+# Results contain three matrices/lists:
+names(neighbor_results)  # bout, total_time, avg_duration
+
 # Access neighbor analysis results
 neighbor_bouts <- neighbor_results$bout         # Bouts at neighboring bins
 neighbor_times <- neighbor_results$total_time  # Time at neighboring bins
 neighbor_avg <- neighbor_results$avg_duration  # Average neighbor bout duration
 
-# === 7. Convert matrices to tidy data frames ===
+# Compare co-occurrence vs neighbor patterns (example)
+# Extract matrices for the first day
+combined_bout_matrix <- pair_combined_results$bout[[1]]
+combined_time_matrix <- pair_combined_results$total_time[[1]]
+neighbor_bout_matrix <- neighbor_results$bout[[1]]
+neighbor_time_matrix <- neighbor_results$total_time[[1]]
+
+example_animal1 <- rownames(combined_time_matrix)[1]
+example_animal2 <- rownames(combined_time_matrix)[2]
+cat(sprintf("Comparison for animals %s and %s (first day):\n
+Co-occurrence (feeding OR drinking at same time, any bins): %d bouts, %d seconds total, %.1f seconds per bout on average
+Neighbor proximity (feeding OR drinking at adjacent bins): %d bouts, %d seconds total, %.1f seconds per bout on average\n",
+  example_animal1, example_animal2,
+  combined_bout_matrix[example_animal1, example_animal2],
+  combined_time_matrix[example_animal1, example_animal2],
+  pair_combined_results$avg_duration[[1]][example_animal1, example_animal2],
+  neighbor_bout_matrix[example_animal1, example_animal2],
+  neighbor_time_matrix[example_animal1, example_animal2],
+  neighbor_results$avg_duration[[1]][example_animal1, example_animal2]
+))
+
+# ---- STEP 5: Convert Matrices to Tidy Data Frames ----
 # Convert pair analysis results to data frame for easier analysis
 pair_df <- synch_pairs_to_df(
   synch_results = pair_feed_results,  # Output from synch_pair_analysis()
@@ -622,7 +788,7 @@ neighbor_df <- synch_pairs_to_df(
   decreasing = TRUE
 )
 
-# === 8. Find most/least synchronized pairs ===
+# ---- STEP 6: Find Most/Least Synchronized Pairs ----
 # Get top 10 most synchronized feeding pairs
 top_pairs <- head(pair_df, 10)
 print(top_pairs)
@@ -639,7 +805,7 @@ print(head(least_pairs, 10))
 # Filter pairs with high synchronicity (e.g., >100 seconds together)
 high_sync_pairs <- pair_df[pair_df$total_time > 100, ]
 
-# === 9. Compare neighbor preference to total co-occurrence ===
+# ---- STEP 7: Compare Neighbor Preference to Total Co-Occurrence ----
 # IMPORTANT: Compare combined feed+water co-occurrence with neighbor proximity
 # This ensures we're comparing the same activity types (both feed and water)
 neighbor_compare <- synch_neighbor_compare(
@@ -657,6 +823,124 @@ neighbor_compare <- synch_neighbor_compare(
 
 # Find pairs that prefer neighboring bins (high ratio)
 high_neighbor_preference <- neighbor_compare[neighbor_compare$neighbor_ratio > 0.5, ]
+
+# ---- STEP 8: Visualize Results ----
+# Create a symmetric dataset for the heatmap to show all pairs
+heatmap_data <- rbind(
+  pair_df,
+  pair_df |> mutate(temp = animal1, animal1 = animal2, animal2 = temp) |> select(-temp)
+)
+
+# Convert to symmetric matrix for clustering
+all_animals <- unique(c(heatmap_data$animal1, heatmap_data$animal2))
+time_matrix <- matrix(0, nrow = length(all_animals), ncol = length(all_animals),
+                      dimnames = list(all_animals, all_animals))
+
+# Fill the matrix
+for (i in seq_len(nrow(heatmap_data))) {
+  time_matrix[as.character(heatmap_data$animal1[i]), 
+              as.character(heatmap_data$animal2[i])] <- heatmap_data$total_time[i]
+}
+
+# Convert similarity to distance for clustering (higher similarity = lower distance)
+max_val <- max(time_matrix, na.rm = TRUE)
+dist_matrix <- max_val + 1 - time_matrix
+diag(dist_matrix) <- 0  # Set diagonal to 0
+
+# Perform hierarchical clustering
+dist_obj <- as.dist(dist_matrix)
+hc <- hclust(dist_obj, method = "ward.D2")
+animal_order <- hc$labels[hc$order]
+
+# Build a complete grid (including diagonal and zero-time pairs) for plotting
+plot_grid <- expand.grid(
+  animal1 = animal_order,
+  animal2 = animal_order,
+  stringsAsFactors = FALSE
+)
+plot_grid$total_time <- time_matrix[cbind(plot_grid$animal1, plot_grid$animal2)]
+plot_grid$animal1 <- factor(plot_grid$animal1, levels = animal_order)
+plot_grid$animal2 <- factor(plot_grid$animal2, levels = animal_order)
+
+# Visualize the total time spent together as a heatmap using viridis palette
+ggplot(plot_grid, aes(x = animal1, y = animal2, fill = total_time)) +
+  geom_tile() +
+  scale_fill_viridis_c(option = "viridis", name = "Total Time\n(seconds)", direction = -1) +
+  labs(
+    title = "Pair-wise Synchronicity Heatmap",
+    subtitle = "Total time spent feeding together (clustered by similarity, first day)",
+    x = "Animal ID",
+    y = "Animal ID"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)
+  )
+
+# Visualize neighbor feeding time as a heatmap (clustered by similarity)
+# Convert neighbor results to data frame
+neighbor_df_viz <- synch_pairs_to_df(
+  synch_results = neighbor_results,
+  min_time = 0,
+  sort_by = "total_time",
+  decreasing = TRUE
+)
+
+# Create a symmetric dataset for the neighbor heatmap
+neighbor_heatmap_data <- rbind(
+  neighbor_df_viz,
+  neighbor_df_viz |> dplyr::mutate(temp = animal1, animal1 = animal2, animal2 = temp) |> dplyr::select(-temp)
+)
+
+# Convert to symmetric matrix for clustering
+all_animals_neighbor <- unique(c(neighbor_heatmap_data$animal1, neighbor_heatmap_data$animal2))
+neighbor_time_matrix <- matrix(0, nrow = length(all_animals_neighbor), 
+                                ncol = length(all_animals_neighbor),
+                                dimnames = list(all_animals_neighbor, all_animals_neighbor))
+
+# Fill the matrix
+for (i in seq_len(nrow(neighbor_heatmap_data))) {
+  neighbor_time_matrix[as.character(neighbor_heatmap_data$animal1[i]), 
+                       as.character(neighbor_heatmap_data$animal2[i])] <- 
+    neighbor_heatmap_data$total_time[i]
+}
+
+# Convert similarity to distance for clustering
+max_val_neighbor <- max(neighbor_time_matrix, na.rm = TRUE)
+neighbor_dist_matrix <- max_val_neighbor + 1 - neighbor_time_matrix
+diag(neighbor_dist_matrix) <- 0
+
+# Perform hierarchical clustering
+neighbor_dist_obj <- as.dist(neighbor_dist_matrix)
+neighbor_hc <- hclust(neighbor_dist_obj, method = "ward.D2")
+neighbor_animal_order <- neighbor_hc$labels[neighbor_hc$order]
+
+# Build a complete grid (including diagonal and zero-time pairs) for plotting
+neighbor_plot_grid <- expand.grid(
+  animal1 = neighbor_animal_order,
+  animal2 = neighbor_animal_order,
+  stringsAsFactors = FALSE
+)
+neighbor_plot_grid$total_time <- neighbor_time_matrix[cbind(neighbor_plot_grid$animal1, neighbor_plot_grid$animal2)]
+neighbor_plot_grid$animal1 <- factor(neighbor_plot_grid$animal1, levels = neighbor_animal_order)
+neighbor_plot_grid$animal2 <- factor(neighbor_plot_grid$animal2, levels = neighbor_animal_order)
+
+# Visualize the total time spent feeding as neighbors as a heatmap
+ggplot(neighbor_plot_grid, aes(x = animal1, y = animal2, fill = total_time)) +
+  geom_tile() +
+  scale_fill_viridis_c(option = "viridis", name = "Total Time\n(seconds)", direction = -1) +
+  labs(
+    title = "Neighbor Synchronicity Heatmap",
+    subtitle = "Total time spent feeding or drinking as neighbors (clustered by similarity, first day)",
+    x = "Animal ID",
+    y = "Animal ID"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)
+  )
 ```
 
 ------------------------------------------------------------------------
