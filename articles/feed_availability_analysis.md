@@ -370,17 +370,24 @@ ggplot(valid_visits, aes(x = pct_feed_remaining)) +
 # Violin plot of feed availability by animal (top 10 animals by visit count)
 top_animals <- valid_visits |>
   dplyr::count(cow, sort = TRUE) |>
-  head(10) |>
+  head(5) |>
   dplyr::pull(cow)
 
+bottom_animals <- valid_visits |>
+  dplyr::count(cow, sort = TRUE) |>
+  tail(5) |>
+  dplyr::pull(cow)
+
+all_animals <- c(top_animals, bottom_animals)
+
 valid_visits |>
-  dplyr::filter(cow %in% top_animals) |>
+  dplyr::filter(cow %in% all_animals) |>
   ggplot(aes(x = reorder(cow, pct_feed_remaining, FUN = median),
              y = pct_feed_remaining)) +
-  geom_violin(fill = "lightgreen", alpha = 0.7) +
-  geom_boxplot(width = 0.1, fill = "white", alpha = 0.5) +
+  geom_violin(fill = "coral3", alpha = 0.8) +
+  geom_boxplot(width = 0.1, fill = "white", alpha = 1) +
   labs(
-    title = "Feed Availability by Animal (Top 10 Animals)",
+    title = "Feed Availability by Animal (Top 5 and Bottom 5)",
     x = "Animal ID",
     y = "Percentage of Feed Remaining (%)"
   ) +
@@ -389,32 +396,6 @@ valid_visits |>
 ```
 
 ![](feed_availability_analysis_files/figure-html/viz-by-animal-1.png)
-
-### Compare Feed Availability Across All Animals
-
-``` r
-# Violin plot for all animals (limited to 50 animals with most visits)
-top_50_animals <- valid_visits |>
-  dplyr::count(cow, sort = TRUE) |>
-  head(50) |>
-  dplyr::pull(cow)
-
-valid_visits |>
-  dplyr::filter(cow %in% top_50_animals) |>
-  ggplot(aes(x = reorder(cow, pct_feed_remaining, FUN = median),
-             y = pct_feed_remaining)) +
-  geom_violin(fill = "steelblue", alpha = 0.6) +
-  geom_boxplot(width = 0.1, fill = "white", alpha = 0.5) +
-  labs(
-    title = "Feed Availability Across All Animals (Top 50 by Visit Count)",
-    x = "Animal ID",
-    y = "Percentage of Feed Remaining (%)"
-  ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 7))
-```
-
-![](feed_availability_analysis_files/figure-html/viz-all-animals-1.png)
 
 ## 8. Summary
 
@@ -553,26 +534,6 @@ valid_visits |>
   ) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-# Violin plot for all animals (limited to top 50 by visit count)
-top_50_animals <- valid_visits |>
-  dplyr::count(cow, sort = TRUE) |>
-  head(50) |>
-  dplyr::pull(cow)
-
-valid_visits |>
-  dplyr::filter(cow %in% top_50_animals) |>
-  ggplot(aes(x = reorder(cow, pct_feed_remaining, FUN = median),
-             y = pct_feed_remaining)) +
-  geom_violin(fill = "steelblue", alpha = 0.6) +
-  geom_boxplot(width = 0.1, fill = "white", alpha = 0.5) +
-  labs(
-    title = "Feed Availability Across All Animals (Top 50)",
-    x = "Animal ID",
-    y = "Percentage of Feed Remaining (%)"
-  ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 7))
 ```
 
 ------------------------------------------------------------------------
