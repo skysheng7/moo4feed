@@ -221,8 +221,9 @@ ggplot(first_day_data, aes(x = reorder(cow, median_non_nutritive_per_meal),
 ![](meal_behavior_analysis_files/figure-html/viz-non-nutritive-bar-1.png)
 
 Similarly, you can visualize the distribution of empty bin visits per
-meal across all animals. However, I’m not visualizing it here because we
-did not have any empty bin visits in the example data on day 1.
+meal across all animals. However, I’m not visualizing it here because
+the number of empty bin visits is very low in on day 1, causing the
+median empty bin visits per meal to be 0 for all animals.
 
 ## 6. Actor/Reactor Roles Within Meals
 
