@@ -24,7 +24,7 @@ library(ggplot2)
 library(dplyr)
 ```
 
-## 1. 🚨 Important: Set Your Global Variables First!
+## 1. 🚨 Important: Set Your Global Variables First
 
 Before analyzing replacement behavior, configure global variables to match your data structure:
 
@@ -58,8 +58,7 @@ This tutorial demonstrates how to: **Detect replacement events** using validated
 
 ## 3. Prerequisites
 
-This tutorial assumes completion of previous data processing steps in **Tutorial 1: Data Cleaning** 
-
+This tutorial assumes completion of previous data processing steps in **Tutorial 1: Data Cleaning**
 
 ## 4. Data Preparation
 
@@ -153,15 +152,57 @@ cat("Replacement events by hour of day:\n")
 print(hourly_replacements)
 ```
 
+### Visualize Replacement Patterns
+
+```{r viz-replacement-timing, fig.width=8, fig.height=5}
+# Visualize replacement events by hour
+ggplot(hourly_replacements, aes(x = hour, y = replacement_count)) +
+  geom_line(color = "steelblue", linewidth = 1.2) +
+  geom_point(color = "steelblue", size = 3) +
+  scale_x_continuous(breaks = 0:23) +
+  labs(
+    title = "Replacement Events by Hour of Day",
+    subtitle = "Shows when displacement behavior most frequently occurs",
+    x = "Hour of Day (0-23)",
+    y = "Total Replacement Events"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    panel.grid.minor.x = element_blank()
+  )
+```
+
+```{r viz-top-actors, fig.width=10, fig.height=6}
+# Visualize top 50 most active displacing animals
+top_50_actors <- head(all_replacements |>
+  dplyr::count(actor_cow, sort = TRUE, name = "times_replaced_others"), 50)
+
+ggplot(top_50_actors, aes(x = reorder(actor_cow, times_replaced_others), y = times_replaced_others)) +
+  geom_bar(stat = "identity", fill = "indianred", alpha = 0.7) +
+  coord_flip() +
+  labs(
+    title = "Frequency of Initiating Replacements",
+    subtitle = "Animals that most frequently pushed others away from bins",
+    x = "Animal ID",
+    y = "Number of Replacements Initiated"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.y = element_text(size = 8),
+    plot.title = element_text(size = 14, face = "bold")
+  )
+```
+
 ## 7. Summary
 
 This tutorial demonstrated replacement detection for understanding social dynamics:
 
-✅ **Event detection**: Identified and validated replacement events using time thresholds
+* **Event detection**: Identified and validated replacement events using time thresholds
 
-✅ **Pattern analysis**: Analyzed which cows are most active in displacement behavior
+* **Pattern analysis**: Analyzed which cows are most active in displacement behavior
 
-✅ **Timing insights**: Examined when most replacement events occur throughout the day
+* **Timing insights**: Examined when most replacement events occur throughout the day
 
 ## 8. Code Cheatsheet
 
@@ -236,4 +277,4 @@ print(top_actors)
 
 cat("Most frequently displaced animals:\n")
 print(top_reactors)
-``` 
+```
