@@ -6,7 +6,7 @@ library(ggplot2)
 library(dplyr)
 ```
 
-## 1. 🚨 Important: Set Your Global Variables First!
+## 1. 🚨 Important: Set Your Global Variables First
 
 Before analyzing bin visit patterns, configure global variables to match
 your data structure:
@@ -166,6 +166,31 @@ This analysis reveals clear individual differences in exploration
 behavior. Most exploratory animals visit many different stations, while
 creatures of habit consistently use fewer preferred locations.
 
+### Visualize Exploration Patterns
+
+``` r
+# Visualize top 50 most exploratory animals
+top_50_explorers <- head(avg_bin_visits, 50)
+
+ggplot(top_50_explorers, aes(x = reorder(cow, avg_total_bins), y = avg_total_bins)) +
+  geom_bar(stat = "identity", fill = "lightcoral", alpha = 0.8) +
+  coord_flip() +
+  labs(
+    title = "Average Total Bins Visited by Animal",
+    subtitle = "Sorted by average total unique bins visited",
+    x = "Animal ID",
+    y = "Average Total Unique Bins Visited"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.y = element_text(size = 8),
+    plot.title = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 11)
+  )
+```
+
+![](bin_visit_analysis_files/figure-html/viz-explorers-bar-1.png)
+
 ## 7. Code Cheatsheet
 
 ``` r
@@ -173,6 +198,7 @@ creatures of habit consistently use fewer preferred locations.
 
 # ---- SETUP: Global Variables (REQUIRED FIRST!) ----
 library(moo4feed)
+library(ggplot2)
 library(dplyr)
 
 # Set up your column names and timezone (modify these!)
@@ -187,22 +213,24 @@ set_global_cols(
 )
 
 # ---- STEP 1: Load Your Data ----
-# Use your own cleaned data from previous tutorials:
+# Load your cleaned data
+data(clean_feed)
+data(clean_water)
+
+# Or use your own cleaned data from previous tutorials:
 # clean_feed <- your_cleaned_feed_data
 # clean_water <- your_cleaned_water_data
 
 # ---- STEP 2: Calculate Unique Bin Visits ----
 # Get overall summary across all days
 bin_visits <- unique_bin_visits(
-  feed = your_clean_feed,           # Your cleaned feed data
-  water = your_clean_water,         # Your cleaned water data  
-  id_col = id_col2(),               # Animal ID column (default from global vars)
-  bin_col = bin_col2(),             # Bin/feeder ID column (default from global vars)
-  bin_offset = bin_offset2(),       # Bin offset for water bins (default from global vars)
-  bins_feed = bins_feed2(),         # Valid feed bin numbers (default from global vars)
-  bins_wat = bins_wat2(),           # Valid water bin numbers (default from global vars)
-  return_list = FALSE               # FALSE = combined summary, TRUE = day-by-day
+  feed = clean_feed,            # Your cleaned feed data
+  water = clean_water,          # Your cleaned water data
+  return_list = FALSE           # FALSE = combined summary, TRUE = day-by-day
 )
+
+# View results
+head(bin_visits)
 
 # ---- STEP 3: Identify Most/Least Exploratory Animals ----
 # Calculate averages per animal
@@ -220,4 +248,27 @@ avg_bin_visits <- bin_visits |>
 # Get top and bottom explorers
 top_explorers <- head(avg_bin_visits, 10)       # Most exploratory
 creatures_of_habit <- tail(avg_bin_visits, 10)  # Least exploratory
+
+print(top_explorers)
+print(creatures_of_habit)
+
+# ---- STEP 4: Visualize Results ----
+# Top exploratory animals bar plot
+top_50_explorers <- head(avg_bin_visits, 50)
+
+ggplot(top_50_explorers, aes(x = reorder(cow, avg_total_bins), y = avg_total_bins)) +
+  geom_bar(stat = "identity", fill = "lightcoral", alpha = 0.8) +
+  coord_flip() +
+  labs(
+    title = "Average Total Bins Visited by Animal",
+    subtitle = "Sorted by average total unique bins visited",
+    x = "Animal ID",
+    y = "Average Total Unique Bins Visited"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.y = element_text(size = 8),
+    plot.title = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 11)
+  )
 ```

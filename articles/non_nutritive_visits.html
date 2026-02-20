@@ -63,7 +63,7 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
-<h2 id="important-set-your-global-variables-first">1. 🚨 Important: Set Your Global Variables First!<a class="anchor" aria-label="anchor" href="#important-set-your-global-variables-first"></a>
+<h2 id="important-set-your-global-variables-first">1. 🚨 Important: Set Your Global Variables First<a class="anchor" aria-label="anchor" href="#important-set-your-global-variables-first"></a>
 </h2>
 <p>Before analyzing non-nutritive visit patterns, configure global
 variables to match your data structure:</p>
@@ -278,40 +278,88 @@ delivery timing or amount)</li>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>  <span style="text-decoration: underline;">5</span>067                             6</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>  <span style="text-decoration: underline;">7</span>023                             4</span></span></code></pre></div>
 </div>
+<div class="section level3">
+<h3 id="visualize-non-nutritive-and-no-feed-patterns">Visualize Non-Nutritive and No-Feed Patterns<a class="anchor" aria-label="anchor" href="#visualize-non-nutritive-and-no-feed-patterns"></a>
+</h3>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Use first day's data and get animals with most non-nutritive visits</span></span>
+<span><span class="va">top_nn</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">non_nutritive_desc</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="fl">50</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">top_nn</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">cow</span>, <span class="va">number_of_non_nutritive_visits</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">number_of_non_nutritive_visits</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_bar</a></span><span class="op">(</span>stat <span class="op">=</span> <span class="st">"identity"</span>, fill <span class="op">=</span> <span class="st">"coral"</span>, alpha <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Frequency of Non-Nutritive Visits"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Non-nutritive visits: Feed available but animal did not eat"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Animal ID"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Total Non-Nutritive Visits"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
+<span>    axis.text.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">8</span><span class="op">)</span>,</span>
+<span>    plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">14</span>, face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>,</span>
+<span>    plot.subtitle <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">11</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p><img src="non_nutritive_visits_files/figure-html/viz-non-nutritive-bar-1.png" class="r-plt" alt="" width="960"></p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Use first day's data and get animals checking empty bins</span></span>
+<span><span class="va">top_empty</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">no_feed_desc</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="fl">50</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">top_empty</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">cow</span>, <span class="va">number_of_visits_when_no_feed</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">number_of_visits_when_no_feed</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_bar</a></span><span class="op">(</span>stat <span class="op">=</span> <span class="st">"identity"</span>, fill <span class="op">=</span> <span class="st">"olivedrab3"</span>, alpha <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Frequency of Empty Bin Visits"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Empty bin visits: No feed available in the visited bin"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Animal ID"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Total Empty Bin Visits"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
+<span>    axis.text.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">8</span><span class="op">)</span>,</span>
+<span>    plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">14</span>, face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>,</span>
+<span>    plot.subtitle <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">11</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p><img src="non_nutritive_visits_files/figure-html/viz-no-feed-bar-1.png" class="r-plt" alt="" width="960"></p>
+<p><strong>Note:</strong> Many animals have no empty bin visits, so they
+are excluded from the plot.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="code-cheatsheet">7. Code Cheatsheet<a class="anchor" aria-label="anchor" href="#code-cheatsheet"></a>
 </h2>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># === 1. Load packages ===</span></span>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#' Copy and modify these code blocks for your own analysis!</span></span>
+<span></span>
+<span><span class="co"># ---- SETUP: Global Variables (REQUIRED FIRST!) ----</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/skysheng7/moo4feed" class="external-link">moo4feed</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># === 2. Configure global variables ===</span></span>
+<span><span class="co"># Set up your column names and timezone (modify these!)</span></span>
 <span><span class="fu"><a href="../reference/set_global_cols.html">set_global_cols</a></span><span class="op">(</span></span>
-<span>  id_col <span class="op">=</span> <span class="st">"cow"</span>,</span>
-<span>  start_col <span class="op">=</span> <span class="st">"start"</span>,</span>
-<span>  end_col <span class="op">=</span> <span class="st">"end"</span>,</span>
-<span>  bin_col <span class="op">=</span> <span class="st">"bin"</span>,</span>
-<span>  intake_col <span class="op">=</span> <span class="st">"intake"</span>,</span>
-<span>  dur_col <span class="op">=</span> <span class="st">"duration"</span>,</span>
-<span>  tz <span class="op">=</span> <span class="st">"America/Vancouver"</span></span>
+<span>  id_col <span class="op">=</span> <span class="st">"cow"</span>,           <span class="co"># Your animal ID column</span></span>
+<span>  start_col <span class="op">=</span> <span class="st">"start"</span>,      <span class="co"># Visit start time column</span></span>
+<span>  end_col <span class="op">=</span> <span class="st">"end"</span>,          <span class="co"># Visit end time column</span></span>
+<span>  bin_col <span class="op">=</span> <span class="st">"bin"</span>,          <span class="co"># Bin/feeder ID column</span></span>
+<span>  intake_col <span class="op">=</span> <span class="st">"intake"</span>,    <span class="co"># Feed intake amount column</span></span>
+<span>  dur_col <span class="op">=</span> <span class="st">"duration"</span>,     <span class="co"># Visit duration column</span></span>
+<span>  tz <span class="op">=</span> <span class="st">"America/Vancouver"</span>  <span class="co"># Your timezone</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># === 3. Load your cleaned data ===</span></span>
-<span><span class="co"># Use the example data:</span></span>
+<span><span class="co"># ---- STEP 1: Load Your Data ----</span></span>
+<span><span class="co"># Load your cleaned data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">clean_feed</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Or use your own cleaned data from Tutorial 1:</span></span>
+<span><span class="co"># Or use your own cleaned data from previous tutorials:</span></span>
 <span><span class="co"># clean_feed &lt;- your_cleaned_feed_data</span></span>
 <span></span>
-<span><span class="co"># === 4. Create QC configuration ===</span></span>
+<span><span class="co"># ---- STEP 2: Create QC Configuration ----</span></span>
 <span><span class="va">my_qc_config</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qc_config.html">qc_config</a></span><span class="op">(</span></span>
-<span>  calibration_error <span class="op">=</span> <span class="fl">0.5</span></span>
+<span>  calibration_error <span class="op">=</span> <span class="fl">0.5</span>    <span class="co"># Equipment measurement threshold (kg)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># === 5. Calculate non-nutritive visits ===</span></span>
+<span><span class="co"># ---- STEP 3: Calculate Non-Nutritive Visits ----</span></span>
 <span><span class="co"># Basic calculation (unsorted)</span></span>
 <span><span class="va">non_nutritive</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculate_non_nutritive_visits.html">calculate_non_nutritive_visits</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">clean_feed</span>,</span>
@@ -339,7 +387,7 @@ delivery timing or amount)</li>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">non_nutritive_asc</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="fl">5</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># === 6. Calculate no-feed visits ===</span></span>
+<span><span class="co"># ---- STEP 4: Calculate No-Feed Visits ----</span></span>
 <span><span class="co"># Basic calculation (unsorted)</span></span>
 <span><span class="va">no_feed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculate_no_feed_visits.html">calculate_no_feed_visits</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">clean_feed</span>,</span>
@@ -356,7 +404,46 @@ delivery timing or amount)</li>
 <span>  sort <span class="op">=</span> <span class="op">-</span><span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">no_feed_desc</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">no_feed_desc</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="fl">5</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># ---- STEP 5: Visualize Results ----</span></span>
+<span><span class="co"># Non-nutritive visits bar plot (first day example)</span></span>
+<span><span class="va">top_nn</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">non_nutritive_desc</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="fl">50</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">top_nn</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">cow</span>, <span class="va">number_of_non_nutritive_visits</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">number_of_non_nutritive_visits</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_bar</a></span><span class="op">(</span>stat <span class="op">=</span> <span class="st">"identity"</span>, fill <span class="op">=</span> <span class="st">"coral"</span>, alpha <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Frequency of Non-Nutritive Visits"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Non-nutritive visits: Feed available but animal did not eat"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Animal ID"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Total Non-Nutritive Visits"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
+<span>    axis.text.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">8</span><span class="op">)</span>,</span>
+<span>    plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">14</span>, face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>,</span>
+<span>    plot.subtitle <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">11</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Empty bin visits bar plot (first day example)</span></span>
+<span><span class="va">top_empty</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">no_feed_desc</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="fl">50</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">top_empty</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">cow</span>, <span class="va">number_of_visits_when_no_feed</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">number_of_visits_when_no_feed</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_bar</a></span><span class="op">(</span>stat <span class="op">=</span> <span class="st">"identity"</span>, fill <span class="op">=</span> <span class="st">"olivedrab3"</span>, alpha <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Frequency of Empty Bin Visits"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Empty bin visits: No feed available in the visited bin"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Animal ID"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Total Empty Bin Visits"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
+<span>    axis.text.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">8</span><span class="op">)</span>,</span>
+<span>    plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">14</span>, face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>,</span>
+<span>    plot.subtitle <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">11</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
 <hr>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
