@@ -19,7 +19,6 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-devtools::load_all()
 library(moo4feed)
 library(ggplot2)
 library(dplyr)
