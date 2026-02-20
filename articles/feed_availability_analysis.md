@@ -367,15 +367,24 @@ ggplot(valid_visits, aes(x = pct_feed_remaining)) +
 ### Compare Feed Availability by Animal (Top 10)
 
 ``` r
-# Violin plot of feed availability by animal (top 10 animals by visit count)
-top_animals <- valid_visits |>
-  dplyr::count(cow, sort = TRUE) |>
-  head(5) |>
+# Violin plot of feed availability by animal (top 5 and bottom 5 by median pct_feed_remaining)
+# Calculate median feed availability per animal
+animal_medians <- valid_visits |>
+  dplyr::group_by(cow) |>
+  dplyr::summarise(
+    median_pct = median(pct_feed_remaining, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  dplyr::arrange(median_pct)
+
+# Top 5 animals with highest median feed availability
+top_animals <- animal_medians |>
+  tail(5) |>
   dplyr::pull(cow)
 
-bottom_animals <- valid_visits |>
-  dplyr::count(cow, sort = TRUE) |>
-  tail(5) |>
+# Bottom 5 animals with lowest median feed availability
+bottom_animals <- animal_medians |>
+  head(5) |>
   dplyr::pull(cow)
 
 all_animals <- c(top_animals, bottom_animals)
@@ -384,10 +393,10 @@ valid_visits |>
   dplyr::filter(cow %in% all_animals) |>
   ggplot(aes(x = reorder(cow, pct_feed_remaining, FUN = median),
              y = pct_feed_remaining)) +
-  geom_violin(fill = "coral3", alpha = 0.8) +
+  geom_violin(fill = "olivedrab3", alpha = 0.8) +
   geom_boxplot(width = 0.1, fill = "white", alpha = 1) +
   labs(
-    title = "Feed Availability by Animal (Top 5 and Bottom 5)",
+    title = "Feed Availability by Animal (Top 5 and Bottom 5 by Median)",
     x = "Animal ID",
     y = "Percentage of Feed Remaining (%)"
   ) +
@@ -515,20 +524,36 @@ ggplot(all_visits, aes(x = pct_feed_remaining)) +
   ) +
   theme_minimal()
 
-# Violin plot for top 10 animals by visit count
-top_animals <- valid_visits |>
-  dplyr::count(cow, sort = TRUE) |>
-  head(10) |>
+# Violin plot of feed availability by animal (top 5 and bottom 5 by median pct_feed_remaining)
+# Calculate median feed availability per animal
+animal_medians <- valid_visits |>
+  dplyr::group_by(cow) |>
+  dplyr::summarise(
+    median_pct = median(pct_feed_remaining, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  dplyr::arrange(median_pct)
+
+# Top 5 animals with highest median feed availability
+top_animals <- animal_medians |>
+  tail(5) |>
   dplyr::pull(cow)
 
+# Bottom 5 animals with lowest median feed availability
+bottom_animals <- animal_medians |>
+  head(5) |>
+  dplyr::pull(cow)
+
+all_animals <- c(top_animals, bottom_animals)
+
 valid_visits |>
-  dplyr::filter(cow %in% top_animals) |>
+  dplyr::filter(cow %in% all_animals) |>
   ggplot(aes(x = reorder(cow, pct_feed_remaining, FUN = median),
              y = pct_feed_remaining)) +
-  geom_violin(fill = "lightgreen", alpha = 0.7) +
-  geom_boxplot(width = 0.1, fill = "white", alpha = 0.5) +
+  geom_violin(fill = "olivedrab3", alpha = 0.8) +
+  geom_boxplot(width = 0.1, fill = "white", alpha = 1) +
   labs(
-    title = "Feed Availability by Animal (Top 10)",
+    title = "Feed Availability by Animal (Top 5 and Bottom 5 by Median)",
     x = "Animal ID",
     y = "Percentage of Feed Remaining (%)"
   ) +

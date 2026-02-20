@@ -158,22 +158,41 @@ meal_visits[[1]] |>
 #> 6           9
 ```
 
-### Visualize Non-Nutritive Patterns
+### Visualize Non-Nutritive Distribution
+
+``` r
+# Combine all days all animals
+all_meal_visits <- do.call(rbind, meal_visits)
+
+# Distribution of non-nutritive visits per meal across all animals
+ggplot(all_meal_visits, aes(x = mean_non_nutritive_per_meal)) +
+  geom_histogram(bins = 20, fill = "steelblue", alpha = 0.7) +
+  labs(
+    title = "Distribution of Non-Nutritive Visits Per Meal",
+    x = "Average Non-Nutritive Visits Per Meal",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+```
+
+![](meal_behavior_analysis_files/figure-html/viz-non-nutritive-1.png)
+
+### Visualize Non-Nutritive by Animal
 
 ``` r
 # Use first day's data as an example
 first_day_data <- meal_visits[[1]] |>
-  dplyr::arrange(desc(total_non_nutritive_visits)) |>
-  head(50)  # Limit to top 50 animals
+  dplyr::arrange(desc(median_non_nutritive_per_meal)) |>
+  head(50)  # Limit to up to top 50 animals with the most non-nutritive visits per meal
 
 # Create bar plot
-ggplot(first_day_data, aes(x = reorder(cow, total_non_nutritive_visits), 
-                           y = mean_non_nutritive_per_meal)) +
-  geom_bar(stat = "identity", fill = "steelblue", alpha = 0.7) +
+ggplot(first_day_data, aes(x = reorder(cow, median_non_nutritive_per_meal), 
+                           y = median_non_nutritive_per_meal)) +
+  geom_bar(stat = "identity", fill = "coral", alpha = 0.7) +
   coord_flip() +  # Horizontal bars for better readability
   labs(
     title = "Average Non-Nutritive Visits Per Meal by Animal",
-    subtitle = "Top 50 animals sorted by total non-nutritive visits (first day example)",
+    subtitle = "Animals sorted by median non-nutritive visits per meal (first day example)",
     x = "Animal ID",
     y = "Average Non-Nutritive Visits Per Meal"
   ) +
@@ -186,6 +205,35 @@ ggplot(first_day_data, aes(x = reorder(cow, total_non_nutritive_visits),
 ```
 
 ![](meal_behavior_analysis_files/figure-html/viz-non-nutritive-bar-1.png)
+
+### Visualize Empty Bin Visits by Animal
+
+``` r
+# Use first day's data as an example
+first_day_empty_bin <- meal_visits[[1]] |>
+  dplyr::arrange(desc(median_empty_bin_per_meal)) |>
+  head(50)  # Limit to up to top 50 animals with the most empty bin visits per meal
+
+# Create bar plot
+ggplot(first_day_empty_bin, aes(x = reorder(cow, median_empty_bin_per_meal), 
+                                y = median_empty_bin_per_meal)) +
+  geom_bar(stat = "identity", fill = "olivedrab3", alpha = 0.7) +
+  coord_flip() +  # Horizontal bars for better readability
+  labs(
+    title = "Average Empty Bin Visits Per Meal by Animal",
+    subtitle = "Animals sorted by median empty bin visits per meal (first day example)",
+    x = "Animal ID",
+    y = "Average Empty Bin Visits Per Meal"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.y = element_text(size = 8),
+    plot.title = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 11)
+  )
+```
+
+![](meal_behavior_analysis_files/figure-html/viz-empty-bin-bar-1.png)
 
 The summary provides per animal per day:
 
@@ -200,25 +248,6 @@ The summary provides per animal per day:
 - **`total_non_nutritive_visits`**: Total count of non-nutritive visits
 - **`total_empty_bin_visits`**: Total count of empty bin visits
 - **`total_meals`**: Number of meals analyzed
-
-### Visualize Non-Nutritive Patterns
-
-``` r
-# Combine all days all animals
-all_meal_visits <- do.call(rbind, meal_visits)
-
-# Distribution of non-nutritive visits per meal across all animals
-ggplot(all_meal_visits, aes(x = mean_non_nutritive_per_meal)) +
-  geom_histogram(bins = 20, fill = "coral", alpha = 0.7) +
-  labs(
-    title = "Distribution of Non-Nutritive Visits Per Meal",
-    x = "Average Non-Nutritive Visits Per Meal",
-    y = "Frequency"
-  ) +
-  theme_minimal()
-```
-
-![](meal_behavior_analysis_files/figure-html/viz-non-nutritive-1.png)
 
 ## 6. Actor/Reactor Roles Within Meals
 
@@ -372,6 +401,61 @@ The daily summary provides:
   with both actor and reactor roles across all meals
 - **`total_meals`**: Number of meals analyzed
 
+### Visualize Actor/Reactor Roles
+
+This is a scatter plot of the median percentage of visits as an actor vs
+the median percentage of visits as a reactor across all meals, each
+point represents one animal on day 1 in the example data.
+
+``` r
+# Use first day's data for visualization
+first_day_roles <- daily_roles[[1]]
+
+# Scatter plot: median_pct_actor vs median_pct_reactor
+ggplot(first_day_roles, aes(x = median_pct_actor, y = median_pct_reactor, color = cow)) +
+  geom_point(size = 5, alpha = 0.7) +
+  labs(
+    title = "Actor vs Reactor Roles by Animal",
+    subtitle = "First day: Each point represents one animal",
+    x = "Median % Visits as Actor",
+    y = "Median % Visits as Reactor",
+    color = "Animal ID"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 11),
+    legend.position = "none"  # Hide legend if too many animals
+  )
+```
+
+![](meal_behavior_analysis_files/figure-html/viz-actor-reactor-scatter-1.png)
+
+``` r
+# Bar plot: median_pct_actor_reactor sorted from high to low
+first_day_roles_sorted <- first_day_roles |>
+  dplyr::arrange(desc(median_pct_actor_reactor))
+
+ggplot(first_day_roles_sorted, aes(x = reorder(cow, median_pct_actor_reactor), 
+                                   y = median_pct_actor_reactor)) +
+  geom_bar(stat = "identity", fill = "orchid3", alpha = 0.7) +
+  coord_flip() +  # Horizontal bars for better readability
+  labs(
+    title = "Median % Visits as Both Actor and Reactor by Animal",
+    subtitle = "Animals sorted by median_pct_actor_reactor from high to low (first day example)",
+    x = "Animal ID",
+    y = "Median % Visits as Actor-Reactor"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.y = element_text(size = 8),
+    plot.title = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 11)
+  )
+```
+
+![](meal_behavior_analysis_files/figure-html/viz-actor-reactor-bar-1.png)
+
 ## 8. Summary
 
 This tutorial demonstrated meal-level behavior analysis:
@@ -459,7 +543,12 @@ labeled_comb <- meal_label_visits(
   eps = NULL,
   min_pts = 2,
   method = "gmm",
-  eps_scope = "all_animals"
+  eps_scope = "all_animals",
+  lower_bound = NULL,
+  upper_bound = NULL,
+  use_log_transform = TRUE,
+  log_multiplier = 20,
+  log_offset = 1
 )
 
 # Analyze roles within meals
@@ -500,14 +589,97 @@ print(dominance_summary)
 # ---- STEP 5: Visualize Results ----
 # Distribution of non-nutritive visits
 ggplot(all_meal_visits, aes(x = mean_non_nutritive_per_meal)) +
-  geom_histogram(bins = 20, fill = "coral", alpha = 0.7) +
+  geom_histogram(bins = 20, fill = "steelblue", alpha = 0.7) +
+  labs(
+    title = "Distribution of Non-Nutritive Visits Per Meal",
+    x = "Average Non-Nutritive Visits Per Meal",
+    y = "Frequency"
+  ) +
   theme_minimal()
 
-# Actor vs Reactor scatter plot
-ggplot(dominance_summary, aes(x = avg_pct_reactor, y = avg_pct_actor)) +
-  geom_point(aes(size = total_meals), alpha = 0.6) +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
-  theme_minimal()
+# Non-nutritive visits bar plot by animal (first day example)
+first_day_data <- meal_visits[[1]] |>
+  dplyr::arrange(desc(median_non_nutritive_per_meal)) |>
+  head(50)
+
+ggplot(first_day_data, aes(x = reorder(cow, median_non_nutritive_per_meal), 
+                           y = median_non_nutritive_per_meal)) +
+  geom_bar(stat = "identity", fill = "coral", alpha = 0.7) +
+  coord_flip() +
+  labs(
+    title = "Average Non-Nutritive Visits Per Meal by Animal",
+    subtitle = "Animals sorted by median non-nutritive visits per meal (first day example)",
+    x = "Animal ID",
+    y = "Average Non-Nutritive Visits Per Meal"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.y = element_text(size = 8),
+    plot.title = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 11)
+  )
+
+# Empty bin visits bar plot by animal (first day example)
+first_day_empty_bin <- meal_visits[[1]] |>
+  dplyr::arrange(desc(median_empty_bin_per_meal)) |>
+  head(50)
+
+ggplot(first_day_empty_bin, aes(x = reorder(cow, median_empty_bin_per_meal), 
+                                y = median_empty_bin_per_meal)) +
+  geom_bar(stat = "identity", fill = "olivedrab3", alpha = 0.7) +
+  coord_flip() +
+  labs(
+    title = "Average Empty Bin Visits Per Meal by Animal",
+    subtitle = "Animals sorted by median empty bin visits per meal (first day example)",
+    x = "Animal ID",
+    y = "Average Empty Bin Visits Per Meal"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.y = element_text(size = 8),
+    plot.title = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 11)
+  )
+
+# Actor vs Reactor scatter plot (first day example)
+first_day_roles <- daily_roles[[1]]
+
+ggplot(first_day_roles, aes(x = median_pct_actor, y = median_pct_reactor, color = cow)) +
+  geom_point(size = 5, alpha = 0.7) +
+  labs(
+    title = "Actor vs Reactor Roles by Animal",
+    subtitle = "First day: Each point represents one animal",
+    x = "Median % Visits as Actor",
+    y = "Median % Visits as Reactor",
+    color = "Animal ID"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 11),
+    legend.position = "none"
+  )
+
+# Actor-Reactor bar plot (first day example)
+first_day_roles_sorted <- first_day_roles |>
+  dplyr::arrange(desc(median_pct_actor_reactor))
+
+ggplot(first_day_roles_sorted, aes(x = reorder(cow, median_pct_actor_reactor), 
+                                   y = median_pct_actor_reactor)) +
+  geom_bar(stat = "identity", fill = "orchid3", alpha = 0.7) +
+  coord_flip() +
+  labs(
+    title = "Median % Visits as Both Actor and Reactor by Animal",
+    subtitle = "Animals sorted by median_pct_actor_reactor from high to low (first day example)",
+    x = "Animal ID",
+    y = "Median % Visits as Actor-Reactor"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.y = element_text(size = 8),
+    plot.title = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 11)
+  )
 ```
 
 ------------------------------------------------------------------------
