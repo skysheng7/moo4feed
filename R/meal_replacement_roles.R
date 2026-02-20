@@ -198,29 +198,37 @@ meal_replacement_roles <- function(visit_data,
     return(visits)
   }
 
-  # Check for actor matches (cow entered as actor at visit start)
-  actor_matches <- visits |>
-    dplyr::inner_join(
-      replacements |>
-        dplyr::select("actor_cow", "bin", "time") |>
-        dplyr::rename(.repl_time = "time"),
-      by = c(stats::setNames("actor_cow", id_col), stats::setNames("bin", bin_col)),
-      relationship = "many-to-many"
-    ) |>
-    dplyr::filter(abs(as.numeric(.data[[start_col]]) - as.numeric(.data$.repl_time)) <= time_tolerance) |>
-    dplyr::distinct(.data$.visit_row_id) |>
-    dplyr::pull(.data$.visit_row_id)
+  replacements <- replacements |>
+    dplyr::mutate(.repl_row_id = dplyr::row_number())
 
-  # Check for reactor matches (cow left as reactor at visit end)
+  # Reactor: match replacement timestamp to reactor visit end at the same bin.
   reactor_matches <- visits |>
     dplyr::inner_join(
       replacements |>
-        dplyr::select("reactor_cow", "bin", "time") |>
+        dplyr::select(".repl_row_id", "reactor_cow", "bin", "time") |>
         dplyr::rename(.repl_time = "time"),
       by = c(stats::setNames("reactor_cow", id_col), stats::setNames("bin", bin_col)),
       relationship = "many-to-many"
     ) |>
     dplyr::filter(abs(as.numeric(.data[[end_col]]) - as.numeric(.data$.repl_time)) <= time_tolerance) |>
+    dplyr::distinct(.data$.visit_row_id) |>
+    dplyr::pull(.data$.visit_row_id)
+
+  # Actor: replacement time marks reactor leaving; actor is the first subsequent
+  # visit at the same bin, and should match actor_cow from replacement_data.
+  actor_matches <- visits |>
+    dplyr::inner_join(
+      replacements |>
+        dplyr::select(".repl_row_id", "actor_cow", "bin", "time") |>
+        dplyr::rename(.repl_time = "time"),
+      by = c(stats::setNames("bin", bin_col)),
+      relationship = "many-to-many"
+    ) |>
+    dplyr::filter(.data[[start_col]] >= .data$.repl_time) |>
+    dplyr::group_by(.data$.repl_row_id) |>
+    dplyr::slice_min(order_by = .data[[start_col]], n = 1, with_ties = TRUE) |>
+    dplyr::ungroup() |>
+    dplyr::filter(.data[[id_col]] == .data$actor_cow) |>
     dplyr::distinct(.data$.visit_row_id) |>
     dplyr::pull(.data$.visit_row_id)
 

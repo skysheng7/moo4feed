@@ -19,6 +19,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
+devtools::load_all()
 library(moo4feed)
 library(ggplot2)
 library(dplyr)
@@ -125,6 +126,18 @@ meal_visits[[1]] |>
   head()
 ```
 
+The summary provides per animal per day:
+
+- **`mean_non_nutritive_per_meal`**: Average non-nutritive visits per meal
+- **`median_non_nutritive_per_meal`**: Median non-nutritive visits per meal
+- **`sd_non_nutritive_per_meal`**: Standard deviation
+- **`mean_empty_bin_per_meal`**: Average empty bin visits per meal
+- **`median_empty_bin_per_meal`**: Median empty bin visits per meal
+- **`sd_empty_bin_per_meal`**: Standard deviation
+- **`total_non_nutritive_visits`**: Total count of non-nutritive visits
+- **`total_empty_bin_visits`**: Total count of empty bin visits
+- **`total_meals`**: Number of meals analyzed
+
 ### Visualize Non-Nutritive Distribution
 
 ```{r viz-non-nutritive, fig.width=6, fig.height=4}
@@ -169,46 +182,7 @@ ggplot(first_day_data, aes(x = reorder(cow, median_non_nutritive_per_meal),
   )
 ```
 
-### Visualize Empty Bin Visits by Animal
-
-```{r viz-empty-bin-bar, fig.width=10, fig.height=6}
-# Use first day's data as an example
-first_day_empty_bin <- meal_visits[[1]] |>
-  dplyr::arrange(desc(median_empty_bin_per_meal)) |>
-  head(50)  # Limit to up to top 50 animals with the most empty bin visits per meal
-
-# Create bar plot
-ggplot(first_day_empty_bin, aes(x = reorder(cow, median_empty_bin_per_meal), 
-                                y = median_empty_bin_per_meal)) +
-  geom_bar(stat = "identity", fill = "olivedrab3", alpha = 0.7) +
-  coord_flip() +  # Horizontal bars for better readability
-  labs(
-    title = "Average Empty Bin Visits Per Meal by Animal",
-    subtitle = "Animals sorted by median empty bin visits per meal (first day example)",
-    x = "Animal ID",
-    y = "Average Empty Bin Visits Per Meal"
-  ) +
-  theme_minimal() +
-  theme(
-    axis.text.y = element_text(size = 8),
-    plot.title = element_text(size = 14, face = "bold"),
-    plot.subtitle = element_text(size = 11)
-  )
-```
-
-The summary provides per animal per day:
-
-- **`mean_non_nutritive_per_meal`**: Average non-nutritive visits per meal
-- **`median_non_nutritive_per_meal`**: Median non-nutritive visits per meal
-- **`sd_non_nutritive_per_meal`**: Standard deviation
-- **`mean_empty_bin_per_meal`**: Average empty bin visits per meal
-- **`median_empty_bin_per_meal`**: Median empty bin visits per meal
-- **`sd_empty_bin_per_meal`**: Standard deviation
-- **`total_non_nutritive_visits`**: Total count of non-nutritive visits
-- **`total_empty_bin_visits`**: Total count of empty bin visits
-- **`total_meals`**: Number of meals analyzed
-
-
+Similarly, you can visualize the distribution of empty bin visits per meal across all animals. However, I'm not visualizing it here because we did not have any empty bin visits in the example data on day 1.
 
 ## 6. Actor/Reactor Roles Within Meals
 
@@ -311,28 +285,46 @@ This is a scatter plot of the median percentage of visits as an actor vs the med
 ```{r viz-actor-reactor-scatter, fig.width=8, fig.height=6}
 # Use first day's data for visualization
 first_day_roles <- daily_roles[[1]]
+role_axis_max <- max(
+  first_day_roles$median_pct_actor,
+  first_day_roles$median_pct_reactor,
+  na.rm = TRUE
+) + 5
 
 # Scatter plot: median_pct_actor vs median_pct_reactor
-ggplot(first_day_roles, aes(x = median_pct_actor, y = median_pct_reactor, color = cow)) +
+animal_ids <- sort(unique(as.character(first_day_roles$cow)))
+set3_extended <- grDevices::colorRampPalette(
+  RColorBrewer::brewer.pal(12, "Set2")
+)(length(animal_ids))
+
+ggplot(
+  first_day_roles,
+  aes(x = median_pct_actor, y = median_pct_reactor, color = as.factor(cow))
+) +
   geom_point(size = 5, alpha = 0.7) +
+  scale_color_manual(values = stats::setNames(set3_extended, animal_ids)) +
+  scale_x_continuous(limits = c(0, role_axis_max)) +
+  scale_y_continuous(limits = c(0, role_axis_max)) +
+  coord_equal() +
   labs(
-    title = "Actor vs Reactor Roles by Animal",
+    title = "Median % Visits as Actor vs Reactor by Animal",
     subtitle = "First day: Each point represents one animal",
-    x = "Median % Visits as Actor",
-    y = "Median % Visits as Reactor",
+    x = "Median % Visits as Actor (per meal)",
+    y = "Median % Visits as Reactor (per meal)",
     color = "Animal ID"
   ) +
   theme_minimal() +
   theme(
     plot.title = element_text(size = 14, face = "bold"),
     plot.subtitle = element_text(size = 11),
-    legend.position = "none"  # Hide legend if too many animals
+    legend.position = "right"
   )
 ```
 
 ```{r viz-actor-reactor-bar, fig.width=10, fig.height=6}
 # Bar plot: median_pct_actor_reactor sorted from high to low
 first_day_roles_sorted <- first_day_roles |>
+  dplyr::filter(median_pct_actor_reactor > 0) |>
   dplyr::arrange(desc(median_pct_actor_reactor))
 
 ggplot(first_day_roles_sorted, aes(x = reorder(cow, median_pct_actor_reactor), 
@@ -341,7 +333,7 @@ ggplot(first_day_roles_sorted, aes(x = reorder(cow, median_pct_actor_reactor),
   coord_flip() +  # Horizontal bars for better readability
   labs(
     title = "Median % Visits as Both Actor and Reactor by Animal",
-    subtitle = "Animals sorted by median_pct_actor_reactor from high to low (first day example)",
+    subtitle = "Animals with non-zero median_pct_actor_reactor, sorted high to low (first day example)",
     x = "Animal ID",
     y = "Median % Visits as Actor-Reactor"
   ) +
@@ -352,6 +344,8 @@ ggplot(first_day_roles_sorted, aes(x = reorder(cow, median_pct_actor_reactor),
     plot.subtitle = element_text(size = 11)
   )
 ```
+
+**Note**: Many animals have 0% actor-reactor average, they are excluded from the plot for better readability.
 
 ## 8. Summary
 
@@ -538,25 +532,42 @@ ggplot(first_day_empty_bin, aes(x = reorder(cow, median_empty_bin_per_meal),
 
 # Actor vs Reactor scatter plot (first day example)
 first_day_roles <- daily_roles[[1]]
+role_axis_max <- max(
+  first_day_roles$median_pct_actor,
+  first_day_roles$median_pct_reactor,
+  na.rm = TRUE
+) + 5
+animal_ids <- sort(unique(as.character(first_day_roles$cow)))
+set3_extended <- grDevices::colorRampPalette(
+  RColorBrewer::brewer.pal(12, "Set3")
+)(length(animal_ids))
 
-ggplot(first_day_roles, aes(x = median_pct_actor, y = median_pct_reactor, color = cow)) +
+ggplot(
+  first_day_roles,
+  aes(x = median_pct_actor, y = median_pct_reactor, color = as.factor(cow))
+) +
   geom_point(size = 5, alpha = 0.7) +
+  scale_color_manual(values = stats::setNames(set3_extended, animal_ids)) +
+  scale_x_continuous(limits = c(0, role_axis_max)) +
+  scale_y_continuous(limits = c(0, role_axis_max)) +
+  coord_equal() +
   labs(
-    title = "Actor vs Reactor Roles by Animal",
+    title = "Median % Visits as Actor vs Reactor by Animal",
     subtitle = "First day: Each point represents one animal",
-    x = "Median % Visits as Actor",
-    y = "Median % Visits as Reactor",
+    x = "Median % Visits as Actor (per meal)",
+    y = "Median % Visits as Reactor (per meal)",
     color = "Animal ID"
   ) +
   theme_minimal() +
   theme(
     plot.title = element_text(size = 14, face = "bold"),
     plot.subtitle = element_text(size = 11),
-    legend.position = "none"
+    legend.position = "right"
   )
 
 # Actor-Reactor bar plot (first day example)
 first_day_roles_sorted <- first_day_roles |>
+  dplyr::filter(median_pct_actor_reactor > 0) |>
   dplyr::arrange(desc(median_pct_actor_reactor))
 
 ggplot(first_day_roles_sorted, aes(x = reorder(cow, median_pct_actor_reactor), 
@@ -565,7 +576,7 @@ ggplot(first_day_roles_sorted, aes(x = reorder(cow, median_pct_actor_reactor),
   coord_flip() +
   labs(
     title = "Median % Visits as Both Actor and Reactor by Animal",
-    subtitle = "Animals sorted by median_pct_actor_reactor from high to low (first day example)",
+    subtitle = "Animals with non-zero median_pct_actor_reactor, sorted high to low (first day example)",
     x = "Animal ID",
     y = "Median % Visits as Actor-Reactor"
   ) +

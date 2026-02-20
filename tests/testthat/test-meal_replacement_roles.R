@@ -101,50 +101,50 @@ test_that("meal_replacement_roles identifies actor_reactor visits", {
   expect_equal(result$pct_actor_reactor[1], 100)
 })
 
-test_that("time matching allows ±1 second tolerance by default", {
+test_that("time matching allows ±1 second tolerance by default for reactor match", {
   visits <- make_role_visit_data(
-    cow_ids = c(1),
-    bin_ids = c("B1"),
-    meal_ids = c(1),
-    start_times = c("2025-01-15 08:30:00"),
-    end_times = c("2025-01-15 09:00:00")
+    cow_ids = c(2, 1),
+    bin_ids = c("B1", "B1"),
+    meal_ids = c(1, 1),
+    start_times = c("2025-01-15 08:00:00", "2025-01-15 08:30:02"),
+    end_times = c("2025-01-15 08:30:00", "2025-01-15 08:50:00")
   )
 
   replacements <- make_role_replacement_data(
     actor_ids = c(1),
     reactor_ids = c(2),
     bin_ids = c("B1"),
-    times = c("2025-01-15 08:30:01")  # 1 second after start
+    times = c("2025-01-15 08:30:01")  # 1 second after reactor leave
   )
 
   result <- meal_replacement_roles(visits, replacements)
 
-  expect_equal(result$actor_visits[1], 1)
+  expect_equal(result$reactor_visits[result[[id_col2()]] == 2], 1)
 })
 
-test_that("time_tolerance parameter is configurable", {
+test_that("time_tolerance parameter is configurable for reactor matching", {
   visits <- make_role_visit_data(
-    cow_ids = c(1),
-    bin_ids = c("B1"),
-    meal_ids = c(1),
-    start_times = c("2025-01-15 08:30:00"),
-    end_times = c("2025-01-15 09:00:00")
+    cow_ids = c(2, 1),
+    bin_ids = c("B1", "B1"),
+    meal_ids = c(1, 1),
+    start_times = c("2025-01-15 08:00:00", "2025-01-15 08:30:04"),
+    end_times = c("2025-01-15 08:30:00", "2025-01-15 08:50:00")
   )
 
   replacements <- make_role_replacement_data(
     actor_ids = c(1),
     reactor_ids = c(2),
     bin_ids = c("B1"),
-    times = c("2025-01-15 08:30:03")  # 3 seconds after start
+    times = c("2025-01-15 08:30:03")  # 3 seconds after reactor leave
   )
 
   # With default tolerance of 1 second, should not match
   result_strict <- meal_replacement_roles(visits, replacements, time_tolerance = 1)
-  expect_equal(result_strict$actor_visits[1], 0)
+  expect_equal(result_strict$reactor_visits[result_strict[[id_col2()]] == 2], 0)
 
   # With tolerance of 5 seconds, should match
   result_lenient <- meal_replacement_roles(visits, replacements, time_tolerance = 5)
-  expect_equal(result_lenient$actor_visits[1], 1)
+  expect_equal(result_lenient$reactor_visits[result_lenient[[id_col2()]] == 2], 1)
 })
 
 test_that("meal_replacement_roles calculates percentages correctly", {
