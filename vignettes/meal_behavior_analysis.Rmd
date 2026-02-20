@@ -279,44 +279,48 @@ The daily summary provides:
 
 ### Visualize Actor/Reactor Roles
 
-This is a scatter plot of the median percentage of visits as an actor vs the median percentage of visits as a reactor across all meals, each point represents one animal on day 1 in the example data.
+This is a diverging bar chart showing the median percentage of visits as an actor versus a reactor across all meals. Each animal is represented on the y-axis, with the left side showing their actor percentage and the right side showing their reactor percentage. This makes it easy to read each animal's ID and compare their interaction patterns on day 1.
 
-```{r viz-actor-reactor-scatter, fig.width=8, fig.height=6}
+```{r viz-actor-reactor-diverging, fig.width=10, fig.height=8}
 # Use first day's data for visualization
 first_day_roles <- daily_roles[[1]]
-role_axis_max <- max(
-  first_day_roles$median_pct_actor,
-  first_day_roles$median_pct_reactor,
-  na.rm = TRUE
-) + 5
 
-# Scatter plot: median_pct_actor vs median_pct_reactor
-animal_ids <- sort(unique(as.character(first_day_roles$cow)))
-set3_extended <- grDevices::colorRampPalette(
-  RColorBrewer::brewer.pal(12, "Set2")
-)(length(animal_ids))
+# Reshape data to long format and make actor values negative for diverging plot
+plot_data <- dplyr::bind_rows(
+  first_day_roles |> 
+    dplyr::select(cow, pct = median_pct_actor) |> 
+    dplyr::mutate(role = "Actor", plot_value = -pct),
+  first_day_roles |> 
+    dplyr::select(cow, pct = median_pct_reactor) |> 
+    dplyr::mutate(role = "Reactor", plot_value = pct)
+)
 
-ggplot(
-  first_day_roles,
-  aes(x = median_pct_actor, y = median_pct_reactor, color = as.factor(cow))
-) +
-  geom_point(size = 5, alpha = 0.7) +
-  scale_color_manual(values = stats::setNames(set3_extended, animal_ids)) +
-  scale_x_continuous(limits = c(0, role_axis_max)) +
-  scale_y_continuous(limits = c(0, role_axis_max)) +
-  coord_equal() +
+# Sort animals by their actor percentage for a cleaner chart
+cow_order <- first_day_roles |>
+  dplyr::arrange(median_pct_actor) |>
+  dplyr::pull(cow)
+
+plot_data$cow <- factor(plot_data$cow, levels = cow_order)
+
+# Create diverging bar chart
+ggplot(plot_data, aes(x = cow, y = plot_value, fill = role)) +
+  geom_bar(stat = "identity", alpha = 0.8) +
+  coord_flip() +
+  scale_fill_manual(values = c("Actor" = "#e78ac3", "Reactor" = "#a6d854")) +
+  scale_y_continuous(labels = abs) + # Show absolute values on axis
   labs(
-    title = "Median % Visits as Actor vs Reactor by Animal",
-    subtitle = "First day: Each point represents one animal",
-    x = "Median % Visits as Actor (per meal)",
-    y = "Median % Visits as Reactor (per meal)",
-    color = "Animal ID"
+    title = "Actor vs Reactor Roles by Animal",
+    subtitle = "First day: Diverging bars show median % visits as actor (left) vs reactor (right)",
+    x = "Animal ID",
+    y = "Median % Visits",
+    fill = "Role"
   ) +
   theme_minimal() +
   theme(
     plot.title = element_text(size = 14, face = "bold"),
     plot.subtitle = element_text(size = 11),
-    legend.position = "right"
+    axis.text.y = element_text(size = 8),
+    legend.position = "top"
   )
 ```
 
@@ -328,13 +332,13 @@ first_day_roles_sorted <- first_day_roles |>
 
 ggplot(first_day_roles_sorted, aes(x = reorder(cow, median_pct_actor_reactor), 
                                    y = median_pct_actor_reactor)) +
-  geom_bar(stat = "identity", fill = "orchid3", alpha = 0.7) +
+  geom_bar(stat = "identity", fill = "#edb870", alpha = 0.7) +
   coord_flip() +  # Horizontal bars for better readability
   labs(
-    title = "Median % Visits as Both Actor and Reactor by Animal",
+    title = "Median % Visits as Actor upon Entry and Reactor upon Exit",
     subtitle = "Animals with non-zero median_pct_actor_reactor, sorted high to low (first day example)",
     x = "Animal ID",
-    y = "Median % Visits as Actor-Reactor"
+    y = "Median % Visits as Actor upon Entry and Reactor upon Exit"
   ) +
   theme_minimal() +
   theme(
@@ -529,39 +533,45 @@ ggplot(first_day_empty_bin, aes(x = reorder(cow, median_empty_bin_per_meal),
     plot.subtitle = element_text(size = 11)
   )
 
-# Actor vs Reactor scatter plot (first day example)
+# Actor vs Reactor diverging bar plot (first day example)
 first_day_roles <- daily_roles[[1]]
-role_axis_max <- max(
-  first_day_roles$median_pct_actor,
-  first_day_roles$median_pct_reactor,
-  na.rm = TRUE
-) + 5
-animal_ids <- sort(unique(as.character(first_day_roles$cow)))
-set3_extended <- grDevices::colorRampPalette(
-  RColorBrewer::brewer.pal(12, "Set3")
-)(length(animal_ids))
 
-ggplot(
-  first_day_roles,
-  aes(x = median_pct_actor, y = median_pct_reactor, color = as.factor(cow))
-) +
-  geom_point(size = 5, alpha = 0.7) +
-  scale_color_manual(values = stats::setNames(set3_extended, animal_ids)) +
-  scale_x_continuous(limits = c(0, role_axis_max)) +
-  scale_y_continuous(limits = c(0, role_axis_max)) +
-  coord_equal() +
+# Reshape data to long format and make actor values negative for diverging plot
+plot_data <- dplyr::bind_rows(
+  first_day_roles |> 
+    dplyr::select(cow, pct = median_pct_actor) |> 
+    dplyr::mutate(role = "Actor", plot_value = -pct),
+  first_day_roles |> 
+    dplyr::select(cow, pct = median_pct_reactor) |> 
+    dplyr::mutate(role = "Reactor", plot_value = pct)
+)
+
+# Sort animals by their actor percentage for a cleaner chart
+cow_order <- first_day_roles |>
+  dplyr::arrange(median_pct_actor) |>
+  dplyr::pull(cow)
+
+plot_data$cow <- factor(plot_data$cow, levels = cow_order)
+
+# Create diverging bar chart
+ggplot(plot_data, aes(x = cow, y = plot_value, fill = role)) +
+  geom_bar(stat = "identity", alpha = 0.8) +
+  coord_flip() +
+  scale_fill_manual(values = c("Actor" = "#e78ac3", "Reactor" = "#a6d854")) +
+  scale_y_continuous(labels = abs) + # Show absolute values on axis
   labs(
-    title = "Median % Visits as Actor vs Reactor by Animal",
-    subtitle = "First day: Each point represents one animal",
-    x = "Median % Visits as Actor (per meal)",
-    y = "Median % Visits as Reactor (per meal)",
-    color = "Animal ID"
+    title = "Actor vs Reactor Roles by Animal",
+    subtitle = "First day: Diverging bars show median % visits as actor (left) vs reactor (right)",
+    x = "Animal ID",
+    y = "Median % Visits",
+    fill = "Role"
   ) +
   theme_minimal() +
   theme(
     plot.title = element_text(size = 14, face = "bold"),
     plot.subtitle = element_text(size = 11),
-    legend.position = "right"
+    axis.text.y = element_text(size = 8),
+    legend.position = "top"
   )
 
 # Actor-Reactor bar plot (first day example)
@@ -571,7 +581,7 @@ first_day_roles_sorted <- first_day_roles |>
 
 ggplot(first_day_roles_sorted, aes(x = reorder(cow, median_pct_actor_reactor), 
                                    y = median_pct_actor_reactor)) +
-  geom_bar(stat = "identity", fill = "orchid3", alpha = 0.7) +
+  geom_bar(stat = "identity", fill = "#edb870", alpha = 0.7) +
   coord_flip() +
   labs(
     title = "Median % Visits as Both Actor and Reactor by Animal",
