@@ -636,7 +636,9 @@ set_global_cols(
 # set_bin_offset2(100)
 
 # ---- STEP 6: Process Feeder Data ----
-# Define column names for feeder files
+# the .DAT files I get from the feeders do not have column headers,
+# so we need to define the column names manually. Note the number of columns 
+# you manually declear here should match the number of values in each row in the .DAT file.
 col_names <- c("transponder", "cow", "bin", "start", "end", "duration", 
               "start_weight", "end_weight", "comment", "intake", "intake2", 
               "X1", "X2", "X3", "X4", "x5")
