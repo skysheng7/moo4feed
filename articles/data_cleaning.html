@@ -856,7 +856,9 @@ demonstrated in subsequent tutorials.</p>
 <span><span class="co"># set_bin_offset2(100)</span></span>
 <span></span>
 <span><span class="co"># ---- STEP 6: Process Feeder Data ----</span></span>
-<span><span class="co"># Define column names for feeder files</span></span>
+<span><span class="co"># the .DAT files I get from the feeders do not have column headers,</span></span>
+<span><span class="co"># so we need to define the column names manually. Note the number of columns </span></span>
+<span><span class="co"># you manually declear here should match the number of values in each row in the .DAT file.</span></span>
 <span><span class="va">col_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"transponder"</span>, <span class="st">"cow"</span>, <span class="st">"bin"</span>, <span class="st">"start"</span>, <span class="st">"end"</span>, <span class="st">"duration"</span>, </span>
 <span>              <span class="st">"start_weight"</span>, <span class="st">"end_weight"</span>, <span class="st">"comment"</span>, <span class="st">"intake"</span>, <span class="st">"intake2"</span>, </span>
 <span>              <span class="st">"X1"</span>, <span class="st">"X2"</span>, <span class="st">"X3"</span>, <span class="st">"X4"</span>, <span class="st">"x5"</span><span class="op">)</span></span>
