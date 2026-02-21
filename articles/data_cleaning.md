@@ -31,8 +31,6 @@ records into analysis-ready datasets suitable for behavioral research.
 
 ``` r
 library(moo4feed)   # Main package for animal data processing
-library(ggplot2)    # For visualization
-library(dplyr)      # For data manipulation
 ```
 
 The `moo4feed` package includes sample datasets from UBC Dairy Education
