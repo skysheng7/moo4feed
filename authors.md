@@ -23,7 +23,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/skysheng7/moo4feed/blob/main/inst/CITATION)
+[`inst/CITATION`](https://github.com/skysheng7/moo4feed/blob/0.1.0/inst/CITATION)
 
 Sheng K, Foris B, Weary D, von Keyserlingk M (2025). “Decoding
 individual animal narratives through precision livestock monitoring
