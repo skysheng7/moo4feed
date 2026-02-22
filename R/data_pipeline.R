@@ -421,7 +421,23 @@ process_data_generic <- function(
   # — Assign column names if needed —
   if (!header) {
     if (length(col_names) != ncol(df)) {
-      stop("Length of `col_names` must equal number of columns in the file.")
+      message(paste0(
+        "Column name mismatch in file: ", file, 
+        ". Expected ", length(col_names), " columns, but found ", ncol(df), " columns in the actual file. ",
+        "Auto-adjusting column names to match the actual number of columns in the file."
+      ))
+      
+      if (length(col_names) < ncol(df)) {
+        # More columns in data than col_names: keep only the first length(col_names) columns
+        df <- df[, 1:length(col_names), drop = FALSE]
+        message(paste0("Kept the first ", length(col_names), " columns in the file and discarded the rest."))
+      } else {
+        # More col_names than columns in data: add NA columns to match length(col_names)
+        n_missing <- length(col_names) - ncol(df)
+        na_cols <- as.data.frame(matrix(NA, nrow = nrow(df), ncol = n_missing))
+        df <- cbind(df, na_cols)
+        message(paste0("Added ", n_missing, " columns with NA values to match exapected column names."))
+      }
     }
     colnames(df) <- col_names
   }

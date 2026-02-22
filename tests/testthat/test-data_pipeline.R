@@ -263,7 +263,7 @@ test_that("process_water reads, shifts bins, and subsets correctly", {
   expect_equal(out$value, c(50, 60, 70, 80))
 })
 
-test_that("When the length of `col_names` does not equal to the number of columns in the file", {
+test_that("When col_names is shorter than file columns, extra columns are discarded", {
   original <- data.frame(
     cow = c("D", "E", "F", "D"),
     transponder = c("Y1", "Y2", "Y3", "Y2"),
@@ -271,22 +271,73 @@ test_that("When the length of `col_names` does not equal to the number of column
     value = c(50, 60, 70, 80),
     stringsAsFactors = FALSE
   )
-  tmp <- make_csv(original)
+  tmp <- tempfile(fileext = ".csv")
+  write.table(original, tmp, sep = ",", row.names = FALSE, col.names = FALSE)
 
-  # Drop nothing, keep bins 5:7, offset +100, select cow, bin, value
-  expect_error(
-    (out <- process_water(
-      file = tmp,
-      col_names = c("cow", "transponder"),
-      drop_ids = NULL,
-      drop_trans = NULL,
-      bins = 5:7,
-      select_cols = c("cow", "bin", "value"),
-      bin_offset = 100,
-      header = FALSE
-    )),
-    "Length of `col_names` must equal number of columns in the file"
+  # col_names only has 3 elements, but file has 4 columns
+  expect_message(
+    expect_message(
+      out <- process_water(
+        file = tmp,
+        col_names = c("cow", "transponder", "bin"),
+        drop_ids = NULL,
+        drop_trans = NULL,
+        bins = 5:7,
+        select_cols = c("cow", "bin"),
+        bin_offset = 100,
+        header = FALSE
+      ),
+      "Column name mismatch"
+    ),
+    "Kept the first 3 columns"
   )
+  
+  # Should only have 3 columns now (4th column "value" was discarded)
+  expect_equal(ncol(out), 2) # Only cow and bin selected
+  expect_equal(colnames(out), c("cow", "bin"))
+  expect_equal(nrow(out), 4)
+  expect_equal(out$bin, c(105, 106, 107, 106)) # with offset +100
+  
+  unlink(tmp)
+})
+
+test_that("When col_names is longer than file columns, NA columns are added", {
+  original <- data.frame(
+    cow = c("D", "E", "F", "D"),
+    transponder = c("Y1", "Y2", "Y3", "Y2"),
+    bin = c(5, 6, 7, 6),
+    stringsAsFactors = FALSE
+  )
+  tmp <- tempfile(fileext = ".csv")
+  write.table(original, tmp, sep = ",", row.names = FALSE, col.names = FALSE)
+
+  # col_names has 5 elements, but file only has 3 columns
+  expect_message(
+    expect_message(
+      out <- process_water(
+        file = tmp,
+        col_names = c("cow", "transponder", "bin", "value", "extra"),
+        drop_ids = NULL,
+        drop_trans = NULL,
+        bins = 5:7,
+        select_cols = c("cow", "bin", "value", "extra"),
+        bin_offset = 100,
+        header = FALSE
+      ),
+      "Column name mismatch"
+    ),
+    "Added 2 columns with NA values"
+  )
+  
+  # Should have all selected columns
+  expect_equal(ncol(out), 4)
+  expect_equal(colnames(out), c("cow", "bin", "value", "extra"))
+  expect_equal(nrow(out), 4)
+  expect_equal(out$bin, c(105, 106, 107, 106)) # with offset +100
+  # The last two columns (value, extra) should be all NA
+  expect_true(all(is.na(out$value)))
+  expect_true(all(is.na(out$extra)))
+  
   unlink(tmp)
 })
 
