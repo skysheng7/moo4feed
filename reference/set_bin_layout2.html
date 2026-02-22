@@ -75,14 +75,13 @@ feed and water bin numbering systems.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Single row layout</span></span></span>
 <span class="r-in"><span><span class="fu">set_bin_layout2</span><span class="op">(</span><span class="st">"1-2-101-3-4-102-5-6"</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Bin IDs 1, 2, 3, 4, 5 appear in both feed and water bin lists. Make sure you're using updated bin IDs (e.g., water bins should be 101+, not 1-5) to avoid conflicts.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Note: The following bins from your feed/water bin lists are not included in the layout: 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Note: The following bins in the layout are not in your feed/water bin lists: 101, 102</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Note: Bin offset is set to 100. During data processing, water bins 1-5 will be transformed to 101-105.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Note: The following bins from your feed/water bin lists are not included in the layout. Please ignore this message if this is intended. Otherwise you need to update your bin layout: 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 103, 104, 105</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Multiple row layout (3 rows)</span></span></span>
 <span class="r-in"><span><span class="fu">set_bin_layout2</span><span class="op">(</span><span class="st">"1-2-3-4-5\n6-7-8-9-10-11\n12-13-14"</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Bin IDs 1, 2, 3, 4, 5 appear in both feed and water bin lists. Make sure you're using updated bin IDs (e.g., water bins should be 101+, not 1-5) to avoid conflicts.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Note: The following bins from your feed/water bin lists are not included in the layout: 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Note: Bin offset is set to 100. During data processing, water bins 1-5 will be transformed to 101-105.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Note: The following bins from your feed/water bin lists are not included in the layout. Please ignore this message if this is intended. Otherwise you need to update your bin layout: 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 101, 102, 103, 104, 105</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Check if bin_layout is set up correctly</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="bin_layout2.html">bin_layout2</a></span><span class="op">(</span><span class="op">)</span></span></span>

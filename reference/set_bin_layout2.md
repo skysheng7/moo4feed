@@ -47,14 +47,13 @@ The layout should be specified as a string where:
 ``` r
 # Single row layout
 set_bin_layout2("1-2-101-3-4-102-5-6")
-#> Warning: Bin IDs 1, 2, 3, 4, 5 appear in both feed and water bin lists. Make sure you're using updated bin IDs (e.g., water bins should be 101+, not 1-5) to avoid conflicts.
-#> Note: The following bins from your feed/water bin lists are not included in the layout: 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30
-#> Note: The following bins in the layout are not in your feed/water bin lists: 101, 102
+#> Note: Bin offset is set to 100. During data processing, water bins 1-5 will be transformed to 101-105.
+#> Note: The following bins from your feed/water bin lists are not included in the layout. Please ignore this message if this is intended. Otherwise you need to update your bin layout: 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 103, 104, 105
 
 # Multiple row layout (3 rows)
 set_bin_layout2("1-2-3-4-5\n6-7-8-9-10-11\n12-13-14")
-#> Warning: Bin IDs 1, 2, 3, 4, 5 appear in both feed and water bin lists. Make sure you're using updated bin IDs (e.g., water bins should be 101+, not 1-5) to avoid conflicts.
-#> Note: The following bins from your feed/water bin lists are not included in the layout: 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30
+#> Note: Bin offset is set to 100. During data processing, water bins 1-5 will be transformed to 101-105.
+#> Note: The following bins from your feed/water bin lists are not included in the layout. Please ignore this message if this is intended. Otherwise you need to update your bin layout: 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 101, 102, 103, 104, 105
 
 # Check if bin_layout is set up correctly
 bin_layout2()

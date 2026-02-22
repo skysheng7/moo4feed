@@ -107,6 +107,6 @@ Called for its side-effects
 
 ``` r
 set_global_cols(tz = "UTC", id_col = "animal_id", dur_col = "visit_duration")
-#> Warning: Bin IDs 1, 2, 3 appear in both feed and water bin lists. Make sure you're using updated bin IDs (e.g., water bins should be 101+, not 1-5) to avoid conflicts.
-#> Note: The following bins from your feed/water bin lists are not included in the layout: 15, 16, 17, 18, 19, 20
+#> Note: Bin offset is set to 50. During data processing, water bins 1-3 will be transformed to 51-53.
+#> Note: The following bins from your feed/water bin lists are not included in the layout. Please ignore this message if this is intended. Otherwise you need to update your bin layout: 15, 16, 17, 18, 19, 20, 51, 52, 53
 ```
