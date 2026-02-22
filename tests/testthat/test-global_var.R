@@ -140,23 +140,88 @@ test_that("set_bin_layout2() validates input correctly", {
   set_bin_layout2(orig)
 })
 
-test_that("set_bin_layout2() warns about overlapping feed/water bin IDs", {
+test_that("set_bin_layout2() handles overlapping raw bin IDs correctly based on offset", {
   orig_layout <- bin_layout2()
   orig_feed <- bins_feed2()
   orig_wat <- bins_wat2()
+  orig_offset <- bin_offset2()
   
-  # Set up conflicting bin IDs (same IDs for feed and water)
+  # Scenario 1: Raw bins overlap (1:5 feed, 1:3 water), but offset = 100 resolves it
+  # After offset: feed stays 1:5, water becomes 101:103 - no conflict!
   set_bins_feed2(1:5)
-  set_bins_wat2(1:3)  # Overlapping with feed bins
+  set_bins_wat2(1:3)  # Raw overlap with feed bins - this is OK!
+  set_bin_offset2(100)
   
-  # Should warn about overlapping IDs
-  expect_warning(set_bin_layout2("1-2-3"), 
-                 "appear in both feed and water bin lists")
+  # Should work without warnings because offset resolves the conflict
+  expect_no_warning(set_bin_layout2("1-2-101-3-4-102-5-103"))
+  
+  # Scenario 2: Raw bins overlap AND offset doesn't resolve it
+  # Feed: 1:10, Water: 1:5, Offset: 5
+  # After offset: feed stays 1:10, water becomes 6:10 - still overlaps with feed 6:10!
+  set_bins_feed2(1:10)
+  set_bins_wat2(1:5)
+  set_bin_offset2(5)  # Too small to resolve conflict
+  
+  # Using a layout where water bins use their offset IDs (6-10)
+  # This will trigger BOTH warnings:
+  # 1. Warning about raw overlap not being resolved by offset
+  # 2. Warning about ambiguous bin IDs in layout (6,7 could be feed OR water)
+  expect_warning(
+    expect_warning(
+      set_bin_layout2("1-2-6-3-4-7"),
+      "match both feed bins and water bins"
+    ),
+    "Even after applying bin_offset"
+  )
+  
+  # Scenario 3: Raw bins overlap, but offset = 0 means they stay overlapped
+  set_bins_feed2(1:5)
+  set_bins_wat2(1:3)
+  set_bin_offset2(0)  # No offset - conflict remains
+  
+  # With offset = 0, water_bins_with_offset = 1:3, which overlaps with feed 1:5
+  # Layout "1-2-3" has ambiguous bins that could be either feed or water
+  expect_warning(
+    expect_warning(
+      set_bin_layout2("1-2-3"),
+      "match both feed bins and water bins"
+    ),
+    "Even after applying bin_offset"
+  )
   
   # Restore original values
   set_bin_layout2(orig_layout)
   set_bins_feed2(orig_feed)
   set_bins_wat2(orig_wat)
+  set_bin_offset2(orig_offset)
+})
+
+test_that("set_bin_layout2() handles bin_offset correctly with water bin transformation", {
+  orig_layout <- bin_layout2()
+  orig_feed <- bins_feed2()
+  orig_wat <- bins_wat2()
+  orig_offset <- bin_offset2()
+  
+  # User scenario: raw water bins are 1:5, will be transformed to 101:105
+  set_bins_feed2(1:30)
+  set_bins_wat2(1:5)
+  set_bin_offset2(100)
+  
+  # Layout includes the TRANSFORMED water bin IDs (101-105)
+  # This should work without warnings, with informative message about offset
+  expect_message(
+    set_bin_layout2("1-2-3-4-5-6-101-102-7-8-9-10-103-104-105"),
+    "Bin offset is set to 100"
+  )
+  
+  # Verify no warning about overlapping IDs (because offset will resolve it)
+  expect_no_warning(set_bin_layout2("1-2-3-4-5-6-101-102-7-8-9-10-103-104-105"))
+  
+  # Restore original values
+  set_bin_layout2(orig_layout)
+  set_bins_feed2(orig_feed)
+  set_bins_wat2(orig_wat)
+  set_bin_offset2(orig_offset)
 })
 
 test_that("set_bin_layout2() provides helpful messages about missing/extra bins", {
@@ -186,63 +251,72 @@ test_that("set_bin_layout2() handles valid layouts correctly", {
   orig_layout <- bin_layout2()
   orig_feed <- bins_feed2()
   orig_wat <- bins_wat2()
+  orig_offset <- bin_offset2()
   
-  # Set up non-overlapping bin lists
+  # Scenario: Raw bins overlap (feed 1:5, water 1:3) but offset = 100 makes water bins 101:103
   set_bins_feed2(1:5)
-  set_bins_wat2(101:103)
+  set_bins_wat2(1:3)
+  set_bin_offset2(100)
   
-  # Valid single-row layout should work without warnings or errors
-  expect_silent(set_bin_layout2("1-2-101-3-4-102-5-103"))
+  # Valid single-row layout with offset water bins (101-103)
+  expect_no_warning(set_bin_layout2("1-2-101-3-4-102-5-103"))
   expect_equal(bin_layout2(), "1-2-101-3-4-102-5-103")
   
   # Valid multi-row layout should also work
-  expect_silent(set_bin_layout2("1-2-101\n3-4-102\n5-103"))
+  expect_no_warning(set_bin_layout2("1-2-101\n3-4-102\n5-103"))
   expect_equal(bin_layout2(), "1-2-101\n3-4-102\n5-103")
   
   # Restore original values
   set_bin_layout2(orig_layout)
   set_bins_feed2(orig_feed)
   set_bins_wat2(orig_wat)
+  set_bin_offset2(orig_offset)
 })
 
 test_that("set_bin_layout2() handles multi-row layouts with different row lengths", {
   orig_layout <- bin_layout2()
   orig_feed <- bins_feed2()
   orig_wat <- bins_wat2()
+  orig_offset <- bin_offset2()
   
-  # Set up bin lists
+  # Set up bin lists with raw overlap (feed 1:10, water 1:3, offset makes water 101:103)
   set_bins_feed2(1:10)
-  set_bins_wat2(101:103)
+  set_bins_wat2(1:3)
+  set_bin_offset2(100)
   
   # Multi-row layout with different row lengths (common in real barns)
   # Row 1: 5 bins, Row 2: 6 bins, Row 3: 2 bins
   layout_str <- "1-2-3-4-5\n6-7-8-9-10-101\n102-103"
-  expect_silent(set_bin_layout2(layout_str))
+  expect_no_warning(set_bin_layout2(layout_str))
   expect_equal(bin_layout2(), layout_str)
   
   # Restore original values
   set_bin_layout2(orig_layout)
   set_bins_feed2(orig_feed)
   set_bins_wat2(orig_wat)
+  set_bin_offset2(orig_offset)
 })
 
 test_that("set_bin_layout2() handles layouts with extra whitespace", {
   orig_layout <- bin_layout2()
   orig_feed <- bins_feed2()
   orig_wat <- bins_wat2()
+  orig_offset <- bin_offset2()
   
-  # Set up bin lists
+  # Set up bin lists with raw overlap (feed 1:5, water 1:2, offset makes water 101:102)
   set_bins_feed2(1:5)
-  set_bins_wat2(101:102)
+  set_bins_wat2(1:2)
+  set_bin_offset2(100)
   
   # Layout with extra spaces (should be trimmed)
   layout_str <- " 1 - 2 - 3 \n 4 - 5 - 101 - 102 "
-  expect_silent(set_bin_layout2(layout_str))
+  expect_no_warning(set_bin_layout2(layout_str))
   
   # Restore original values
   set_bin_layout2(orig_layout)
   set_bins_feed2(orig_feed)
   set_bins_wat2(orig_wat)
+  set_bin_offset2(orig_offset)
 })
 
 # duration_col2 / set_duration_col2 test

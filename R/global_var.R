@@ -2,9 +2,9 @@ utils::globalVariables(c(
   "season", "fall", "spring", "start", "end", "overlap", "n", "rate",
   "date", "feed_intake", "feed_duration", "feed_visits",
   "water_intake", "water_duration", "water_visits", "warning_str", "unique_feed_bins_visited",
-  "unique_water_bins_visited", "visit_freq", "next_cow", "time_dif", "actor_at_another_bin", 
+  "unique_water_bins_visited", "visit_freq", "next_cow", "time_dif", "actor_at_another_bin",
   "date_str", ".data", "outlier", "intake_col", "duration_col", "gaps", "cluster", "meal_duration",
-  "total_feeding_duration", "component", "density", "gap_minutes", "hcl.colors", "meal_id_factor", 
+  "total_feeding_duration", "component", "density", "gap_minutes", "hcl.colors", "meal_id_factor",
   "time_of_day", "x"
 ))
 
@@ -12,20 +12,20 @@ utils::globalVariables(c(
 the <- new.env(parent = emptyenv())
 
 ## default global variables ----------------------------------------------------
-the$tz          <- "America/Vancouver"
-the$id_col      <- "cow"
-the$trans_col   <- "transponder"
-the$start_col   <- "start"
-the$end_col     <- "end"
-the$bin_col     <- "bin"
-the$dur_col     <- "duration"
-the$intake_col     <- "intake"
-the$start_weight_col     <- "start_weight"
-the$end_weight_col     <- "end_weight"
-the$bin_offset  <- 100
-the$bins_feed   <- 1:30
-the$bins_wat    <- 1:5
-the$bin_layout  <- "1-2-3-4-5-6-101-102-7-8-9-10-11-12-13-14-15-16-17-18-103-104-19-20-21-22-23-24-25-26-27-28-29-30-105"
+the$tz <- "America/Vancouver"
+the$id_col <- "cow"
+the$trans_col <- "transponder"
+the$start_col <- "start"
+the$end_col <- "end"
+the$bin_col <- "bin"
+the$dur_col <- "duration"
+the$intake_col <- "intake"
+the$start_weight_col <- "start_weight"
+the$end_weight_col <- "end_weight"
+the$bin_offset <- 100
+the$bins_feed <- 1:30
+the$bins_wat <- 1:5
+the$bin_layout <- "1-2-3-4-5-6-101-102-7-8-9-10-11-12-13-14-15-16-17-18-103-104-19-20-21-22-23-24-25-26-27-28-29-30-105"
 
 # -- tz -------------------------------------------------------------
 
@@ -338,7 +338,7 @@ set_bins_wat2 <- function(new_bins = 1:5) {
 #' Returns the physical arrangement order of feed and water bins as they are
 #' positioned in the facility. This is used for neighbor analysis and spatial
 #' synchronicity studies where the physical proximity of bins matters.
-#' 
+#'
 #' The layout is specified as a string where:
 #' - Bins within the same row are separated by "-"
 #' - Different rows are separated by `\n` (newline)
@@ -356,7 +356,7 @@ bin_layout2 <- function() the$bin_layout
 #' Define the physical arrangement order of feed and water bins as they are
 #' positioned in the facility. This is used for neighbor analysis and spatial
 #' synchronicity studies where the physical proximity of bins matters.
-#' 
+#'
 #' The layout should be specified as a string where:
 #' - Bins within the same row are separated by "-"
 #' - Different rows are separated by `\n` (newline)
@@ -373,34 +373,33 @@ bin_layout2 <- function() the$bin_layout
 #' @examples
 #' # Single row layout
 #' set_bin_layout2("1-2-101-3-4-102-5-6")
-#' 
+#'
 #' # Multiple row layout (3 rows)
 #' set_bin_layout2("1-2-3-4-5\n6-7-8-9-10-11\n12-13-14")
-#' 
+#'
 #' # Check if bin_layout is set up correctly
 #' bin_layout2()
 #'
 #' @export
 set_bin_layout2 <- function(new_layout = "1-2-3\n4-5-6") {
-  
   # Input validation
   if (!is.character(new_layout)) {
     stop("`new_layout` must be a character string", call. = FALSE)
   }
-  
+
   if (length(new_layout) == 0 || new_layout == "") {
     stop("`new_layout` cannot be empty", call. = FALSE)
   }
-  
+
   # Parse the layout to extract bin numbers
   rows <- strsplit(new_layout, "\\n")[[1]]
   rows <- trimws(rows)
-  rows <- rows[rows != ""]  # Remove empty rows
-  
+  rows <- rows[rows != ""] # Remove empty rows
+
   if (length(rows) == 0) {
     stop("`new_layout` must contain at least one row", call. = FALSE)
   }
-  
+
   # Extract all bin numbers from the layout
   all_bins_in_layout <- numeric(0)
   for (row in rows) {
@@ -408,51 +407,96 @@ set_bin_layout2 <- function(new_layout = "1-2-3\n4-5-6") {
     bins <- trimws(bins)
     bins <- bins[bins != ""]
     bin_nums <- suppressWarnings(as.numeric(bins))
-    
+
     if (any(is.na(bin_nums))) {
       stop("Invalid bin numbers in layout. All bins must be numeric.", call. = FALSE)
     }
-    
+
     all_bins_in_layout <- c(all_bins_in_layout, bin_nums)
   }
-  
+
   # Check for duplicate bin IDs
   if (any(duplicated(all_bins_in_layout))) {
     duplicates <- all_bins_in_layout[duplicated(all_bins_in_layout)]
-    stop("Duplicate bin IDs found in layout: ", paste(unique(duplicates), collapse = ", "), 
-         ". Each bin ID must appear only once in the physical layout.", call. = FALSE)
+    stop("Duplicate bin IDs found in layout: ", paste(unique(duplicates), collapse = ", "),
+      ". Each bin ID must appear only once in the physical layout.",
+      call. = FALSE
+    )
   }
-  
+
   # Check for potential conflicts between feed and water bin IDs
   feed_bins <- bins_feed2()
   water_bins <- bins_wat2()
-  
-  # Warn if there are overlapping IDs between feed and water bins in the layout
+  offset <- bin_offset2()
+
+  # Calculate what water bins will become after offset is applied during data processing
+  water_bins_with_offset <- water_bins + offset
+
+  # Find which bins in the layout are feed vs water (using offset IDs for water)
   feed_in_layout <- intersect(all_bins_in_layout, feed_bins)
-  water_in_layout <- intersect(all_bins_in_layout, water_bins)
-  overlapping_ids <- intersect(feed_in_layout, water_in_layout)
-  
-  if (length(overlapping_ids) > 0) {
-    warning("Bin IDs ", paste(overlapping_ids, collapse = ", "), 
-            " appear in both feed and water bin lists. Make sure you're using updated bin IDs ",
-            "(e.g., water bins should be 101+, not 1-5) to avoid conflicts.", call. = FALSE)
+  water_in_layout <- intersect(all_bins_in_layout, water_bins_with_offset)
+
+  # Check if raw water and feed bins overlap (before offset)
+  raw_overlap <- intersect(feed_bins, water_bins)
+
+  # Check if after-offset bins overlap in the layout (this would be a configuration error)
+  layout_overlap <- intersect(feed_in_layout, water_in_layout)
+
+  # Warn if raw bins overlap AND offset won't resolve it
+  if (length(raw_overlap) > 0) {
+    # Check if the offset actually resolves the conflict
+    after_offset_overlap <- intersect(feed_bins, water_bins_with_offset)
+    
+    if (length(after_offset_overlap) > 0) {
+      warning("Raw water bin IDs ", paste(raw_overlap, collapse = ", "),
+        " overlap with feed bin IDs. Even after applying bin_offset = ", offset,
+        ", there is still overlap: ", paste(after_offset_overlap, collapse = ", "),
+        ". Consider using a larger bin_offset to differentiate water bins from feed bins.",
+        call. = FALSE
+      )
+    }
   }
-  
-  # Provide helpful message about missing bins
-  all_expected_bins <- c(feed_bins, water_bins)
+
+  # Warn if layout has ambiguous bins (bins that could be interpreted as either feed or water)
+  if (length(layout_overlap) > 0) {
+    warning("Bin IDs ", paste(layout_overlap, collapse = ", "),
+      " in the layout match both feed bins and water bins (after offset). ",
+      "This creates ambiguity. To avoid confusion, use bin IDs in the layout that ",
+      "clearly identify each bin as either feed or water. Water bin ID listed in layout should be the ID after offset is applied.",
+      call. = FALSE
+    )
+  }
+
+  # Provide helpful messages about bin configuration
+  all_expected_bins <- c(feed_bins, water_bins_with_offset)
+  all_expected_bins <- unique(all_expected_bins)
+
   missing_bins <- setdiff(all_expected_bins, all_bins_in_layout)
   extra_bins <- setdiff(all_bins_in_layout, all_expected_bins)
-  
+
+  # If offset > 0, provide informative note about which bins we expect
+  if (offset > 0 && (length(missing_bins) > 0 || length(extra_bins) > 0)) {
+    message(
+      "Note: Bin offset is set to ", offset, ". During data processing, water bins ",
+      paste(range(water_bins), collapse = "-"), " will be transformed to ",
+      paste(range(water_bins_with_offset), collapse = "-"), "."
+    )
+  }
+
   if (length(missing_bins) > 0) {
-    message("Note: The following bins from your feed/water bin lists are not included in the layout: ", 
-            paste(missing_bins, collapse = ", "))
+    message(
+      "Note: The following bins from your feed/water bin lists are not included in the layout. Please ignore this message if this is intended. Otherwise you need to update your bin layout: ",
+      paste(missing_bins, collapse = ", ")
+    )
   }
-  
+
   if (length(extra_bins) > 0) {
-    message("Note: The following bins in the layout are not in your feed/water bin lists: ", 
-            paste(extra_bins, collapse = ", "))
+    message(
+      "Note: The following bins in the layout are not in your feed/water bin lists, please udpate your bin lists as needed: ",
+      paste(extra_bins, collapse = ", ")
+    )
   }
-  
+
   old <- the$bin_layout
   the$bin_layout <- new_layout
   invisible(old)
