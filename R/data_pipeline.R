@@ -161,6 +161,11 @@ process_water <- function(file,
     header       = header
   )
 
+  # Early exit for empty data frames (no rows to rename)
+  if (nrow(out) == 0L) {
+    return(out)
+  }
+
   return(rename_bins(out, bins = bins, bin_offset = bin_offset, bin_col = bin_col))
 }
 
@@ -418,18 +423,31 @@ process_data_generic <- function(
   # ------ main logic ---------#
   df <- read_data_safely(file, sep = sep, header = header)
 
+  # — Early exit for empty data —
+  if (nrow(df) == 0L) {
+    if (!is.null(select_cols)) {
+      empty <- as.data.frame(matrix(ncol = length(select_cols), nrow = 0))
+      names(empty) <- select_cols
+    } else {
+      empty <- df
+    }
+
+    return(empty)
+  }
+
+
   # — Assign column names if needed —
   if (!header) {
     if (length(col_names) != ncol(df)) {
       message(paste0(
-        "Column name mismatch in file: ", file, 
+        "Column name mismatch in file: ", file,
         ". Expected ", length(col_names), " columns, but found ", ncol(df), " columns in the actual file. ",
         "Auto-adjusting column names to match the actual number of columns in the file."
       ))
-      
+
       if (length(col_names) < ncol(df)) {
         # More columns in data than col_names: keep only the first length(col_names) columns
-        df <- df[, 1:length(col_names), drop = FALSE]
+        df <- df[, seq_len(length(col_names)), drop = FALSE]
         message(paste0("Kept the first ", length(col_names), " columns in the file and discarded the rest."))
       } else {
         # More col_names than columns in data: add NA columns to match length(col_names)
@@ -442,17 +460,6 @@ process_data_generic <- function(
     colnames(df) <- col_names
   }
 
-  # — Early exit for empty data —
-  if (nrow(df) == 0L) {
-    if (!is.null(select_cols)) {
-      empty <- as.data.frame(matrix(ncol = length(select_cols), nrow = 0))
-      names(empty) <- select_cols
-    } else {
-      empty <- df
-    }
-
-    return(empty)
-  }
 
   # — Determine select_cols default —
   if (is.null(select_cols)) {
