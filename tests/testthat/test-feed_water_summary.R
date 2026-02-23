@@ -323,7 +323,7 @@ test_that("feed_water_summary handles lists of data frames", {
       water_list,
       warn
     ),
-    "All data frames in `feed` list must have a 'date' column"
+    "All non-empty data frames in `feed` list must have a 'date' column"
   )
   
   expect_error(
@@ -332,7 +332,7 @@ test_that("feed_water_summary handles lists of data frames", {
       list("2024-01-01" = tibble::tibble(cow = "A")),
       warn
     ),
-    "All data frames in `water` list must have a 'date' column"
+    "All non-empty data frames in `water` list must have a 'date' column"
   )
   
   # Test error handling for invalid data frame elements
@@ -486,4 +486,122 @@ test_that("feed_water_summary handles multiple visits per cow per day", {
   expect_true(grepl("A, 25", result$warn$low_daily_feed_intake_cows[3])) # A's feed intake < 50
   expect_true(grepl("C, 195", result$warn$high_daily_feed_intake_cows[3])) # C > 100
   expect_true(grepl("C, 320", result$warn$high_daily_water_intake_cows[3])) # C's water intake > 300
+})
+
+test_that("feed_water_summary handles empty data frames in lists", {
+  # Setup test data with some empty data frames
+  feed_list <- list(
+    "2024-01-01" = tibble::tibble(
+      date = as.Date("2024-01-01"),
+      cow = c("A", "B"),
+      intake = c(20, 80),
+      duration = c(200, 300)
+    ),
+    "2024-01-02" = tibble::tibble(),  # Empty data frame
+    "2024-01-03" = tibble::tibble(
+      date = as.Date("2024-01-03"),
+      cow = c("A", "C"),
+      intake = c(25, 85),
+      duration = c(210, 310)
+    )
+  )
+
+  water_list <- list(
+    "2024-01-01" = tibble::tibble(
+      date = as.Date("2024-01-01"),
+      cow = c("A", "B"),
+      intake = c(50, 200),
+      duration = c(100, 150)
+    ),
+    "2024-01-02" = tibble::tibble(),  # Empty data frame
+    "2024-01-03" = tibble::tibble()   # Empty data frame
+  )
+
+  warn <- tibble::tibble(
+    date = as.Date(c("2024-01-01", "2024-01-02", "2024-01-03")),
+    low_daily_feed_intake_cows = NA_character_,
+    high_daily_feed_intake_cows = NA_character_,
+    low_daily_water_intake_cows = NA_character_,
+    high_daily_water_intake_cows = NA_character_
+  )
+
+  # Test with lists containing empty data frames
+  result <- feed_water_summary(
+    feed_list, 
+    water_list, 
+    warn,
+    cfg = qc_config(),
+    id_col = "cow",
+    intake_col = "intake",
+    dur_col = "duration"
+  )
+
+  # Assertions
+  expect_true(is.list(result))
+  expect_true(all(c("summary", "warn") %in% names(result)))
+  
+  # Should have data for 2 dates (01-01 and 01-03 for feed, only 01-01 for water)
+  expect_equal(nrow(result$summary), 4)  # 2 cows on 01-01 + 2 cows on 01-03
+  
+  # Check if dates are preserved
+  expect_equal(
+    sort(unique(result$summary$date)), 
+    as.Date(c("2024-01-01", "2024-01-03"))
+  )
+  
+  # Check water intake is 0 for date 01-03 (since water data was empty)
+  day3_data <- result$summary[result$summary$date == as.Date("2024-01-03"), ]
+  expect_true(all(day3_data$water_intake == 0))
+  expect_true(all(day3_data$water_visits == 0))
+})
+
+test_that("feed_water_summary handles all empty data frames in lists", {
+  # Setup with all empty data frames
+  feed_list <- list(
+    "2024-01-01" = tibble::tibble(),
+    "2024-01-02" = tibble::tibble()
+  )
+
+  water_list <- list(
+    "2024-01-01" = tibble::tibble(
+      date = as.Date("2024-01-01"),
+      cow = c("A", "B"),
+      intake = c(50, 200),
+      duration = c(100, 150)
+    ),
+    "2024-01-02" = tibble::tibble(
+      date = as.Date("2024-01-02"),
+      cow = c("A", "C"),
+      intake = c(55, 210),
+      duration = c(110, 160)
+    )
+  )
+
+  warn <- tibble::tibble(
+    date = as.Date(c("2024-01-01", "2024-01-02")),
+    low_daily_feed_intake_cows = NA_character_,
+    high_daily_feed_intake_cows = NA_character_,
+    low_daily_water_intake_cows = NA_character_,
+    high_daily_water_intake_cows = NA_character_
+  )
+
+  # Test with all feed data frames empty
+  result <- feed_water_summary(
+    feed_list, 
+    water_list, 
+    warn,
+    cfg = qc_config(),
+    id_col = "cow",
+    intake_col = "intake",
+    dur_col = "duration"
+  )
+
+  # Should still get water data
+  expect_true(is.list(result))
+  expect_true(all(c("summary", "warn") %in% names(result)))
+  expect_equal(nrow(result$summary), 4)  # 2 dates, 2-3 cows per date
+  
+  # All feed values should be 0 (columns exist but filled with 0s from join)
+  expect_true(all(result$summary$water_intake > 0))
+  expect_true(all(result$summary$water_visits > 0))
 })

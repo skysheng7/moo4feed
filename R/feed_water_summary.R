@@ -114,8 +114,9 @@ feed_water_summary <- function(feed = NULL,
       if (!all(sapply(feed, is.data.frame))) {
         stop("All elements in `feed` list must be data frames.")
       }
-      if (!all(sapply(feed, function(df) "date" %in% names(df)))) {
-        stop("All data frames in `feed` list must have a 'date' column.")
+      non_empty_feed <- feed[sapply(feed, function(df) nrow(df) > 0)]
+      if (length(non_empty_feed) > 0 && !all(sapply(non_empty_feed, function(df) "date" %in% names(df)))) {
+        stop("All non-empty data frames in `feed` list must have a 'date' column.")
       }
     }
   }
@@ -129,8 +130,9 @@ feed_water_summary <- function(feed = NULL,
       if (!all(sapply(water, is.data.frame))) {
         stop("All elements in `water` list must be data frames.")
       }
-      if (!all(sapply(water, function(df) "date" %in% names(df)))) {
-        stop("All data frames in `water` list must have a 'date' column.")
+      non_empty_water <- water[sapply(water, function(df) nrow(df) > 0)]
+      if (length(non_empty_water) > 0 && !all(sapply(non_empty_water, function(df) "date" %in% names(df)))) {
+        stop("All non-empty data frames in `water` list must have a 'date' column.")
       }
     }
   }
@@ -138,31 +140,51 @@ feed_water_summary <- function(feed = NULL,
   list_to_merge <- list()
 
   if (!is.null(feed)) {
-    # If feed is a list of data frames, merge it into a single data frame
-    feed_combined <- if (is.list(feed) && !inherits(feed, "data.frame")) merge_list_df(feed) else feed
-    feed_sum <- sum_visits(feed_combined, type = "feed", 
-                          id_col = id_col, 
-                          intake_col = intake_col, 
-                          dur_col = dur_col)
-    
-    if (!is.null(warn)) {
-      warn <- qc_check_intake(feed_sum, warn, type = "feed", cfg = cfg, id_col = id_col)
+    # If feed is a list of data frames, filter out empty ones and merge
+    if (is.list(feed) && !inherits(feed, "data.frame")) {
+      feed <- feed[sapply(feed, function(df) nrow(df) > 0)]
+      if (length(feed) == 0) {
+        feed <- NULL
+      } else {
+        feed <- merge_list_df(feed)
+      }
     }
-    list_to_merge <- append(list_to_merge, list(feed_sum))
+    
+    if (!is.null(feed) && nrow(feed) > 0) {
+      feed_sum <- sum_visits(feed, type = "feed", 
+                            id_col = id_col, 
+                            intake_col = intake_col, 
+                            dur_col = dur_col)
+      
+      if (!is.null(warn)) {
+        warn <- qc_check_intake(feed_sum, warn, type = "feed", cfg = cfg, id_col = id_col)
+      }
+      list_to_merge <- append(list_to_merge, list(feed_sum))
+    }
   }
 
   if (!is.null(water)) {
-    # If water is a list of data frames, merge it into a single data frame
-    water_combined <- if (is.list(water) && !inherits(water, "data.frame")) merge_list_df(water) else water
-    water_sum <- sum_visits(water_combined, type = "water", 
-                           id_col = id_col, 
-                           intake_col = intake_col, 
-                           dur_col = dur_col)
-    
-    if (!is.null(warn)) {
-      warn <- qc_check_intake(water_sum, warn, type = "water", cfg = cfg, id_col = id_col)
+    # If water is a list of data frames, filter out empty ones and merge
+    if (is.list(water) && !inherits(water, "data.frame")) {
+      water <- water[sapply(water, function(df) nrow(df) > 0)]
+      if (length(water) == 0) {
+        water <- NULL
+      } else {
+        water <- merge_list_df(water)
+      }
     }
-    list_to_merge <- append(list_to_merge, list(water_sum))
+    
+    if (!is.null(water) && nrow(water) > 0) {
+      water_sum <- sum_visits(water, type = "water", 
+                             id_col = id_col, 
+                             intake_col = intake_col, 
+                             dur_col = dur_col)
+      
+      if (!is.null(warn)) {
+        warn <- qc_check_intake(water_sum, warn, type = "water", cfg = cfg, id_col = id_col)
+      }
+      list_to_merge <- append(list_to_merge, list(water_sum))
+    }
   }
 
   if (length(list_to_merge) > 0) {
