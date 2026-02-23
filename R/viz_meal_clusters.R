@@ -398,6 +398,18 @@ create_nested_plot_list <- function(combined_data,
   # Get unique animals
   unique_animals <- unique(combined_data[[id_col]])
   
+  # Count total animal-day combinations for progress bar
+  total_combinations <- combined_data |>
+    dplyr::distinct(.data[[id_col]], date) |>
+    nrow()
+  
+  # Initialize progress bar
+  pb_id <- cli::cli_progress_bar(
+    format = "Creating meal plots {cli::pb_current}/{cli::pb_total} | ETA: {cli::pb_eta}",
+    total = total_combinations,
+    clear = FALSE
+  )
+  
   # Create nested list structure
   plot_list <- list()
   
@@ -421,10 +433,16 @@ create_nested_plot_list <- function(combined_data,
       # Use formatted date string as key instead of date object
       date_key <- as.character(unique_dates[date_index])
       animal_plots[[date_key]] <- plot
+      
+      # Update progress after each plot
+      cli::cli_progress_update(id = pb_id)
     }
     
     plot_list[[as.character(animal)]] <- animal_plots
   }
+  
+  # Complete progress bar
+  cli::cli_progress_done(id = pb_id)
   
   return(plot_list)
 } 

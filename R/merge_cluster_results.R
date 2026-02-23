@@ -67,10 +67,20 @@ merge_cluster_results <- function(visit_data,
       stop("All items in visit_data list must be dataframes")
     }
     
-    # Apply helper function to each dataframe in the list
-    result_list <- lapply(visit_data, function(df) {
-      merge_cluster_results_single(df, meal_results, id_col, start_col, end_col, tz)
+    # Apply helper function to each dataframe in the list with progress bar
+    n <- length(visit_data)
+    pb_id <- cli::cli_progress_bar(
+      format = "Merging cluster results {cli::pb_current}/{cli::pb_total} | ETA: {cli::pb_eta}",
+      total = n,
+      clear = FALSE
+    )
+    
+    result_list <- lapply(seq_along(visit_data), function(i) {
+      cli::cli_progress_update(id = pb_id)
+      merge_cluster_results_single(visit_data[[i]], meal_results, id_col, start_col, end_col, tz)
     })
+    
+    cli::cli_progress_done(id = pb_id)
     
     return(result_list)
     

@@ -13,25 +13,25 @@ calculate_gaps <- function(start_times, end_times) {
   if (length(start_times) <= 1) {
     return(numeric(0))
   }
-  
+
   if (length(start_times) != length(end_times)) {
     stop("start_times and end_times must have the same length")
   }
-  
+
   # Sort by start times and get corresponding end times
   sorted_indices <- order(start_times)
   sorted_start_times <- start_times[sorted_indices]
   sorted_end_times <- end_times[sorted_indices]
-  
+
   # Calculate gaps between end of previous visit and start of current visit
   gaps <- numeric(length(sorted_start_times) - 1)
   for (i in 2:length(sorted_start_times)) {
     gaps[i - 1] <- sorted_start_times[i] - sorted_end_times[i - 1]
   }
-  
+
   # Remove negative gaps (overlapping visits)
   gaps <- gaps[gaps >= 0]
-  
+
   return(gaps)
 }
 
@@ -50,41 +50,43 @@ calculate_gaps_by_animal <- function(data, id_col = id_col2(), start_col = start
   if (nrow(data) <= 1) {
     return(numeric(0))
   }
-  
+
   # Add date column if not present
   if (!"date" %in% names(data)) {
     data$date <- lubridate::date(data[[start_col]])
   }
-  
+
   # Check for NA values in date column
   if (any(is.na(data$date))) {
     n_na <- sum(is.na(data$date))
     message("Removing ", n_na, " rows with NA in date column")
     data <- data[!is.na(data$date), ]
   }
-  
+
   # Convert times to minutes from midnight
   data$start_minutes <- convert_times_to_minutes(data[[start_col]], tz = tz)
   data$end_minutes <- convert_times_to_minutes(data[[end_col]], tz = tz)
-  
+
   # Check for NA values in converted minutes
   if (any(is.na(data$start_minutes)) || any(is.na(data$end_minutes))) {
     n_na_start <- sum(is.na(data$start_minutes))
     n_na_end <- sum(is.na(data$end_minutes))
     if (n_na_start > 0 || n_na_end > 0) {
-      message("Removing ", n_na_start, " rows with NA in start times and ", 
-              n_na_end, " rows with NA in end times")
+      message(
+        "Removing ", n_na_start, " rows with NA in start times and ",
+        n_na_end, " rows with NA in end times"
+      )
     }
     # Remove rows with NA in either start or end minutes
     valid_rows <- !is.na(data$start_minutes) & !is.na(data$end_minutes)
     data <- data[valid_rows, ]
   }
-  
+
   if (nrow(data) <= 1) {
     message("After removing NA values, insufficient data remains")
     return(numeric(0))
   }
-  
+
   # Group by animal and date, calculate gaps within each group
   all_gaps <- data |>
     dplyr::group_by(.data[[id_col]], date) |>
@@ -95,7 +97,7 @@ calculate_gaps_by_animal <- function(data, id_col = id_col2(), start_col = start
     ) |>
     dplyr::pull(gaps) |>
     unlist()
-  
+
   # Filter out any remaining NA or infinite values from gaps
   if (length(all_gaps) > 0) {
     valid_gaps <- !is.na(all_gaps) & is.finite(all_gaps)
@@ -105,6 +107,6 @@ calculate_gaps_by_animal <- function(data, id_col = id_col2(), start_col = start
       all_gaps <- all_gaps[valid_gaps]
     }
   }
-  
+
   return(all_gaps)
-} 
+}
