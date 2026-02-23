@@ -9,7 +9,9 @@
   
 ## Overview
 
-**moo4feed** is an R package designed to extract novel individual-level traits from raw feeding and drinking data collected through precision livestock farming systems. The package aims to support animal welfare research and data-driven monitoring by enabling reproducible, scalable analysis workflows.
+**moo4feed** is an R package designed to extract novel individual-level traits from raw feeding and drinking data collected through precision livestock farming systems. 
+
+The package aims to support animal welfare research and data-driven monitoring by enabling reproducible, scalable analysis workflows.
 
 ## Installation
 
