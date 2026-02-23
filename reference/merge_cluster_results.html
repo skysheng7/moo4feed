@@ -117,9 +117,8 @@ match any meal are considered outliers and assigned meal_id = 0.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Cluster meals first (all_fed is included in the package)</span></span></span>
 <span class="r-in"><span><span class="va">meals</span> <span class="op">&lt;-</span> <span class="fu"><a href="cluster_meals.html">cluster_meals</a></span><span class="op">(</span><span class="va">all_fed</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Calculating optimal meal interval for all animals...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ <span style="color: #00BB00;">■■■■■■■■■■■■■■                  </span> 20/47 [ 43%] | ETA:  1s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■      </span> 39/47 [ 83%] | ETA:  0s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 47/47 [100%] | ETA:  0s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ <span style="color: #00BB00;">■■■■■■■■■■■■■■                  </span> 21/47 [ 45%] | ETA:  1s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 47/47 [100%] | ETA:  0s</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Merge results with original data</span></span></span>
 <span class="r-in"><span><span class="va">merged_data</span> <span class="op">&lt;-</span> <span class="fu">merge_cluster_results</span><span class="op">(</span><span class="va">all_fed</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="va">meals</span><span class="op">)</span></span></span>
