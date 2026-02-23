@@ -70,15 +70,28 @@ to match your data structure:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Configure global variables for your data structure</span></span>
 <span><span class="fu"><a href="../reference/set_global_cols.html">set_global_cols</a></span><span class="op">(</span></span>
-<span>  id_col <span class="op">=</span> <span class="st">"cow"</span>,           <span class="co"># Animal ID column name</span></span>
-<span>  start_col <span class="op">=</span> <span class="st">"start"</span>,      <span class="co"># Visit start time column</span></span>
-<span>  end_col <span class="op">=</span> <span class="st">"end"</span>,          <span class="co"># Visit end time column</span></span>
-<span>  bin_col <span class="op">=</span> <span class="st">"bin"</span>,          <span class="co"># Bin/feeder ID column</span></span>
-<span>  start_weight_col <span class="op">=</span> <span class="st">"start_weight"</span>,  <span class="co"># Start weight column</span></span>
-<span>  end_weight_col <span class="op">=</span> <span class="st">"end_weight"</span>,      <span class="co"># End weight column</span></span>
-<span>  tz <span class="op">=</span> <span class="st">"America/Vancouver"</span>, <span class="co"># Your timezone</span></span>
-<span>  bins_feed <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">30</span>,         <span class="co"># Feed bin IDs</span></span>
-<span>  bins_wat <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,           <span class="co"># Water bin IDs</span></span>
+<span>  <span class="co"># Time zone</span></span>
+<span>  tz <span class="op">=</span> <span class="st">"America/Vancouver"</span>,        <span class="co"># Your timezone</span></span>
+<span>  </span>
+<span>  <span class="co"># Column names in your cleaned data</span></span>
+<span>  id_col <span class="op">=</span> <span class="st">"cow"</span>,</span>
+<span>  trans_col <span class="op">=</span> <span class="st">"transponder"</span>,</span>
+<span>  start_col <span class="op">=</span> <span class="st">"start"</span>,</span>
+<span>  end_col <span class="op">=</span> <span class="st">"end"</span>,</span>
+<span>  bin_col <span class="op">=</span> <span class="st">"bin"</span>,</span>
+<span>  dur_col <span class="op">=</span> <span class="st">"duration"</span>,</span>
+<span>  intake_col <span class="op">=</span> <span class="st">"intake"</span>,</span>
+<span>  start_weight_col <span class="op">=</span> <span class="st">"start_weight"</span>,</span>
+<span>  end_weight_col <span class="op">=</span> <span class="st">"end_weight"</span>,</span>
+<span>  </span>
+<span>  <span class="co"># Bin settings</span></span>
+<span>  bins_feed <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">30</span>,                <span class="co"># All feed bin IDs in your barn</span></span>
+<span>  bins_wat <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,                  <span class="co"># All water bin IDs in your barn</span></span>
+<span>  bin_offset <span class="op">=</span> <span class="fl">100</span>,                <span class="co"># Add this to water bin IDs to avoid conflicts</span></span>
+<span>  </span>
+<span>  <span class="co"># Physical bin layout for spatial neighbor analysis</span></span>
+<span>  <span class="co"># Rows separated by "\n", bins within rows separated by "-"</span></span>
+<span>  <span class="co"># Only bins in the same row are considered spatial neighbors (left/right adjacency)</span></span>
 <span>  bin_layout <span class="op">=</span> <span class="st">"1-2-3-4-5-6-101-102-7-8-9-10-11-12-13-14-15-16-17-18-103-104-19-20-21-22-23-24-25-26-27-28-29-30-105"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -680,12 +693,15 @@ are feed bins, and bins 101-105 are water bins (with offset of 100).</p>
 <span>  tz <span class="op">=</span> <span class="st">"America/Vancouver"</span>,        <span class="co"># Your timezone</span></span>
 <span>  </span>
 <span>  <span class="co"># Column names in your cleaned data</span></span>
-<span>  id_col <span class="op">=</span> <span class="st">"cow"</span>,                  <span class="co"># Animal ID column name</span></span>
-<span>  start_col <span class="op">=</span> <span class="st">"start"</span>,             <span class="co"># Visit start time column</span></span>
-<span>  end_col <span class="op">=</span> <span class="st">"end"</span>,                 <span class="co"># Visit end time column</span></span>
-<span>  bin_col <span class="op">=</span> <span class="st">"bin"</span>,                 <span class="co"># Bin/feeder ID column</span></span>
-<span>  start_weight_col <span class="op">=</span> <span class="st">"start_weight"</span>,  <span class="co"># Start weight column (feed only)</span></span>
-<span>  end_weight_col <span class="op">=</span> <span class="st">"end_weight"</span>,      <span class="co"># End weight column (feed only)</span></span>
+<span>  id_col <span class="op">=</span> <span class="st">"cow"</span>,</span>
+<span>  trans_col <span class="op">=</span> <span class="st">"transponder"</span>,</span>
+<span>  start_col <span class="op">=</span> <span class="st">"start"</span>,</span>
+<span>  end_col <span class="op">=</span> <span class="st">"end"</span>,</span>
+<span>  bin_col <span class="op">=</span> <span class="st">"bin"</span>,</span>
+<span>  dur_col <span class="op">=</span> <span class="st">"duration"</span>,</span>
+<span>  intake_col <span class="op">=</span> <span class="st">"intake"</span>,</span>
+<span>  start_weight_col <span class="op">=</span> <span class="st">"start_weight"</span>,</span>
+<span>  end_weight_col <span class="op">=</span> <span class="st">"end_weight"</span>,</span>
 <span>  </span>
 <span>  <span class="co"># Bin settings</span></span>
 <span>  bins_feed <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">30</span>,                <span class="co"># All feed bin IDs in your barn</span></span>

@@ -14,13 +14,24 @@ your data structure:
 ``` r
 # Configure global variables for your data structure
 set_global_cols(
-  id_col = "cow",           # Animal ID column name
-  start_col = "start",      # Visit start time column  
-  end_col = "end",          # Visit end time column
-  bin_col = "bin",          # Bin/feeder ID column
-  intake_col = "intake",    # Feed intake amount column
-  dur_col = "duration",     # Visit duration column
-  tz = "America/Vancouver"  # Your timezone
+  # Time zone
+  tz = "America/Vancouver",
+  
+  # Column names in your data files
+  id_col = "cow",
+  trans_col = "transponder",
+  start_col = "start",
+  end_col = "end",
+  bin_col = "bin",
+  dur_col = "duration",
+  intake_col = "intake",
+  start_weight_col = "start_weight",
+  end_weight_col = "end_weight",
+  
+  # Bin settings
+  bins_feed = 1:30,
+  bins_wat = 1:5,
+  bin_offset = 100
 )
 ```
 
@@ -203,13 +214,24 @@ library(dplyr)
 
 # Set up your column names and timezone (modify these!)
 set_global_cols(
-  id_col = "cow",           # Your animal ID column
-  start_col = "start",      # Visit start time column  
-  end_col = "end",          # Visit end time column
-  bin_col = "bin",          # Bin/feeder ID column
-  intake_col = "intake",    # Feed intake amount column
-  dur_col = "duration",     # Visit duration column
-  tz = "America/Vancouver"  # Your timezone
+  # Time zone
+  tz = "America/Vancouver",
+  
+  # Column names in your data files
+  id_col = "cow",
+  trans_col = "transponder",
+  start_col = "start",
+  end_col = "end",
+  bin_col = "bin",
+  dur_col = "duration",
+  intake_col = "intake",
+  start_weight_col = "start_weight",
+  end_weight_col = "end_weight",
+  
+  # Bin settings
+  bins_feed = 1:30,
+  bins_wat = 1:5,
+  bin_offset = 100
 )
 
 # ---- STEP 1: Load Your Data ----

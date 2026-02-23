@@ -70,13 +70,24 @@ match your data structure:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Configure global variables for your data structure</span></span>
 <span><span class="fu"><a href="../reference/set_global_cols.html">set_global_cols</a></span><span class="op">(</span></span>
-<span>  id_col <span class="op">=</span> <span class="st">"cow"</span>,           <span class="co"># Animal ID column name</span></span>
-<span>  start_col <span class="op">=</span> <span class="st">"start"</span>,      <span class="co"># Visit start time column  </span></span>
-<span>  end_col <span class="op">=</span> <span class="st">"end"</span>,          <span class="co"># Visit end time column</span></span>
-<span>  bin_col <span class="op">=</span> <span class="st">"bin"</span>,          <span class="co"># Bin/feeder ID column</span></span>
-<span>  intake_col <span class="op">=</span> <span class="st">"intake"</span>,    <span class="co"># Feed intake amount column</span></span>
-<span>  dur_col <span class="op">=</span> <span class="st">"duration"</span>,     <span class="co"># Visit duration column</span></span>
-<span>  tz <span class="op">=</span> <span class="st">"America/Vancouver"</span>  <span class="co"># Your timezone</span></span>
+<span>  <span class="co"># Time zone</span></span>
+<span>  tz <span class="op">=</span> <span class="st">"America/Vancouver"</span>,</span>
+<span>  </span>
+<span>  <span class="co"># Column names in your data files</span></span>
+<span>  id_col <span class="op">=</span> <span class="st">"cow"</span>,</span>
+<span>  trans_col <span class="op">=</span> <span class="st">"transponder"</span>,</span>
+<span>  start_col <span class="op">=</span> <span class="st">"start"</span>,</span>
+<span>  end_col <span class="op">=</span> <span class="st">"end"</span>,</span>
+<span>  bin_col <span class="op">=</span> <span class="st">"bin"</span>,</span>
+<span>  dur_col <span class="op">=</span> <span class="st">"duration"</span>,</span>
+<span>  intake_col <span class="op">=</span> <span class="st">"intake"</span>,</span>
+<span>  start_weight_col <span class="op">=</span> <span class="st">"start_weight"</span>,</span>
+<span>  end_weight_col <span class="op">=</span> <span class="st">"end_weight"</span>,</span>
+<span>  </span>
+<span>  <span class="co"># Bin settings</span></span>
+<span>  bins_feed <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">30</span>,</span>
+<span>  bins_wat <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,</span>
+<span>  bin_offset <span class="op">=</span> <span class="fl">100</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -361,13 +372,24 @@ events occur throughout the day</p></li>
 <span></span>
 <span><span class="co"># Set up your column names and timezone (modify these!)</span></span>
 <span><span class="fu"><a href="../reference/set_global_cols.html">set_global_cols</a></span><span class="op">(</span></span>
-<span>  id_col <span class="op">=</span> <span class="st">"cow"</span>,           <span class="co"># Your animal ID column</span></span>
-<span>  start_col <span class="op">=</span> <span class="st">"start"</span>,      <span class="co"># Visit start time column  </span></span>
-<span>  end_col <span class="op">=</span> <span class="st">"end"</span>,          <span class="co"># Visit end time column</span></span>
-<span>  bin_col <span class="op">=</span> <span class="st">"bin"</span>,          <span class="co"># Bin/feeder ID column</span></span>
-<span>  intake_col <span class="op">=</span> <span class="st">"intake"</span>,    <span class="co"># Feed intake amount column</span></span>
-<span>  dur_col <span class="op">=</span> <span class="st">"duration"</span>,     <span class="co"># Visit duration column</span></span>
-<span>  tz <span class="op">=</span> <span class="st">"America/Vancouver"</span>  <span class="co"># Your timezone</span></span>
+<span>  <span class="co"># Time zone</span></span>
+<span>  tz <span class="op">=</span> <span class="st">"America/Vancouver"</span>,</span>
+<span>  </span>
+<span>  <span class="co"># Column names in your data files</span></span>
+<span>  id_col <span class="op">=</span> <span class="st">"cow"</span>,</span>
+<span>  trans_col <span class="op">=</span> <span class="st">"transponder"</span>,</span>
+<span>  start_col <span class="op">=</span> <span class="st">"start"</span>,</span>
+<span>  end_col <span class="op">=</span> <span class="st">"end"</span>,</span>
+<span>  bin_col <span class="op">=</span> <span class="st">"bin"</span>,</span>
+<span>  dur_col <span class="op">=</span> <span class="st">"duration"</span>,</span>
+<span>  intake_col <span class="op">=</span> <span class="st">"intake"</span>,</span>
+<span>  start_weight_col <span class="op">=</span> <span class="st">"start_weight"</span>,</span>
+<span>  end_weight_col <span class="op">=</span> <span class="st">"end_weight"</span>,</span>
+<span>  </span>
+<span>  <span class="co"># Bin settings</span></span>
+<span>  bins_feed <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">30</span>,</span>
+<span>  bins_wat <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,</span>
+<span>  bin_offset <span class="op">=</span> <span class="fl">100</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># ---- STEP 1: Load Your Data ----</span></span>

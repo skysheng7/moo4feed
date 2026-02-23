@@ -14,15 +14,28 @@ match your data structure:
 ``` r
 # Configure global variables for your data structure
 set_global_cols(
-  id_col = "cow",           # Animal ID column name
-  start_col = "start",      # Visit start time column
-  end_col = "end",          # Visit end time column
-  bin_col = "bin",          # Bin/feeder ID column
-  start_weight_col = "start_weight",  # Start weight column
-  end_weight_col = "end_weight",      # End weight column
-  tz = "America/Vancouver", # Your timezone
-  bins_feed = 1:30,         # Feed bin IDs
-  bins_wat = 1:5,           # Water bin IDs
+  # Time zone
+  tz = "America/Vancouver",        # Your timezone
+  
+  # Column names in your cleaned data
+  id_col = "cow",
+  trans_col = "transponder",
+  start_col = "start",
+  end_col = "end",
+  bin_col = "bin",
+  dur_col = "duration",
+  intake_col = "intake",
+  start_weight_col = "start_weight",
+  end_weight_col = "end_weight",
+  
+  # Bin settings
+  bins_feed = 1:30,                # All feed bin IDs in your barn
+  bins_wat = 1:5,                  # All water bin IDs in your barn
+  bin_offset = 100,                # Add this to water bin IDs to avoid conflicts
+  
+  # Physical bin layout for spatial neighbor analysis
+  # Rows separated by "\n", bins within rows separated by "-"
+  # Only bins in the same row are considered spatial neighbors (left/right adjacency)
   bin_layout = "1-2-3-4-5-6-101-102-7-8-9-10-11-12-13-14-15-16-17-18-103-104-19-20-21-22-23-24-25-26-27-28-29-30-105"
 )
 ```
@@ -609,12 +622,15 @@ set_global_cols(
   tz = "America/Vancouver",        # Your timezone
   
   # Column names in your cleaned data
-  id_col = "cow",                  # Animal ID column name
-  start_col = "start",             # Visit start time column
-  end_col = "end",                 # Visit end time column
-  bin_col = "bin",                 # Bin/feeder ID column
-  start_weight_col = "start_weight",  # Start weight column (feed only)
-  end_weight_col = "end_weight",      # End weight column (feed only)
+  id_col = "cow",
+  trans_col = "transponder",
+  start_col = "start",
+  end_col = "end",
+  bin_col = "bin",
+  dur_col = "duration",
+  intake_col = "intake",
+  start_weight_col = "start_weight",
+  end_weight_col = "end_weight",
   
   # Bin settings
   bins_feed = 1:30,                # All feed bin IDs in your barn
