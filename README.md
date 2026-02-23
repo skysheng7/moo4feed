@@ -13,8 +13,6 @@
 
 The package aims to support animal welfare research and data-driven monitoring by enabling reproducible, scalable analysis workflows.
 
-**Release:** 0.1.1
-
 ## Installation
 
 To install the development version of **moo4feed** from GitHub, run:
