@@ -88,6 +88,7 @@ viz_eps_percentile <- function(data,
   }
   
   # Calculate optimal eps using percentile method
+  cli::cli_alert_info("Calculating optimal meal interval using percentile method...")
   optimal_eps <- meal_interval(data, 
                                method = "percentile", 
                                percentile = percentile,
@@ -130,6 +131,7 @@ viz_eps_percentile <- function(data,
   }
   
   # Calculate gaps using existing helper function
+  cli::cli_alert_info("Calculating time gaps between visits...")
   gaps <- calculate_gaps_by_animal(combined_data, id_col, start_col, end_col, tz)
   
   if (length(gaps) == 0) {
@@ -165,6 +167,8 @@ viz_eps_percentile <- function(data,
       axis.title = ggplot2::element_text(size = 11),
       axis.text = ggplot2::element_text(size = 10)
     )
+  
+  cli::cli_alert_success("Visualization complete!")
   
   return(p)
 } 

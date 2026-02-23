@@ -230,23 +230,41 @@ cluster_meals_by_animal_day <- function(combined_data, eps, min_pts, method, per
                                        id_col, start_col, end_col, bin_col, intake_col, dur_col, tz) {
   
   # Group by animal and date, process each combination
-  results <- combined_data |>
+  animal_day_groups <- combined_data |>
     dplyr::group_by(.data[[id_col]], date) |>
-    dplyr::group_split() |>
-    lapply(function(animal_day_df) {
-      
-      # Determine eps for this specific animal-day if not provided
-      current_eps <- eps
-      if (is.null(current_eps)) {
-        # Calculate gaps for just this animal-day
-        gaps <- calculate_gaps_by_animal(animal_day_df, id_col, start_col, end_col, tz)
-        current_eps <- optimal_interval_from_gaps(gaps, method, percentile, lower_bound, upper_bound, use_log_transform, log_multiplier, log_offset)
-      }
-      
-      # Cluster meals for this animal-day
-      cluster_meals_cow_day(animal_day_df, current_eps, min_pts, 
-                           id_col, start_col, end_col, bin_col, intake_col, dur_col, tz)
-    })
+    dplyr::group_split()
+  
+  n_groups <- length(animal_day_groups)
+  
+  # Initialize progress bar
+  cli::cli_progress_bar(
+    "Clustering meals (per animal-day)",
+    total = n_groups,
+    format = "{cli::pb_spin} {cli::pb_bar} {cli::pb_current}/{cli::pb_total} [{cli::pb_percent}] | ETA: {cli::pb_eta}"
+  )
+  
+  results <- vector("list", n_groups)
+  for (i in seq_len(n_groups)) {
+    animal_day_df <- animal_day_groups[[i]]
+    
+    # Determine eps for this specific animal-day if not provided
+    current_eps <- eps
+    if (is.null(current_eps)) {
+      # Calculate gaps for just this animal-day
+      gaps <- calculate_gaps_by_animal(animal_day_df, id_col, start_col, end_col, tz)
+      current_eps <- optimal_interval_from_gaps(gaps, method, percentile, lower_bound, upper_bound, use_log_transform, log_multiplier, log_offset)
+    }
+    
+    # Cluster meals for this animal-day
+    results[[i]] <- cluster_meals_cow_day(animal_day_df, current_eps, min_pts, 
+                         id_col, start_col, end_col, bin_col, intake_col, dur_col, tz)
+    
+    # Update progress
+    cli::cli_progress_update()
+  }
+  
+  # Complete progress bar
+  cli::cli_progress_done()
   
   # Combine results
   if (length(results) > 0) {
@@ -275,9 +293,19 @@ cluster_meals_by_animal <- function(combined_data, eps, min_pts, method, percent
   
   # Get unique animals
   unique_animals <- unique(combined_data[[id_col]])
+  n_animals <- length(unique_animals)
+  
+  # Initialize progress bar
+  cli::cli_progress_bar(
+    "Clustering meals (per animal)",
+    total = n_animals,
+    format = "{cli::pb_spin} {cli::pb_bar} {cli::pb_current}/{cli::pb_total} [{cli::pb_percent}] | ETA: {cli::pb_eta}"
+  )
   
   # Process each animal
-  animal_results <- lapply(unique_animals, function(animal_id) {
+  animal_results <- vector("list", n_animals)
+  for (i in seq_len(n_animals)) {
+    animal_id <- unique_animals[i]
     
     # Get all data for this animal
     animal_data <- combined_data[combined_data[[id_col]] == animal_id, ]
@@ -301,11 +329,17 @@ cluster_meals_by_animal <- function(combined_data, eps, min_pts, method, percent
     
     # Combine results for this animal
     if (length(animal_day_results) > 0) {
-      do.call(rbind, animal_day_results)
+      animal_results[[i]] <- do.call(rbind, animal_day_results)
     } else {
-      create_empty_meal_df(id_col, tz)
+      animal_results[[i]] <- create_empty_meal_df(id_col, tz)
     }
-  })
+    
+    # Update progress
+    cli::cli_progress_update()
+  }
+  
+  # Complete progress bar
+  cli::cli_progress_done()
   
   # Combine results from all animals
   if (length(animal_results) > 0) {
@@ -335,19 +369,39 @@ cluster_meals_universal_eps <- function(combined_data, eps, min_pts, method, per
   # Determine universal eps if not provided
   current_eps <- eps
   if (is.null(current_eps)) {
+    cli::cli_alert_info("Calculating optimal meal interval for all animals...")
     # Calculate gaps from all animals (but properly grouped by animal)
     gaps <- calculate_gaps_by_animal(combined_data, id_col, start_col, end_col, tz)
     current_eps <- optimal_interval_from_gaps(gaps, method, percentile, lower_bound, upper_bound, use_log_transform, log_multiplier, log_offset)
   }
   
   # Cluster meals for each animal-day using the same universal eps
-  results <- combined_data |>
+  animal_day_groups <- combined_data |>
     dplyr::group_by(.data[[id_col]], date) |>
-    dplyr::group_split() |>
-    lapply(function(animal_day_df) {
-      cluster_meals_cow_day(animal_day_df, current_eps, min_pts, 
+    dplyr::group_split()
+  
+  n_groups <- length(animal_day_groups)
+  
+  # Initialize progress bar
+  cli::cli_progress_bar(
+    "Clustering meals (universal interval)",
+    total = n_groups,
+    format = "{cli::pb_spin} {cli::pb_bar} {cli::pb_current}/{cli::pb_total} [{cli::pb_percent}] | ETA: {cli::pb_eta}"
+  )
+  
+  results <- vector("list", n_groups)
+  for (i in seq_len(n_groups)) {
+    animal_day_df <- animal_day_groups[[i]]
+    
+    results[[i]] <- cluster_meals_cow_day(animal_day_df, current_eps, min_pts, 
                            id_col, start_col, end_col, bin_col, intake_col, dur_col, tz)
-    })
+    
+    # Update progress
+    cli::cli_progress_update()
+  }
+  
+  # Complete progress bar
+  cli::cli_progress_done()
   
   # Combine results
   if (length(results) > 0) {

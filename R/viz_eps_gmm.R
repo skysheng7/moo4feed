@@ -138,6 +138,7 @@ viz_eps_gmm <- function(data,
   }
   
   # Calculate gaps using existing helper function
+  cli::cli_alert_info("Calculating time gaps between visits...")
   gaps <- calculate_gaps_by_animal(combined_data, id_col, start_col, end_col, tz)
   
   if (length(gaps) == 0) {
@@ -154,6 +155,7 @@ viz_eps_gmm <- function(data,
   x_limit <- xlim
   
   # Fit GMM and get optimal eps (always calculate, even if not showing components)
+  cli::cli_alert_info("Fitting Gaussian Mixture Model to identify meal intervals...")
   gmm_result <- fit_gmm_model(gaps, use_log_transform, log_multiplier, log_offset)
   
   # Get optimal eps value
@@ -269,6 +271,8 @@ viz_eps_gmm <- function(data,
       axis.text = ggplot2::element_text(size = 10),
       legend.position = "bottom"
     )
+  
+  cli::cli_alert_success("Visualization complete!")
   
   return(p)
 } 
