@@ -185,7 +185,7 @@ belong to the same meal.</p>
 <span><span class="va">demo_data</span> <span class="op">&lt;-</span> <span class="va">clean_feed</span></span>
 <span><span class="va">eps_percentile</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/meal_interval.html">meal_interval</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">demo_data</span>, </span>
 <span>                               method <span class="op">=</span> <span class="st">"percentile"</span>, </span>
-<span>                               percentile <span class="op">=</span> <span class="fl">0.93</span>,</span>
+<span>                               percentile <span class="op">=</span> <span class="fl">0.9</span>,</span>
 <span>                               lower_bound <span class="op">=</span> <span class="cn">NULL</span>, <span class="co"># default wass 5 minutes</span></span>
 <span>                               upper_bound <span class="op">=</span> <span class="cn">NULL</span>, <span class="co"># default wass 60 minutes</span></span>
 <span>                               use_log_transform <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -197,7 +197,7 @@ belong to the same meal.</p>
 <span>                               tz <span class="op">=</span> <span class="fu"><a href="../reference/tz2.html">tz2</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Optimal interval (93rd percentile):"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">eps_percentile</span>, <span class="fl">2</span><span class="op">)</span>, <span class="st">"minutes\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Optimal interval (93rd percentile): 17.62 minutes</span></span></code></pre></div>
+<span><span class="co">#&gt; Optimal interval (93rd percentile): 5.99 minutes</span></span></code></pre></div>
 <div class="section level4">
 <h4 id="visualizing-percentile-method">Visualizing Percentile Method<a class="anchor" aria-label="anchor" href="#visualizing-percentile-method"></a>
 </h4>
@@ -242,7 +242,7 @@ distributions</li>
 <code class="sourceCode R"><span><span class="co"># Calculate optimal interval using GMM method</span></span>
 <span><span class="va">eps_gmm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/meal_interval.html">meal_interval</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">demo_data</span>, </span>
 <span>                        method <span class="op">=</span> <span class="st">"gmm"</span>, </span>
-<span>                        percentile <span class="op">=</span> <span class="fl">0.93</span>,</span>
+<span>                        percentile <span class="op">=</span> <span class="fl">0.9</span>,</span>
 <span>                        lower_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>                        upper_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>                        use_log_transform <span class="op">=</span> <span class="cn">TRUE</span>,  <span class="co"># 🎯 Try changing this to FALSE!</span></span>
@@ -270,7 +270,7 @@ results!”</em></p>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">log_params</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">eps_val</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/meal_interval.html">meal_interval</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">demo_data</span>, </span>
 <span>                          method <span class="op">=</span> <span class="st">"gmm"</span>, </span>
-<span>                          percentile <span class="op">=</span> <span class="fl">0.93</span>,</span>
+<span>                          percentile <span class="op">=</span> <span class="fl">0.9</span>,</span>
 <span>                          lower_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>                          upper_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>                          use_log_transform <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -496,7 +496,7 @@ analysis:</p>
 <span>                                   eps <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>                                   min_pts <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>                                   method <span class="op">=</span> <span class="st">"gmm"</span>,</span>
-<span>                                   percentile <span class="op">=</span> <span class="fl">0.93</span>,</span>
+<span>                                   percentile <span class="op">=</span> <span class="fl">0.9</span>,</span>
 <span>                                   eps_scope <span class="op">=</span> <span class="st">"all_animals"</span>,</span>
 <span>                                   lower_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>                                   upper_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -645,15 +645,36 @@ verification of clustering results</li>
 <span>  tz <span class="op">=</span> <span class="st">"America/Vancouver"</span>  <span class="co"># Your timezone</span></span>
 <span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># Load your data</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">clean_feed</span><span class="op">)</span>  <span class="co"># Or load your own cleaned data</span></span>
+<span></span>
+<span><span class="co"># ---- OPTIONAL: Fixed Interval Clustering (for comparison) ----</span></span>
+<span><span class="co"># Traditional approach using fixed interval (not recommended as primary method)</span></span>
+<span><span class="va">fixed_labeled</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/meal_label_visits.html">meal_label_visits</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">your_data</span>,</span>
+<span>  eps <span class="op">=</span> <span class="fl">90</span>,                             <span class="co"># Fixed interval in minutes</span></span>
+<span>  min_pts <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  lower_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  upper_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  eps_scope <span class="op">=</span> <span class="st">"all_animals"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Visualize fixed interval results</span></span>
+<span><span class="va">p_fixed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_meal_clusters.html">viz_meal_clusters</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">fixed_labeled</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_fixed</span><span class="op">)</span></span>
+<span></span>
 <span><span class="co"># ---- STEP 1: Find Optimal Meal Interval ----</span></span>
 <span><span class="co"># Method 1: Simple percentile approach</span></span>
 <span><span class="va">eps_percentile</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/meal_interval.html">meal_interval</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">your_data</span>, </span>
 <span>  method <span class="op">=</span> <span class="st">"percentile"</span>, </span>
-<span>  percentile <span class="op">=</span> <span class="fl">0.9</span>,                    <span class="co"># Try: 0.80, 0.93, 0.95, 0.99</span></span>
-<span>  lower_bound <span class="op">=</span> <span class="cn">NULL</span>, </span>
-<span>  upper_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  id_col <span class="op">=</span> <span class="fu"><a href="../reference/id_col2.html">id_col2</a></span><span class="op">(</span><span class="op">)</span>, </span>
+<span>  percentile <span class="op">=</span> <span class="fl">0.9</span>,                    <span class="co"># Try: 0.80, 0.9, 0.95, 0.99</span></span>
+<span>  lower_bound <span class="op">=</span> <span class="cn">NULL</span>,                   <span class="co"># Default is 5 minutes</span></span>
+<span>  upper_bound <span class="op">=</span> <span class="cn">NULL</span>,                   <span class="co"># Default is 60 minutes</span></span>
+<span>  use_log_transform <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  log_multiplier <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  log_offset <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  id_col <span class="op">=</span> <span class="fu"><a href="../reference/id_col2.html">id_col2</a></span><span class="op">(</span><span class="op">)</span>,                   <span class="co"># Optional, uses global variables if not specified</span></span>
 <span>  start_col <span class="op">=</span> <span class="fu"><a href="../reference/start_col2.html">start_col2</a></span><span class="op">(</span><span class="op">)</span>, </span>
 <span>  end_col <span class="op">=</span> <span class="fu"><a href="../reference/end_col2.html">end_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  tz <span class="op">=</span> <span class="fu"><a href="../reference/tz2.html">tz2</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -663,17 +684,40 @@ verification of clustering results</li>
 <span><span class="va">eps_gmm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/meal_interval.html">meal_interval</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">your_data</span>, </span>
 <span>  method <span class="op">=</span> <span class="st">"gmm"</span>, </span>
-<span>  percentile <span class="op">=</span> <span class="fl">0.9</span>,</span>
+<span>  percentile <span class="op">=</span> <span class="fl">0.9</span>,                    <span class="co"># Try: 0.9, 0.95</span></span>
 <span>  lower_bound <span class="op">=</span> <span class="cn">NULL</span>, </span>
 <span>  upper_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  use_log_transform <span class="op">=</span> <span class="cn">TRUE</span>,             <span class="co"># Try: FALSE</span></span>
-<span>  log_multiplier <span class="op">=</span> <span class="fl">20</span>,                  <span class="co"># Try: 10, 30, 50</span></span>
+<span>  log_multiplier <span class="op">=</span> <span class="fl">20</span>,                  <span class="co"># Try: 1, 10, 30, 50</span></span>
 <span>  log_offset <span class="op">=</span> <span class="fl">1</span>,                       <span class="co"># Try: 0.5, 2</span></span>
 <span>  id_col <span class="op">=</span> <span class="fu"><a href="../reference/id_col2.html">id_col2</a></span><span class="op">(</span><span class="op">)</span>, </span>
 <span>  start_col <span class="op">=</span> <span class="fu"><a href="../reference/start_col2.html">start_col2</a></span><span class="op">(</span><span class="op">)</span>, </span>
 <span>  end_col <span class="op">=</span> <span class="fu"><a href="../reference/end_col2.html">end_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  tz <span class="op">=</span> <span class="fu"><a href="../reference/tz2.html">tz2</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Experiment with different log transformation parameters</span></span>
+<span><span class="va">log_params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>multiplier <span class="op">=</span> <span class="fl">1</span>, offset <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>multiplier <span class="op">=</span> <span class="fl">20</span>, offset <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>multiplier <span class="op">=</span> <span class="fl">30</span>, offset <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">log_params</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">eps_val</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/meal_interval.html">meal_interval</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="va">your_data</span>, </span>
+<span>    method <span class="op">=</span> <span class="st">"gmm"</span>, </span>
+<span>    percentile <span class="op">=</span> <span class="fl">0.9</span>,</span>
+<span>    lower_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    upper_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    use_log_transform <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    log_multiplier <span class="op">=</span> <span class="va">log_params</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">multiplier</span>,</span>
+<span>    log_offset <span class="op">=</span> <span class="va">log_params</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">offset</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Log params (mult="</span>, <span class="va">log_params</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">multiplier</span>, </span>
+<span>      <span class="st">", offset="</span>, <span class="va">log_params</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">offset</span>, </span>
+<span>      <span class="st">"): eps ="</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">eps_val</span>, <span class="fl">2</span><span class="op">)</span>, <span class="st">"minutes\n"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
 <span></span>
 <span><span class="co"># Method 3: Conservative approach (uses both methods, takes minimum)</span></span>
 <span><span class="va">eps_both</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/meal_interval.html">meal_interval</a></span><span class="op">(</span></span>
@@ -682,6 +726,9 @@ verification of clustering results</li>
 <span>  percentile <span class="op">=</span> <span class="fl">0.9</span>,</span>
 <span>  lower_bound <span class="op">=</span> <span class="cn">NULL</span>, </span>
 <span>  upper_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  use_log_transform <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  log_multiplier <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  log_offset <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  id_col <span class="op">=</span> <span class="fu"><a href="../reference/id_col2.html">id_col2</a></span><span class="op">(</span><span class="op">)</span>, </span>
 <span>  start_col <span class="op">=</span> <span class="fu"><a href="../reference/start_col2.html">start_col2</a></span><span class="op">(</span><span class="op">)</span>, </span>
 <span>  end_col <span class="op">=</span> <span class="fu"><a href="../reference/end_col2.html">end_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -695,6 +742,9 @@ verification of clustering results</li>
 <span>  percentile <span class="op">=</span> <span class="fl">0.9</span>,                    <span class="co"># Try different values!</span></span>
 <span>  lower_bound <span class="op">=</span> <span class="cn">NULL</span>, </span>
 <span>  upper_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  bins <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  colors <span class="op">=</span> <span class="fu">grDevices</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span><span class="fl">2</span>, <span class="st">"Set 3"</span><span class="op">)</span>,</span>
+<span>  title_prefix <span class="op">=</span> <span class="st">"Distribution of time gap between visits &amp; \noptimal meal interval (eps)\n"</span>,</span>
 <span>  xlim <span class="op">=</span> <span class="fl">15</span>,                           <span class="co"># Adjust for your data range</span></span>
 <span>  id_col <span class="op">=</span> <span class="fu"><a href="../reference/id_col2.html">id_col2</a></span><span class="op">(</span><span class="op">)</span>, </span>
 <span>  start_col <span class="op">=</span> <span class="fu"><a href="../reference/start_col2.html">start_col2</a></span><span class="op">(</span><span class="op">)</span>, </span>
@@ -705,14 +755,68 @@ verification of clustering results</li>
 <span><span class="co"># Visualize GMM method  </span></span>
 <span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_eps_gmm.html">viz_eps_gmm</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">your_data</span>, </span>
-<span>  use_log_transform <span class="op">=</span> <span class="cn">TRUE</span>,             <span class="co"># Try: FALSE</span></span>
-<span>  xlim <span class="op">=</span> <span class="fl">20</span>,                            <span class="co"># Use smaller values for log transform</span></span>
+<span>  lower_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  upper_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  bins <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  colors <span class="op">=</span> <span class="fu">grDevices</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span><span class="fl">4</span>, <span class="st">"Set 3"</span><span class="op">)</span>,</span>
+<span>  title_prefix <span class="op">=</span> <span class="st">"Distribution of time gap between visits \n&amp; GMM-based meal interval (eps)"</span>,</span>
 <span>  show_components <span class="op">=</span> <span class="cn">TRUE</span>,               <span class="co"># Try: FALSE</span></span>
+<span>  use_log_transform <span class="op">=</span> <span class="cn">TRUE</span>,             <span class="co"># Try: FALSE</span></span>
+<span>  log_multiplier <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  log_offset <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  xlim <span class="op">=</span> <span class="fl">10</span>,                            <span class="co"># Use smaller values for log transform</span></span>
 <span>  id_col <span class="op">=</span> <span class="fu"><a href="../reference/id_col2.html">id_col2</a></span><span class="op">(</span><span class="op">)</span>, </span>
 <span>  start_col <span class="op">=</span> <span class="fu"><a href="../reference/start_col2.html">start_col2</a></span><span class="op">(</span><span class="op">)</span>, </span>
 <span>  end_col <span class="op">=</span> <span class="fu"><a href="../reference/end_col2.html">end_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  tz <span class="op">=</span> <span class="fu"><a href="../reference/tz2.html">tz2</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Compare GMM with different log transformations</span></span>
+<span><span class="co"># Without log transformation</span></span>
+<span><span class="va">p_gmm_no_log</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_eps_gmm.html">viz_eps_gmm</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">your_data</span>, </span>
+<span>  lower_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  upper_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  bins <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  colors <span class="op">=</span> <span class="fu">grDevices</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span><span class="fl">4</span>, <span class="st">"Set 3"</span><span class="op">)</span>,</span>
+<span>  title_prefix <span class="op">=</span> <span class="st">"Distribution of time gap between visits \n&amp; GMM-based meal interval (eps)"</span>,</span>
+<span>  show_components <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  use_log_transform <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  xlim <span class="op">=</span> <span class="fl">20</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_gmm_no_log</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># With basic log transformation: log(x + 1)</span></span>
+<span><span class="va">p_gmm_log</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_eps_gmm.html">viz_eps_gmm</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">your_data</span>, </span>
+<span>  lower_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  upper_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  bins <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  colors <span class="op">=</span> <span class="fu">grDevices</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span><span class="fl">4</span>, <span class="st">"Set 3"</span><span class="op">)</span>,</span>
+<span>  title_prefix <span class="op">=</span> <span class="st">"Distribution of time gap between visits \n&amp; GMM-based meal interval (eps)\n"</span>,</span>
+<span>  show_components <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  use_log_transform <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  log_multiplier <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  log_offset <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  xlim <span class="op">=</span> <span class="fl">10</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_gmm_log</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># With customized log transformation: log(20x + 1)</span></span>
+<span><span class="va">p_gmm_log_20</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_eps_gmm.html">viz_eps_gmm</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">your_data</span>, </span>
+<span>  lower_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  upper_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  bins <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  colors <span class="op">=</span> <span class="fu">grDevices</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span><span class="fl">4</span>, <span class="st">"Set 3"</span><span class="op">)</span>,</span>
+<span>  title_prefix <span class="op">=</span> <span class="st">"Distribution of time gap between visits \n&amp; GMM-based meal interval (eps)\n"</span>,</span>
+<span>  show_components <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  use_log_transform <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  log_multiplier <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  log_offset <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  xlim <span class="op">=</span> <span class="fl">10</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_gmm_log_20</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># ---- STEP 3: Cluster Visits into Meals ----</span></span>
 <span><span class="co"># - Step 1 + 2 are optional, it's designed to help you find the optimal interval (eps) </span></span>
@@ -724,9 +828,13 @@ verification of clustering results</li>
 <span>  eps <span class="op">=</span> <span class="cn">NULL</span>,                           <span class="co"># Auto-determine, or set specific value</span></span>
 <span>  min_pts <span class="op">=</span> <span class="fl">2</span>,                          <span class="co"># Try: 3, 4, 5 for stricter clustering</span></span>
 <span>  method <span class="op">=</span> <span class="st">"gmm"</span>,                       <span class="co"># Try: "percentile", "both"</span></span>
+<span>  percentile <span class="op">=</span> <span class="fl">0.9</span>,                     <span class="co"># Try: 0.93, 0.95</span></span>
 <span>  eps_scope <span class="op">=</span> <span class="st">"all_animals"</span>,            <span class="co"># Try: "one_animal_all_days", "one_animal_single_day"</span></span>
-<span>  lower_bound <span class="op">=</span> <span class="fl">5</span>, </span>
-<span>  upper_bound <span class="op">=</span> <span class="fl">60</span>,</span>
+<span>  lower_bound <span class="op">=</span> <span class="cn">NULL</span>,                   <span class="co"># Default is 5 minutes, NULL = no restriction</span></span>
+<span>  upper_bound <span class="op">=</span> <span class="cn">NULL</span>,                   <span class="co"># Default is 60 minutes, NULL = no restriction</span></span>
+<span>  use_log_transform <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  log_multiplier <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  log_offset <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  id_col <span class="op">=</span> <span class="fu"><a href="../reference/id_col2.html">id_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  start_col <span class="op">=</span> <span class="fu"><a href="../reference/start_col2.html">start_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  end_col <span class="op">=</span> <span class="fu"><a href="../reference/end_col2.html">end_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -736,13 +844,46 @@ verification of clustering results</li>
 <span>  tz <span class="op">=</span> <span class="fu"><a href="../reference/tz2.html">tz2</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># Compare different eps calculation scopes</span></span>
+<span><span class="va">scopes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"all_animals"</span>, <span class="st">"one_animal_all_days"</span>, <span class="st">"one_animal_single_day"</span><span class="op">)</span></span>
+<span><span class="va">scope_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">scope</span> <span class="kw">in</span> <span class="va">scopes</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">meals_temp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cluster_meals.html">cluster_meals</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="va">your_data</span>,</span>
+<span>    eps <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    min_pts <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>    method <span class="op">=</span> <span class="st">"gmm"</span>,</span>
+<span>    percentile <span class="op">=</span> <span class="fl">0.9</span>,</span>
+<span>    eps_scope <span class="op">=</span> <span class="va">scope</span>,</span>
+<span>    lower_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    upper_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    use_log_transform <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    log_multiplier <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>    log_offset <span class="op">=</span> <span class="fl">1</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="va">scope_results</span><span class="op">[[</span><span class="va">scope</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">meals_temp</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># Print comparison results</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Meals identified by different eps scopes:\n"</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">scope</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">scope_results</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">scope</span>, <span class="st">":"</span>, <span class="va">scope_results</span><span class="op">[[</span><span class="va">scope</span><span class="op">]</span><span class="op">]</span>, <span class="st">"meals\n"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
 <span><span class="co"># Option B: Label individual visits with meal info (recommended!)</span></span>
 <span><span class="va">labeled_visits</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/meal_label_visits.html">meal_label_visits</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">your_data</span>,</span>
 <span>  eps <span class="op">=</span> <span class="cn">NULL</span>,                           <span class="co"># Auto-determine optimal interval</span></span>
 <span>  min_pts <span class="op">=</span> <span class="fl">2</span>,                          <span class="co"># Minimum visits to form a meal</span></span>
-<span>  method <span class="op">=</span> <span class="st">"gmm"</span>,                       <span class="co"># Clustering method</span></span>
-<span>  eps_scope <span class="op">=</span> <span class="st">"all_animals"</span>,            <span class="co"># Scope for eps calculation</span></span>
+<span>  method <span class="op">=</span> <span class="st">"gmm"</span>,                       <span class="co"># Try: "percentile", "both"</span></span>
+<span>  percentile <span class="op">=</span> <span class="fl">0.9</span>,                    <span class="co"># Try: 0.9, 0.95</span></span>
+<span>  eps_scope <span class="op">=</span> <span class="st">"all_animals"</span>,            <span class="co"># Try: "one_animal_all_days", "one_animal_single_day"</span></span>
+<span>  lower_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  upper_bound <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  use_log_transform <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  log_multiplier <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  log_offset <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  id_col <span class="op">=</span> <span class="fu"><a href="../reference/id_col2.html">id_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  start_col <span class="op">=</span> <span class="fu"><a href="../reference/start_col2.html">start_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  end_col <span class="op">=</span> <span class="fu"><a href="../reference/end_col2.html">end_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -758,15 +899,22 @@ verification of clustering results</li>
 <span>  data <span class="op">=</span> <span class="va">labeled_visits</span>,</span>
 <span>  point_size <span class="op">=</span> <span class="fl">2</span>,                       <span class="co"># Try: 1, 3, 4</span></span>
 <span>  point_alpha <span class="op">=</span> <span class="fl">0.7</span>,                    <span class="co"># Try: 0.5, 0.8, 1.0</span></span>
+<span>  ncol_facet <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  date_format <span class="op">=</span> <span class="st">"%Y-%m-%d"</span>,</span>
+<span>  time_breaks <span class="op">=</span> <span class="st">"4 hours"</span>,              <span class="co"># Try: "2 hours", "6 hours"</span></span>
+<span>  time_labels <span class="op">=</span> <span class="st">"%H"</span>,</span>
 <span>  color_palette <span class="op">=</span> <span class="st">"Set 3"</span>,              <span class="co"># Try: "Dark 2", "Pastel 1", "Set 1"</span></span>
 <span>  outlier_color <span class="op">=</span> <span class="st">"grey50"</span>,             <span class="co"># Try: "red", "black"</span></span>
-<span>  title_prefix <span class="op">=</span> <span class="st">"Animal"</span>,              <span class="co"># Try: "Cow", ""</span></span>
-<span>  text_size <span class="op">=</span> <span class="fl">12</span>,                       <span class="co"># Try: 10, 14, 16</span></span>
-<span>  time_breaks <span class="op">=</span> <span class="st">"4 hours"</span>,              <span class="co"># Try: "2 hours", "6 hours"</span></span>
+<span>  title_prefix <span class="op">=</span> <span class="st">"Cow"</span>,                 <span class="co"># Try: "Animal", ""</span></span>
+<span>  text_size <span class="op">=</span> <span class="fl">10</span>,                       <span class="co"># Try: 12, 14, 16</span></span>
+<span>  title_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  id_col <span class="op">=</span> <span class="fu"><a href="../reference/id_col2.html">id_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  start_col <span class="op">=</span> <span class="fu"><a href="../reference/start_col2.html">start_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  tz <span class="op">=</span> <span class="fu"><a href="../reference/tz2.html">tz2</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># View specific animal on specific day</span></span>
+<span><span class="va">meal_plots</span><span class="op">[[</span><span class="st">"6027"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span>  <span class="co"># First number is animal ID, second is day index</span></span>
 <span></span>
 <span><span class="co"># ---- STEP 5: Extract and Combine Specific Plots ----</span></span>
 <span><span class="co"># Get plots for specific animals</span></span>
@@ -786,10 +934,12 @@ verification of clustering results</li>
 <span><span class="co"># Combine multiple days for one animal</span></span>
 <span><span class="va">combined_plots</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combine_animal_plots.html">combine_animal_plots</a></span><span class="op">(</span></span>
 <span>  plot_list <span class="op">=</span> <span class="va">meal_plots</span>, </span>
-<span>  animal_id <span class="op">=</span> <span class="st">"5124"</span>,                   <span class="co"># Your animal ID</span></span>
-<span>  plots_per_page <span class="op">=</span> <span class="fl">4</span>,                   <span class="co"># Number of plots per page</span></span>
+<span>  animal_id <span class="op">=</span> <span class="st">"7022"</span>,                   <span class="co"># Your animal ID (was "5124" above, use your ID)</span></span>
+<span>  plots_per_page <span class="op">=</span> <span class="fl">3</span>,                   <span class="co"># Number of plots per page (was 4 in demo)</span></span>
 <span>  method <span class="op">=</span> <span class="st">"vertical"</span>                   <span class="co"># Try: "grid"</span></span>
 <span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">combined_plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Combine multiple animals for one date</span></span>
 <span><span class="va">date_combined</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combine_date_plots.html">combine_date_plots</a></span><span class="op">(</span></span>
@@ -798,6 +948,8 @@ verification of clustering results</li>
 <span>  plots_per_page <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"vertical"</span></span>
 <span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">date_combined</span><span class="op">[[</span><span class="st">"1"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># ---- BONUS: Quick Analysis ----</span></span>
 <span><span class="co"># Check meal summary statistics</span></span>
@@ -810,14 +962,6 @@ verification of clustering results</li>
 <span><span class="co"># Check labeling success on the first day</span></span>
 <span><span class="va">labeled_visits_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">labeled_visits</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">meal_id</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span>    <span class="co"># TRUE = outliers, FALSE = assigned to meals</span></span>
 <span><span class="va">labeled_visits_summary</span></span></code></pre></div>
-<hr>
-<p><strong>🦦 Ollie’s Final Words</strong>: <em>“Remember, the best
-parameters are the ones that make sense for YOUR data and research
-questions. Don’t be afraid to experiment with different settings until
-you find what works best!”</em></p>
-<p><strong>Next Adventure</strong>: Try these functions with your own
-animal data! Start with the defaults, then play with the parameters to
-discover the feeding patterns hidden in your dataset. 🍽️✨</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

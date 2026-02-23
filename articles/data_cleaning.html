@@ -626,9 +626,23 @@ variables</li>
 <code><a href="../reference/viz_outliers.html">viz_outliers()</a></code> to check if the detected outliers make sense
 before removing them</li>
 <li>
-<strong>Custom scaling matters</strong>: Adjusting the scaling
-values helps balance the influence of different variables and adjusting
-for variables at different scales:
+<strong>Automatic vs Custom scaling</strong>:
+<ul>
+<li>Set <code>custom_scaling = NULL</code> to use automatic min-max
+scaling, which normalizes all variables (duration, intake, rate) to a
+0-1 range. This ensures equal contribution of each variable to the
+distance calculation.</li>
+<li>You can also provide a list like
+<code>custom_scaling = list(rate = 10000, intake = 7, duration = 0.03)</code>
+to use custom scaling factors that give different weights to each
+variable</li>
+</ul>
+</li>
+<li>
+<strong>Why scaling?</strong>: The KNN algorithm uses distance to
+identify outliers. Variables at different scales (e.g., duration in
+seconds vs. rate in kg/s) need to be scaled to ensure they contribute
+equally to the distance calculation.
 <ul>
 <li>e.g., duration is in tens to hundreds of seconds, but rate is often
 &lt; 1, so rate needs to be scaled up in order to be comparable to

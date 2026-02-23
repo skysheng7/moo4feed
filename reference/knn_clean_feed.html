@@ -42,7 +42,7 @@
 <span>  <span class="va">feed_data</span>,</span>
 <span>  k <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  threshold_percentile <span class="op">=</span> <span class="fl">99.936</span>,</span>
-<span>  custom_scaling <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>rate <span class="op">=</span> <span class="fl">10000</span>, intake <span class="op">=</span> <span class="fl">7</span>, duration <span class="op">=</span> <span class="fl">0.03</span><span class="op">)</span>,</span>
+<span>  custom_scaling <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  intake_col <span class="op">=</span> <span class="fu"><a href="intake_col2.html">intake_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  duration_col <span class="op">=</span> <span class="fu"><a href="duration_col2.html">duration_col2</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  remove_outliers <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -70,8 +70,10 @@ Must be between 0 and 100. Default is 99.</p></dd>
 
 
 <dt id="arg-custom-scaling">custom_scaling<a class="anchor" aria-label="anchor" href="#arg-custom-scaling"></a></dt>
-<dd><p>A named list with scaling factors for input variables.
-Default is NULL, which means no scaling is applied (all factors = 1).</p></dd>
+<dd><p>A named list with scaling factors for input variables
+(e.g., list(rate = 10, intake = 2, duration = 0.5)).
+If NULL (default), min-max scaling is applied to normalize all variables
+to a 0-1 range, ensuring equal contribution to distance calculations.</p></dd>
 
 
 <dt id="arg-intake-col">intake_col<a class="anchor" aria-label="anchor" href="#arg-intake-col"></a></dt>
@@ -95,6 +97,13 @@ Default is NULL, which means no scaling is applied (all factors = 1).</p></dd>
     <p>If input is a list: a list of data frames with outliers detected.
 If input is a data frame: a data frame with outliers detected.
 If remove_outliers=TRUE, returns data with outliers removed.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>When <code>custom_scaling</code> is NULL, the function automatically applies min-max scaling
+to normalize all variables (duration, intake, rate) to a 0-1 range. This ensures
+equal contribution of each variable to the distance calculation in the KNN algorithm.
+When <code>custom_scaling</code> is provided, those scaling factors are used instead.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

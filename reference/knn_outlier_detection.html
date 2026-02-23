@@ -75,8 +75,10 @@ Must be between 0 and 100. Default is 99.</p></dd>
 
 
 <dt id="arg-custom-scaling">custom_scaling<a class="anchor" aria-label="anchor" href="#arg-custom-scaling"></a></dt>
-<dd><p>A named list with scaling factors for input variables.
-Default is NULL, which means no scaling is applied (all factors = 1).</p></dd>
+<dd><p>A named list with scaling factors for input variables
+(e.g., list(rate = 10, intake = 2, duration = 0.5)).
+If NULL (default), min-max scaling is applied to normalize all variables
+to a 0-1 range, ensuring equal contribution to distance calculations.</p></dd>
 
 
 <dt id="arg-intake-col">intake_col<a class="anchor" aria-label="anchor" href="#arg-intake-col"></a></dt>
@@ -106,13 +108,13 @@ outlier column dropped.</p>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>NAs or Inf values detected in rate calculation. These rows will be automatically marked as outliers.</span>
 <span class="r-in"><span><span class="va">cleaned_feed</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">cleaned_feed</span><span class="op">$</span><span class="va">outlier</span> <span class="op">==</span> <span class="st">"Y"</span><span class="op">)</span>, <span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      transponder  cow bin               start                 end duration</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 318     12706614 7023  12 2020-10-31 03:45:10 2020-10-31 03:54:15      545</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 748     12200070 5124   1 2020-10-31 07:36:44 2020-10-31 08:06:42     1798</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1517    11724250 3150  14 2020-10-31 11:21:38 2020-10-31 11:51:05     1767</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1761    12706613 7022  26 2020-10-31 13:12:53 2020-10-31 13:12:53        0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3367    12200069 5123  14 2020-10-31 22:12:23 2020-10-31 22:41:59     1776</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      start_weight end_weight intake       date        rate outlier</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 318          32.6       15.6   17.0 2020-10-31 0.031192661       Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 748          30.7       25.5    5.2 2020-10-31 0.002892102       Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1517         14.4        9.0    5.4 2020-10-31 0.003056027       Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1761         26.8       26.9   -0.1 2020-10-31        -Inf       Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3367         34.1       27.6    6.5 2020-10-31 0.003659910       Y</span>
 <span class="r-in"><span></span></span>

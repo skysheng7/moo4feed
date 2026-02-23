@@ -39,8 +39,10 @@ knn_outlier_detection(
 
 - custom_scaling:
 
-  A named list with scaling factors for input variables. Default is
-  NULL, which means no scaling is applied (all factors = 1).
+  A named list with scaling factors for input variables (e.g., list(rate
+  = 10, intake = 2, duration = 0.5)). If NULL (default), min-max scaling
+  is applied to normalize all variables to a 0-1 range, ensuring equal
+  contribution to distance calculations.
 
 - intake_col:
 
@@ -71,13 +73,13 @@ cleaned_feed <- knn_outlier_detection(all_fed[[1]], threshold_percentile = 99.93
 #> Warning: NAs or Inf values detected in rate calculation. These rows will be automatically marked as outliers.
 cleaned_feed[which(cleaned_feed$outlier == "Y"), ]
 #>      transponder  cow bin               start                 end duration
+#> 318     12706614 7023  12 2020-10-31 03:45:10 2020-10-31 03:54:15      545
 #> 748     12200070 5124   1 2020-10-31 07:36:44 2020-10-31 08:06:42     1798
-#> 1517    11724250 3150  14 2020-10-31 11:21:38 2020-10-31 11:51:05     1767
 #> 1761    12706613 7022  26 2020-10-31 13:12:53 2020-10-31 13:12:53        0
 #> 3367    12200069 5123  14 2020-10-31 22:12:23 2020-10-31 22:41:59     1776
 #>      start_weight end_weight intake       date        rate outlier
+#> 318          32.6       15.6   17.0 2020-10-31 0.031192661       Y
 #> 748          30.7       25.5    5.2 2020-10-31 0.002892102       Y
-#> 1517         14.4        9.0    5.4 2020-10-31 0.003056027       Y
 #> 1761         26.8       26.9   -0.1 2020-10-31        -Inf       Y
 #> 3367         34.1       27.6    6.5 2020-10-31 0.003659910       Y
 ```

@@ -9,7 +9,7 @@ knn_clean_feed(
   feed_data,
   k = 50,
   threshold_percentile = 99.936,
-  custom_scaling = list(rate = 10000, intake = 7, duration = 0.03),
+  custom_scaling = NULL,
   intake_col = intake_col2(),
   duration_col = duration_col2(),
   remove_outliers = FALSE,
@@ -37,8 +37,10 @@ knn_clean_feed(
 
 - custom_scaling:
 
-  A named list with scaling factors for input variables. Default is
-  NULL, which means no scaling is applied (all factors = 1).
+  A named list with scaling factors for input variables (e.g., list(rate
+  = 10, intake = 2, duration = 0.5)). If NULL (default), min-max scaling
+  is applied to normalize all variables to a 0-1 range, ensuring equal
+  contribution to distance calculations.
 
 - intake_col:
 
@@ -64,3 +66,11 @@ knn_clean_feed(
 If input is a list: a list of data frames with outliers detected. If
 input is a data frame: a data frame with outliers detected. If
 remove_outliers=TRUE, returns data with outliers removed.
+
+## Details
+
+When `custom_scaling` is NULL, the function automatically applies
+min-max scaling to normalize all variables (duration, intake, rate) to a
+0-1 range. This ensures equal contribution of each variable to the
+distance calculation in the KNN algorithm. When `custom_scaling` is
+provided, those scaling factors are used instead.
