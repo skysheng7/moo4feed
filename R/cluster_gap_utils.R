@@ -56,9 +56,34 @@ calculate_gaps_by_animal <- function(data, id_col = id_col2(), start_col = start
     data$date <- lubridate::date(data[[start_col]])
   }
   
+  # Check for NA values in date column
+  if (any(is.na(data$date))) {
+    n_na <- sum(is.na(data$date))
+    warning("Found ", n_na, " NA values in date column. These rows will be removed.")
+    data <- data[!is.na(data$date), ]
+  }
+  
   # Convert times to minutes from midnight
   data$start_minutes <- convert_times_to_minutes(data[[start_col]], tz = tz)
   data$end_minutes <- convert_times_to_minutes(data[[end_col]], tz = tz)
+  
+  # Check for NA values in converted minutes
+  if (any(is.na(data$start_minutes)) || any(is.na(data$end_minutes))) {
+    n_na_start <- sum(is.na(data$start_minutes))
+    n_na_end <- sum(is.na(data$end_minutes))
+    if (n_na_start > 0 || n_na_end > 0) {
+      warning("Found ", n_na_start, " NA values in start_minutes and ", 
+              n_na_end, " NA values in end_minutes. These rows will be removed.")
+    }
+    # Remove rows with NA in either start or end minutes
+    valid_rows <- !is.na(data$start_minutes) & !is.na(data$end_minutes)
+    data <- data[valid_rows, ]
+  }
+  
+  if (nrow(data) <= 1) {
+    warning("After removing NA values, insufficient data remains")
+    return(numeric(0))
+  }
   
   # Group by animal and date, calculate gaps within each group
   all_gaps <- data |>
@@ -70,6 +95,16 @@ calculate_gaps_by_animal <- function(data, id_col = id_col2(), start_col = start
     ) |>
     dplyr::pull(gaps) |>
     unlist()
+  
+  # Filter out any remaining NA or infinite values from gaps
+  if (length(all_gaps) > 0) {
+    valid_gaps <- !is.na(all_gaps) & is.finite(all_gaps)
+    if (any(!valid_gaps)) {
+      n_invalid <- sum(!valid_gaps)
+      warning("Found ", n_invalid, " invalid gap values (NA or Inf). These will be removed.")
+      all_gaps <- all_gaps[valid_gaps]
+    }
+  }
   
   return(all_gaps)
 } 
