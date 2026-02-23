@@ -52,6 +52,7 @@
 #'                    end_col = "end", tz = "America/Vancouver",
 #'                    use_log_transform = FALSE)
 #'
+#' @importFrom cli cli_alert_info cli_alert_success
 #' @export
 viz_eps_gmm <- function(data, 
                         lower_bound = NULL,

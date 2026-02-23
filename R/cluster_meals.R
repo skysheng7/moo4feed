@@ -66,6 +66,7 @@
 #'                        start_col="start", end_col="end", bin_col="bin", 
 #'                        intake_col="intake", dur_col="duration")
 #' 
+#' @importFrom cli cli_progress_bar cli_progress_update cli_progress_done cli_alert_info
 #' @export
 cluster_meals <- function(data,
                          eps = NULL,
@@ -231,7 +232,7 @@ cluster_meals_by_animal_day <- function(combined_data, eps, min_pts, method, per
   
   # Group by animal and date, process each combination
   animal_day_groups <- combined_data |>
-    dplyr::group_by(.data[[id_col]], date) |>
+    dplyr::group_by(.data[[id_col]], .data[["date"]]) |>
     dplyr::group_split()
   
   n_groups <- length(animal_day_groups)
@@ -377,7 +378,7 @@ cluster_meals_universal_eps <- function(combined_data, eps, min_pts, method, per
   
   # Cluster meals for each animal-day using the same universal eps
   animal_day_groups <- combined_data |>
-    dplyr::group_by(.data[[id_col]], date) |>
+    dplyr::group_by(.data[[id_col]], .data[["date"]]) |>
     dplyr::group_split()
   
   n_groups <- length(animal_day_groups)

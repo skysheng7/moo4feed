@@ -40,6 +40,7 @@
 #'                            tz = "America/Vancouver", 
 #'                            percentile = 0.93)
 #'
+#' @importFrom cli cli_alert_info cli_alert_success
 #' @export
 viz_eps_percentile <- function(data, 
                                percentile = 0.93,
