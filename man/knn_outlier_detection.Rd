@@ -24,8 +24,10 @@ Will be automatically adjusted if it exceeds the number of rows in the data.}
 Points with average distances above this percentile are considered outliers.
 Must be between 0 and 100. Default is 99.}
 
-\item{custom_scaling}{A named list with scaling factors for input variables.
-Default is NULL, which means no scaling is applied (all factors = 1).}
+\item{custom_scaling}{A named list with scaling factors for input variables
+(e.g., list(rate = 10, intake = 2, duration = 0.5)).
+If NULL (default), min-max scaling is applied to normalize all variables
+to a 0-1 range, ensuring equal contribution to distance calculations.}
 
 \item{intake_col}{Character. Name of the column containing intake data (default: from global_var.R).}
 

@@ -452,7 +452,10 @@ print(p_knn)
 >
 > - **Experiment with settings**: Try different values for `k`, `threshold_percentile`, and `custom_scaling` to see what works best for your data
 > - **Visualize before removing**: Always use `viz_outliers()` to check if the detected outliers make sense before removing them
-> - **Custom scaling matters**: Adjusting the scaling values helps balance the influence of different variables and adjusting for variables at different scales:
+> - **Automatic vs Custom scaling**:
+>   - Set `custom_scaling = NULL` to use automatic min-max scaling, which normalizes all variables (duration, intake, rate) to a 0-1 range. This ensures equal contribution of each variable to the distance calculation.
+>   - You can also provide a list like `custom_scaling = list(rate = 10000, intake = 7, duration = 0.03)` to use custom scaling factors that give different weights to each variable
+> - **Why scaling?**: The KNN algorithm uses distance to identify outliers. Variables at different scales (e.g., duration in seconds vs. rate in kg/s) need to be scaled to ensure they contribute equally to the distance calculation.
 >   - e.g., duration is in tens to hundreds of seconds, but rate is often < 1, so rate needs to be scaled up in order to be comparable to duration
 >   - Increase scaling for variables that should have more influence
 >   - Decrease scaling for variables that should have less influence

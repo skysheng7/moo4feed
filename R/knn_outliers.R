@@ -14,8 +14,10 @@
 #' @param threshold_percentile Numeric. Percentile threshold for outlier detection.
 #'   Points with average distances above this percentile are considered outliers.
 #'   Must be between 0 and 100. Default is 99.
-#' @param custom_scaling A named list with scaling factors for input variables.
-#'   Default is NULL, which means no scaling is applied (all factors = 1).
+#' @param custom_scaling A named list with scaling factors for input variables
+#'   (e.g., list(rate = 10, intake = 2, duration = 0.5)).
+#'   If NULL (default), min-max scaling is applied to normalize all variables
+#'   to a 0-1 range, ensuring equal contribution to distance calculations.
 #' @param intake_col Character. Name of the column containing intake data (default: from global_var.R).
 #' @param duration_col Character. Name of the column containing duration data (default: from global_var.R).
 #' @param remove_outliers Logical. Whether to remove outliers from the data frame.
@@ -165,11 +167,18 @@ knn_outlier_detection <- function(df,
 #' @return If input is a list: a list of data frames with outliers detected.
 #'   If input is a data frame: a data frame with outliers detected.
 #'   If remove_outliers=TRUE, returns data with outliers removed.
+#'   
+#' @details
+#' When `custom_scaling` is NULL, the function automatically applies min-max scaling
+#' to normalize all variables (duration, intake, rate) to a 0-1 range. This ensures
+#' equal contribution of each variable to the distance calculation in the KNN algorithm.
+#' When `custom_scaling` is provided, those scaling factors are used instead.
+#'   
 #' @export
 knn_clean_feed <- function(feed_data, 
                           k = 50, 
                           threshold_percentile = 99.936,
-                          custom_scaling = list(rate = 10000, intake = 7, duration = 0.03),
+                          custom_scaling = NULL,
                           intake_col = intake_col2(),
                           duration_col = duration_col2(),
                           remove_outliers = FALSE,
@@ -227,11 +236,18 @@ knn_clean_feed <- function(feed_data,
 #' @return If input is a list: a list of data frames with outliers detected.
 #'   If input is a data frame: a data frame with outliers detected.
 #'   If remove_outliers=TRUE, returns data with outliers removed.
+#'   
+#' @details
+#' When `custom_scaling` is NULL, the function automatically applies min-max scaling
+#' to normalize all variables (duration, intake, rate) to a 0-1 range. This ensures
+#' equal contribution of each variable to the distance calculation in the KNN algorithm.
+#' When `custom_scaling` is provided, those scaling factors are used instead.
+#'   
 #' @export
 knn_clean_water <- function(water_data, 
                            k = 50, 
                            threshold_percentile = 99.9,
-                           custom_scaling = list(rate = 20, intake = 1, duration = 0.01),
+                           custom_scaling = NULL,
                            intake_col = intake_col2(),
                            duration_col = duration_col2(),
                            remove_outliers = FALSE,
@@ -287,22 +303,50 @@ knn_clean_water <- function(water_data,
 # -------------------- Internal helper functions -----------------------------#
 # -----------------------------------------------------------------------------#
 
+#' Min-max scaling to 0-1 range
+#' 
+#' @param x Numeric vector to scale
+#' 
+#' @return Scaled numeric vector with values between 0 and 1
+#' @keywords internal
+#' @noRd
+scale_to_01 <- function(x) {
+  x_min <- min(x, na.rm = TRUE)
+  x_max <- max(x, na.rm = TRUE)
+  
+  # Handle case where all values are the same
+  if (x_max == x_min) {
+    return(rep(0.5, length(x)))
+  }
+  
+  (x - x_min) / (x_max - x_min)
+}
+
 #' Create scaled data for KNN processing
 #' 
 #' @param df_clean Data frame with clean data
-#' @param scaling List of scaling factors
+#' @param scaling List of scaling factors or NULL for automatic min-max scaling
 #' @param intake_col Name of intake column
 #' @param duration_col Name of duration column
 #' 
 #' @return Matrix of scaled data for KNN processing
+#' @keywords internal
 #' @noRd
 create_scaled_matrix <- function(df_clean, scaling, intake_col, duration_col) {
   df_scaled <- df_clean
   
-  # Apply scaling
-  df_scaled$rate <- df_scaled$rate * scaling$rate
-  df_scaled$intake <- df_scaled[[intake_col]] * scaling$intake
-  df_scaled$duration <- df_scaled[[duration_col]] * scaling$duration
+  # Check if we should use min-max scaling (when scaling is NULL)
+  if (is.null(scaling)) {
+    # Apply min-max scaling to normalize all variables to 0-1 range
+    df_scaled$duration <- scale_to_01(df_scaled[[duration_col]])
+    df_scaled$intake <- scale_to_01(df_scaled[[intake_col]])
+    df_scaled$rate <- scale_to_01(df_scaled$rate)
+  } else {
+    # Apply custom scaling factors
+    df_scaled$rate <- df_scaled$rate * scaling$rate
+    df_scaled$intake <- df_scaled[[intake_col]] * scaling$intake
+    df_scaled$duration <- df_scaled[[duration_col]] * scaling$duration
+  }
   
   # Return matrix for KNN
   as.matrix(df_scaled[, c("duration", "intake", "rate")])
@@ -312,11 +356,12 @@ create_scaled_matrix <- function(df_clean, scaling, intake_col, duration_col) {
 #' 
 #' @param custom_scaling Custom scaling factors or NULL
 #' 
-#' @return List of scaling factors
+#' @return List of scaling factors or NULL
+#' @keywords internal
 #' @noRd
 get_scaling_factors <- function(custom_scaling) {
   if (is.null(custom_scaling)) {
-    return(list(rate = 1, intake = 1, duration = 1))
+    return(NULL)
   } 
   
   # Ensure all required scaling factors exist

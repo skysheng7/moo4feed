@@ -112,7 +112,7 @@ The percentile method calculates gaps between consecutive visits for each animal
 demo_data <- clean_feed
 eps_percentile <- meal_interval(data = demo_data, 
                                method = "percentile", 
-                               percentile = 0.93,
+                               percentile = 0.9,
                                lower_bound = NULL, # default wass 5 minutes
                                upper_bound = NULL, # default wass 60 minutes
                                use_log_transform = TRUE,
@@ -158,7 +158,7 @@ Using the percentile method could still be a bit rigid. Gaussian Mixture Model (
 # Calculate optimal interval using GMM method
 eps_gmm <- meal_interval(data = demo_data, 
                         method = "gmm", 
-                        percentile = 0.93,
+                        percentile = 0.9,
                         lower_bound = NULL,
                         upper_bound = NULL,
                         use_log_transform = TRUE,  # 🎯 Try changing this to FALSE!
@@ -185,7 +185,7 @@ log_params <- list(
 for (i in seq_along(log_params)) {
   eps_val <- meal_interval(data = demo_data, 
                           method = "gmm", 
-                          percentile = 0.93,
+                          percentile = 0.9,
                           lower_bound = NULL,
                           upper_bound = NULL,
                           use_log_transform = TRUE,
@@ -341,7 +341,7 @@ labeled_visits <- meal_label_visits(data = demo_data,
                                    eps = NULL,
                                    min_pts = 2,
                                    method = "gmm",
-                                   percentile = 0.93,
+                                   percentile = 0.9,
                                    eps_scope = "all_animals",
                                    lower_bound = NULL,
                                    upper_bound = NULL,
@@ -464,15 +464,36 @@ set_global_cols(
   tz = "America/Vancouver"  # Your timezone
 )
 
+# Load your data
+data(clean_feed)  # Or load your own cleaned data
+
+# ---- OPTIONAL: Fixed Interval Clustering (for comparison) ----
+# Traditional approach using fixed interval (not recommended as primary method)
+fixed_labeled <- meal_label_visits(
+  data = your_data,
+  eps = 90,                             # Fixed interval in minutes
+  min_pts = 2,
+  lower_bound = NULL,
+  upper_bound = NULL,
+  eps_scope = "all_animals"
+)
+
+# Visualize fixed interval results
+p_fixed <- viz_meal_clusters(data = fixed_labeled)
+print(p_fixed)
+
 # ---- STEP 1: Find Optimal Meal Interval ----
 # Method 1: Simple percentile approach
 eps_percentile <- meal_interval(
   data = your_data, 
   method = "percentile", 
-  percentile = 0.9,                    # Try: 0.80, 0.93, 0.95, 0.99
-  lower_bound = NULL, 
-  upper_bound = NULL,
-  id_col = id_col2(), 
+  percentile = 0.9,                    # Try: 0.80, 0.9, 0.95, 0.99
+  lower_bound = NULL,                   # Default is 5 minutes
+  upper_bound = NULL,                   # Default is 60 minutes
+  use_log_transform = TRUE,
+  log_multiplier = 20,
+  log_offset = 1,
+  id_col = id_col2(),                   # Optional, uses global variables if not specified
   start_col = start_col2(), 
   end_col = end_col2(),
   tz = tz2()
@@ -482,17 +503,40 @@ eps_percentile <- meal_interval(
 eps_gmm <- meal_interval(
   data = your_data, 
   method = "gmm", 
-  percentile = 0.9,
+  percentile = 0.9,                    # Try: 0.9, 0.95
   lower_bound = NULL, 
   upper_bound = NULL,
   use_log_transform = TRUE,             # Try: FALSE
-  log_multiplier = 20,                  # Try: 10, 30, 50
+  log_multiplier = 20,                  # Try: 1, 10, 30, 50
   log_offset = 1,                       # Try: 0.5, 2
   id_col = id_col2(), 
   start_col = start_col2(), 
   end_col = end_col2(),
   tz = tz2()
 )
+
+# Experiment with different log transformation parameters
+log_params <- list(
+  list(multiplier = 1, offset = 1),
+  list(multiplier = 20, offset = 1),
+  list(multiplier = 30, offset = 1)
+)
+
+for (i in seq_along(log_params)) {
+  eps_val <- meal_interval(
+    data = your_data, 
+    method = "gmm", 
+    percentile = 0.9,
+    lower_bound = NULL,
+    upper_bound = NULL,
+    use_log_transform = TRUE,
+    log_multiplier = log_params[[i]]$multiplier,
+    log_offset = log_params[[i]]$offset
+  )
+  cat("Log params (mult=", log_params[[i]]$multiplier, 
+      ", offset=", log_params[[i]]$offset, 
+      "): eps =", round(eps_val, 2), "minutes\n")
+}
 
 # Method 3: Conservative approach (uses both methods, takes minimum)
 eps_both <- meal_interval(
@@ -501,6 +545,9 @@ eps_both <- meal_interval(
   percentile = 0.9,
   lower_bound = NULL, 
   upper_bound = NULL,
+  use_log_transform = TRUE,
+  log_multiplier = 20,
+  log_offset = 1,
   id_col = id_col2(), 
   start_col = start_col2(), 
   end_col = end_col2(),
@@ -514,6 +561,9 @@ p1 <- viz_eps_percentile(
   percentile = 0.9,                    # Try different values!
   lower_bound = NULL, 
   upper_bound = NULL,
+  bins = 100,
+  colors = grDevices::hcl.colors(2, "Set 3"),
+  title_prefix = "Distribution of time gap between visits & \noptimal meal interval (eps)\n",
   xlim = 15,                           # Adjust for your data range
   id_col = id_col2(), 
   start_col = start_col2(), 
@@ -524,14 +574,68 @@ p1 <- viz_eps_percentile(
 # Visualize GMM method  
 p2 <- viz_eps_gmm(
   data = your_data, 
-  use_log_transform = TRUE,             # Try: FALSE
-  xlim = 20,                            # Use smaller values for log transform
+  lower_bound = NULL,
+  upper_bound = NULL,
+  bins = 100,
+  colors = grDevices::hcl.colors(4, "Set 3"),
+  title_prefix = "Distribution of time gap between visits \n& GMM-based meal interval (eps)",
   show_components = TRUE,               # Try: FALSE
+  use_log_transform = TRUE,             # Try: FALSE
+  log_multiplier = 20,
+  log_offset = 1,
+  xlim = 10,                            # Use smaller values for log transform
   id_col = id_col2(), 
   start_col = start_col2(), 
   end_col = end_col2(),
   tz = tz2()
 )
+
+# Compare GMM with different log transformations
+# Without log transformation
+p_gmm_no_log <- viz_eps_gmm(
+  data = your_data, 
+  lower_bound = NULL,
+  upper_bound = NULL,
+  bins = 100,
+  colors = grDevices::hcl.colors(4, "Set 3"),
+  title_prefix = "Distribution of time gap between visits \n& GMM-based meal interval (eps)",
+  show_components = TRUE,
+  use_log_transform = FALSE,
+  xlim = 20
+)
+print(p_gmm_no_log)
+
+# With basic log transformation: log(x + 1)
+p_gmm_log <- viz_eps_gmm(
+  data = your_data, 
+  lower_bound = NULL,
+  upper_bound = NULL,
+  bins = 100,
+  colors = grDevices::hcl.colors(4, "Set 3"),
+  title_prefix = "Distribution of time gap between visits \n& GMM-based meal interval (eps)\n",
+  show_components = TRUE,
+  use_log_transform = TRUE,
+  log_multiplier = 1,
+  log_offset = 1,
+  xlim = 10
+)
+print(p_gmm_log)
+
+# With customized log transformation: log(20x + 1)
+p_gmm_log_20 <- viz_eps_gmm(
+  data = your_data, 
+  lower_bound = NULL,
+  upper_bound = NULL,
+  bins = 100,
+  colors = grDevices::hcl.colors(4, "Set 3"),
+  title_prefix = "Distribution of time gap between visits \n& GMM-based meal interval (eps)\n",
+  show_components = TRUE,
+  use_log_transform = TRUE,
+  log_multiplier = 20,
+  log_offset = 1,
+  xlim = 10
+)
+print(p_gmm_log_20)
 
 # ---- STEP 3: Cluster Visits into Meals ----
 # - Step 1 + 2 are optional, it's designed to help you find the optimal interval (eps) 
@@ -543,9 +647,13 @@ meals <- cluster_meals(
   eps = NULL,                           # Auto-determine, or set specific value
   min_pts = 2,                          # Try: 3, 4, 5 for stricter clustering
   method = "gmm",                       # Try: "percentile", "both"
+  percentile = 0.9,                     # Try: 0.93, 0.95
   eps_scope = "all_animals",            # Try: "one_animal_all_days", "one_animal_single_day"
-  lower_bound = 5, 
-  upper_bound = 60,
+  lower_bound = NULL,                   # Default is 5 minutes, NULL = no restriction
+  upper_bound = NULL,                   # Default is 60 minutes, NULL = no restriction
+  use_log_transform = TRUE,
+  log_multiplier = 20,
+  log_offset = 1,
   id_col = id_col2(),
   start_col = start_col2(),
   end_col = end_col2(),
@@ -555,13 +663,46 @@ meals <- cluster_meals(
   tz = tz2()
 )
 
+# Compare different eps calculation scopes
+scopes <- c("all_animals", "one_animal_all_days", "one_animal_single_day")
+scope_results <- list()
+
+for (scope in scopes) {
+  meals_temp <- cluster_meals(
+    data = your_data,
+    eps = NULL,
+    min_pts = 2,
+    method = "gmm",
+    percentile = 0.9,
+    eps_scope = scope,
+    lower_bound = NULL,
+    upper_bound = NULL,
+    use_log_transform = TRUE,
+    log_multiplier = 20,
+    log_offset = 1
+  )
+  scope_results[[scope]] <- nrow(meals_temp)
+}
+
+# Print comparison results
+cat("Meals identified by different eps scopes:\n")
+for (scope in names(scope_results)) {
+  cat(scope, ":", scope_results[[scope]], "meals\n")
+}
+
 # Option B: Label individual visits with meal info (recommended!)
 labeled_visits <- meal_label_visits(
   data = your_data,
   eps = NULL,                           # Auto-determine optimal interval
   min_pts = 2,                          # Minimum visits to form a meal
-  method = "gmm",                       # Clustering method
-  eps_scope = "all_animals",            # Scope for eps calculation
+  method = "gmm",                       # Try: "percentile", "both"
+  percentile = 0.9,                    # Try: 0.9, 0.95
+  eps_scope = "all_animals",            # Try: "one_animal_all_days", "one_animal_single_day"
+  lower_bound = NULL,
+  upper_bound = NULL,
+  use_log_transform = TRUE,
+  log_multiplier = 20,
+  log_offset = 1,
   id_col = id_col2(),
   start_col = start_col2(),
   end_col = end_col2(),
@@ -577,15 +718,22 @@ meal_plots <- viz_meal_clusters(
   data = labeled_visits,
   point_size = 2,                       # Try: 1, 3, 4
   point_alpha = 0.7,                    # Try: 0.5, 0.8, 1.0
+  ncol_facet = 1,
+  date_format = "%Y-%m-%d",
+  time_breaks = "4 hours",              # Try: "2 hours", "6 hours"
+  time_labels = "%H",
   color_palette = "Set 3",              # Try: "Dark 2", "Pastel 1", "Set 1"
   outlier_color = "grey50",             # Try: "red", "black"
-  title_prefix = "Animal",              # Try: "Cow", ""
-  text_size = 12,                       # Try: 10, 14, 16
-  time_breaks = "4 hours",              # Try: "2 hours", "6 hours"
+  title_prefix = "Cow",                 # Try: "Animal", ""
+  text_size = 10,                       # Try: 12, 14, 16
+  title_size = NULL,
   id_col = id_col2(),
   start_col = start_col2(),
   tz = tz2()
 )
+
+# View specific animal on specific day
+meal_plots[["6027"]][[2]]  # First number is animal ID, second is day index
 
 # ---- STEP 5: Extract and Combine Specific Plots ----
 # Get plots for specific animals
@@ -605,10 +753,12 @@ date_plots <- extract_plots(
 # Combine multiple days for one animal
 combined_plots <- combine_animal_plots(
   plot_list = meal_plots, 
-  animal_id = "5124",                   # Your animal ID
-  plots_per_page = 4,                   # Number of plots per page
+  animal_id = "7022",                   # Your animal ID (was "5124" above, use your ID)
+  plots_per_page = 3,                   # Number of plots per page (was 4 in demo)
   method = "vertical"                   # Try: "grid"
 )
+
+print(combined_plots[[1]])
 
 # Combine multiple animals for one date
 date_combined <- combine_date_plots(
@@ -617,6 +767,8 @@ date_combined <- combine_date_plots(
   plots_per_page = 3,
   method = "vertical"
 )
+
+print(date_combined[["1"]])
 
 # ---- BONUS: Quick Analysis ----
 # Check meal summary statistics
@@ -631,8 +783,3 @@ labeled_visits_summary <- table(labeled_visits[[1]]$meal_id == 0)    # TRUE = ou
 labeled_visits_summary
 ```
 
----
-
-**🦦 Ollie's Final Words**: *"Remember, the best parameters are the ones that make sense for YOUR data and research questions. Don't be afraid to experiment with different settings until you find what works best!"*
-
-**Next Adventure**: Try these functions with your own animal data! Start with the defaults, then play with the parameters to discover the feeding patterns hidden in your dataset. 🍽️✨ 

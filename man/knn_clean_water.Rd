@@ -8,7 +8,7 @@ knn_clean_water(
   water_data,
   k = 50,
   threshold_percentile = 99.9,
-  custom_scaling = list(rate = 20, intake = 1, duration = 0.01),
+  custom_scaling = NULL,
   intake_col = intake_col2(),
   duration_col = duration_col2(),
   remove_outliers = FALSE,
@@ -25,8 +25,10 @@ Will be automatically adjusted if it exceeds the number of rows in the data.}
 Points with average distances above this percentile are considered outliers.
 Must be between 0 and 100. Default is 99.}
 
-\item{custom_scaling}{A named list with scaling factors for input variables.
-Default is NULL, which means no scaling is applied (all factors = 1).}
+\item{custom_scaling}{A named list with scaling factors for input variables
+(e.g., list(rate = 10, intake = 2, duration = 0.5)).
+If NULL (default), min-max scaling is applied to normalize all variables
+to a 0-1 range, ensuring equal contribution to distance calculations.}
 
 \item{intake_col}{Character. Name of the column containing intake data (default: from global_var.R).}
 
@@ -43,4 +45,10 @@ If remove_outliers=TRUE, returns data with outliers removed.
 }
 \description{
 Process multiple days of water data and remove outliers using KNN
+}
+\details{
+When \code{custom_scaling} is NULL, the function automatically applies min-max scaling
+to normalize all variables (duration, intake, rate) to a 0-1 range. This ensures
+equal contribution of each variable to the distance calculation in the KNN algorithm.
+When \code{custom_scaling} is provided, those scaling factors are used instead.
 }

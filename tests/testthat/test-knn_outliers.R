@@ -93,6 +93,36 @@ test_that("knn_outlier_detection works with custom_scaling", {
   expect_true("outlier" %in% names(result))
 })
 
+test_that("knn_outlier_detection works with NULL scaling (min-max)", {
+  set.seed(123)
+  n <- 50
+  
+  df <- data.frame(
+    duration = runif(n, 50, 300),
+    intake = runif(n, 5, 15)
+  )
+  
+  # Add outliers
+  outliers <- data.frame(
+    duration = c(500, 600),
+    intake = c(30, 35)
+  )
+  
+  df <- rbind(df, outliers)
+  
+  # Test with NULL scaling (should use min-max scaling)
+  result <- knn_outlier_detection(
+    df, 
+    k = 5, 
+    threshold_percentile = 95,
+    custom_scaling = NULL
+  )
+  
+  expect_s3_class(result, "data.frame")
+  expect_true("outlier" %in% names(result))
+  expect_equal(nrow(result), nrow(df))
+})
+
 test_that("knn_outlier_detection works with partial custom_scaling", {
   set.seed(123)
   n <- 50
@@ -519,6 +549,32 @@ test_that("knn_clean_water handles custom column names and scaling", {
 # ------------------- Tests for helper functions ------------------------------#
 # -----------------------------------------------------------------------------#
 
+test_that("scale_to_01 works correctly", {
+  # Test with normal data
+  x <- c(10, 20, 30, 40, 50)
+  result <- scale_to_01(x)
+  
+  expect_equal(min(result), 0)
+  expect_equal(max(result), 1)
+  expect_equal(length(result), length(x))
+  expect_true(all(result >= 0 & result <= 1))
+  
+  # Test with all same values
+  x_same <- c(5, 5, 5, 5)
+  result_same <- scale_to_01(x_same)
+  
+  expect_equal(unique(result_same), 0.5)
+  expect_equal(length(result_same), length(x_same))
+  
+  # Test with negative values
+  x_neg <- c(-10, 0, 10)
+  result_neg <- scale_to_01(x_neg)
+  
+  expect_equal(min(result_neg), 0)
+  expect_equal(max(result_neg), 1)
+  expect_equal(result_neg[2], 0.5)  # Middle value
+})
+
 test_that("create_scaled_matrix works correctly", {
   # Create test data
   df <- data.frame(
@@ -528,16 +584,19 @@ test_that("create_scaled_matrix works correctly", {
     extra_col = c("a", "b", "c")  # Column that should be ignored
   )
   
-  # Test with default scaling (1,1,1)
-  scaling <- list(rate = 1, intake = 1, duration = 1)
-  result <- create_scaled_matrix(df, scaling, "intake", "duration")
+  # Test with NULL scaling (min-max scaling to 0-1)
+  result <- create_scaled_matrix(df, NULL, "intake", "duration")
   
   expect_true(is.matrix(result))
   expect_equal(dim(result), c(3, 3))
   expect_equal(colnames(result), c("duration", "intake", "rate"))
-  expect_equal(result[, "duration"], df$duration)
-  expect_equal(result[, "intake"], df$intake)
-  expect_equal(result[, "rate"], df$rate)
+  
+  # Check that values are scaled to 0-1 range
+  expect_true(all(result >= 0 & result <= 1))
+  expect_equal(min(result[, "duration"]), 0)
+  expect_equal(max(result[, "duration"]), 1)
+  expect_equal(min(result[, "intake"]), 0)
+  expect_equal(max(result[, "intake"]), 1)
   
   # Test with custom scaling
   scaling <- list(rate = 10, intake = 2, duration = 0.5)
@@ -550,9 +609,9 @@ test_that("create_scaled_matrix works correctly", {
 })
 
 test_that("get_scaling_factors works correctly", {
-  # Test with NULL input (defaults to 1,1,1)
+  # Test with NULL input (should return NULL for min-max scaling)
   result <- get_scaling_factors(NULL)
-  expect_equal(result, list(rate = 1, intake = 1, duration = 1))
+  expect_null(result)
   
   # Test with complete custom scaling
   custom <- list(rate = 10, intake = 2, duration = 0.5)
