@@ -92,6 +92,9 @@ meal_id = 0.
 ``` r
 # Cluster meals first (all_fed is included in the package)
 meals <- cluster_meals(all_fed[[1]])
+#> ℹ Calculating optimal meal interval for all animals...
+#> ⠙ ■■■■■■■■■■■■■■                   21/47 [ 45%] | ETA:  1s
+#> ⠙ ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  47/47 [100%] | ETA:  0s
 
 # Merge results with original data
 merged_data <- merge_cluster_results(all_fed[[1]], meals)

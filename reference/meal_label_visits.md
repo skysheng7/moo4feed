@@ -177,6 +177,7 @@ toy_data <- all_fed[[1]][which(all_fed[[1]]$cow == 5114),]
 labeled <- meal_label_visits(toy_data, id_col = 'cow', start_col = 'start', 
 end_col = 'end', bin_col = 'bin', intake_col = 'intake', dur_col = 'duration',
 tz = 'America/Vancouver')
+#> ℹ Calculating optimal meal interval for all animals...
 head(labeled)
 #>     transponder  cow bin               start                 end duration
 #> 31     12200060 5114  13 2020-10-31 00:03:24 2020-10-31 00:04:01       37

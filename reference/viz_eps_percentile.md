@@ -117,4 +117,7 @@ plot <- viz_eps_percentile(toy_data, id_col = "cow",
                            start_col = "start", end_col = "end", 
                            tz = "America/Vancouver", 
                            percentile = 0.93)
+#> ℹ Calculating optimal meal interval using percentile method...
+#> ℹ Calculating time gaps between visits...
+#> ✔ Visualization complete!
 ```

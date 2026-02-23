@@ -38,6 +38,7 @@ toy_data <- all_fed[[1]][which(all_fed[[1]]$cow %in% c(5114, 4070, 7010, 5028, 6
 labeled <- meal_label_visits(toy_data, id_col = 'cow', start_col = 'start', 
 end_col = 'end', bin_col = 'bin', intake_col = 'intake', dur_col = 'duration',
 tz = 'America/Vancouver')
+#> ℹ Calculating optimal meal interval for all animals...
 
 # Customize colors and text
 p <- viz_meal_clusters(labeled, id_col = 'cow', start_col = 'start')

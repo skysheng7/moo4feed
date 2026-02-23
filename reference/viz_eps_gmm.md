@@ -144,4 +144,7 @@ toy_data <- all_fed[[1]][which(all_fed[[1]]$cow == 5114),]
 plot <- viz_eps_gmm(toy_data, id_col = "cow", start_col = "start", 
                    end_col = "end", tz = "America/Vancouver",
                    use_log_transform = FALSE)
+#> ℹ Calculating time gaps between visits...
+#> ℹ Fitting Gaussian Mixture Model to identify meal intervals...
+#> ✔ Visualization complete!
 ```
