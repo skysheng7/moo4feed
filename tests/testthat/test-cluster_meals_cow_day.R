@@ -353,6 +353,78 @@ test_that("cluster_meals_cow_day handles NA values in intake and duration", {
   expect_equal(result$feeding_percentage, (900 / (25 * 60)) * 100)  # Should ignore NA duration
 })
 
+test_that("cluster_meals_cow_day handles NA values in start times", {
+  # Create data with NA values in start times
+  animal_day_df <- data.frame(
+    cow = rep("A001", 4),
+    start = c(
+      lubridate::as_datetime("2023-01-01 08:00:00"),
+      NA,  # NA value
+      lubridate::as_datetime("2023-01-01 08:20:00"),
+      lubridate::as_datetime("2023-01-01 08:30:00")
+    ),
+    end = lubridate::as_datetime(c(
+      "2023-01-01 08:05:00", "2023-01-01 08:15:00",
+      "2023-01-01 08:25:00", "2023-01-01 08:35:00"
+    )),
+    bin = rep(1, 4),
+    intake = rep(1.5, 4),
+    duration = rep(300, 4),
+    date = as.Date(rep("2023-01-01", 4))
+  )
+  
+  # Should inform about NA values and remove them
+  expect_message(
+    result <- cluster_meals_cow_day(
+      animal_day_df = animal_day_df,
+      eps = 30,
+      min_pts = 2,
+      id_col = "cow",
+      start_col = "start",
+      end_col = "end",
+      bin_col = "bin",
+      intake_col = "intake",
+      dur_col = "duration"
+    ),
+    "Found 1 NA values in start times for clustering"
+  )
+  
+  # Should still create a meal with the remaining 3 valid visits
+  expect_equal(nrow(result), 1)
+  expect_equal(result$visit_count, 3)
+})
+
+test_that("cluster_meals_cow_day returns empty when all start times are NA", {
+  # Create data where all start times are NA
+  animal_day_df <- data.frame(
+    cow = rep("A001", 3),
+    start = rep(as.POSIXct(NA), 3),
+    end = lubridate::as_datetime(c(
+      "2023-01-01 08:05:00", "2023-01-01 08:15:00", "2023-01-01 08:25:00"
+    )),
+    bin = rep(1, 3),
+    intake = rep(1.5, 3),
+    duration = rep(300, 3),
+    date = as.Date(rep("2023-01-01", 3))
+  )
+  
+  # Should error because no valid start times exist for conversion
+  expect_error(
+    cluster_meals_cow_day(
+      animal_day_df = animal_day_df,
+      eps = 30,
+      min_pts = 2,
+      id_col = "cow",
+      start_col = "start",
+      end_col = "end",
+      bin_col = "bin",
+      intake_col = "intake",
+      dur_col = "duration"
+    ),
+    "Failed to convert datetime_vec to datetime objects"
+  )
+})
+
 # Tests for Error Handling
 test_that("cluster_meals_cow_day stops when eps is NULL", {
   animal_day_df <- create_sample_animal_day(5)

@@ -29,6 +29,20 @@ cluster_meals_cow_day <- function(animal_day_df, eps, min_pts,
   # Convert start times to minutes from midnight using helper function
   minutes_from_midnight <- convert_times_to_minutes(animal_day_df[[start_col]], tz = tz)
   
+  # Check for and remove NA values in start times before clustering
+  if (any(is.na(minutes_from_midnight))) {
+    n_na <- sum(is.na(minutes_from_midnight))
+    message("Found ", n_na, " NA values in start times for clustering. These rows will be removed.")
+    valid_rows <- !is.na(minutes_from_midnight)
+    animal_day_df <- animal_day_df[valid_rows, ]
+    minutes_from_midnight <- minutes_from_midnight[valid_rows]
+  }
+  
+  # Check if we still have enough data after removing NAs
+  if (length(minutes_from_midnight) < min_pts) {
+    return(create_empty_meal_df(id_col, tz))
+  }
+  
   # Eps should already be determined at a higher level based on scope
   if (is.null(eps)) {
     stop("eps should be determined before calling cluster_meals_cow_day")
