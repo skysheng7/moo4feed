@@ -144,8 +144,4 @@ toy_data <- all_fed[[1]][which(all_fed[[1]]$cow == 5114),]
 plot <- viz_eps_gmm(toy_data, id_col = "cow", start_col = "start", 
                    end_col = "end", tz = "America/Vancouver",
                    use_log_transform = FALSE)
-#> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-#> ℹ Please use `linewidth` instead.
-#> ℹ The deprecated feature was likely used in the moo4feed package.
-#>   Please report the issue at <https://github.com/skysheng7/moo4feed/issues>.
 ```
