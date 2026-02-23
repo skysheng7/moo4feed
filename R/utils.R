@@ -36,12 +36,12 @@ read_data_safely <- function(file, sep = ",", header = FALSE) {
   # 2) File must exist, not be a directory, and have nonzero size
   info <- file.info(file)
   if (isTRUE(info$isdir)) {
-    message("Warning: this path is to a folder instead of a file")
+    message("Note: this path is to a folder instead of a file")
     return(data.frame())
   }
   if (is.na(info$size) || info$size == 0) {
     message(paste0(
-      "Warning: File missing, or the file is empty; returning an empty data frame: ",
+      "Note: File missing, or the file is empty; returning an empty data frame: ",
       file,
       ". You can ignore this warning if an empty file is expected."
     ))
@@ -62,7 +62,7 @@ read_data_safely <- function(file, sep = ",", header = FALSE) {
       # treat zero‐row frames as “empty”
       if (nrow(df) == 0L) {
         message(paste0(
-          "Warning: File has no data rows; returning an empty data frame, : ",
+          "Note: File has no data rows; returning an empty data frame, : ",
           file,
           ". You can ignore this warning if an empty file is expected."
         ))

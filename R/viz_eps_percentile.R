@@ -150,7 +150,7 @@ viz_eps_percentile <- function(data,
     ggplot2::geom_vline(xintercept = optimal_eps, 
                         linetype = "dashed", 
                         color = colors[2], 
-                        size = 1.2) +
+                        linewidth = 1.2) +
     ggplot2::labs(
       title = paste0(title_prefix, " (", round(percentile * 100), "th Percentile)"),
       subtitle = paste0("Optimal eps = ", round(optimal_eps, 2), " minutes"),

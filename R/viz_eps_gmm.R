@@ -216,7 +216,7 @@ viz_eps_gmm <- function(data,
     p <- p + 
       ggplot2::geom_line(data = component_data, 
                          ggplot2::aes(x = x, y = density, color = component), 
-                         size = 1.2, alpha = 0.8) +
+                         linewidth = 1.2, alpha = 0.8) +
       ggplot2::geom_area(data = component_data, 
                          ggplot2::aes(x = x, y = density, fill = component), 
                          alpha = 0.3) +
@@ -234,7 +234,7 @@ viz_eps_gmm <- function(data,
     ggplot2::geom_vline(xintercept = optimal_eps, 
                         linetype = "dashed", 
                         color = eps_color, 
-                        size = 1.2)
+                        linewidth = 1.2)
   
   # Add labels and formatting
   subtitle_text <- paste0("Optimal interval = ", round(optimal_eps, 2))
