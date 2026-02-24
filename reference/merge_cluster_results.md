@@ -94,7 +94,7 @@ meal_id = 0.
 meals <- cluster_meals(all_fed[[1]])
 #> ℹ Calculating optimal meal interval for all animals...
 #> ⠙ ■■■■■■■■■■■■■■■■                 23/47 [ 49%] | ETA:  1s
-#> ⠹ ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   45/47 [ 96%] | ETA:  0s
+#> ⠹ ■■■■■■■■■■■■■■■■■■■■■■■■■■■■     43/47 [ 91%] | ETA:  0s
 #> ⠹ ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  47/47 [100%] | ETA:  0s
 
 # Merge results with original data
