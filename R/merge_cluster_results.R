@@ -35,6 +35,7 @@
 #' # Check how many visits were assigned vs. outliers
 #' table(merged_data$meal_id == 0)
 #' 
+#' @importFrom stats setNames
 #' @export
 merge_cluster_results <- function(visit_data,
                                  meal_results,
