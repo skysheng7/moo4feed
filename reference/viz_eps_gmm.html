@@ -29,7 +29,7 @@ make sure data belongs to a single animal and only 1 day.
 
     <a class="navbar-brand me-2" href="../index.html">moo4feed</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,7 +50,7 @@ make sure data belongs to a single animal and only 1 day.
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Visualize gap distribution with GMM fit and optimal interval (eps)</h1>
-      <small class="dont-index">Source: <a href="https://github.com/skysheng7/moo4feed/blob/0.1.4/R/viz_eps_gmm.R" class="external-link"><code>R/viz_eps_gmm.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/skysheng7/moo4feed/blob/main/R/viz_eps_gmm.R" class="external-link"><code>R/viz_eps_gmm.R</code></a></small>
       <div class="d-none name"><code>viz_eps_gmm.Rd</code></div>
     </div>
 
@@ -173,12 +173,14 @@ falls back to percentile method with a warning.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">toy_data</span> <span class="op">&lt;-</span> <span class="va">all_fed</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">all_fed</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cow</span> <span class="op">==</span> <span class="fl">5114</span><span class="op">)</span>,<span class="op">]</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">toy_data</span> <span class="op">&lt;-</span> <span class="va">all_fed</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">all_fed</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cow</span> <span class="op">==</span> <span class="fl">5114</span><span class="op">)</span>, <span class="op">]</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Visualize with GMM method (default uses log transformation)</span></span></span>
-<span class="r-in"><span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu">viz_eps_gmm</span><span class="op">(</span><span class="va">toy_data</span>, id_col <span class="op">=</span> <span class="st">"cow"</span>, start_col <span class="op">=</span> <span class="st">"start"</span>, </span></span>
-<span class="r-in"><span>                   end_col <span class="op">=</span> <span class="st">"end"</span>, tz <span class="op">=</span> <span class="st">"America/Vancouver"</span>,</span></span>
-<span class="r-in"><span>                   use_log_transform <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu">viz_eps_gmm</span><span class="op">(</span><span class="va">toy_data</span>,</span></span>
+<span class="r-in"><span>  id_col <span class="op">=</span> <span class="st">"cow"</span>, start_col <span class="op">=</span> <span class="st">"start"</span>,</span></span>
+<span class="r-in"><span>  end_col <span class="op">=</span> <span class="st">"end"</span>, tz <span class="op">=</span> <span class="st">"America/Vancouver"</span>,</span></span>
+<span class="r-in"><span>  use_log_transform <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Calculating time gaps between visits...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Fitting Gaussian Mixture Model to identify meal intervals...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Visualization complete!</span>
