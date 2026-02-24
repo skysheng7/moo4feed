@@ -185,7 +185,7 @@ viz_eps_gmm <- function(data,
   if (length(gaps) >= 10 && show_components && gmm_result$fit_successful) {
     gmm_fitted <- TRUE
 
-    x_seq <- seq(0, x_limit, length.out = nrow(combined_data))
+    x_seq <- seq(0, x_limit, length.out = 500)
 
     # Calculate the actual component densities (properly weighted)
     component1_density <- gmm_result$lambda1 * stats::dnorm(x_seq,
