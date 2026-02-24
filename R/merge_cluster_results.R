@@ -92,11 +92,202 @@ merge_cluster_results <- function(visit_data,
   }
 }
 
+#' Validate required columns in dataframes
+#'
+#' @description
+#' Helper function to check that required columns exist in a dataframe.
+#'
+#' @param df Dataframe to validate
+#' @param required_cols Character vector of required column names
+#' @param df_name Name of the dataframe for error messages
+#'
+#' @return NULL (stops execution if validation fails)
+#'
+#' @noRd
+#' @keywords internal
+validate_columns <- function(df, required_cols, df_name) {
+  missing_cols <- setdiff(required_cols, names(df))
+  if (length(missing_cols) > 0) {
+    stop("Missing required columns in ", df_name, ": ", 
+         paste(missing_cols, collapse = ", "))
+  }
+}
+
+#' Initialize meal columns for empty or unmatched visits
+#'
+#' @description
+#' Helper function to add meal columns with default outlier values.
+#'
+#' @param visit_df Visit dataframe
+#' @param tz Timezone for datetime columns
+#' @param empty If TRUE, creates empty vectors; if FALSE, creates NA values
+#'
+#' @return Dataframe with meal columns added
+#'
+#' @noRd
+#' @keywords internal
+initialize_meal_columns <- function(visit_df, tz, empty = FALSE) {
+  if (empty) {
+    visit_df$meal_id <- integer(0)
+    visit_df$meal_start <- lubridate::as_datetime(character(0), tz = tz)
+    visit_df$meal_end <- lubridate::as_datetime(character(0), tz = tz)
+    visit_df$meal_duration <- numeric(0)
+    visit_df$total_intake <- numeric(0)
+    visit_df$visit_count <- integer(0)
+  } else {
+    visit_df$meal_id <- 0L
+    visit_df$meal_start <- lubridate::as_datetime(NA, tz = tz)
+    visit_df$meal_end <- lubridate::as_datetime(NA, tz = tz)
+    visit_df$meal_duration <- NA_real_
+    visit_df$total_intake <- NA_real_
+    visit_df$visit_count <- NA_integer_
+  }
+  return(visit_df)
+}
+
+#' Prepare visit and meal data for merging
+#'
+#' @description
+#' Helper function to add date columns and convert datetime formats.
+#'
+#' @inheritParams merge_cluster_results
+#' @param visit_df Visit dataframe
+#' @param meal_results Meal results dataframe
+#'
+#' @return List with prepared visit_df and meal_results
+#'
+#' @noRd
+#' @keywords internal
+prepare_data_for_merge <- function(visit_df, meal_results, start_col, end_col, tz) {
+  # Add date column to visit data if not present
+  if (!"date" %in% names(visit_df)) {
+    visit_df$date <- lubridate::date(visit_df[[start_col]])
+  }
+  
+  # Convert datetime columns to ensure compatibility
+  visit_df[[start_col]] <- lubridate::as_datetime(visit_df[[start_col]], tz = tz)
+  visit_df[[end_col]] <- lubridate::as_datetime(visit_df[[end_col]], tz = tz)
+  meal_results$meal_start <- lubridate::as_datetime(meal_results$meal_start, tz = tz)
+  meal_results$meal_end <- lubridate::as_datetime(meal_results$meal_end, tz = tz)
+  
+  list(visit_df = visit_df, meal_results = meal_results)
+}
+
+#' Find visits that match meals based on time overlap
+#'
+#' @description
+#' Helper function that performs vectorized join and filtering to find
+#' which visits belong to which meals.
+#'
+#' @inheritParams merge_cluster_results
+#' @param visit_df Visit dataframe (with .visit_idx column added)
+#' @param meal_results Meal results dataframe
+#'
+#' @return Dataframe with matched visit-meal pairs
+#'
+#' @noRd
+#' @keywords internal
+find_visit_meal_matches <- function(visit_df, meal_results, id_col, start_col, end_col) {
+  # Select only necessary columns from meal_results to reduce memory during join
+  meal_subset <- meal_results[, c(id_col, "date", "meal_id", "meal_start", "meal_end", 
+                                  "meal_duration", "total_intake", "visit_count")]
+  
+  # Join visits with meals on animal ID and date
+  # This creates all possible visit-meal combinations for each animal-day
+  joined <- dplyr::inner_join(
+    visit_df,
+    meal_subset,
+    by = c(setNames(id_col, id_col), "date"),
+    relationship = "many-to-many"
+  )
+  
+  # Filter to only keep overlapping visits
+  # A visit overlaps with a meal if: meal_start <= visit_start AND meal_end >= visit_end
+  matched_visits <- joined[
+    joined$meal_start <= joined[[start_col]] & 
+    joined$meal_end >= joined[[end_col]],
+  ]
+  
+  # For visits matching multiple meals (shouldn't happen often), keep the first match
+  matched_visits <- matched_visits[!duplicated(matched_visits$.visit_idx), ]
+  
+  return(matched_visits)
+}
+
+#' Merge matched meal assignments back to visit data
+#'
+#' @description
+#' Helper function to merge the meal assignments back to the original visit data
+#' using a left join to preserve all visits including outliers.
+#'
+#' @param visit_df Visit dataframe
+#' @param matched_visits Dataframe with matched visit-meal pairs
+#'
+#' @return Dataframe with meal assignments merged
+#'
+#' @noRd
+#' @keywords internal
+merge_meal_assignments <- function(visit_df, matched_visits) {
+  if (nrow(matched_visits) == 0) {
+    return(visit_df)
+  }
+  
+  # Select only the meal columns we need
+  meal_assignments <- matched_visits[, c(".visit_idx", "meal_id", "meal_start", 
+                                         "meal_end", "meal_duration", "total_intake", 
+                                         "visit_count")]
+  
+  # Merge back to original visit data using left join to keep all visits (including outliers)
+  result_df <- dplyr::left_join(
+    visit_df,
+    meal_assignments,
+    by = ".visit_idx"
+  )
+  
+  return(result_df)
+}
+
+#' Fill NA values in meal columns with outlier defaults
+#'
+#' @description
+#' Helper function to replace NA values in meal columns with default values
+#' for visits that weren't matched to any meal (outliers).
+#'
+#' @param result_df Dataframe with meal columns
+#' @param tz Timezone for datetime columns
+#'
+#' @return Dataframe with NA values replaced
+#'
+#' @noRd
+#' @keywords internal
+fill_outlier_values <- function(result_df, tz) {
+  # Define meal columns and their default values
+  meal_cols <- list(
+    meal_id = 0L,
+    meal_start = lubridate::as_datetime(NA, tz = tz),
+    meal_end = lubridate::as_datetime(NA, tz = tz),
+    meal_duration = NA_real_,
+    total_intake = NA_real_,
+    visit_count = NA_integer_
+  )
+  
+  # Fill each column
+  for (col_name in names(meal_cols)) {
+    if (!col_name %in% names(result_df)) {
+      result_df[[col_name]] <- meal_cols[[col_name]]
+    } else {
+      result_df[[col_name]][is.na(result_df[[col_name]])] <- meal_cols[[col_name]]
+    }
+  }
+  
+  return(result_df)
+}
+
 #' Merge clustering results for a single dataframe
 #'
 #' @description
 #' Helper function that processes a single dataframe of visit data and merges
-#' it with meal clustering results.
+#' it with meal clustering results using a vectorized join-based approach.
 #'
 #' @inheritParams merge_cluster_results
 #'
@@ -111,105 +302,48 @@ merge_cluster_results_single <- function(visit_df,
                                         end_col = end_col2(),
                                         tz = tz2()) {
   
-  # Validate required columns in visit data
-  required_visit_cols <- c(id_col, start_col, end_col)
-  missing_visit_cols <- setdiff(required_visit_cols, names(visit_df))
-  if (length(missing_visit_cols) > 0) {
-    stop("Missing required columns in visit_data: ", paste(missing_visit_cols, collapse = ", "))
-  }
-  
-  # Validate required columns in meal results
-  required_meal_cols <- c(id_col, "date", "meal_id", "meal_start", "meal_end", 
-                         "meal_duration", "total_intake", "visit_count")
-  missing_meal_cols <- setdiff(required_meal_cols, names(meal_results))
-  if (length(missing_meal_cols) > 0) {
-    stop("Missing required columns in meal_results: ", paste(missing_meal_cols, collapse = ", "))
-  }
+  # Validate required columns
+  validate_columns(visit_df, c(id_col, start_col, end_col), "visit_data")
+  validate_columns(meal_results, 
+                  c(id_col, "date", "meal_id", "meal_start", "meal_end", 
+                    "meal_duration", "total_intake", "visit_count"),
+                  "meal_results")
   
   # Handle empty dataframe case
   if (nrow(visit_df) == 0) {
-    # Add date column if not present
     if (!"date" %in% names(visit_df)) {
       visit_df$date <- as.Date(character(0))
     }
-    
-    # Initialize meal columns for empty dataframe
-    visit_df$meal_id <- integer(0)
-    visit_df$meal_start <- lubridate::as_datetime(character(0), tz = tz)
-    visit_df$meal_end <- lubridate::as_datetime(character(0), tz = tz)
-    visit_df$meal_duration <- numeric(0)
-    visit_df$total_intake <- numeric(0)
-    visit_df$visit_count <- integer(0)
-    
-    return(visit_df)
+    return(initialize_meal_columns(visit_df, tz, empty = TRUE))
   }
 
   # Handle empty meal_results - all visits will be outliers
   if (nrow(meal_results) == 0) {
-    # Add date column if not present
     if (!"date" %in% names(visit_df)) {
       visit_df$date <- lubridate::date(visit_df[[start_col]])
     }
-    
-    # Initialize meal columns with outlier values
-    visit_df$meal_id <- 0L
-    visit_df$meal_start <- lubridate::as_datetime(NA, tz = tz)
-    visit_df$meal_end <- lubridate::as_datetime(NA, tz = tz)
-    visit_df$meal_duration <- NA_real_
-    visit_df$total_intake <- NA_real_
-    visit_df$visit_count <- NA_integer_
-    
-    return(visit_df)
+    return(initialize_meal_columns(visit_df, tz, empty = FALSE))
   }
   
-  # Add date column to visit data if not present
-  if (!"date" %in% names(visit_df)) {
-    visit_df$date <- lubridate::date(visit_df[[start_col]])
-  }
+  # Prepare data: add date column and convert datetime formats
+  prepared <- prepare_data_for_merge(visit_df, meal_results, start_col, end_col, tz)
+  visit_df <- prepared$visit_df
+  meal_results <- prepared$meal_results
   
-  # Initialize meal columns in visit data
-  visit_df$meal_id <- 0L  # Default to outlier
-  visit_df$meal_start <- lubridate::as_datetime(NA, tz = tz)
-  visit_df$meal_end <- lubridate::as_datetime(NA, tz = tz)
-  visit_df$meal_duration <- NA_real_
-  visit_df$total_intake <- NA_real_
-  visit_df$visit_count <- NA_integer_
+  # Add row index to preserve original order
+  visit_df$.visit_idx <- seq_len(nrow(visit_df))
   
-  # Convert datetime columns to ensure compatibility
-  visit_df[[start_col]] <- lubridate::as_datetime(visit_df[[start_col]], tz = tz)
-  visit_df[[end_col]] <- lubridate::as_datetime(visit_df[[end_col]], tz = tz)
-  meal_results$meal_start <- lubridate::as_datetime(meal_results$meal_start, tz = tz)
-  meal_results$meal_end <- lubridate::as_datetime(meal_results$meal_end, tz = tz)
+  # Find visits that match meals based on time overlap
+  matched_visits <- find_visit_meal_matches(visit_df, meal_results, id_col, start_col, end_col)
   
-  # Vectorized approach: for each visit, find matching meal
-  for (i in seq_len(nrow(visit_df))) {
-    visit_animal <- visit_df[[id_col]][i]
-    visit_date <- visit_df$date[i]
-    visit_start <- visit_df[[start_col]][i]
-    visit_end <- visit_df[[end_col]][i]
-    
-    # Find meals for this animal on this date
-    animal_day_meals <- meal_results[meal_results[[id_col]] == visit_animal & 
-                                    as.character(meal_results$date) == as.character(visit_date), ]
-    
-    if (nrow(animal_day_meals) == 0) {
-      next  # No meals for this animal-day, visit remains as outlier (meal_id = 0)
-    }
-    
-    # Vectorized overlap check: find all meals that overlap with this visit
-    overlaps <- animal_day_meals[which((animal_day_meals$meal_start <= visit_start) & 
-                (animal_day_meals$meal_end >= visit_end)),]
-    
-    if (nrow(overlaps) > 0) {
-      # Assign this visit to the matched meal
-      visit_df$meal_id[i] <- overlaps$meal_id[1]
-      visit_df$meal_start[i] <- overlaps$meal_start[1]
-      visit_df$meal_end[i] <- overlaps$meal_end[1]
-      visit_df$meal_duration[i] <- overlaps$meal_duration[1]
-      visit_df$total_intake[i] <- overlaps$total_intake[1]
-      visit_df$visit_count[i] <- overlaps$visit_count[1]
-    }
-  }
+  # Merge meal assignments back to visit data
+  result_df <- merge_meal_assignments(visit_df, matched_visits)
   
-  return(visit_df)
+  # Fill NA values for outliers
+  result_df <- fill_outlier_values(result_df, tz)
+  
+  # Remove helper column
+  result_df <- result_df[, !names(result_df) %in% c(".visit_idx")]
+  
+  return(result_df)
 }
