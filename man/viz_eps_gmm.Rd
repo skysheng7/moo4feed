@@ -87,11 +87,13 @@ If GMM fitting fails or there are insufficient data points (< 10), the function
 falls back to percentile method with a warning.
 }
 \examples{
-toy_data <- all_fed[[1]][which(all_fed[[1]]$cow == 5114),]
+toy_data <- all_fed[[1]][which(all_fed[[1]]$cow == 5114), ]
 
 # Visualize with GMM method (default uses log transformation)
-plot <- viz_eps_gmm(toy_data, id_col = "cow", start_col = "start", 
-                   end_col = "end", tz = "America/Vancouver",
-                   use_log_transform = FALSE)
+plot <- viz_eps_gmm(toy_data,
+  id_col = "cow", start_col = "start",
+  end_col = "end", tz = "America/Vancouver",
+  use_log_transform = FALSE
+)
 
 }

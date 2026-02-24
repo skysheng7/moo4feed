@@ -69,11 +69,13 @@ optimal eps marked as a vertical dashed line.
 }
 \examples{
 # Create toy dataset
-toy_data <- all_fed[[1]][which(all_fed[[1]]$cow == 5114),]
+toy_data <- all_fed[[1]][which(all_fed[[1]]$cow == 5114), ]
 # Visualize with 93rd percentile
-plot <- viz_eps_percentile(toy_data, id_col = "cow", 
-                           start_col = "start", end_col = "end", 
-                           tz = "America/Vancouver", 
-                           percentile = 0.93)
+plot <- viz_eps_percentile(toy_data,
+  id_col = "cow",
+  start_col = "start", end_col = "end",
+  tz = "America/Vancouver",
+  percentile = 0.93
+)
 
 }

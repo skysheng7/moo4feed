@@ -82,6 +82,9 @@ merge_cluster_results <- function(visit_data,
     
     cli::cli_progress_done(id = pb_id)
     
+    # Preserve names from input list
+    names(result_list) <- names(visit_data)
+    
     return(result_list)
     
   } else {
