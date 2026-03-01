@@ -74,6 +74,7 @@
 #'                                   bins_feed = 1:2)
 #' names(result)
 #' 
+#' @importFrom cli cli_progress_bar cli_progress_update cli_progress_done
 #' @export
 matrix_process <- function(data_list, 
                           type = c("feed", "drink", "feed_and_drink"),
@@ -273,6 +274,14 @@ matrix_initialize_internal <- function(data_list,
     synch_master_feed <- matrices$synch_master_feed
   }
   
+  # Initialize progress bar
+  n_days <- length(data_list)
+  cli::cli_progress_bar(
+    "Processing matrices",
+    total = n_days,
+    format = "{cli::pb_spin} {cli::pb_bar} {cli::pb_current}/{cli::pb_total} [{cli::pb_percent}] | ETA: {cli::pb_eta}"
+  )
+  
   # Populate matrices with data (memory-efficient approach)
   for (y in seq_along(data_list)) {
     cur_data <- data_list[[y]]
@@ -315,7 +324,13 @@ matrix_initialize_internal <- function(data_list,
     if (type == "feed") {
       synch_master_feed[[y]] <- updated_matrices$feed_matrix
     }
+    
+    # Update progress
+    cli::cli_progress_update()
   }
+  
+  # Complete progress bar
+  cli::cli_progress_done()
   
   if (type == "feed") {
     return(list(
@@ -508,6 +523,14 @@ process_feed_matrix_data <- function(feed_matrix, bins_feed) {
 #' @noRd
 process_matrices <- function(synch_master_animal, synch_master_bin, synch_master_feed = NULL, type, bins_feed, bins_wat) {
   
+  # Initialize progress bar
+  n_days <- length(synch_master_animal)
+  cli::cli_progress_bar(
+    "Processing and filtering matrices",
+    total = n_days,
+    format = "{cli::pb_spin} {cli::pb_bar} {cli::pb_current}/{cli::pb_total} [{cli::pb_percent}] | ETA: {cli::pb_eta}"
+  )
+  
   for (i in seq_along(synch_master_animal)) {
     # Compute total animals active and bins occupied
     if (ncol(synch_master_animal[[i]]) > 1) {
@@ -550,7 +573,13 @@ process_matrices <- function(synch_master_animal, synch_master_bin, synch_master
       synch_master_feed[[i]] <- filter_matrix_and_add_date(synch_master_feed[[i]], active_records)
       synch_master_feed[[i]] <- process_feed_matrix_data(synch_master_feed[[i]], bins_feed)
     }
+    
+    # Update progress
+    cli::cli_progress_update()
   }
+  
+  # Complete progress bar
+  cli::cli_progress_done()
   
   # Return results based on whether feed matrix was provided
   if (!is.null(synch_master_feed)) {

@@ -57,6 +57,7 @@
 #'                                    id_col = "animal")
 #' 
 #' 
+#' @importFrom cli cli_progress_bar cli_progress_update cli_progress_done
 #' @export
 synch_pair_analysis <- function(matrix_data,
                                type = c("feed", "drink", "feed_and_drink"),
@@ -91,6 +92,14 @@ synch_pair_analysis <- function(matrix_data,
     stop("`synch_master_animal2` must be a data frame or list of data frames", call. = FALSE)
   }
   
+  # Initialize progress bar
+  n_days <- length(animal_matrices)
+  cli::cli_progress_bar(
+    "Analyzing pair-wise co-occurrence",
+    total = n_days,
+    format = "{cli::pb_spin} {cli::pb_bar} {cli::pb_current}/{cli::pb_total} [{cli::pb_percent}] | ETA: {cli::pb_eta}"
+  )
+  
   # Process each day
   bout_list <- list()
   total_time_list <- list()
@@ -114,7 +123,13 @@ synch_pair_analysis <- function(matrix_data,
     names(bout_list)[i] <- day_name
     names(total_time_list)[i] <- day_name
     names(avg_duration_list)[i] <- day_name
+    
+    # Update progress
+    cli::cli_progress_update()
   }
+  
+  # Complete progress bar
+  cli::cli_progress_done()
   
   # If single day input, return single matrices instead of lists
   if (single_day_input) {
