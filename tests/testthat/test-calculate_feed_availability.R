@@ -964,3 +964,54 @@ test_that("unparseable day names fallback gracefully", {
   # Day2 early visit should be NA (can't determine previous day from "day1")
   expect_true(is.na(result$visits[["day2"]]$feed_addition_time[1]))
 })
+
+test_that("bin column type mismatch between days is handled", {
+  # Day 1 has numeric bin
+  visits1 <- make_availability_visits(
+    cow_ids = c(1),
+    bin_ids = c(1),  # Numeric bin
+    start_times = c("2025-01-15 08:00:00"),
+    start_weights = c(60)
+  )
+  visits1$date <- "2025-01-15"
+
+  additions1 <- make_feed_additions(
+    bin_ids = c(1),  # Numeric bin
+    times = c("2025-01-15 20:00:00"),
+    weight_increases = c(60),
+    bin_weight_after_fills = c(60)
+  )
+  additions1$date <- "2025-01-15"
+
+  # Day 2 has character bin
+  visits2 <- make_availability_visits(
+    cow_ids = c(1),
+    bin_ids = c("1"),  # Character bin
+    start_times = c("2025-01-16 06:00:00"),
+    start_weights = c(50)
+  )
+  visits2$date <- "2025-01-16"
+
+  additions2 <- make_feed_additions(
+    bin_ids = c("1"),  # Character bin
+    times = c("2025-01-16 12:00:00"),
+    weight_increases = c(60),
+    bin_weight_after_fills = c(60)
+  )
+  additions2$date <- "2025-01-16"
+
+  visit_list <- list("2025-01-15" = visits1, "2025-01-16" = visits2)
+  addition_list <- list("2025-01-15" = additions1, "2025-01-16" = additions2)
+
+  # Should not error due to type mismatch when combining previous day's data
+  expect_no_error({
+    result <- calculate_feed_availability(visit_list, addition_list)
+  })
+
+  # Verify it found the previous day's addition
+  expect_false(is.na(result$visits[["2025-01-16"]]$feed_addition_time[1]))
+  expect_equal(
+    as.character(result$visits[["2025-01-16"]]$feed_addition_time[1]),
+    as.character(as.POSIXct("2025-01-15 20:00:00", tz = "America/Vancouver"))
+  )
+})

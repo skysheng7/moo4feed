@@ -180,6 +180,10 @@ calculate_feed_availability <- function(visit_data,
 
       # Only combine if previous day has feed events
       if (nrow(prev_feed_events) > 0) {
+        # Ensure bin column types match before combining
+        prev_feed_events <- .harmonize_bin_type(
+          prev_feed_events, combined_feed_events, bin_col
+        )
         combined_feed_events <- dplyr::bind_rows(prev_feed_events, combined_feed_events)
       }
     }
@@ -458,6 +462,44 @@ calculate_feed_availability <- function(visit_data,
 
   # Could not find previous day
   return(NULL)
+}
+
+
+#' Harmonize Bin Column Type Between Two Data Frames
+#'
+#' @description
+#' Internal function to ensure the bin column has the same type in both data frames
+#' before combining them with bind_rows(). Converts the first dataframe's bin column
+#' to match the type of the second dataframe's bin column.
+#'
+#' @param df1 First data frame (will be modified)
+#' @param df2 Second data frame (reference for type)
+#' @param bin_col Name of the bin column
+#'
+#' @return Modified df1 with bin column type matching df2
+#'
+#' @keywords internal
+#' @noRd
+.harmonize_bin_type <- function(df1, df2, bin_col) {
+  # Get the types of bin columns
+  type1 <- class(df1[[bin_col]])[1]
+  type2 <- class(df2[[bin_col]])[1]
+
+  # If types match, return as is
+  if (type1 == type2) {
+    return(df1)
+  }
+
+  # Convert df1's bin column to match df2's type
+  if (type2 == "character") {
+    df1[[bin_col]] <- as.character(df1[[bin_col]])
+  } else if (type2 == "numeric" || type2 == "double") {
+    df1[[bin_col]] <- as.numeric(df1[[bin_col]])
+  } else if (type2 == "integer") {
+    df1[[bin_col]] <- as.integer(df1[[bin_col]])
+  }
+
+  return(df1)
 }
 
 
