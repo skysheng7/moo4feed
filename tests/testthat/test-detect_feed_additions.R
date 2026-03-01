@@ -265,6 +265,8 @@ test_that("no feed additions when weight increases below threshold", {
   )
 
   expect_equal(nrow(result), 0)
+  # Verify time column is POSIXct, not numeric
+  expect_true(inherits(result$time, "POSIXct"))
 })
 
 test_that("empty input returns empty result with correct structure", {
@@ -282,6 +284,8 @@ test_that("empty input returns empty result with correct structure", {
 
   expect_equal(nrow(result), 0)
   expect_true(all(c("date", bin_col2(), "time", "weight_increase", "bin_weight_after_fill") %in% names(result)))
+  # Verify time column is POSIXct, not numeric
+  expect_true(inherits(result$time, "POSIXct"))
 })
 
 test_that("single visit per bin returns no additions", {

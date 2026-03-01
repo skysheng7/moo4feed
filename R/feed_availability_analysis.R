@@ -180,9 +180,9 @@ calculate_feed_availability <- function(visit_data,
 
       # Only combine if previous day has feed events
       if (nrow(prev_feed_events) > 0) {
-        # Ensure bin column types match before combining
-        prev_feed_events <- .harmonize_bin_type(
-          prev_feed_events, combined_feed_events, bin_col
+        # Ensure column types match before combining
+        prev_feed_events <- .harmonize_column_types(
+          prev_feed_events, combined_feed_events, required_feed_cols
         )
         combined_feed_events <- dplyr::bind_rows(prev_feed_events, combined_feed_events)
       }
@@ -465,40 +465,57 @@ calculate_feed_availability <- function(visit_data,
 }
 
 
-#' Harmonize Bin Column Type Between Two Data Frames
+#' Harmonize Column Types Between Two Data Frames
 #'
 #' @description
-#' Internal function to ensure the bin column has the same type in both data frames
-#' before combining them with bind_rows(). Converts the first dataframe's bin column
-#' to match the type of the second dataframe's bin column.
+#' Internal function to ensure specified columns have the same types in both data frames
+#' before combining them with bind_rows(). Converts the first dataframe's columns
+#' to match the types of the second dataframe's columns.
 #'
 #' @param df1 First data frame (will be modified)
-#' @param df2 Second data frame (reference for type)
-#' @param bin_col Name of the bin column
+#' @param df2 Second data frame (reference for types)
+#' @param cols Character vector of column names to harmonize
 #'
-#' @return Modified df1 with bin column type matching df2
+#' @return Modified df1 with column types matching df2
 #'
 #' @keywords internal
 #' @noRd
-.harmonize_bin_type <- function(df1, df2, bin_col) {
-  # Get the types of bin columns
-  type1 <- class(df1[[bin_col]])[1]
-  type2 <- class(df2[[bin_col]])[1]
-
-  # If types match, return as is
-  if (type1 == type2) {
-    return(df1)
+.harmonize_column_types <- function(df1, df2, cols) {
+  for (col in cols) {
+    if (!(col %in% names(df1)) || !(col %in% names(df2))) {
+      next
+    }
+    
+    # Get the types of columns
+    type1 <- class(df1[[col]])[1]
+    type2 <- class(df2[[col]])[1]
+    
+    # If types match, skip
+    if (type1 == type2) {
+      next
+    }
+    
+    # Handle POSIXct conversion specially
+    if (type2 %in% c("POSIXct", "POSIXt")) {
+      if (type1 == "numeric" || type1 == "double") {
+        # Convert numeric to POSIXct using timezone from df2
+        tz <- attr(df2[[col]], "tzone")
+        if (is.null(tz)) tz <- "UTC"
+        df1[[col]] <- structure(
+          df1[[col]],
+          class = c("POSIXct", "POSIXt"),
+          tzone = tz
+        )
+      }
+    } else if (type2 == "character") {
+      df1[[col]] <- as.character(df1[[col]])
+    } else if (type2 == "numeric" || type2 == "double") {
+      df1[[col]] <- as.numeric(df1[[col]])
+    } else if (type2 == "integer") {
+      df1[[col]] <- as.integer(df1[[col]])
+    }
   }
-
-  # Convert df1's bin column to match df2's type
-  if (type2 == "character") {
-    df1[[bin_col]] <- as.character(df1[[bin_col]])
-  } else if (type2 == "numeric" || type2 == "double") {
-    df1[[bin_col]] <- as.numeric(df1[[bin_col]])
-  } else if (type2 == "integer") {
-    df1[[bin_col]] <- as.integer(df1[[bin_col]])
-  }
-
+  
   return(df1)
 }
 

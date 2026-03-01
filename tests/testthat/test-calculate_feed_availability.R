@@ -1015,3 +1015,49 @@ test_that("bin column type mismatch between days is handled", {
     as.character(as.POSIXct("2025-01-15 20:00:00", tz = "America/Vancouver"))
   )
 })
+
+test_that("empty feed additions on one day does not cause type mismatch errors", {
+  # Day 1 has feed additions
+  visits1 <- make_availability_visits(
+    cow_ids = c(1, 1),
+    bin_ids = c("B1", "B1"),
+    start_times = c("2025-01-15 08:00:00", "2025-01-15 10:00:00"),
+    start_weights = c(60, 55)
+  )
+  visits1$date <- "2025-01-15"
+  visits1$end <- visits1$start + 600
+  visits1$end_weight <- visits1$start_weight - 5
+
+  # Day 2 has no feed additions (no weight increase above threshold)
+  visits2 <- make_availability_visits(
+    cow_ids = c(1, 1),
+    bin_ids = c("B1", "B1"),
+    start_times = c("2025-01-16 08:00:00", "2025-01-16 10:00:00"),
+    start_weights = c(50, 48)
+  )
+  visits2$date <- "2025-01-16"
+  visits2$end <- visits2$start + 600
+  visits2$end_weight <- visits2$start_weight - 2  # Only 2kg decrease, no refill
+
+  # Detect feed additions
+  additions1 <- detect_feed_additions(visits1, aggregate_all_bin = FALSE, min_weight_increase = 5)
+  additions2 <- detect_feed_additions(visits2, aggregate_all_bin = FALSE, min_weight_increase = 5)
+
+  # additions2 should be empty (no feed additions detected)
+  expect_equal(nrow(additions2), 0)
+  # But it should have proper POSIXct time column
+  expect_true("time" %in% names(additions2))
+  expect_true(inherits(additions2$time, "POSIXct"))
+
+  visit_list <- list("2025-01-15" = visits1, "2025-01-16" = visits2)
+  addition_list <- list("2025-01-15" = additions1, "2025-01-16" = additions2)
+
+  # Should not error due to time column type mismatch
+  expect_no_error({
+    result <- calculate_feed_availability(visit_list, addition_list)
+  })
+
+  # Verify both days processed
+  expect_equal(nrow(result$visits[["2025-01-15"]]), 2)
+  expect_equal(nrow(result$visits[["2025-01-16"]]), 2)
+})

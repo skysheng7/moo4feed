@@ -155,6 +155,13 @@ detect_feed_additions <- function(data,
       stop("Missing required columns: ", paste(missing_cols, collapse = ", "), call. = FALSE)
     }
 
+    # Extract timezone from input data for consistent empty dataframes
+    input_tz <- if (nrow(df) > 0 && inherits(df[[start_col]], "POSIXct")) {
+      attr(df[[start_col]], "tzone")
+    } else {
+      tz2()  # Use global timezone setting
+    }
+
     # Detect bin weight jumps
     bin_additions <- .detect_bin_weight_jump(
       df = df,
@@ -163,7 +170,8 @@ detect_feed_additions <- function(data,
       bin_col = bin_col,
       start_col = start_col,
       start_weight_col = start_weight_col,
-      end_weight_col = end_weight_col
+      end_weight_col = end_weight_col,
+      input_tz = input_tz
     )
 
     # If no additions found, return appropriate empty structure
@@ -183,7 +191,7 @@ detect_feed_additions <- function(data,
       } else {
         result_df <- data.frame(
           date = character(0),
-          time = numeric(0),
+          time = structure(numeric(0), class = c("POSIXct", "POSIXt"), tzone = input_tz),
           weight_increase = numeric(0),
           bin_weight_after_fill = numeric(0),
           stringsAsFactors = FALSE
@@ -234,7 +242,7 @@ detect_feed_additions <- function(data,
 #' @noRd
 .detect_bin_weight_jump <- function(df, date, min_weight_increase,
                                      bin_col, start_col, start_weight_col,
-                                     end_weight_col) {
+                                     end_weight_col, input_tz = tz2()) {
 
   # Sort by bin and start time
   df <- df |>
@@ -256,7 +264,7 @@ detect_feed_additions <- function(data,
   if (nrow(df_jumps) == 0) {
     return(data.frame(
       date = character(0),
-      time = numeric(0),
+      time = structure(numeric(0), class = c("POSIXct", "POSIXt"), tzone = input_tz),
       weight_increase = numeric(0),
       bin_weight_after_fill = numeric(0),
       stringsAsFactors = FALSE
