@@ -308,6 +308,11 @@ calculate_feed_availability <- function(visit_data,
       feed_added_weight = "weight_increase"
     )
 
+  # Harmonize bin column type between visits and feed_events before joining
+  feed_events_renamed <- .harmonize_column_types(
+    feed_events_renamed, visits, c(bin_col)
+  )
+
   # Cross join visits with feed additions for same bin, keeping only prior additions
   # Then select the most recent feed addition per visit
   matched <- visits |>

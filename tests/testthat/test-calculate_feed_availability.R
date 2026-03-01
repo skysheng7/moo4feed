@@ -1061,3 +1061,34 @@ test_that("empty feed additions on one day does not cause type mismatch errors",
   expect_equal(nrow(result$visits[["2025-01-15"]]), 2)
   expect_equal(nrow(result$visits[["2025-01-16"]]), 2)
 })
+
+test_that("bin type mismatch between visits and feed_additions is handled", {
+  # Visits have numeric bin
+  visits <- make_availability_visits(
+    cow_ids = c(1, 1),
+    bin_ids = c(1, 1),  # Numeric
+    start_times = c("2025-01-15 08:00:00", "2025-01-15 10:00:00"),
+    start_weights = c(50, 40)
+  )
+
+  # Feed additions have character bin (simulating data from different source)
+  feed_additions <- data.frame(
+    date = "2025-01-15",
+    bin = "1",  # Character (type mismatch!)
+    time = as.POSIXct("2025-01-15 07:00:00", tz = "America/Vancouver"),
+    weight_increase = 60,
+    bin_weight_after_fill = 60,
+    stringsAsFactors = FALSE
+  )
+  colnames(feed_additions)[2] <- bin_col2()
+
+  # Should not error due to bin type mismatch in the join
+  expect_no_error({
+    result <- calculate_feed_availability(visits, feed_additions)
+  })
+
+  # Verify results are correct
+  expect_equal(nrow(result$visits), 2)
+  expect_false(is.na(result$visits$feed_addition_time[1]))
+  expect_equal(result$visits$pct_feed_remaining, c(50/60*100, 40/60*100))
+})
