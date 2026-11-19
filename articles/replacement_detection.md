@@ -1,6 +1,7 @@
 # 4. Replacement Detection
 
 ``` r
+
 library(moo4feed)
 library(ggplot2)
 library(dplyr)
@@ -12,6 +13,7 @@ Before analyzing replacement behavior, configure global variables to
 match your data structure:
 
 ``` r
+
 # Configure global variables for your data structure
 set_global_cols(
   # Time zone
@@ -64,6 +66,7 @@ This tutorial assumes completion of previous data processing steps in
 ## 4. Data Preparation
 
 ``` r
+
 # Load cleaned example data
 data(clean_comb)
 
@@ -109,6 +112,7 @@ research.
 ### Detecting Replacement Events
 
 ``` r
+
 # Process replacement events for all days
 replacements <- record_replacement_days(
   comb = clean_comb,           # Our cleaned feed data
@@ -150,6 +154,7 @@ Each replacement event contains:
 ### Most Active cows
 
 ``` r
+
 # Combine all days for analysis
 all_replacements <- do.call(rbind, replacements)
 
@@ -192,6 +197,7 @@ print(top_reactors)
 ### Replacement Timing Patterns
 
 ``` r
+
 # Analyze replacement timing throughout the day
 all_replacements$hour <- lubridate::hour(all_replacements$time)
 
@@ -220,6 +226,7 @@ print(hourly_replacements)
 ### Visualize Replacement Patterns
 
 ``` r
+
 # Visualize replacement events by hour
 ggplot(hourly_replacements, aes(x = hour, y = replacement_count)) +
   geom_line(color = "steelblue", linewidth = 1.2) +
@@ -241,6 +248,7 @@ ggplot(hourly_replacements, aes(x = hour, y = replacement_count)) +
 ![](replacement_detection_files/figure-html/viz-replacement-timing-1.png)
 
 ``` r
+
 # Visualize top 50 most active displacing animals
 top_50_actors <- head(all_replacements |>
   dplyr::count(actor_cow, sort = TRUE, name = "times_replaced_others"), 50)
@@ -280,6 +288,7 @@ social dynamics:
 ## 8. Code Cheatsheet
 
 ``` r
+
 #' Copy and modify these code blocks for your own analysis!
 
 # ---- SETUP: Global Variables (REQUIRED FIRST!) ----

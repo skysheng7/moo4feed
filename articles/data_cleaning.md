@@ -30,6 +30,7 @@ records into analysis-ready datasets suitable for behavioral research.
 ### 2. Load Required Packages 🧰
 
 ``` r
+
 library(moo4feed)   # Main package for animal data processing
 ```
 
@@ -42,6 +43,7 @@ own data.
 ### 3. Where Are Your Files? 📂
 
 ``` r
+
 # For your own data, edit this line:
 # extdata_path <- "/path/to/my/raw/files"  # ← your folder path
 
@@ -54,6 +56,7 @@ extdata_path <- system.file("extdata", package = "moo4feed")
 If your feeder and drinker files are stored separately:
 
 ``` r
+
 extdata_path_f <- "/path/to/feeder/files"    # 🐄 For feed data
 extdata_path_w <- "/path/to/drinker/files"   # 🚰 For water data
 ```
@@ -65,6 +68,7 @@ extdata_path_w <- "/path/to/drinker/files"   # 🚰 For water data
 We use filename patterns to distinguish feeder data from drinker data:
 
 ``` r
+
 # Find all feeder files (VR*.DAT pattern)
 fileNames.f <- list.files(
   path       = extdata_path,     # 🐄 Where to look
@@ -104,6 +108,7 @@ Daylight saving time (DST) transitions can create timestamp
 inconsistencies. Identify DST change dates for your study period:
 
 ``` r
+
 # Identify DST transitions for your data years
 dst_df <- get_dst_switch_info(
   years = c(2020, 2021),     # 📅 EDIT THIS to match your data years
@@ -128,6 +133,7 @@ print(dst_df)
 To analyze only days with both feeder AND drinker data:
 
 ``` r
+
 # Match feeder and drinker files by date
 date_compare <- compare_files(fileNames.f, fileNames.w)
 fileNames.f <- date_compare$feed    # Updated feeder file list
@@ -157,6 +163,7 @@ There are two ways to set up global variables for your data:
 This is the simplest approach - set everything in one function call:
 
 ``` r
+
 # Configure all global variables in one call
 # 👉 EDIT THIS to match your data file structure
 set_global_cols(
@@ -191,6 +198,7 @@ set_global_cols(
 Alternatively, you can set each variable separately:
 
 ``` r
+
 # ── Time zone ──────────────────────────────────────────────────────────────
 set_tz2("America/Vancouver")   # governs the handling of timestamp data
 
@@ -217,6 +225,7 @@ You can verify any setting at any time with the corresponding getter
 functions:
 
 ``` r
+
 cat("Timezone:", tz2(), "\n")
 #> Timezone: America/Vancouver
 cat("ID column:", id_col2(), "\n")
@@ -234,6 +243,7 @@ cat("Bin layout:", bin_layout2(), "\n")
 #### Process Feeder Data
 
 ``` r
+
 # Define your column names (if your files don't have headers)
 # 👉 EDIT THIS to match your data file structure
 col_names <- c("transponder", "cow", "bin", "start", "end", "duration", 
@@ -300,6 +310,7 @@ need a one-off override (for example, a different time-zone just for
 this call) you can still pass that argument directly:
 
 ``` r
+
 process_all_feed(files = fileNames.f, tz = "UTC")
 ```
 
@@ -308,6 +319,7 @@ process_all_feed(files = fileNames.f, tz = "UTC")
 #### Process Water Data
 
 ``` r
+
 # Column names (only needed because drinker files have no headers)
 col_names_wat <- c(
   "transponder", "cow", "bin", "start", "end",
@@ -366,6 +378,7 @@ overlapping visits, impossible values, and missing records.
 #### Configure Quality Check Parameters
 
 ``` r
+
 # Define quality control thresholds
 # 👉 EDIT the thresholds to match your data and preferences
 my_qc_config <- qc_config(
@@ -394,6 +407,7 @@ my_qc_config <- qc_config(
 #### Run the quality check
 
 ``` r
+
 # Run comprehensive quality check
 qc_results <- qc(
   feed = all_fed,               # Your processed feeder data
@@ -426,6 +440,7 @@ function performs multiple validation steps:
 #### Extract Cleaned Data
 
 ``` r
+
 # The qc_results contains our cleaned data
 qc_feed <- qc_results$feed     # Cleaned feeder data
 qc_water <- qc_results$water   # Cleaned drinker data
@@ -441,6 +456,7 @@ remove outliers. The traditional approach removes all data points beyond
 3 standard deviations from the mean:
 
 ``` r
+
 # Demonstrate traditional outlier removal on feed data
 demo_feed <- do.call(rbind, qc_feed)  # Combine all days into one dataframe
 
@@ -523,6 +539,7 @@ rate), it might be an outlier.
 - **Relationship-aware**: Preserves correlations between variables
 
 ``` r
+
 # Apply KNN outlier detection
 feed_with_outliers <- knn_clean_feed(
   qc_feed,            # Our cleaned feed data
@@ -595,6 +612,7 @@ three dimensions.
 #### Apply KNN to Water Data
 
 ``` r
+
 # KNN outlier detection for water data
 water_with_outliers <- knn_clean_water(
   qc_water,           # Our cleaned water data
@@ -630,6 +648,7 @@ Once you’re satisfied with the outlier detection, you can choose to
 remove them:
 
 ``` r
+
 # Remove outliers from feed data
 cleaned_feed_no_outliers <- knn_clean_feed(
   qc_feed,
@@ -657,6 +676,7 @@ clean_comb <- combine_feed_water(clean_feed, clean_water)
 ### 10. Daily Intake Summaries 📈
 
 ``` r
+
 # Generate daily intake summaries
 daily_summary <- feed_water_summary(
   feed = qc_feed,           # Your cleaned feed data 
@@ -714,6 +734,7 @@ demonstrated in subsequent tutorials.
 ### 12. Code cheatsheet 📋
 
 ``` r
+
 #' Copy and modify these code blocks for your own analysis!
 
 # ---- SETUP: Load Packages ----

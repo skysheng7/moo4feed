@@ -1,6 +1,7 @@
 # 6. Non-Nutritive Visit Analysis
 
 ``` r
+
 library(moo4feed)
 library(ggplot2)
 library(dplyr)
@@ -12,6 +13,7 @@ Before analyzing non-nutritive visit patterns, configure global
 variables to match your data structure:
 
 ``` r
+
 # Configure global variables for your data structure
 set_global_cols(
   # Time zone
@@ -52,6 +54,7 @@ Cleaning**](https://skysheng7.github.io/moo4feed/articles/data_cleaning.md).
 ## 4. Data Preparation
 
 ``` r
+
 # Load cleaned example data
 data(clean_feed)
 
@@ -90,6 +93,7 @@ visits of each type.
 ### Calculate Non-Nutritive Visits
 
 ``` r
+
 # Create quality control configuration with calibration error
 my_qc_config <- qc_config(
   calibration_error = 0.5    # Equipment measurement threshold (kg)
@@ -119,6 +123,7 @@ head(non_nutritive[[1]])
 ### Using the Sort Parameter
 
 ``` r
+
 # Sort by highest non-nutritive visits first (descending)
 non_nutritive_desc <- calculate_non_nutritive_visits(
   data = clean_feed,
@@ -181,6 +186,7 @@ which may reflect:
 ### Calculate No-Feed Visits
 
 ``` r
+
 # Calculate visits to empty bins for each animal on each day
 no_feed <- calculate_no_feed_visits(
   data = clean_feed,           # Our cleaned feed data
@@ -225,6 +231,7 @@ head(no_feed_desc[[1]], 5)
 ### Visualize Non-Nutritive and No-Feed Patterns
 
 ``` r
+
 # Use first day's data and get animals with most non-nutritive visits
 top_nn <- head(non_nutritive_desc[[1]], 50)
 
@@ -248,6 +255,7 @@ ggplot(top_nn, aes(x = reorder(cow, number_of_non_nutritive_visits), y = number_
 ![](non_nutritive_visits_files/figure-html/viz-non-nutritive-bar-1.png)
 
 ``` r
+
 # Use first day's data and get animals checking empty bins
 top_empty <- head(no_feed_desc[[1]], 50)
 
@@ -276,6 +284,7 @@ from the plot.
 ## 7. Code Cheatsheet
 
 ``` r
+
 #' Copy and modify these code blocks for your own analysis!
 
 # ---- SETUP: Global Variables (REQUIRED FIRST!) ----

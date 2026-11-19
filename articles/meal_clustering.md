@@ -1,6 +1,7 @@
 # 2. Meal Clustering
 
 ``` r
+
 library(moo4feed)
 library(ggplot2)
 library(dplyr)
@@ -12,6 +13,7 @@ Before proceeding with meal clustering analysis, configure global
 variables to match your data structure:
 
 ``` r
+
 # Configure global variables for your data structure
 set_global_cols(
   # Time zone
@@ -63,6 +65,7 @@ This tutorial demonstrates how to:
 > time or implement parallel processing.
 
 ``` r
+
 # Load example cleaned data
 data(clean_feed)
 
@@ -84,6 +87,7 @@ different feeding habits.
 ### Demonstration: Fixed 90-Minute Interval
 
 ``` r
+
 # Apply fixed 90-minute interval clustering on the second day the first cow
 selected_animal <- unique(clean_feed[[2]]$cow)[1]
 selected_date <- names(clean_feed)[2]
@@ -110,6 +114,7 @@ print(p_fixed)
 
 ``` r
 
+
 cat("Fixed interval (90 min) resulted in", max(fixed_labeled$meal_id), "meals\n")
 #> Fixed interval (90 min) resulted in 3 meals
 ```
@@ -128,6 +133,7 @@ threshold for YOUR data. By default we take a high percentile (default
 belong to the same meal.
 
 ``` r
+
 # Calculate optimal interval using percentile method without restricting the 
 # interval has to be between the lower_bound and upper_bound (default is 5 to 60 minutes)
 demo_data <- clean_feed
@@ -153,6 +159,7 @@ cat("Optimal interval (93rd percentile):", round(eps_percentile, 2), "minutes\n"
 - Now let’s visualize the distribution of the gaps.
 
 ``` r
+
 # Visualize gap distribution with percentile-based eps
 # Try changing the percentile to 0.75, 0.85, 0.95, 0.99 and see how it affects the threshold!
 p1 <- viz_eps_percentile(data = demo_data, 
@@ -185,6 +192,7 @@ curves to our data:
 >     distributions
 
 ``` r
+
 # Calculate optimal interval using GMM method
 eps_gmm <- meal_interval(data = demo_data, 
                         method = "gmm", 
@@ -205,6 +213,7 @@ cat("Optimal interval (GMM):", round(eps_gmm, 2), "minutes\n")
 excitedly. “Let’s see how different parameters affect our results!”*
 
 ``` r
+
 # 🎯 TRY THIS: Change these parameter combinations!
 # Try different multipliers: 5, 10, 20, 30, 50
 # Try different offsets: 0.5, 1, 2
@@ -238,6 +247,7 @@ Log transformation often improves GMM fitting for highly skewed gap
 distributions:
 
 ``` r
+
 # Compare GMM with and without log transformation
 p_gmm_no_log <- viz_eps_gmm(demo_data, 
                             lower_bound = NULL,
@@ -254,6 +264,7 @@ print(p_gmm_no_log)
 ![](meal_clustering_files/figure-html/gmm-comparison-1.png)
 
 ``` r
+
 
 # with basic log transformation: log(x + 1) where x is the gap in minutes
 p_gmm_log <- viz_eps_gmm(demo_data, 
@@ -273,6 +284,7 @@ print(p_gmm_log)
 ![](meal_clustering_files/figure-html/gmm-comparison-2.png)
 
 ``` r
+
 
 # with customzied log transformation: log(20x + 1) where x is the gap in minutes
 p_gmm_log_20 <- viz_eps_gmm(demo_data, 
@@ -324,6 +336,7 @@ For meal clustering:
 ### Apply DBSCAN Clustering
 
 ``` r
+
 # Cluster meals with default parameters
 # 🎯 TRY THIS: Change these min_pts values!
 # Try: c(1, 2, 3, 4) or c(2, 3, 5, 7) or even c(1, 2, 4, 8)
@@ -384,6 +397,7 @@ You can calculate optimal eps using different data scopes:
   different days, calculate eps based on each animal on each day
 
 ``` r
+
 # Compare different eps calculation scopes
 scopes <- c("all_animals", "one_animal_all_days", "one_animal_single_day")
 scope_results <- list()
@@ -425,6 +439,7 @@ input data is a dataframe, it will return a labeled dataframe.
 Label individual visits with meal assignments for detailed analysis:
 
 ``` r
+
 # Label each visit with its meal information
 labeled_visits <- meal_label_visits(data = demo_data,
                                    eps = NULL,
@@ -474,6 +489,7 @@ Create timeline visualizations showing meal patterns throughout the day:
   organized by animal then date
 
 ``` r
+
 # Create timeline plots for meal clusters
 meal_plots <- viz_meal_clusters(data = labeled_visits,
                                point_size = 2,
@@ -496,6 +512,7 @@ meal_plots <- viz_meal_clusters(data = labeled_visits,
 Using fixed interval clustering, we set the eps to 90 minutes:
 
 ``` r
+
 # Cluster meals with fixed 90-minute interval
 print(p_fixed)
 ```
@@ -506,6 +523,7 @@ Using data-driven GMM method to determine the eps and DBSCAN for
 clustering:
 
 ``` r
+
 # Compare optimized vs. fixed interval for the same animal
 # first digit means sequence of the animal, second digit means sequence of the day
 # Display sample plots
@@ -522,6 +540,7 @@ reasonable clustering result.
 Extract plots for specific animals on specific dates:
 
 ``` r
+
 # Get plots for a specific animal on specific day
 animal_plot <- extract_plots(meal_plots, animals = "7022", dates = "2020-10-31")
 
@@ -539,6 +558,7 @@ print(combined_plots[[1]])
 Compare multiple animals on the same date:
 
 ``` r
+
 # Combine multiple animals for one date
 date_plots <- combine_date_plots(meal_plots,
                                 date = "2020-10-31",
@@ -565,6 +585,7 @@ advantages of data-driven meal clustering:
 ## 10. Code Cheatsheet
 
 ``` r
+
 #' Copy and modify these code blocks for your own analysis!
 
 # ---- SETUP: Global Variables (REQUIRED FIRST!) ----

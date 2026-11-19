@@ -130,12 +130,14 @@ If you’re already added as a collaborator to the GitHub repository:
     If you have created/modified 1 or a few new R scripts, run:
 
     ``` r
+
     styler::style_file("path/to/your/r/scripts")
     ```
 
     If you wish to style an entire directory, run:
 
     ``` r
+
     styler::style_dir("path/to/your/folder")
     ```
 
@@ -205,12 +207,14 @@ These guidelines apply to both internal and external contributors:
 1.  Install dependencies and load the package:
 
     ``` r
+
     # Install any missing dependencies
     install.packages("remotes")
     remotes::install_deps(dependencies = TRUE)
     ```
 
     ``` r
+
     # Load code without sourcing individual R files and functions
     devtools::load_all()
     ```
@@ -221,6 +225,7 @@ These guidelines apply to both internal and external contributors:
 2.  When adding a new package dependency:
 
     ``` r
+
     usethis::use_package("pkgName")
     ```
 
@@ -230,6 +235,7 @@ These guidelines apply to both internal and external contributors:
 3.  Run tests and checks regularly:
 
     ``` r
+
     # Run all tests
     devtools::test()
 
@@ -261,6 +267,7 @@ These guidelines apply to both internal and external contributors:
 - Build the pkgdown site (if applicable) with:
 
   ``` r
+
   pkgdown::build_site()
   ```
 
@@ -311,6 +318,7 @@ writing or improving docs:
 - All `@examples` must run without errors. Test by running:
 
   ``` r
+
   devtools::document()
   devtools::run_examples()
   ```
@@ -320,6 +328,7 @@ writing or improving docs:
 - After updating `.R` files and roxygen comments, rebuild documentation:
 
   ``` r
+
   devtools::document()
   ```
 
@@ -329,6 +338,7 @@ writing or improving docs:
   with:
 
   ``` r
+
   pkgdown::build_site()
   ```
 
@@ -345,6 +355,7 @@ We use `testthat` R package for testing. Follow these steps:
 2.  When creating a new function:
 
     ``` r
+
     # Create new R script for your function
     usethis::use_r("your_new_function_name")
 
@@ -366,12 +377,14 @@ We use `testthat` R package for testing. Follow these steps:
 4.  Run the entire test suite:
 
     ``` r
+
     devtools::test()
     ```
 
 5.  Check test coverage:
 
     ``` r
+
     covr::package_coverage()
     ```
 

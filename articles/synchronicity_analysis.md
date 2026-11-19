@@ -1,6 +1,7 @@
 # 5. Synchronicity Analysis
 
 ``` r
+
 library(moo4feed)
 library(ggplot2)
 library(dplyr)
@@ -12,6 +13,7 @@ Before analyzing synchronicity patterns, configure global variables to
 match your data structure:
 
 ``` r
+
 # Configure global variables for your data structure
 set_global_cols(
   # Time zone
@@ -64,6 +66,7 @@ You need cleaned feeding or drinking data.
 ## 4. Data Preparation
 
 ``` r
+
 # Load cleaned example data
 data(clean_feed)   # For feed-only pair-wise analysis
 data(clean_water)  # For water-only pair-wise analysis
@@ -83,6 +86,7 @@ into time-based matrices.
 ### Process Feed Data Matrices (for pair-wise analysis)
 
 ``` r
+
 # Process feed data to create time-based matrices
 # Resolution "sec" means one row per second (more detailed but will generate larger files)
 # Resolution "min" means one row per minute (less detailed but will generate smaller files)
@@ -125,6 +129,7 @@ animal is feeding or drinking, to reduce output data file size.
 ### Process Water Data Matrices (for pair-wise analysis)
 
 ``` r
+
 # Process water data similarly
 water_matrices <- matrix_process(
   data_list = clean_water,
@@ -145,6 +150,7 @@ data because water bins are often located between feed bins. Analyzing
 them separately would miss important spatial relationships.
 
 ``` r
+
 # Process combined feed and water data to create time-based matrices
 # The clean_comb dataset already contains both feed and water visits
 combined_matrices <- matrix_process(
@@ -168,6 +174,7 @@ or drinking simultaneously, regardless of their spatial location.
 ### Analyze Feed Synchronicity
 
 ``` r
+
 # Analyze pair-wise co-occurrence for feeding
 pair_feed_results <- synch_pair_analysis(
   matrix_data = feed_matrices,
@@ -238,6 +245,7 @@ the diagonal) because the matrix is symmetrical.
 ### Finding Most Synchronized Pairs
 
 ``` r
+
 # Convert matrices to pair-level data frame for easier analysis
 # Use synch_pairs_to_df() to extract upper triangle and sort by total_time
 pair_df <- synch_pairs_to_df(
@@ -268,6 +276,7 @@ together may have social bonds. On the other hand, low synchronicity
 despite being in the same herd might indicate avoidance:
 
 ``` r
+
 # Get least synchronized pairs (sort ascending)
 pair_df_least <- synch_pairs_to_df(
   pair_feed_results,
@@ -295,6 +304,7 @@ print(head(pair_df_least, 10))
 ### Analyze Water Drinking Synchronicity
 
 ``` r
+
 # Analyze pair-wise co-occurrence for drinking
 pair_water_results <- synch_pair_analysis(
   matrix_data = water_matrices,
@@ -311,6 +321,7 @@ water data, which shows how often 2 animals feed or drink at the same
 time, regardless of their spatial location.
 
 ``` r
+
 # Analyze pair-wise co-occurrence for both feeding and drinking
 pair_combined_results <- synch_pair_analysis(
   matrix_data = combined_matrices,
@@ -373,6 +384,7 @@ bins, and bins 101-105 are water bins (with offset of 100).
 - Bin 101 (water) is neighbor to bins 6 and 102 (water)
 
 ``` r
+
 cat("Current bin layout:\n")
 #> Current bin layout:
 cat(bin_layout2(), "\n")
@@ -382,6 +394,7 @@ cat(bin_layout2(), "\n")
 ### Analyze Neighbor Synchronicity (Combined Feed and Water)
 
 ``` r
+
 # Analyze spatial neighbor patterns using combined feed and water data
 neighbor_results <- synch_neighbor_analysis(
   matrix_data = combined_matrices,
@@ -425,6 +438,7 @@ print(neighbor_time_matrix[1:5, 1:5])
 ### Comparing Co-Occurrence vs. Neighbor Patterns
 
 ``` r
+
 # Compare the same pair in both analyses (using combined feed+water data)
 example_animal1 <- rownames(combined_time_matrix)[1]
 example_animal2 <- rownames(combined_time_matrix)[2]
@@ -449,6 +463,7 @@ Neighbor proximity (feeding OR drinking at adjacent bins): %d bouts, %d seconds 
 ### Finding Pairs That Prefer Neighboring Bins
 
 ``` r
+
 # Compare neighbor time to total co-occurrence time (both feed and water)
 # This calculates the proportion of total co-occurrence time spent as neighbors
 neighbor_df <- synch_neighbor_compare(
@@ -479,6 +494,7 @@ print(head(neighbor_df, 10))
 ### Visualize Time Spent Together as a Heatmap
 
 ``` r
+
 # Create a symmetric dataset for the heatmap to show all pairs
 # pair_df only contains the upper triangle, so we mirror it
 heatmap_data <- rbind(
@@ -540,6 +556,7 @@ ggplot(plot_grid, aes(x = animal1, y = animal2, fill = total_time)) +
 ### Visualize Time Spent Feeding as Neighbors as a Heatmap
 
 ``` r
+
 # Convert neighbor results to data frame
 neighbor_df_viz <- synch_pairs_to_df(
   synch_results = neighbor_results,
@@ -609,6 +626,7 @@ ggplot(neighbor_plot_grid, aes(x = animal1, y = animal2, fill = total_time)) +
 ## 8. Code Cheatsheet
 
 ``` r
+
 #' Copy and modify these code blocks for your own analysis!
 
 # ---- SETUP: Global Variables (REQUIRED FIRST!) ----

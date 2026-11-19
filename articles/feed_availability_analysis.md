@@ -1,6 +1,7 @@
 # 7. Feed Availability Analysis
 
 ``` r
+
 library(moo4feed)
 library(ggplot2)
 library(dplyr)
@@ -12,6 +13,7 @@ Before analyzing feed availability patterns, configure global variables
 to match your data structure:
 
 ``` r
+
 # Configure global variables for your data structure
 set_global_cols(
   # Time zone
@@ -60,6 +62,7 @@ representing the bin weight at the beginning and end of each visit.
 ## 4. Data Preparation
 
 ``` r
+
 # Load cleaned example data
 data(clean_feed)
 
@@ -116,6 +119,7 @@ into one: **45 kg added to Bin 1 at 6:00am**.
 Example code below:
 
 ``` r
+
 # Detect feed additions for each bin separately
 feed_additions <- detect_feed_additions(
   data = clean_feed,
@@ -169,6 +173,7 @@ than the breakdown per bin.
 Example code below:
 
 ``` r
+
 # Detect multi-bin feed events
 feed_events <- detect_feed_additions(
   data = clean_feed,
@@ -214,6 +219,7 @@ consistently visit when bins are nearly empty.
 ### Calculate Feed Availability
 
 ``` r
+
 # Calculate feed availability for each visit
 availability <- calculate_feed_availability(
   visit_data = clean_feed,
@@ -228,6 +234,7 @@ availability <- calculate_feed_availability(
 ### Visit-Level Results
 
 ``` r
+
 # Examine visit-level data from first day (all columns in a scrollable table)
 visits_with_availability <- availability$visits[[1]]
 
@@ -238,14 +245,14 @@ html_table <- knitr::kable(tbl, format = "html")
 cat('<div style="overflow-x: auto;">', html_table, '</div>')
 ```
 
-|  cow | bin | start               | start_weight | feed_addition_time  | bin_weight_after_fill | pct_feed_remaining |
-|-----:|----:|:--------------------|-------------:|:--------------------|----------------------:|-------------------:|
-| 6005 |  30 | 2020-10-31 22:29:25 |         22.4 | 2020-10-31 15:54:27 |                  58.3 |           38.42196 |
-| 6005 |  30 | 2020-10-31 22:58:00 |         22.1 | 2020-10-31 15:54:27 |                  58.3 |           37.90738 |
-| 6069 |  30 | 2020-10-31 22:59:30 |         21.8 | 2020-10-31 15:54:27 |                  58.3 |           37.39280 |
-| 6028 |  30 | 2020-10-31 23:00:29 |         21.6 | 2020-10-31 15:54:27 |                  58.3 |           37.04974 |
-| 6069 |  30 | 2020-10-31 23:14:07 |         21.2 | 2020-10-31 15:54:27 |                  58.3 |           36.36364 |
-| 6069 |  30 | 2020-10-31 23:17:52 |         20.5 | 2020-10-31 15:54:27 |                  58.3 |           35.16295 |
+| cow | bin | start | start_weight | feed_addition_time | bin_weight_after_fill | pct_feed_remaining |
+|---:|---:|:---|---:|:---|---:|---:|
+| 6005 | 30 | 2020-10-31 22:29:25 | 22.4 | 2020-10-31 15:54:27 | 58.3 | 38.42196 |
+| 6005 | 30 | 2020-10-31 22:58:00 | 22.1 | 2020-10-31 15:54:27 | 58.3 | 37.90738 |
+| 6069 | 30 | 2020-10-31 22:59:30 | 21.8 | 2020-10-31 15:54:27 | 58.3 | 37.39280 |
+| 6028 | 30 | 2020-10-31 23:00:29 | 21.6 | 2020-10-31 15:54:27 | 58.3 | 37.04974 |
+| 6069 | 30 | 2020-10-31 23:14:07 | 21.2 | 2020-10-31 15:54:27 | 58.3 | 36.36364 |
+| 6069 | 30 | 2020-10-31 23:17:52 | 20.5 | 2020-10-31 15:54:27 | 58.3 | 35.16295 |
 
 New columns added to visit data:
 
@@ -267,6 +274,7 @@ out of order or have gaps in the data. The function uses actual dates
 ### Daily Summary Statistics
 
 ``` r
+
 # Examine daily summary from first day
 daily_summary <- availability$daily_summary[[1]]
 
@@ -309,6 +317,7 @@ availability is often skewed, making median a more robust measure of
 central tendency than mean.
 
 ``` r
+
 # Combine all visits across days
 all_visits <- do.call(rbind, availability$visits)
 
@@ -353,6 +362,7 @@ tail(low_availability, 5)
 ### Visualize Feed Availability Distribution
 
 ``` r
+
 # Distribution of feed availability across all visits
 all_visits <- do.call(rbind, availability$visits)
 
@@ -376,6 +386,7 @@ ggplot(valid_visits, aes(x = pct_feed_remaining)) +
 ### Compare Feed Availability by Animal (Top 10)
 
 ``` r
+
 # Violin plot of feed availability by animal (top 5 and bottom 5 by median pct_feed_remaining)
 # Calculate median feed availability per animal
 animal_medians <- valid_visits |>
@@ -431,6 +442,7 @@ This tutorial demonstrated feed availability analysis:
 ## 9. Code Cheatsheet
 
 ``` r
+
 #' Copy and modify these code blocks for your own analysis!
 
 # ---- SETUP: Global Variables (REQUIRED FIRST!) ----

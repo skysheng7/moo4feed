@@ -201,6 +201,7 @@ parameter using:
 ## Examples
 
 ``` r
+
 # Cluster meals with automatic parameter determination (all_fed is a list of 
 # dataframes included in the package)
 meals <- cluster_meals(all_fed[[1]], eps = 90, min_pts = 2, id_col="cow", 

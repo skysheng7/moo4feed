@@ -1,6 +1,7 @@
 # 8. Meal-Level Behavior Analysis
 
 ``` r
+
 library(moo4feed)
 library(ggplot2)
 library(dplyr)
@@ -12,6 +13,7 @@ Before analyzing meal-level behavior patterns, configure global
 variables to match your data structure:
 
 ``` r
+
 # Configure global variables for your data structure
 set_global_cols(
   # Time zone
@@ -66,6 +68,7 @@ This tutorial requires:
 First, we need to prepare meal-labeled data:
 
 ``` r
+
 # Load cleaned example data
 data(clean_feed)
 data(clean_comb)
@@ -124,6 +127,7 @@ function classifies each visit within a meal as:
 ### Analyze Non-Nutritive Patterns
 
 ``` r
+
 # Create quality control configuration
 my_qc_config <- qc_config(
   calibration_error = 0.5    # Equipment measurement threshold (kg)
@@ -186,6 +190,7 @@ The summary provides per animal per day:
 ### Visualize Non-Nutritive Distribution
 
 ``` r
+
 # Combine all days all animals
 all_meal_visits <- do.call(rbind, meal_visits)
 
@@ -205,6 +210,7 @@ ggplot(all_meal_visits, aes(x = mean_non_nutritive_per_meal)) +
 ### Visualize Non-Nutritive by Animal
 
 ``` r
+
 # Use first day's data as an example
 first_day_data <- meal_visits[[1]] |>
   dplyr::arrange(desc(median_non_nutritive_per_meal)) |>
@@ -256,6 +262,7 @@ a visit as an “actor” (replacing another animal) or leave as a “reactor”
 ### Prepare Replacement Data
 
 ``` r
+
 # Detect replacement events
 # (See Tutorial 4: Replacement Detection for details)
 replacements <- record_replacement_days(
@@ -275,6 +282,7 @@ We need meal-labeled data that matches the combined feed/water data used
 for replacement detection:
 
 ``` r
+
 # Label the combined data with meals
 labeled_comb <- meal_label_visits(
   data = clean_comb,
@@ -334,6 +342,7 @@ The results show for each animal’s meal:
 ### Summarize Roles Per Animal Per Day
 
 ``` r
+
 # Get daily summary statistics across all meals
 daily_roles <- meal_replacement_roles_summary(meal_roles)
 
@@ -397,6 +406,7 @@ right side showing their reactor percentage. This makes it easy to read
 each animal’s ID and compare their interaction patterns on day 1.
 
 ``` r
+
 # Use first day's data for visualization
 first_day_roles <- daily_roles[[1]]
 
@@ -442,6 +452,7 @@ ggplot(plot_data, aes(x = cow, y = plot_value, fill = role)) +
 ![](meal_behavior_analysis_files/figure-html/viz-actor-reactor-diverging-1.png)
 
 ``` r
+
 # Bar plot: median_pct_actor_reactor sorted from high to low
 first_day_roles_sorted <- first_day_roles |>
   dplyr::filter(median_pct_actor_reactor > 0) |>
@@ -483,6 +494,7 @@ This tutorial demonstrated meal-level behavior analysis:
 ## 9. Code Cheatsheet
 
 ``` r
+
 #' Copy and modify these code blocks for your own analysis!
 
 # ---- SETUP: Global Variables (REQUIRED FIRST!) ----

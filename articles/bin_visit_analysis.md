@@ -1,6 +1,7 @@
 # 3. Bin Visit Analysis
 
 ``` r
+
 library(moo4feed)
 library(ggplot2)
 library(dplyr)
@@ -12,6 +13,7 @@ Before analyzing bin visit patterns, configure global variables to match
 your data structure:
 
 ``` r
+
 # Configure global variables for your data structure
 set_global_cols(
   # Time zone
@@ -51,6 +53,7 @@ This tutorial assumes completion of previous data processing steps in
 ## 4. Data Preparation
 
 ``` r
+
 # Load cleaned example data
 data(clean_feed)
 data(clean_water)
@@ -103,6 +106,7 @@ patterns by counting unique bin visits per animal per day.
 ### Calculate Unique Bin Visits
 
 ``` r
+
 # Calculate unique bin visits for each animal across all days
 bin_visits <- unique_bin_visits(
   feed = clean_feed,            # Our cleaned feed data
@@ -134,6 +138,7 @@ This analysis provides three key metrics for each animal on each day:
 ### Most Exploratory Animals
 
 ``` r
+
 # Calculate average unique bin visits per animal
 avg_bin_visits <- bin_visits |>
   dplyr::group_by(cow) |>
@@ -180,6 +185,7 @@ creatures of habit consistently use fewer preferred locations.
 ### Visualize Exploration Patterns
 
 ``` r
+
 # Visualize top 50 most exploratory animals
 top_50_explorers <- head(avg_bin_visits, 50)
 
@@ -205,6 +211,7 @@ ggplot(top_50_explorers, aes(x = reorder(cow, avg_total_bins), y = avg_total_bin
 ## 7. Code Cheatsheet
 
 ``` r
+
 #' Copy and modify these code blocks for your own analysis!
 
 # ---- SETUP: Global Variables (REQUIRED FIRST!) ----
